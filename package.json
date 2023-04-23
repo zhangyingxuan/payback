@@ -1,0 +1,11 @@
+{
+  "name": "root",
+  "private": true,"scripts": {
+    "start:server": "cd packages/server && nest start --watch",
+    "start:client": "cd packages/client && pnpm dev",
+    "start": "pnpm start:client & pnpm start:server"
+  },
+  "devDependencies": {
+    "lerna": "^4.0.0"
+  }
+}
