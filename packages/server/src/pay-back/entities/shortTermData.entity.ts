@@ -1,13 +1,3 @@
-// interface shortTermData {
-//   date: Date,
-//   // ======= 短线数据 =======
-
-//   // 大盘点数
-
-//   // ======= 资金流向 =======
-
-//   // ======= 龙虎榜 =======
-// }
 // {
 //   '上市交易日天数[20230420]': '6511',
 //   'a股市值(不含限售股)[20230420]': '4788658000.000',
@@ -45,6 +35,9 @@ export class shortTermData {
 
   @Column({ comment: '上海涨停数量', type: 'int', default: 0 })
   SHAmount: number;
+  // 一板数量
+  @Column({ comment: '连板数量', type: 'int', default: 0 })
+  evenBoard: number;
   // 一板数量
   @Column({ comment: '1板数量', type: 'int', default: 0 })
   board1: number;

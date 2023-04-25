@@ -1,7 +1,7 @@
 {
   "name": "root",
   "private": true,"scripts": {
-    "start:server": "cd packages/server && nest start --watch",
+    "start:server": "cd packages/server && pnpm start:dev",
     "start:client": "cd packages/client && pnpm dev",
     "start": "pnpm start:client & pnpm start:server"
   },

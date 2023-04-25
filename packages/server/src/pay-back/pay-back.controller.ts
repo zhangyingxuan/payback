@@ -1,15 +1,19 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { PayBackService } from './pay-back.service';
-import { CreatePayBackDto } from './dto/create-pay-back.dto';
+import { MarketService } from './market.service';
 import { UpdatePayBackDto } from './dto/update-pay-back.dto';
 
 @Controller('pay-back')
 export class PayBackController {
-  constructor(private readonly payBackService: PayBackService) { }
+  constructor(private readonly payBackService: PayBackService, private readonly marketService: MarketService) { }
 
   @Get('/autoCrawl')
   autoCrawl() {
     return this.payBackService.crawlTodayData();
+  }
+  @Get('/crawlMarket')
+  crawlMarket() {
+    return this.marketService.crawlMarketData();
   }
   // @Get('/storageTodayData')
   // storageTodayData(@Body() createPayBackDto: CreatePayBackDto) {
@@ -17,9 +21,17 @@ export class PayBackController {
   // }
 
   @Get('list')
-  findByLimit(@Query() query) {
+  async findByLimit(@Query() query) {
     const limit = +(query.limit || 20)
-    return this.payBackService.findByLimit(limit);
+    const shortTermData = await this.payBackService.findByLimit(limit);
+    const marketData = await this.marketService.findByLimit(limit);
+    return {
+      code: 200,
+      data: {
+        shortTermData,
+        marketData,
+      }
+    };
   }
 
   @Get('queryAll')

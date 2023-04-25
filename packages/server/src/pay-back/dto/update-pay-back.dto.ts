@@ -7,6 +7,7 @@ export class UpdatePayBackDto {
   downLimitQuantity: number;
   // 最高连板，市场高度
   marketHeight: number;
+  evenBoard: number;
   // 一板数量
   board1: number;
   board2: number;

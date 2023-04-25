@@ -9,6 +9,7 @@ export class CreatePayBackDto {
   marketHeight: number;
   SHAmount: number;
   SZAmount: number;
+  evenBoard: number;
   // 一板数量
   board1: number;
   board2: number;
