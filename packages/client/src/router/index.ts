@@ -55,7 +55,7 @@ const routes: RouteRecordRaw[] = [
           title: '图表',
           permiss: '11',
         },
-        component: () => import(/* webpackChunkName: "charts" */ '../views/charts.vue'),
+        component: () => import(/* webpackChunkName: "charts" */ '../views/charts/index.vue'),
       },
       {
         path: '/form',
