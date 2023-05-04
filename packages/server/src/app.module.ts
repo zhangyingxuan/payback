@@ -9,8 +9,9 @@ import { ScheduleModule } from '@nestjs/schedule';
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      // host: 'localhost',
-      host: '9.134.243.217',
+      host: '43.154.209.141',
+      // devCloud
+      // host: '9.134.243.217',
       port: 3306,
       username: 'root',
       password: '123',

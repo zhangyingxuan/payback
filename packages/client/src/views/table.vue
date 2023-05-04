@@ -127,7 +127,7 @@
 import { ref, reactive } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { Delete, Edit, Search, Plus } from '@element-plus/icons-vue';
-import { fetchData } from '@/api/index';
+import { fetchData } from '@/api/payBack';
 import { useRouter } from 'vue-router';
 
 interface TableItem {
@@ -143,13 +143,13 @@ const query = reactive({
   address: '',
   name: '',
   pageIndex: 1,
-  pageSize: 10
+  pageSize: 10,
 });
 const tableData = ref<TableItem[]>([]);
 const pageTotal = ref(0);
 // 获取表格数据
 const getData = () => {
-  fetchData().then(res => {
+  fetchData({}).then((res: any) => {
     tableData.value = res.data.list;
     pageTotal.value = res.data.pageTotal || 50;
   });
@@ -173,7 +173,7 @@ const handlePageChange = (val: number) => {
 const handleDelete = (index: number) => {
   // 二次确认删除
   ElMessageBox.confirm('确定要删除吗？', '提示', {
-    type: 'warning'
+    type: 'warning',
   })
     .then(() => {
       ElMessage.success('删除成功');
@@ -186,7 +186,7 @@ const handleDelete = (index: number) => {
 const editVisible = ref(false);
 let form = reactive({
   name: '',
-  address: ''
+  address: '',
 });
 let idx = -1;
 

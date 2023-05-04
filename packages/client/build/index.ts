@@ -1,7 +1,7 @@
 /** 处理环境变量 */
 const warpperEnv = (envConf: Recordable): ViteEnv => {
   /** 此处为默认值 */
-  const ret: ViteEnv = {
+  const ret: any = {
     VITE_PORT: 8848,
     VITE_PUBLIC_PATH: "",
     VITE_ROUTER_HISTORY: "",
