@@ -13,6 +13,9 @@ dependencies:
   axios:
     specifier: ^1.3.6
     version: 1.3.6
+  cropperjs:
+    specifier: ^1.5.13
+    version: 1.5.13
   dayjs:
     specifier: ^1.11.7
     version: 1.11.7

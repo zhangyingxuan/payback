@@ -23,7 +23,7 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl): Promise<Response> => {
       if (response.url().includes(apiUrl) && response.status() === 200) {
         setTimeout(() => {
           browser.close();
-        }, 15000)
+        }, 60000)
         resolve(response);
       }
     })
