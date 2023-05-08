@@ -19,7 +19,7 @@ const alias: Record<string, string> = {
 };
 
 export default ({ command, mode }: ConfigEnv): UserConfigExport => {
-	const { VITE_CDN, VITE_PORT, VITE_COMPRESSION, VITE_PUBLIC_PATH } =
+	const { VITE_CDN, VITE_PORT, VITE_COMPRESSION, VITE_PUBLIC_PATH, VITE_BASE_API } =
 		warpperEnv(loadEnv(mode, process.cwd()));
 	return {
 		base: './',
@@ -35,7 +35,7 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 			// 本地跨域代理 https://cn.vitejs.dev/config/server-options.html#server-proxy
 			proxy: {
 				'/pay-back/': {
-					target: 'http://localhost:3000/',
+					target: VITE_BASE_API,
 					changeOrigin: false,
 				},
 			}

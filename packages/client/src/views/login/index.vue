@@ -1,7 +1,7 @@
 <template>
   <div class="login-wrap">
     <div class="ms-login">
-      <div class="ms-title">后台管理系统</div>
+      <div class="ms-title">payBack</div>
       <el-form
         :model="param"
         :rules="rules"

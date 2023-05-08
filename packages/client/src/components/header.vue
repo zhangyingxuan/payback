@@ -5,11 +5,11 @@
       <el-icon v-if="sidebar.collapse"><Expand /></el-icon>
       <el-icon v-else><Fold /></el-icon>
     </div>
-    <div class="logo">后台管理系统</div>
+    <div class="logo">payBack</div>
     <div class="header-right">
       <div class="header-user-con">
         <!-- 消息中心 -->
-        <div class="btn-bell" @click="router.push('/tabs')">
+        <!-- <div class="btn-bell" @click="router.push('/tabs')">
           <el-tooltip
             effect="dark"
             :content="message ? `有${message}条未读消息` : `消息中心`"
@@ -18,7 +18,7 @@
             <i class="el-icon-lx-notice"></i>
           </el-tooltip>
           <span class="btn-bell-badge" v-if="message"></span>
-        </div>
+        </div> -->
         <!-- 用户头像 -->
         <el-avatar class="user-avator" :size="30" :src="imgurl" />
         <!-- 用户名下拉菜单 -->
@@ -37,7 +37,7 @@
               >
                 <el-dropdown-item>项目仓库</el-dropdown-item>
               </a>
-              <el-dropdown-item command="user">个人中心</el-dropdown-item>
+              <!-- <el-dropdown-item command="user">个人中心</el-dropdown-item> -->
               <el-dropdown-item divided command="loginout"
                 >退出登录</el-dropdown-item
               >

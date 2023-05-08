@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "vite",
+    "start:prod": "vite --mode production",
     "build": "vue-tsc --noEmit && vite build",
     "serve": "vite preview",
     "lint": "npm run lint:eslint && npm run lint:prettier",
