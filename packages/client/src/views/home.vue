@@ -3,7 +3,7 @@
   <v-sidebar v-if="!isMobile" />
   <div
     :class="[
-      sidebar.collapse ? 'content-collapse' : '',
+      sidebar.collapse && !isMobile ? 'content-collapse' : '',
       isMobile ? 'content-box-mobile' : 'content-box',
     ]"
   >
