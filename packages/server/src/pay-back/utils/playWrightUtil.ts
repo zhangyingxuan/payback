@@ -151,8 +151,12 @@ export default {
     const response: Response = await waitOriginalDataByUrl('https://data.eastmoney.com/hsgt/index.html', 'reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE');
     let dataStr = await response.text();
     // 单位 万元
-    let northFunds = 0;
-    let southFunds = 0;
+    // 净流入
+    let northFundsAmtIn = 0;
+    let southFundsAmtIn = 0;
+    // 净买入
+    let northFundsBuyAmt = 0;
+    let southFundsBuyAmt = 0;
     let marketTurnover = 0;
     try {
       dataStr = dataStr.substring(dataStr.indexOf('(') + 1, dataStr.length - 2);
@@ -161,9 +165,11 @@ export default {
       // FUNDS_DIRECTION 北向、南向
       data.forEach(item => {
         if (item.FUNDS_DIRECTION === '北向') {
-          northFunds += item.dayNetAmtIn;
+          northFundsAmtIn += item.dayNetAmtIn;
+          northFundsBuyAmt += item.netBuyAmt;
         } else {
-          southFunds += item.dayNetAmtIn;
+          southFundsAmtIn += item.dayNetAmtIn;
+          southFundsBuyAmt += item.netBuyAmt;
         }
       });
     } catch (e) {
@@ -178,8 +184,10 @@ export default {
 
     const createFundsDataDto = new CreateFundsDataDto();
     createFundsDataDto.createTime = new Date();
-    createFundsDataDto.southFunds = +(southFunds / 10000).toFixed(2);
-    createFundsDataDto.northFunds = +(northFunds / 10000).toFixed(2);
+    createFundsDataDto.northFundsAmtIn = +(northFundsAmtIn / 10000).toFixed(2);
+    createFundsDataDto.northFundsBuyAmt = +(northFundsBuyAmt / 10000).toFixed(2);
+    createFundsDataDto.southFundsAmtIn = +(southFundsAmtIn / 10000).toFixed(2);
+    createFundsDataDto.southFundsBuyAmt = +(southFundsBuyAmt / 10000).toFixed(2);
     createFundsDataDto.marketTurnover = +(marketTurnover / 10000 / 10000 / 10000).toFixed(2);
     return createFundsDataDto;
   }

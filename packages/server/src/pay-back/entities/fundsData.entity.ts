@@ -9,12 +9,15 @@ import { PrimaryGeneratedColumn, Column, Entity, Timestamp } from "typeorm";
 export class fundsData {
   @PrimaryGeneratedColumn()
   id: number;
-  // 沪深股通 资金流入
-  @Column({ comment: '北向资金（聪明资金）', type: 'float', default: 0 })
-  northFunds: number;
-  // 沪深股通 资金流入
-  @Column({ comment: '南向资金（到港资金）', type: 'float', default: 0 })
-  southFunds: number;
+  @Column({ comment: '北向资金（聪明资金）净流入', type: 'float', default: 0 })
+  northFundsAmtIn: number;
+  @Column({ comment: '北向资金（聪明资金）净买入', type: 'float', default: 0 })
+  northFundsBuyAmt: number;
+
+  @Column({ comment: '南向资金（到港资金）净流入', type: 'float', default: 0 })
+  southFundsAmtIn: number;
+  @Column({ comment: '南向资金（到港资金）净买入', type: 'float', default: 0 })
+  southFundsBuyAmt: number;
 
   @Column({ comment: '市场成交总额', type: 'float', default: 0 })
   marketTurnover: number;
