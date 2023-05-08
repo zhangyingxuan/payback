@@ -106,6 +106,7 @@ export const getIndexChartOption = function (xAxisData: any, yAxisData: any) {
     },
     grid: {
       right: '10%',
+      // top: '30%',
     },
     toolbox: {
       feature: {

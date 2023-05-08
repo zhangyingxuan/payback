@@ -100,7 +100,7 @@ const handleCommand = (command: string) => {
 }
 .header .logo {
   float: left;
-  width: 250px;
+  width: 100px;
   line-height: 70px;
 }
 .header-right {

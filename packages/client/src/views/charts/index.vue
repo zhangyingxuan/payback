@@ -1,6 +1,6 @@
 <template>
   <el-row :gutter="10">
-    <el-col :span="12">
+    <el-col :span="12" :xs="24">
       <el-card shadow="hover" class="mgb20" :body-style="{ padding: '10px' }">
         <template #header>
           <CardHeader :url="cardUrls.shortTermUrl" headerTitle="短线数据" />
@@ -8,7 +8,7 @@
         <div ref="shortTermChart" style="width: 100%; height: 300px"></div>
       </el-card>
     </el-col>
-    <el-col :span="12">
+    <el-col :span="12" :xs="24">
       <el-card shadow="hover" class="mgb20" :body-style="{ padding: '10px' }">
         <template #header>
           <CardHeader :url="cardUrls.marketChartUrl" headerTitle="大盘趋势" />
@@ -18,7 +18,7 @@
     </el-col>
   </el-row>
   <el-row :gutter="10">
-    <el-col :span="12">
+    <el-col :span="12" :xs="24">
       <el-card shadow="hover" class="mgb20" :body-style="{ padding: '10px' }">
         <template #header>
           <CardHeader :url="cardUrls.shortTermUrl" headerTitle="指数趋势" />
@@ -26,7 +26,7 @@
         <div ref="indexChart" style="width: 100%; height: 300px"></div>
       </el-card>
     </el-col>
-    <el-col :span="12">
+    <el-col :span="12" :xs="24">
       <el-card shadow="hover" class="mgb20" :body-style="{ padding: '10px' }">
         <template #header>
           <CardHeader :url="cardUrls.marketChartUrl" headerTitle="资金流向" />
