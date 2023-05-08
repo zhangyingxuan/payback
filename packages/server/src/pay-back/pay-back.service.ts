@@ -72,7 +72,7 @@ export class PayBackService {
     createPayBackDto.evenBoard = board1;
     createPayBackDto.SZAmount = SZAmount;
     createPayBackDto.SHAmount = SHAmount;
-    console.log(createPayBackDto)
+    // console.log(createPayBackDto)
     await this.shortTermDataRp.save(createPayBackDto)
     this.logger.debug('Called is success!');
     // 深圳 还是 上海涨停的多 SZ. SH

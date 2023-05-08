@@ -51,7 +51,7 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 			})
 		],
 		optimizeDeps: {
-			include: ['schart.js']
+			include: ['schart.js', 'lodash']
 		}
 	}
 };

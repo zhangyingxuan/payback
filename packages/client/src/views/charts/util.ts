@@ -1,3 +1,19 @@
+const grid = {
+  right: 60,
+  // top: '30%',
+  x2: 20,
+  y2: 30,
+  x: 50,
+  y: 80,
+};
+const gridShortTerm = {
+  // top: '30%',
+  x2: 30,
+  y2: 30,
+  x: 30,
+  y: 60,
+};
+
 export const getFundsChartOption = function (xAxisData: any, yAxisData: any) {
   const colors = ['#ED7874', '#ADDE8A', '#EFCA52'];
   const legendData = ['北向资金', '南向资金', '成交量总额'];
@@ -9,9 +25,7 @@ export const getFundsChartOption = function (xAxisData: any, yAxisData: any) {
         type: 'cross',
       },
     },
-    grid: {
-      right: '10%',
-    },
+    grid,
     toolbox: {
       feature: {
         dataView: { show: true, readOnly: false },
@@ -104,10 +118,7 @@ export const getIndexChartOption = function (xAxisData: any, yAxisData: any) {
         type: 'cross',
       },
     },
-    grid: {
-      right: '10%',
-      // top: '30%',
-    },
+    grid,
     toolbox: {
       feature: {
         dataView: { show: true, readOnly: false },
@@ -237,9 +248,7 @@ export const getMarketChartOption = function (xAxisData: any, yAxisData: any) {
         type: 'cross',
       },
     },
-    grid: {
-      right: '10%',
-    },
+    grid,
     toolbox: {
       feature: {
         dataView: { show: true, readOnly: false },
@@ -343,9 +352,7 @@ export const getShortTermChartOption = function (xAxisData: any, yAxisData: any)
         type: 'cross',
       },
     },
-    grid: {
-      right: '10%',
-    },
+    grid: gridShortTerm,
     toolbox: {
       feature: {
         dataView: { show: true, readOnly: false },

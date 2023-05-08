@@ -25,18 +25,18 @@ export class MarketService {
   async crawlMarketData() {
     this.logger.debug('crawlMarketData is Begining!');
     // 如果存在数据，则返回已有该数据
-    // const todayDateStr = new Date().toLocaleDateString();
-    // const todayDataFromDB = await this.marketDataRp
-    //   .createQueryBuilder('market_data')
-    //   .where("market_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
-    //   .getOne();
+    const todayDateStr = new Date().toLocaleDateString();
+    const todayDataFromDB = await this.marketDataRp
+      .createQueryBuilder('market_data')
+      .where("market_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
+      .getOne();
 
-    // if (todayDataFromDB) {
-    //   return {
-    //     code: 'isExist',
-    //     msg: todayDateStr + ' 数据已存在！',
-    //   }
-    // }
+    if (todayDataFromDB) {
+      return {
+        code: 'isExist',
+        msg: todayDateStr + ' 数据已存在！',
+      }
+    }
 
     const marketData: CreateMarketDataDto = await playWrightUtil.getMarketData(marketUrl, '/api.php');
     await this.marketDataRp.save(marketData);

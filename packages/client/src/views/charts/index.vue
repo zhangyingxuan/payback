@@ -21,7 +21,7 @@
     <el-col :span="12" :xs="24">
       <el-card shadow="hover" class="mgb20" :body-style="{ padding: '10px' }">
         <template #header>
-          <CardHeader :url="cardUrls.shortTermUrl" headerTitle="指数趋势" />
+          <CardHeader :url="cardUrls.indexChartUrl" headerTitle="指数趋势" />
         </template>
         <div ref="indexChart" style="width: 100%; height: 300px"></div>
       </el-card>
@@ -29,7 +29,7 @@
     <el-col :span="12" :xs="24">
       <el-card shadow="hover" class="mgb20" :body-style="{ padding: '10px' }">
         <template #header>
-          <CardHeader :url="cardUrls.marketChartUrl" headerTitle="资金流向" />
+          <CardHeader :url="cardUrls.fundsChartUrl" headerTitle="资金流向" />
         </template>
         <div ref="fundsChart" style="width: 100%; height: 300px"></div>
       </el-card>
@@ -37,6 +37,7 @@
   </el-row>
 </template>
 <script lang="ts" setup>
+import { debounce } from 'lodash-es';
 import CardHeader from './components/cardHeader.vue';
 import { fetchChartData, ChartResult } from '@/api/payBack';
 import { ShortTermModel } from '../../api/model/shortTermModel';
@@ -55,6 +56,12 @@ import dayjs from 'dayjs';
 import { ref, onMounted, reactive } from 'vue';
 //  按需引入 echarts
 import * as echarts from 'echarts';
+const chartList: any = {
+  shortTermChart: null,
+  marketChart: null,
+  indexChart: null,
+  fundsChart: null,
+};
 const shortTermChart = ref(); // 使用ref创建虚拟DOM引用，使用时用shortTermChart.value
 const marketChart = ref(); // 市场chart
 const indexChart = ref(); // 指数chart
@@ -65,6 +72,8 @@ const cardUrls = reactive({
   iLikeUrl:
     'http://www.iwencai.com/unifiedwap/result?w=上升趋势%20或%20横盘突破，流通市值低于80亿，股价低于20元，放量初期&querytype=stock',
   marketChartUrl: 'http://q.10jqka.com.cn/',
+  fundsChartUrl: 'https://data.eastmoney.com/hsgt/index.html',
+  indexChartUrl: 'http://q.10jqka.com.cn',
 });
 
 onMounted(async () => {
@@ -74,6 +83,16 @@ onMounted(async () => {
   initMarketChart(result.marketData);
   initIndexChart(result.marketData);
   initFundsChart(result.fundsData);
+
+  window.addEventListener(
+    'resize',
+    debounce(() => {
+      console.log('resize======', chartList);
+      Object.keys(chartList).forEach(key => {
+        chartList[key].resize();
+      });
+    }, 500),
+  );
 });
 
 async function initFundsChart(marketData: FundsModel[]) {
@@ -87,11 +106,11 @@ async function initFundsChart(marketData: FundsModel[]) {
   });
 
   // 基于准备好的dom，初始化echarts实例
-  var myChart = echarts.init(fundsChart.value);
+  chartList.fundsChart = echarts.init(fundsChart.value);
   // 指定图表的配置项和数据
   var option = getFundsChartOption(xAxisData, yAxisData);
   // 使用刚指定的配置项和数据显示图表。
-  myChart.setOption(option);
+  chartList.fundsChart.setOption(option);
 }
 function initIndexChart(marketData: MarketModel[]) {
   let xAxisData: any[] = [];
@@ -105,11 +124,11 @@ function initIndexChart(marketData: MarketModel[]) {
   });
 
   // 基于准备好的dom，初始化echarts实例
-  var myChart = echarts.init(indexChart.value);
+  chartList.indexChart = echarts.init(indexChart.value);
   // 指定图表的配置项和数据
   var option = getIndexChartOption(xAxisData, yAxisData);
   // 使用刚指定的配置项和数据显示图表。
-  myChart.setOption(option);
+  chartList.indexChart.setOption(option);
 }
 function initMarketChart(marketData: MarketModel[]) {
   let xAxisData: any[] = [];
@@ -123,11 +142,11 @@ function initMarketChart(marketData: MarketModel[]) {
   });
 
   // 基于准备好的dom，初始化echarts实例
-  var myChart = echarts.init(marketChart.value);
+  chartList.marketChart = echarts.init(marketChart.value);
   // 指定图表的配置项和数据
   var option = getMarketChartOption(xAxisData, yAxisData);
   // 使用刚指定的配置项和数据显示图表。
-  myChart.setOption(option);
+  chartList.marketChart.setOption(option);
 }
 
 function initShortTermChart(shortTermData: ShortTermModel[]) {
@@ -143,11 +162,11 @@ function initShortTermChart(shortTermData: ShortTermModel[]) {
   });
 
   // 基于准备好的dom，初始化echarts实例
-  var myChart = echarts.init(shortTermChart.value);
+  chartList.shortTermChart = echarts.init(shortTermChart.value);
   // 指定图表的配置项和数据
   var option = getShortTermChartOption(xAxisData, yAxisData);
   // 使用刚指定的配置项和数据显示图表。
-  myChart.setOption(option);
+  chartList.shortTermChart.setOption(option);
 }
 </script>
 
