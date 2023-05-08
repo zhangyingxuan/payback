@@ -5,6 +5,7 @@ interface ViteEnv {
   VITE_ROUTER_HISTORY: string;
   VITE_CDN: boolean;
   VITE_COMPRESSION: ViteCompression;
+  VITE_BASE_API: string;
 }
 
 type RefType<T> = T | null;

@@ -72,7 +72,7 @@ import { computed } from 'vue';
 import { useSidebarStore } from '../store/sidebar';
 import { useRoute } from 'vue-router';
 
-const items = [
+const items: any = [
   {
     icon: 'PieChart',
     index: '/charts',
