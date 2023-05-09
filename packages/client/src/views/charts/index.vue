@@ -76,9 +76,13 @@ const cardUrls = reactive({
   indexChartUrl: 'http://q.10jqka.com.cn',
 });
 
+const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+
 onMounted(async () => {
   // 获取图表数据
-  const result: ChartResult = await fetchChartData({});
+  const result: ChartResult = await fetchChartData({
+    limit: isMobile ? 10 : 20,
+  });
   initShortTermChart(result.shortTermData);
   initMarketChart(result.marketData);
   initIndexChart(result.marketData);
@@ -100,8 +104,8 @@ async function initFundsChart(marketData: FundsModel[]) {
   let yAxisData: number[][] = [[], [], [], []];
   marketData.forEach(item => {
     xAxisData.push(dayjs(item.createTime).format('MM/DD'));
-    yAxisData[0].push(item.northFunds);
-    yAxisData[1].push(item.southFunds);
+    yAxisData[0].push(item.northFundsBuyAmt);
+    yAxisData[1].push(item.southFundsBuyAmt);
     yAxisData[2].push(item.marketTurnover);
   });
 

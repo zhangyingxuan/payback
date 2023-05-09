@@ -1,7 +1,11 @@
 export interface FundsModel {
-  northFunds: number;
+  northFundsAmtIn: number;
 
-  southFunds: number;
+  northFundsBuyAmt: number;
+
+  southFundsAmtIn: number;
+
+  southFundsBuyAmt: number;
 
   marketTurnover: number;
 

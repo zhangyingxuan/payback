@@ -12,9 +12,9 @@ export interface ChartResult {
 }
 
 export const fetchChartData = (params: any | null) => {
-  return http.request<ChartResult>("get", `${baseUrl}/list`, params);
+  return http.request<ChartResult>("get", `${baseUrl}/list`, { params });
 }
 
 export const fetchData = (params: any | null) => {
-  return http.request<ChartResult>("get", `${baseUrl}/list`, params);
+  return http.request<ChartResult>("get", `${baseUrl}/list`, { params });
 }

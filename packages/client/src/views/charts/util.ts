@@ -325,6 +325,7 @@ export const getMarketChartOption = function (xAxisData: any, yAxisData: any) {
           color: '#fff',
           position: 'inside'
         },
+        stack: 'marketAmount',
       },
       {
         name: legendData[3],
@@ -336,6 +337,7 @@ export const getMarketChartOption = function (xAxisData: any, yAxisData: any) {
           color: '#fff',
           position: 'inside'
         },
+        stack: 'marketAmount',
       },
     ],
   };
