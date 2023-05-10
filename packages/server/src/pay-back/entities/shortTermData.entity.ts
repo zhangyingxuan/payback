@@ -35,28 +35,15 @@ export class shortTermData {
 
   @Column({ comment: '上海涨停数量', type: 'int', default: 0 })
   SHAmount: number;
-  // 一板数量
+
   @Column({ comment: '连板数量', type: 'int', default: 0 })
-  evenBoard: number;
+  evenBoardAmount: number;
+
+  @Column({ comment: '连板原始数据', type: 'text' })
+  evenBoardData: string;
   // 一板数量
   @Column({ comment: '1板数量', type: 'int', default: 0 })
   board1: number;
-  @Column({ comment: '2板数量', type: 'int', default: 0 })
-  board2: number;
-  @Column({ comment: '3板数量', type: 'int', default: 0 })
-  board3: number;
-  @Column({ comment: '4板数量', type: 'int', default: 0 })
-  board4: number;
-  @Column({ comment: '5板数量', type: 'int', default: 0 })
-  board5: number;
-  @Column({ comment: '6板数量', type: 'int', default: 0 })
-  board6: number;
-  @Column({ comment: '7板数量', type: 'int', default: 0 })
-  board7: number;
-  @Column({ comment: '8板数量', type: 'int', default: 0 })
-  board8: number;
-  @Column({ comment: '9板数量', type: 'int', default: 0 })
-  board9: number;
 
   // @Column({ type: 'date', comment: '创建时间' })
   @Column({ type: 'timestamp', comment: '创建时间', default: () => 'current_timestamp' })

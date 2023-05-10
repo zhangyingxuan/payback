@@ -6,6 +6,7 @@ import { shortTermData } from './entities/shortTermData.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import playWrightUtil from './utils/playWrightUtil'
 import { params, iwencaiUrl } from './utils/config';
+import transformDataUtil from './utils/transformDataUtil';
 import * as dayjs from 'dayjs';
 import { Cron } from '@nestjs/schedule';
 
@@ -23,22 +24,22 @@ export class PayBackService {
   // 0 */30 9-17 * * *：上午九时至下午五时，每三十分钟一次
   // 0 30 11 * * 1-5：星期一至星期五上午11:30
   @Cron('0 0 17 * * 1-5')
-  async crawlTodayData() {
-    this.logger.debug('crawlTodayData is Begining!');
+  async crawlShortTermData() {
+    this.logger.debug('crawlShortTermData is Begining!');
     // 如果存在数据，则返回已有该数据
     const todayDateStr = new Date().toLocaleDateString();
-    const todayDataFromDB = await this.shortTermDataRp
-      .createQueryBuilder('short_term_data')
-      .where("short_term_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
-      .getOne();
+    // const todayDataFromDB = await this.shortTermDataRp
+    //   .createQueryBuilder('short_term_data')
+    //   .where("short_term_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
+    //   .getOne();
 
-    if (todayDataFromDB) {
-      this.logger.debug('crawlTodayData is end![isExist]');
-      return {
-        code: 'isExist',
-        msg: todayDateStr + ' 数据已存在！',
-      }
-    }
+    // if (todayDataFromDB) {
+    //   this.logger.debug('crawlShortTermData is end![isExist]');
+    //   return {
+    //     code: 'isExist',
+    //     msg: todayDateStr + ' 数据已存在！',
+    //   }
+    // }
 
     let createPayBackDto: CreatePayBackDto = new CreatePayBackDto();
     // 准备涨停数据
@@ -48,34 +49,20 @@ export class PayBackService {
     // console.log(dailyLimitData);
     // console.log(downLimitData);
 
-    const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
-    const evenBoardLabel = `连续涨停天数[${currentDate}]`;
-    // const currentDate = dayjs(new Date().toLocaleTimeString()).format('YYYYMMDD')
+    let { SZAmount = 0, SHAmount = 0, board1 = 0, evenBoardData } = transformDataUtil.transformShortTermSourceData(dailyLimitData, todayDateStr);
+
     createPayBackDto.createTime = new Date();
     createPayBackDto.downLimitQuantity = downLimitData.length;
     createPayBackDto.dailyLimitQuantity = dailyLimitData.length;
-    createPayBackDto.marketHeight = dailyLimitData[0][evenBoardLabel];
-
-    let SZAmount = 0, SHAmount = 0, board1 = 0;
-    dailyLimitData.forEach(item => {
-      if (item[evenBoardLabel] === 1) {
-        board1++;
-      }
-      // 连板的数据
-      if (item['股票代码'].includes('SZ')) {
-        SZAmount++;
-      } else {
-        SHAmount++;
-      }
-    });
-    createPayBackDto.board1 = dailyLimitData.length - board1;
-    createPayBackDto.evenBoard = board1;
+    createPayBackDto.marketHeight = evenBoardData.maxHeight;
+    createPayBackDto.board1 = board1;
+    createPayBackDto.evenBoardAmount = dailyLimitData.length - board1;
+    createPayBackDto.evenBoardData = JSON.stringify(evenBoardData);
     createPayBackDto.SZAmount = SZAmount;
     createPayBackDto.SHAmount = SHAmount;
     // console.log(createPayBackDto)
     await this.shortTermDataRp.save(createPayBackDto)
     this.logger.debug('Called is success!');
-    // 深圳 还是 上海涨停的多 SZ. SH
     return createPayBackDto;
   }
 

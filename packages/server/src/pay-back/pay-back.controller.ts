@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
-import { PayBackService } from './pay-back.service';
+import { PayBackService } from './shortTerm.service';
 import { MarketService } from './market.service';
 import { FundsService } from './funds.service';
 import { UpdatePayBackDto } from './dto/update-pay-back.dto';
@@ -13,7 +13,7 @@ export class PayBackController {
 
   @Get('/crawlShortTerm')
   crawlShortTerm() {
-    return this.payBackService.crawlTodayData();
+    return this.payBackService.crawlShortTermData();
   }
   @Get('/crawlMarket')
   crawlMarket() {

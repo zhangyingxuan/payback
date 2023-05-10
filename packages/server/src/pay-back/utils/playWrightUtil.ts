@@ -27,7 +27,7 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl): Promise<Response> => {
         resolve(response);
       }
     })
-    await page.goto(pageUrl);
+    await page.goto(pageUrl, { timeout: 60000 });
   });
 };
 
@@ -52,7 +52,7 @@ async function getRealDataJson(response: Response, replaceStr) {
 
 /**
 * 
-* @param url 准备涨停数据
+* @param url 准备市场 指数数据
 * @returns 
 */
 const waitMarketDataByUrls = async (pageUrl, apiUrl): Promise<CreateMarketDataDto> => {
@@ -125,7 +125,7 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl): Promise<CreateMarketDataDt
         browser.close();
       }, 15000)
     })
-    await page.goto(pageUrl);
+    await page.goto(pageUrl, { timeout: 60000 });
   });
 };
 

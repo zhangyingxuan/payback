@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { PayBackService } from './pay-back.service';
+import { PayBackService } from './shortTerm.service';
 import { MarketService } from './market.service';
 import { FundsService } from './funds.service';
 import { PayBackController } from './pay-back.controller';
