@@ -23,7 +23,7 @@ RUN npm install
 RUN npm run build
 
 # 启动服务
-# "start:prod": "cross-env NODE_ENV=production node ./dist/src/main.js",
+# "start:prod": "cross-env NODE_ENV=prod node ./dist/src/main.js",
 CMD npm run start:prod
 
 EXPOSE 9000

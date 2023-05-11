@@ -10,7 +10,7 @@ export const params = {
   // downLimit: '?w=跌停',
   downLimit: '?w=跌停非st',
   // dailyLimitMoreThan1: '?w=连续涨停天数>%3D1；不包含新股；不包含ST&querytype=stock&issugs',
-  dailyLimitMoreThan1: '?w=连续涨停天数>%3D1；不包含新股；不包含ST；涨停原因；封板金额；成交额&querytype=stock',
+  dailyLimitMoreThan1: '?w=连续涨停天数>%3D1；不包含新股；不包含ST；几天几板；涨停原因；封板金额；成交额&querytype=stock',
   dailyLimit1: '?w=连续涨停天数%3D1；不包含新股；不包含ST&querytype=stock&issugs',
   dailyLimit2: '?w=连续2天涨停，不包含新股，不包含ST，连续涨停天数%3D2&querytype=stock&issugs',
   // 涨停明细数据，代码 + 涨停明细数据
