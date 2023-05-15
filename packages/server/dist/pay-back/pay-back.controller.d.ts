@@ -15,7 +15,10 @@ export declare class PayBackController {
         code: string;
         msg: string;
     }>;
-    crawlFunds(): Promise<import("./dto/create-funds-data.dto").CreateFundsDataDto>;
+    crawlFunds(): Promise<import("./dto/create-funds-data.dto").CreateFundsDataDto | {
+        code: string;
+        msg: string;
+    }>;
     findByLimit(query: any): Promise<{
         code: number;
         data: {
