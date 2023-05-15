@@ -1,6 +1,9 @@
-import { chromium, firefox, Page, Response } from 'playwright';
+import { chromium, firefox, Browser, Response } from 'playwright';
 import { CreateMarketDataDto } from '../dto/create-market-data.dto';
 import { CreateFundsDataDto } from '../dto/create-funds-data.dto';
+import commonUtil from './commonUtil';
+import fundsUtil from './fundsUtil';
+import { iwencaiUrl, params } from './config';
 
 const getBrowser = async () => {
   return await firefox.launch({
@@ -12,8 +15,8 @@ const getBrowser = async () => {
 * @param url
 * @returns 
 */
-const waitOriginalDataByUrl = async (pageUrl, apiUrl): Promise<Response> => {
-  const browser = await getBrowser();
+const waitOriginalDataByUrl = async (pageUrl, apiUrl, baseBrowser?: Browser): Promise<Response> => {
+  const browser = baseBrowser ? baseBrowser : await getBrowser();
   // 打开股票行情页面  
   const page = await browser.newPage();
   return new Promise(async (resolve, reject) => {
@@ -21,7 +24,8 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl): Promise<Response> => {
       // console.log(response.url())
 
       if (response.url().includes(apiUrl) && response.status() === 200) {
-        setTimeout(() => {
+        // 方法自创建的 baseBrowser 需要自动关闭
+        !baseBrowser && setTimeout(() => {
           browser.close();
         }, 60000)
         resolve(response);
@@ -133,7 +137,7 @@ export default {
   async getShortTermData(pageUrl, apiUrl) {
     const response: Response = await waitOriginalDataByUrl(pageUrl, apiUrl);
     const responseJson: any = await response.json();
-    const todayData = responseJson.data.answer[0].txt[0].content.components[0].data.datas;
+    const todayData = commonUtil.getIwencaiData(responseJson);
     return todayData;
   },
   /**
@@ -147,48 +151,42 @@ export default {
   /**
    * 获取 资金数据
    */
-  async getFundsData() {
-    const response: Response = await waitOriginalDataByUrl('https://data.eastmoney.com/hsgt/index.html', 'reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE');
-    let dataStr = await response.text();
-    // 单位 万元
-    // 净流入
-    let northFundsAmtIn = 0;
-    let southFundsAmtIn = 0;
-    // 净买入
-    let northFundsBuyAmt = 0;
-    let southFundsBuyAmt = 0;
-    let marketTurnover = 0;
-    try {
-      dataStr = dataStr.substring(dataStr.indexOf('(') + 1, dataStr.length - 2);
-      const dataJson = JSON.parse(dataStr);
-      const data = dataJson.result.data;
-      // FUNDS_DIRECTION 北向、南向
-      data.forEach(item => {
-        if (item.FUNDS_DIRECTION === '北向') {
-          northFundsAmtIn += item.dayNetAmtIn;
-          northFundsBuyAmt += item.netBuyAmt;
-        } else {
-          southFundsAmtIn += item.dayNetAmtIn;
-          southFundsBuyAmt += item.netBuyAmt;
-        }
-      });
-    } catch (e) {
-      console.log(e);
-    }
+  async getFundsData(dateStr) {
+    const browser = await getBrowser();
+    // 北向资金、南向资金 获取
+    const foreignFundsPromise = waitOriginalDataByUrl('https://data.eastmoney.com/hsgt/index.html', 'reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE', browser);
+    const marketTurnoverPromise = waitOriginalDataByUrl('https://data.eastmoney.com/zjlx/dpzjlx.html', 'fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5', browser);
+    const hangyeFundsInflowPromise = waitOriginalDataByUrl(iwencaiUrl + params.hangyeFundsInflow, 'chart/get-robot-data', browser);
+    const hangyeFundsOutflowPromise = waitOriginalDataByUrl(iwencaiUrl + params.hangyeFundsOutflow, 'chart/get-robot-data', browser);
+    const gaiNianFundsInflowPromise = waitOriginalDataByUrl(iwencaiUrl + params.gailianFundsInflow, 'chart/get-robot-data', browser);
+    const gaiNianFundsOutflowPromise = waitOriginalDataByUrl(iwencaiUrl + params.gailianFundsOutflow, 'chart/get-robot-data', browser);
+    const [responseForeignFunds, responseMarketTurnover, hangyeFundsInflow, hangyeFundsOutflow, gaiNianFundsInflow, gaiNianFundsOutflow] =
+      await Promise.all([foreignFundsPromise, marketTurnoverPromise, hangyeFundsInflowPromise, hangyeFundsOutflowPromise, gaiNianFundsInflowPromise, gaiNianFundsOutflowPromise]);
 
-    const responseMarketTurnover: Response = await waitOriginalDataByUrl('https://data.eastmoney.com/zjlx/dpzjlx.html', 'fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5');
-    let responseMarketTurnoverStr = await responseMarketTurnover.text();
-    const marketTurnoverStr = responseMarketTurnoverStr.substring(responseMarketTurnoverStr.indexOf('(') + 1, responseMarketTurnoverStr.length - 2);
-    const responseMarketTurnoverJson = JSON.parse(marketTurnoverStr).data.diff;
-    marketTurnover = responseMarketTurnoverJson[0].f6 + responseMarketTurnoverJson[1].f6;
+    const foreignFunds: any = await fundsUtil.transformForeignFunds(responseForeignFunds);
+    const marketTurnover: any = await fundsUtil.getMarketTurnover(responseMarketTurnover);
+    // 获取行业板块流入 top5
+    const hangyeFundsInflowTop5 = await fundsUtil.getPlateTop5(hangyeFundsInflow, dateStr);
+    const hangyeFundsOutflowTop5 = await fundsUtil.getPlateTop5(hangyeFundsOutflow, dateStr);
+    const gainianFundsInflowTop5 = await fundsUtil.getPlateTop5(gaiNianFundsInflow, dateStr);
+    const gainianFundsOutflowTop5 = await fundsUtil.getPlateTop5(gaiNianFundsOutflow, dateStr);
 
     const createFundsDataDto = new CreateFundsDataDto();
     createFundsDataDto.createTime = new Date();
-    createFundsDataDto.northFundsAmtIn = +(northFundsAmtIn / 10000).toFixed(2);
-    createFundsDataDto.northFundsBuyAmt = +(northFundsBuyAmt / 10000).toFixed(2);
-    createFundsDataDto.southFundsAmtIn = +(southFundsAmtIn / 10000).toFixed(2);
-    createFundsDataDto.southFundsBuyAmt = +(southFundsBuyAmt / 10000).toFixed(2);
+    createFundsDataDto.northFundsAmtIn = +(foreignFunds.northFundsAmtIn / 10000).toFixed(2);
+    createFundsDataDto.northFundsBuyAmt = +(foreignFunds.northFundsBuyAmt / 10000).toFixed(2);
+    createFundsDataDto.southFundsAmtIn = +(foreignFunds.southFundsAmtIn / 10000).toFixed(2);
+    createFundsDataDto.southFundsBuyAmt = +(foreignFunds.southFundsBuyAmt / 10000).toFixed(2);
     createFundsDataDto.marketTurnover = +(marketTurnover / 10000 / 10000 / 10000).toFixed(2);
+    createFundsDataDto.hangyeFundsTop = JSON.stringify({ in: hangyeFundsInflowTop5, out: hangyeFundsOutflowTop5 });
+    createFundsDataDto.gainianFundsTop = JSON.stringify({ in: gainianFundsInflowTop5, out: gainianFundsOutflowTop5 });
+
+    console.log(createFundsDataDto);
+
+    setTimeout(() => {
+      browser.close();
+    }, 5000);
+
     return createFundsDataDto;
   }
 }

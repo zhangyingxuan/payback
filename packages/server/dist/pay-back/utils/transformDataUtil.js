@@ -39,6 +39,6 @@ exports.default = {
             maxHeight,
             evenBoardData,
         };
-    }
+    },
 };
 //# sourceMappingURL=transformDataUtil.js.map

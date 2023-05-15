@@ -4,4 +4,4 @@ exports.HotTopicDto = void 0;
 class HotTopicDto {
 }
 exports.HotTopicDto = HotTopicDto;
-//# sourceMappingURL=hot-topic.dto.js.map
+//# sourceMappingURL=funds-plate-top.js.map

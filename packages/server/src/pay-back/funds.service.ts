@@ -25,20 +25,20 @@ export class FundsService {
     this.logger.debug('crawlfundsData is Begining!');
     // 如果存在数据，则返回已有该数据
     const todayDateStr = new Date().toLocaleDateString();
-    const todayDataFromDB = await this.fundsDataRp
-      .createQueryBuilder('market_data')
-      .where("market_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
-      .getOne();
+    // const todayDataFromDB = await this.fundsDataRp
+    //   .createQueryBuilder('market_data')
+    //   .where("market_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
+    //   .getOne();
 
-    if (todayDataFromDB) {
-      this.logger.debug('crawlfundsData is isExist!');
-      return {
-        code: 'isExist',
-        msg: todayDateStr + ' 数据已存在！',
-      }
-    }
+    // if (todayDataFromDB) {
+    //   this.logger.debug('crawlfundsData is isExist!');
+    //   return {
+    //     code: 'isExist',
+    //     msg: todayDateStr + ' 数据已存在！',
+    //   }
+    // }
 
-    const fundsData: CreateFundsDataDto = await playWrightUtil.getFundsData();
+    const fundsData: CreateFundsDataDto = await playWrightUtil.getFundsData(dayjs(todayDateStr).format('YYYYMMDD'));
     await this.fundsDataRp.save(fundsData);
     this.logger.debug('crawlfundsData is success!');
     // 深圳 还是 上海涨停的多 SZ. SH

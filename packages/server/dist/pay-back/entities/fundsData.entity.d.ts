@@ -5,6 +5,8 @@ export declare class fundsData {
     northFundsBuyAmt: number;
     southFundsAmtIn: number;
     southFundsBuyAmt: number;
+    hangyeFundsTop: string;
+    gainianFundsTop: string;
     marketTurnover: number;
     createTime: Timestamp;
 }

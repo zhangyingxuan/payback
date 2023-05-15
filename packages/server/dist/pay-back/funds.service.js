@@ -29,18 +29,7 @@ let FundsService = FundsService_1 = class FundsService {
     async crawlfundsData() {
         this.logger.debug('crawlfundsData is Begining!');
         const todayDateStr = new Date().toLocaleDateString();
-        const todayDataFromDB = await this.fundsDataRp
-            .createQueryBuilder('market_data')
-            .where("market_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
-            .getOne();
-        if (todayDataFromDB) {
-            this.logger.debug('crawlfundsData is isExist!');
-            return {
-                code: 'isExist',
-                msg: todayDateStr + ' 数据已存在！',
-            };
-        }
-        const fundsData = await playWrightUtil_1.default.getFundsData();
+        const fundsData = await playWrightUtil_1.default.getFundsData(dayjs(todayDateStr).format('YYYYMMDD'));
         await this.fundsDataRp.save(fundsData);
         this.logger.debug('crawlfundsData is success!');
         return fundsData;

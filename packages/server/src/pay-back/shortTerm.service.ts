@@ -28,18 +28,18 @@ export class PayBackService {
     this.logger.debug('crawlShortTermData is Begining!');
     // 如果存在数据，则返回已有该数据
     const todayDateStr = new Date().toLocaleDateString();
-    // const todayDataFromDB = await this.shortTermDataRp
-    //   .createQueryBuilder('short_term_data')
-    //   .where("short_term_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
-    //   .getOne();
+    const todayDataFromDB = await this.shortTermDataRp
+      .createQueryBuilder('short_term_data')
+      .where("short_term_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
+      .getOne();
 
-    // if (todayDataFromDB) {
-    //   this.logger.debug('crawlShortTermData is end![isExist]');
-    //   return {
-    //     code: 'isExist',
-    //     msg: todayDateStr + ' 数据已存在！',
-    //   }
-    // }
+    if (todayDataFromDB) {
+      this.logger.debug('crawlShortTermData is end![isExist]');
+      return {
+        code: 'isExist',
+        msg: todayDateStr + ' 数据已存在！',
+      }
+    }
 
     let createPayBackDto: CreatePayBackDto = new CreatePayBackDto();
     // 准备涨停数据

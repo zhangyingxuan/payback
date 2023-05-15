@@ -22,6 +22,7 @@ const typeorm_2 = require("@nestjs/typeorm");
 const playWrightUtil_1 = require("./utils/playWrightUtil");
 const config_1 = require("./utils/config");
 const transformDataUtil_1 = require("./utils/transformDataUtil");
+const dayjs = require("dayjs");
 const schedule_1 = require("@nestjs/schedule");
 let PayBackService = PayBackService_1 = class PayBackService {
     constructor(shortTermDataRp) {
@@ -31,6 +32,17 @@ let PayBackService = PayBackService_1 = class PayBackService {
     async crawlShortTermData() {
         this.logger.debug('crawlShortTermData is Begining!');
         const todayDateStr = new Date().toLocaleDateString();
+        const todayDataFromDB = await this.shortTermDataRp
+            .createQueryBuilder('short_term_data')
+            .where("short_term_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
+            .getOne();
+        if (todayDataFromDB) {
+            this.logger.debug('crawlShortTermData is end![isExist]');
+            return {
+                code: 'isExist',
+                msg: todayDateStr + ' 数据已存在！',
+            };
+        }
         let createPayBackDto = new create_pay_back_dto_1.CreatePayBackDto();
         const dailyLimitData = await playWrightUtil_1.default.getShortTermData(config_1.iwencaiUrl + config_1.params.dailyLimitMoreThan1, 'chart/get-robot-data');
         const downLimitData = await playWrightUtil_1.default.getShortTermData(config_1.iwencaiUrl + config_1.params.downLimit, 'chart/get-robot-data');

@@ -19,6 +19,11 @@ export class fundsData {
   @Column({ comment: '南向资金（到港资金）净买入', type: 'float', default: 0 })
   southFundsBuyAmt: number;
 
+  @Column({ comment: '行业板块主力资金Top', type: 'text' })
+  hangyeFundsTop: string;
+  @Column({ comment: '概念板块主力资金Top', type: 'text' })
+  gainianFundsTop: string;
+
   @Column({ comment: '市场成交总额', type: 'float', default: 0 })
   marketTurnover: number;
 

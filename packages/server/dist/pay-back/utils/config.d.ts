@@ -1,4 +1,4 @@
-export declare const iwencaiUrl = "http://www.iwencai.com/unifiedwap/result";
+export declare const iwencaiUrl = "http://www.iwencai.com/unifiedwap/result?w=";
 export declare const marketUrl = "http://q.10jqka.com.cn";
 export declare const params: {
     iLikeWord: string;
@@ -9,4 +9,10 @@ export declare const params: {
     dailyLimitDetail: string;
     capitalFlows3: string;
     capitalFlows3Most10: string;
+    dataCenterUrl: string;
+    latestConceptPlate: string;
+    gailianFundsInflow: string;
+    gailianFundsOutflow: string;
+    hangyeFundsInflow: string;
+    hangyeFundsOutflow: string;
 };
