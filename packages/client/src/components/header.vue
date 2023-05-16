@@ -19,6 +19,19 @@
           </el-tooltip>
           <span class="btn-bell-badge" v-if="message"></span>
         </div> -->
+        <!-- 数据统计天数 5 10 15 20 -->
+        <el-select
+          v-model="sidebar.countDays"
+          @change="onSelectChange"
+          placeholder="统计周期"
+        >
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
         <!-- 用户头像 -->
         <el-avatar class="user-avator" :size="30" :src="imgurl" />
         <!-- 用户名下拉菜单 -->
@@ -57,10 +70,33 @@ import imgurl from '../assets/img/img.jpg';
 const username: string | null = localStorage.getItem('ms_username');
 const message = 2;
 
+// const countDays = ref(20);
+const options = [
+  {
+    value: '5',
+    label: '5天',
+  },
+  {
+    value: '10',
+    label: '10天',
+  },
+  {
+    value: '15',
+    label: '15天',
+  },
+  {
+    value: '20',
+    label: '20天',
+  },
+];
+
 const sidebar = useSidebarStore();
 // 侧边栏折叠
 const collapseChage = () => {
   sidebar.handleCollapse();
+};
+const onSelectChange = (val: any) => {
+  sidebar.updateCountDays(val);
 };
 
 onMounted(() => {

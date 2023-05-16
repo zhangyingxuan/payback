@@ -7,6 +7,10 @@ export interface FundsModel {
 
   southFundsBuyAmt: number;
 
+  hangyeFundsTop: string;
+
+  gainianFundsTop: string;
+
   marketTurnover: number;
 
   createTime: Date;

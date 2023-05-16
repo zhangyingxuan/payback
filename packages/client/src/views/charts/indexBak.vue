@@ -1,53 +1,67 @@
 <template>
   <!-- 连板梯队数据 -->
-  <el-card shadow="hover" class="mgb15" :body-style="{ padding: '15px' }">
-    <EvenBoardTable :evenBoardList="evenBoard.value" />
-  </el-card>
-  <div class="chartList__container">
-    <!-- 热点题材 统计 -->
-    <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
-      <template #header>
-        <CardHeader :url="cardUrls.shortTermUrl" headerTitle="短线数据" />
-      </template>
-      <div ref="shortTermChart" :style="data.style"></div>
-    </el-card>
-    <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
-      <template #header>
-        <CardHeader :url="cardUrls.marketChartUrl" headerTitle="大盘趋势" />
-      </template>
-      <div ref="marketChart" :style="data.style"></div>
-    </el-card>
-    <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
-      <template #header>
-        <CardHeader :url="cardUrls.indexChartUrl" headerTitle="指数趋势" />
-      </template>
-      <div ref="indexChart" :style="data.style"></div>
-    </el-card>
-    <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
-      <template #header>
-        <CardHeader :url="cardUrls.fundsChartUrl" headerTitle="资金流向" />
-      </template>
-      <div ref="fundsChart" :style="data.style"></div>
-    </el-card>
-    <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
-      <!-- <template #header>
-        <CardHeader
-          :url="cardUrls.hangyeFundsChartUrl"
-          headerTitle="行业板块资金流向TOP"
-        />
-      </template> -->
-      <div ref="fundsByHangyeChart" :style="data.styleBig"></div>
-    </el-card>
-    <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
-      <!-- <template #header>
-        <CardHeader
-          :url="cardUrls.gainianFundsChartUrl"
-          headerTitle="概念板块资金流向TOP"
-        />
-      </template> -->
-      <div ref="fundsByGainianChart" :style="data.styleBig"></div>
-    </el-card>
-  </div>
+  <EvenBoardTable :evenBoardList="evenBoard.value" />
+  <!-- 热点题材 统计 -->
+  <el-row :gutter="10">
+    <el-col :span="12" :xs="24">
+      <el-card shadow="hover" class="mgb20" :body-style="{ padding: '10px' }">
+        <template #header>
+          <CardHeader :url="cardUrls.shortTermUrl" headerTitle="短线数据" />
+        </template>
+        <div ref="shortTermChart" :style="data.style"></div>
+      </el-card>
+    </el-col>
+    <el-col :span="12" :xs="24">
+      <el-card shadow="hover" class="mgb20" :body-style="{ padding: '10px' }">
+        <template #header>
+          <CardHeader :url="cardUrls.marketChartUrl" headerTitle="大盘趋势" />
+        </template>
+        <div ref="marketChart" :style="data.style">></div>
+      </el-card>
+    </el-col>
+  </el-row>
+  <el-row :gutter="10">
+    <el-col :span="12" :xs="24">
+      <el-card shadow="hover" class="mgb20" :body-style="{ padding: '10px' }">
+        <template #header>
+          <CardHeader :url="cardUrls.indexChartUrl" headerTitle="指数趋势" />
+        </template>
+        <div ref="indexChart" :style="data.style">></div>
+      </el-card>
+    </el-col>
+    <el-col :span="12" :xs="24">
+      <el-card shadow="hover" class="mgb20" :body-style="{ padding: '10px' }">
+        <template #header>
+          <CardHeader :url="cardUrls.fundsChartUrl" headerTitle="资金流向" />
+        </template>
+        <div ref="fundsChart" :style="data.style">></div>
+      </el-card>
+    </el-col>
+  </el-row>
+  <el-row :gutter="10">
+    <el-col :span="12" :xs="24">
+      <el-card shadow="hover" class="mgb20" :body-style="{ padding: '10px' }">
+        <template #header>
+          <CardHeader
+            :url="cardUrls.hangyeFundsChartUrl"
+            headerTitle="行业板块资金流向TOP"
+          />
+        </template>
+        <div ref="fundsByHangyeChart" :style="data.style"></div>
+      </el-card>
+    </el-col>
+    <el-col :span="12" :xs="24">
+      <el-card shadow="hover" class="mgb20" :body-style="{ padding: '10px' }">
+        <template #header>
+          <CardHeader
+            :url="cardUrls.gainianFundsChartUrl"
+            headerTitle="概念板块资金流向TOP"
+          />
+        </template>
+        <div ref="fundsByGainianChart" :style="data.style"></div>
+      </el-card>
+    </el-col>
+  </el-row>
 </template>
 <script lang="ts" setup>
 import { debounce } from 'lodash-es';
@@ -66,42 +80,62 @@ import {
   getSubFundsChartOption,
 } from './util';
 import dayjs from 'dayjs';
-import { transformFundsData, transformEvenBoardData } from './transformUtil';
-import { columnsConfig, cardUrls } from './config';
+import { transformFundsData } from './transformUtil';
 import { FundsKey } from './index.d';
 import { useSidebarStore } from '@/store/sidebar';
 
+// X轴 日期，20天
+// Y轴 最高连板、涨停个数、跌停个数
 import { ref, onMounted, reactive, watch } from 'vue';
 //  按需引入 echarts
 import * as echarts from 'echarts';
-
-const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
-
 const siderBar = useSidebarStore();
 const { countDays } = storeToRefs(siderBar);
-const data = reactive({
-  ...getChartStyle(),
-});
 
-const chartList: any = reactive({
+const iwencaiUrl = 'http://www.iwencai.com/unifiedwap/result?w=';
+
+const chartList: any = {
   shortTermChart: null,
   marketChart: null,
   indexChart: null,
   fundsChart: null,
   fundsByHangyeChart: null,
   fundsByGainianChart: null,
+};
+
+const data = reactive({
+  style: 'width: 100%; height: 300px',
 });
+
 const shortTermChart = ref(); // 使用ref创建虚拟DOM引用，使用时用shortTermChart.value
 const marketChart = ref(); // 市场chart
 const indexChart = ref(); // 指数chart
 const fundsChart = ref(); // 资金流向Chart
 const fundsByHangyeChart = ref(); // 资金流向Chart
 const fundsByGainianChart = ref(); // 资金流向Chart
+const cardUrls = reactive({
+  shortTermUrl:
+    iwencaiUrl +
+    '连续涨停天数>%3D1；不包含新股；不包含ST；几天几板；涨停原因；封板金额；成交额&querytype=stock',
+  iLikeUrl:
+    iwencaiUrl +
+    '上升趋势%20或%20横盘突破，流通市值低于80亿，股价低于20元，放量初期&querytype=stock',
+  marketChartUrl: 'http://q.10jqka.com.cn/',
+  fundsChartUrl: 'https://data.eastmoney.com/hsgt/index.html',
+  indexChartUrl: 'http://q.10jqka.com.cn',
+  hangyeFundsChartUrl:
+    iwencaiUrl + '行业板块主力资金；主力资金流向金额正序&querytype=zhishu',
+  gainianFundsChartUrl:
+    iwencaiUrl + '概念板块主力资金；主力资金流向金额正序&querytype=zhishu',
+});
 let evenBoard = reactive<any>({ value: [] });
 
+// const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+
 // 监听变化，重新请求数据
-watch(countDays, async val => {
-  await initPage(val);
+watch(countDays, val => {
+  initPage(val);
+  data.style = 'width: 100%; height: 200px';
 });
 
 onMounted(async () => {
@@ -115,16 +149,44 @@ onMounted(async () => {
     }, 500),
   );
 });
+function transformEvenBoardData(shortTermData: ShortTermModel[]): any[] {
+  const evenBoardList: any[] = [];
+
+  shortTermData.map(item => {
+    if (item.evenBoardData) {
+      const evenBoardData = JSON.parse(item.evenBoardData);
+      const ticaiData: any = {};
+
+      // 找出题材共性，涨停最多的 6个题材
+      const maxHeight = evenBoardData.maxHeight;
+      for (let i = 1; i <= maxHeight; i++) {
+        evenBoardData[i].forEach((item: any) => {
+          const resons = item.reason.split('+');
+          resons.forEach((reson: any) => {
+            !ticaiData[reson] && (ticaiData[reson] = 1);
+            ticaiData[reson]++;
+          });
+        });
+      }
+      console.log(ticaiData);
+
+      evenBoardList.push({
+        createTime: dayjs(item.createTime).format('MM/DD'),
+        maxHeight: evenBoardData.maxHeight,
+        evenBoardData,
+      });
+    }
+  });
+
+  return evenBoardList;
+}
 
 async function initPage(pageSize: number) {
   // 获取图表数据
   const result: ChartResult = await fetchChartData({
-    limit: isMobile ? 10 : pageSize,
+    limit: pageSize,
+    // limit: isMobile ? 10 : 20,
   });
-
-  const styles = getChartStyle();
-  data.style = styles.style;
-  data.styleBig = styles.styleBig;
 
   initShortTermChart(result.shortTermData);
   initMarketChart(result.marketData);
@@ -133,24 +195,6 @@ async function initPage(pageSize: number) {
   initHangyeFundsChart(result.fundsData);
   initHangyeGainianFundsChart(result.fundsData);
   evenBoard.value = transformEvenBoardData(result.shortTermData);
-
-  setTimeout(() => {
-    Object.keys(chartList).forEach(key => {
-      console.log(chartList[key]);
-      chartList[key].resize();
-    });
-  }, 0);
-}
-
-function getChartStyle() {
-  // 计算宽度；屏幕宽度 - 左侧siderBar - 边框 - cardLeft
-  const columnsAmount = columnsConfig[countDays.value];
-  const screenWidth = screen.width - 64 - 60 - columnsAmount * 15;
-  const cardWidth = isMobile ? screen.width - 40 : screenWidth / columnsAmount;
-  return {
-    style: `width: ${cardWidth}px; height: 260px`,
-    styleBig: `width: ${cardWidth}px; height: 320px`,
-  };
 }
 
 /**
@@ -263,20 +307,8 @@ function initShortTermChart(shortTermData: ShortTermModel[]) {
 }
 </script>
 
-<style scoped lang="less">
+<style scoped>
 .headerRight {
   text-align: right;
-}
-.chartList__container {
-  display: flex;
-  flex-wrap: wrap;
-
-  > .el-card {
-    margin-left: 15px;
-  }
-
-  /deep/.el-card__header {
-    padding: 5px 10px;
-  }
 }
 </style>

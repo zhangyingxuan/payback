@@ -427,3 +427,57 @@ export const getShortTermChartOption = function (xAxisData: any, yAxisData: any)
     ],
   };
 }
+/**
+ * 行业/概念 板块主力资金Top
+ * @param xAxisData 
+ * @param yAxisData 
+ * @returns 
+ */
+export const getSubFundsChartOption = function (xAxisData: any, series: any, legendData: any) {
+  return {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    },
+    color: [
+      '#9C130B',
+      '#BD2512',
+      '#BD3B1B',
+      // '#C6B43D',
+      // '#C0C634',
+
+      '#1B3A10',
+      '#224C15',
+      '#306A1E',
+      // '#489F2D',
+      // '#5AC738',
+    ],
+    // legend: {
+    //   data: legendData,
+    // },
+    grid: {
+      top: '3%',
+      left: '3%',
+      right: '3%',
+      bottom: '3%',
+      containLabel: true
+    },
+    yAxis: [
+      {
+        type: 'value'
+      }
+    ],
+    xAxis: [
+      {
+        type: 'category',
+        axisTick: {
+          show: false
+        },
+        data: xAxisData,
+      }
+    ],
+    series,
+  };
+}

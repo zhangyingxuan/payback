@@ -27,7 +27,7 @@ a {
   right: 0;
   top: 70px;
   bottom: 0;
-  padding-bottom: 30px;
+  padding-bottom: 10px;
   -webkit-transition: left 0.3s ease-in-out;
   transition: left 0.3s ease-in-out;
   background: #f0f0f0;
@@ -91,6 +91,10 @@ a {
 
 .mgb20 {
   margin-bottom: 20px;
+}
+
+.mgb15 {
+  margin-bottom: 15px;
 }
 
 .move-enter-active,
