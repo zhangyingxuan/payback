@@ -35,9 +35,9 @@ let PayBackController = class PayBackController {
     }
     async findByLimit(query) {
         const limit = +(query.limit || 20);
-        const shortTermData = await this.payBackService.findByLimit(limit);
-        const marketData = await this.marketService.findByLimit(limit);
-        const fundsData = await this.fundsService.findByLimit(limit);
+        const shortTermData = (await this.payBackService.findByLimit(limit)).reverse();
+        const marketData = (await this.marketService.findByLimit(limit)).reverse();
+        const fundsData = (await this.fundsService.findByLimit(limit)).reverse();
         return {
             code: 200,
             data: {

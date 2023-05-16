@@ -53,7 +53,7 @@ let FundsService = FundsService_1 = class FundsService {
             .createQueryBuilder('short_term_data')
             .offset(0)
             .limit(len)
-            .orderBy('createTime', 'ASC')
+            .orderBy('createTime', 'DESC')
             .getMany();
     }
 };
