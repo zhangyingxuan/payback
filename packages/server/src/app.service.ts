@@ -5,4 +5,14 @@ export class AppService {
   getHello(): string {
     return 'Hello World2!';
   }
+
+  async wait30s() {
+    const data = await new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve('成功！');
+      }, 30000)
+    })
+
+    return 'Hello test!' + data;
+  }
 }

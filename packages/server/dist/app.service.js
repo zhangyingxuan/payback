@@ -12,6 +12,14 @@ let AppService = class AppService {
     getHello() {
         return 'Hello World2!';
     }
+    async wait30s() {
+        const data = await new Promise((resolve, reject) => {
+            setTimeout(() => {
+                resolve('成功！');
+            }, 30000);
+        });
+        return 'Hello test!' + data;
+    }
 };
 AppService = __decorate([
     (0, common_1.Injectable)()
