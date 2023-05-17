@@ -83,14 +83,14 @@ const data = reactive({
   ...getChartStyle(),
 });
 
-const chartList: any = reactive({
+const chartList: any = {
   shortTermChart: null,
   marketChart: null,
   indexChart: null,
   fundsChart: null,
   fundsByHangyeChart: null,
   fundsByGainianChart: null,
-});
+};
 const shortTermChart = ref(); // 使用ref创建虚拟DOM引用，使用时用shortTermChart.value
 const marketChart = ref(); // 市场chart
 const indexChart = ref(); // 指数chart
@@ -136,8 +136,7 @@ async function initPage(pageSize: number) {
 
   setTimeout(() => {
     Object.keys(chartList).forEach(key => {
-      console.log(chartList[key]);
-      chartList[key].resize();
+      chartList[key] && chartList[key].resize();
     });
   }, 0);
 }

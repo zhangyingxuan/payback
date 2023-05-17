@@ -1,89 +1,93 @@
 <!DOCTYPE html>
 <html lang="">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>payBack</title>
+    <link
+      rel="stylesheet"
+      href="https://at.alicdn.com/t/font_830376_qzecyukz0s.css"
+    />
+    <script type="module" crossorigin src="./assets/index.6879d222.js"></script>
+    <link rel="stylesheet" href="./assets/index.22e28d12.css">
+  </head>
 
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>vue-manage-system</title>
-  <link rel="stylesheet" href="https://at.alicdn.com/t/font_830376_qzecyukz0s.css">
-  <script type="module" crossorigin src="./assets/index.e510e00d.js"></script>
-  <link rel="stylesheet" href="./assets/index.1fa78058.css">
-</head>
-
-<body>
-  <noscript>
-    <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled.
-      Please enable it to continue.</strong>
-  </noscript>
-  <div id="app">
-    <style>
-      html,
-      body,
-      #app {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        position: relative;
-        justify-content: center;
-        align-items: center;
-        overflow: hidden;
-      }
-
-      .loader,
-      .loader:before,
-      .loader:after {
-        border-radius: 50%;
-        width: 2.5em;
-        height: 2.5em;
-        animation-fill-mode: both;
-        animation: loadAnimation 1.8s infinite ease-in-out;
-      }
-
-      .loader {
-        color: #406eeb;
-        font-size: 10px;
-        margin: 80px auto;
-        position: relative;
-        text-indent: -9999em;
-        transform: translateZ(0);
-        animation-delay: -0.16s;
-        top: 0;
-        transform: translate(-50%, 0);
-      }
-
-      .loader:before,
-      .loader:after {
-        content: "";
-        position: absolute;
-        top: 0;
-      }
-
-      .loader:before {
-        left: -3.5em;
-        animation-delay: -0.32s;
-      }
-
-      .loader:after {
-        left: 3.5em;
-      }
-
-      @keyframes loadAnimation {
-        0%,
-        80%,
-        100% {
-          box-shadow: 0 2.5em 0 -1.3em;
+  <body>
+    <noscript>
+      <strong
+        >We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work
+        properly without JavaScript enabled. Please enable it to
+        continue.</strong
+      >
+    </noscript>
+    <div id="app">
+      <style>
+        html,
+        body,
+        #app {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          position: relative;
+          justify-content: center;
+          align-items: center;
+          overflow: hidden;
         }
 
-        40% {
-          box-shadow: 0 2.5em 0 0;
+        .loader,
+        .loader:before,
+        .loader:after {
+          border-radius: 50%;
+          width: 2.5em;
+          height: 2.5em;
+          animation-fill-mode: both;
+          animation: loadAnimation 1.8s infinite ease-in-out;
         }
-      }
-    </style>
-    <div class="loader"></div>
-  </div>
-  
-  <!-- built files will be auto injected -->
-</body>
 
+        .loader {
+          color: #406eeb;
+          font-size: 10px;
+          margin: 80px auto;
+          position: relative;
+          text-indent: -9999em;
+          transform: translateZ(0);
+          animation-delay: -0.16s;
+          top: 0;
+          transform: translate(-50%, 0);
+        }
+
+        .loader:before,
+        .loader:after {
+          content: '';
+          position: absolute;
+          top: 0;
+        }
+
+        .loader:before {
+          left: -3.5em;
+          animation-delay: -0.32s;
+        }
+
+        .loader:after {
+          left: 3.5em;
+        }
+
+        @keyframes loadAnimation {
+          0%,
+          80%,
+          100% {
+            box-shadow: 0 2.5em 0 -1.3em;
+          }
+
+          40% {
+            box-shadow: 0 2.5em 0 0;
+          }
+        }
+      </style>
+      <div class="loader"></div>
+    </div>
+    
+    <!-- built files will be auto injected -->
+  </body>
 </html>

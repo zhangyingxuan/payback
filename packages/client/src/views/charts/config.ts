@@ -1,12 +1,12 @@
 export const columnsConfig: any = {
   5: 4,
-  7: 3,
+  7: 4,
   10: 3,
   15: 2,
   20: 2
 };
 
-const iwencaiUrl = 'http://www.iwencai.com/unifiedwap/result?w=';
+export const iwencaiUrl = 'http://www.iwencai.com/unifiedwap/result?w=';
 
 export const cardUrls = {
   shortTermUrl:

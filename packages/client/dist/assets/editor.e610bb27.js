@@ -1,1 +1,0 @@
-import{_ as o}from"./editor.vue_vue_type_script_setup_true_name_editor_lang.e1842d60.js";import{d as e,o as t,L as _}from"./index.e510e00d.js";const a=e({name:"editor"}),p=e({...a,setup(r){return(n,s)=>(t(),_(o))}});export{p as default};

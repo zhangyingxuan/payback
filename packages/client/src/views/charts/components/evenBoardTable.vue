@@ -7,6 +7,7 @@
     <div class="table__container">
       <div class="date-col">
         <div class="table-headaer">连板数</div>
+        <div class="table-col">其它连板</div>
         <template v-for="height in heightArr" :key="'row1' + height">
           <div class="table-col" v-if="height != 1">{{ height }}</div>
         </template>
@@ -17,14 +18,31 @@
         :key="'evenBoard' + index"
       >
         <div class="table-headaer">{{ item.createTime }}</div>
-        <template v-for="height in heightArr" :key="'row' + height">
-          <div class="table-col" v-if="height != 1">
-            <span
+        <!-- 高标数据 -->
+        <div class="table-col">
+          <el-tooltip
+            effect="dark"
+            placement="top"
+            v-for="(stock, index) in item.evenBoardData.gaobiao"
+            :content="stock.reason"
+            :key="'stock' + index"
+          >
+            <span> {{ stock.name }} {{ stock.evenDays }} </span>
+          </el-tooltip>
+        </div>
+        <template v-for="height in heightArr">
+          <div class="table-col" v-if="height != 1" :key="'row' + height">
+            <el-tooltip
+              effect="dark"
+              placement="top"
               v-for="(stock, index) in item.evenBoardData[height]"
+              :content="stock.reason"
               :key="'stock' + index"
             >
-              {{ stock.name }} {{ stock.code }}
-            </span>
+              <span :title="stock.reason">
+                {{ stock.name }} {{ stock.code }}
+              </span>
+            </el-tooltip>
           </div>
         </template>
       </div>
@@ -123,6 +141,7 @@ const colSpan = computed(() => {
   .table-col > span {
     font-size: 12px;
     display: inline-block;
+    cursor: pointer;
     /* scale: 0.6; */
     /* transform: scale(0.7);
   transform-origin: 100% 100%; */

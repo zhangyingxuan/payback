@@ -115,15 +115,15 @@ export function transformEvenBoardData(shortTermData: ShortTermModel[]): any[] {
       // 找出题材共性，涨停最多的 6个题材
       const maxHeight = evenBoardData.maxHeight;
       for (let i = 1; i <= maxHeight; i++) {
-        evenBoardData[i].forEach((item: any) => {
-          const resons = item.reason.split('+');
+        evenBoardData[i] && evenBoardData[i].forEach((item: any) => {
+          const resons = item.reason ? item.reason.split('+') : ['其它'];
           resons.forEach((reson: any) => {
             !ticaiData[reson] && (ticaiData[reson] = 1);
             ticaiData[reson]++;
           });
         });
       }
-      console.log(ticaiData);
+      // console.log(ticaiData);
 
       evenBoardList.push({
         createTime: dayjs(item.createTime).format('MM/DD'),

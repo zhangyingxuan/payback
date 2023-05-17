@@ -19,11 +19,20 @@
           </el-tooltip>
           <span class="btn-bell-badge" v-if="message"></span>
         </div> -->
+        <el-button
+          type="primary"
+          style="margin-right: 16px"
+          @click="switchDrawerVisible"
+          size="small"
+        >
+          我的收藏
+        </el-button>
         <!-- 数据统计天数 5 10 15 20 -->
         <el-select
           v-model="sidebar.countDays"
           @change="onSelectChange"
           placeholder="统计周期"
+          size="small"
         >
           <el-option
             v-for="item in options"
@@ -60,10 +69,13 @@
       </div>
     </div>
   </div>
+
+  <MyDrawer :drawerVisible="drawerVisible" @closeDrawer="switchDrawerVisible" />
 </template>
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useSidebarStore } from '../store/sidebar';
+import MyDrawer from './drawer.vue';
 import { useRouter } from 'vue-router';
 import imgurl from '../assets/img/img.jpg';
 
@@ -75,6 +87,10 @@ const options = [
   {
     value: '5',
     label: '5天',
+  },
+  {
+    value: '7',
+    label: '7天',
   },
   {
     value: '10',
@@ -89,6 +105,11 @@ const options = [
     label: '20天',
   },
 ];
+
+const drawerVisible = ref(false);
+function switchDrawerVisible() {
+  drawerVisible.value = !drawerVisible.value;
+}
 
 const sidebar = useSidebarStore();
 // 侧边栏折叠
@@ -121,7 +142,7 @@ const handleCommand = (command: string) => {
   position: relative;
   box-sizing: border-box;
   width: 100%;
-  height: 70px;
+  height: 40px;
   font-size: 22px;
   color: #fff;
 }
@@ -137,7 +158,7 @@ const handleCommand = (command: string) => {
 .header .logo {
   float: left;
   width: 100px;
-  line-height: 70px;
+  line-height: 40px;
 }
 .header-right {
   float: right;
@@ -145,7 +166,7 @@ const handleCommand = (command: string) => {
 }
 .header-user-con {
   display: flex;
-  height: 70px;
+  height: 40px;
   align-items: center;
 }
 .btn-fullscreen {
