@@ -24,15 +24,21 @@ AppModule = __decorate([
                 isGlobal: true,
                 envFilePath,
             }),
-            typeorm_1.TypeOrmModule.forRoot({
-                type: 'mysql',
-                host: '9.134.243.217',
-                port: 3306,
-                username: 'root',
-                password: '123',
-                database: 'blowsysun',
-                entities: [__dirname + '/**/*.entity{.ts,.js}'],
-                synchronize: true,
+            typeorm_1.TypeOrmModule.forRootAsync({
+                imports: [config_1.ConfigModule],
+                inject: [config_1.ConfigService],
+                useFactory: (config) => {
+                    return {
+                        type: 'mysql',
+                        host: config.get('DATABASE_HOST'),
+                        port: config.get('DATABASE_PORT'),
+                        username: config.get('DATABASE_USER'),
+                        password: config.get('DATABASE_PASSWORD'),
+                        database: config.get('DATABASE_DATABASE'),
+                        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+                        synchronize: true,
+                    };
+                },
             }),
             pay_back_module_1.PayBackModule,
             schedule_1.ScheduleModule.forRoot()
