@@ -122,10 +122,10 @@ exports.default = {
         const [responseForeignFunds, responseMarketTurnover, hangyeFundsInflow, hangyeFundsOutflow, gaiNianFundsInflow, gaiNianFundsOutflow] = await Promise.all([foreignFundsPromise, marketTurnoverPromise, hangyeFundsInflowPromise, hangyeFundsOutflowPromise, gaiNianFundsInflowPromise, gaiNianFundsOutflowPromise]);
         const foreignFunds = await fundsUtil_1.default.transformForeignFunds(responseForeignFunds);
         const marketTurnover = await fundsUtil_1.default.getMarketTurnover(responseMarketTurnover);
-        const hangyeFundsInflowTop5 = await fundsUtil_1.default.getPlateTop5(hangyeFundsInflow, dateStr);
-        const hangyeFundsOutflowTop5 = await fundsUtil_1.default.getPlateTop5(hangyeFundsOutflow, dateStr);
-        const gainianFundsInflowTop5 = await fundsUtil_1.default.getPlateTop5(gaiNianFundsInflow, dateStr);
-        const gainianFundsOutflowTop5 = await fundsUtil_1.default.getPlateTop5(gaiNianFundsOutflow, dateStr);
+        const hangyeFundsInflowTop3 = await fundsUtil_1.default.getPlateTop3(hangyeFundsInflow, dateStr);
+        const hangyeFundsOutflowTop3 = await fundsUtil_1.default.getPlateTop3(hangyeFundsOutflow, dateStr);
+        const gainianFundsInflowTop3 = await fundsUtil_1.default.getPlateTop3(gaiNianFundsInflow, dateStr);
+        const gainianFundsOutflowTop3 = await fundsUtil_1.default.getPlateTop3(gaiNianFundsOutflow, dateStr);
         const createFundsDataDto = new create_funds_data_dto_1.CreateFundsDataDto();
         createFundsDataDto.createTime = new Date();
         createFundsDataDto.northFundsAmtIn = +(foreignFunds.northFundsAmtIn / 10000).toFixed(2);
@@ -133,9 +133,8 @@ exports.default = {
         createFundsDataDto.southFundsAmtIn = +(foreignFunds.southFundsAmtIn / 10000).toFixed(2);
         createFundsDataDto.southFundsBuyAmt = +(foreignFunds.southFundsBuyAmt / 10000).toFixed(2);
         createFundsDataDto.marketTurnover = +(marketTurnover / 10000 / 10000 / 10000).toFixed(2);
-        createFundsDataDto.hangyeFundsTop = JSON.stringify({ in: hangyeFundsInflowTop5, out: hangyeFundsOutflowTop5 });
-        createFundsDataDto.gainianFundsTop = JSON.stringify({ in: gainianFundsInflowTop5, out: gainianFundsOutflowTop5 });
-        console.log(createFundsDataDto);
+        createFundsDataDto.hangyeFundsTop = JSON.stringify({ in: hangyeFundsInflowTop3, out: hangyeFundsOutflowTop3 });
+        createFundsDataDto.gainianFundsTop = JSON.stringify({ in: gainianFundsInflowTop3, out: gainianFundsOutflowTop3 });
         setTimeout(() => {
             browser.close();
         }, 5000);

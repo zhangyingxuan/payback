@@ -6,7 +6,7 @@ declare const _default: {
         southFundsBuyAmt: number;
     }>;
     getMarketTurnover(response: any): Promise<any>;
-    getPlateTop5(response: any, dateStr: any): Promise<{
+    getPlateTop3(response: any, dateStr: any): Promise<{
         name: any;
         code: any;
         funds: number;

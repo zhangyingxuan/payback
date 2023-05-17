@@ -23,10 +23,6 @@ export class PayBackController {
   crawlFunds() {
     return this.fundsService.crawlfundsData();
   }
-  // @Get('/storageTodayData')
-  // storageTodayData(@Body() createPayBackDto: CreatePayBackDto) {
-  //   return this.payBackService.create(createPayBackDto);
-  // }
 
   @Get('list')
   async findByLimit(@Query() query) {

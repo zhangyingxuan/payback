@@ -6,6 +6,7 @@ declare const _default: {
         maxHeight: number;
         evenBoardData: {
             maxHeight: number;
+            gaobiao: any[];
         };
     };
 };

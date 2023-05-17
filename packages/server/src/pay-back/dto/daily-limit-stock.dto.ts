@@ -10,6 +10,8 @@ export class DailyLimitStockDto {
   turnover: number;
   // 封板资金
   closingFunds: number;
+  // 几天几板
+  evenDays: string;
 }
 
 // 表格1 、 展示各板数据

@@ -4,4 +4,5 @@ export declare class DailyLimitStockDto {
     reason: string;
     turnover: number;
     closingFunds: number;
+    evenDays: string;
 }

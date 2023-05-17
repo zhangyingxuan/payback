@@ -165,11 +165,11 @@ export default {
 
     const foreignFunds: any = await fundsUtil.transformForeignFunds(responseForeignFunds);
     const marketTurnover: any = await fundsUtil.getMarketTurnover(responseMarketTurnover);
-    // 获取行业板块流入 top5
-    const hangyeFundsInflowTop5 = await fundsUtil.getPlateTop5(hangyeFundsInflow, dateStr);
-    const hangyeFundsOutflowTop5 = await fundsUtil.getPlateTop5(hangyeFundsOutflow, dateStr);
-    const gainianFundsInflowTop5 = await fundsUtil.getPlateTop5(gaiNianFundsInflow, dateStr);
-    const gainianFundsOutflowTop5 = await fundsUtil.getPlateTop5(gaiNianFundsOutflow, dateStr);
+    // 获取行业板块流入 Top3
+    const hangyeFundsInflowTop3 = await fundsUtil.getPlateTop3(hangyeFundsInflow, dateStr);
+    const hangyeFundsOutflowTop3 = await fundsUtil.getPlateTop3(hangyeFundsOutflow, dateStr);
+    const gainianFundsInflowTop3 = await fundsUtil.getPlateTop3(gaiNianFundsInflow, dateStr);
+    const gainianFundsOutflowTop3 = await fundsUtil.getPlateTop3(gaiNianFundsOutflow, dateStr);
 
     const createFundsDataDto = new CreateFundsDataDto();
     createFundsDataDto.createTime = new Date();
@@ -178,10 +178,10 @@ export default {
     createFundsDataDto.southFundsAmtIn = +(foreignFunds.southFundsAmtIn / 10000).toFixed(2);
     createFundsDataDto.southFundsBuyAmt = +(foreignFunds.southFundsBuyAmt / 10000).toFixed(2);
     createFundsDataDto.marketTurnover = +(marketTurnover / 10000 / 10000 / 10000).toFixed(2);
-    createFundsDataDto.hangyeFundsTop = JSON.stringify({ in: hangyeFundsInflowTop5, out: hangyeFundsOutflowTop5 });
-    createFundsDataDto.gainianFundsTop = JSON.stringify({ in: gainianFundsInflowTop5, out: gainianFundsOutflowTop5 });
+    createFundsDataDto.hangyeFundsTop = JSON.stringify({ in: hangyeFundsInflowTop3, out: hangyeFundsOutflowTop3 });
+    createFundsDataDto.gainianFundsTop = JSON.stringify({ in: gainianFundsInflowTop3, out: gainianFundsOutflowTop3 });
 
-    console.log(createFundsDataDto);
+    // console.log(createFundsDataDto);
 
     setTimeout(() => {
       browser.close();
