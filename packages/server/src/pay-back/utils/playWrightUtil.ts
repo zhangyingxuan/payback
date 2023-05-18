@@ -35,6 +35,7 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, baseBrowser?: Browser): Pr
   return new Promise(async (resolve, reject) => {
     // 没有拿到数据 退出机制
     const forceOutTimeOut = setTimeout(() => {
+      browser.close();
       reject('等待超时了~');
     }, commonTimeOut60s);
 
@@ -49,7 +50,7 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, baseBrowser?: Browser): Pr
         logger.log('等待接口返回 end ====', apiUrl);
         resolve(response);
       }
-    })
+    });
     await page.goto(pageUrl, { timeout: commonTimeOut60s });
     logger.log('打开页面成功 ====', pageUrl);
   });
@@ -167,14 +168,14 @@ export default {
     // 准备涨停数据
     const dailyLimitData: Object[] = await getTodayData(iwencaiUrl + params.dailyLimitMoreThan1, 'chart/get-robot-data', browser);
     // 跌停数据
-    const downLimitData: Object[] = await getTodayData(iwencaiUrl + params.downLimit, 'chart/get-robot-data', browser);
+    // const downLimitData: Object[] = await getTodayData(iwencaiUrl + params.downLimit, 'chart/get-robot-data', browser);
     // console.log(dailyLimitData);
     // console.log(downLimitData);
 
     let { SZAmount = 0, SHAmount = 0, board1 = 0, evenBoardData } = transformDataUtil.transformShortTermSourceData(dailyLimitData, todayDateStr);
 
     createPayBackDto.createTime = new Date();
-    createPayBackDto.downLimitQuantity = downLimitData.length;
+    // createPayBackDto.downLimitQuantity = downLimitData.length;
     createPayBackDto.dailyLimitQuantity = dailyLimitData.length;
     createPayBackDto.marketHeight = evenBoardData.maxHeight;
     createPayBackDto.board1 = board1;

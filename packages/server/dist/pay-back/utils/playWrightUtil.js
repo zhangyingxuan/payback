@@ -24,6 +24,7 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, baseBrowser) => {
     const page = await browser.newPage();
     return new Promise(async (resolve, reject) => {
         const forceOutTimeOut = setTimeout(() => {
+            browser.close();
             reject('等待超时了~');
         }, commonTimeOut60s);
         page.on('response', async (response) => {
@@ -125,10 +126,8 @@ exports.default = {
         let createPayBackDto = new create_pay_back_dto_1.CreatePayBackDto();
         const browser = await getBrowser();
         const dailyLimitData = await getTodayData(config_1.iwencaiUrl + config_1.params.dailyLimitMoreThan1, 'chart/get-robot-data', browser);
-        const downLimitData = await getTodayData(config_1.iwencaiUrl + config_1.params.downLimit, 'chart/get-robot-data', browser);
         let { SZAmount = 0, SHAmount = 0, board1 = 0, evenBoardData } = transformDataUtil_1.default.transformShortTermSourceData(dailyLimitData, todayDateStr);
         createPayBackDto.createTime = new Date();
-        createPayBackDto.downLimitQuantity = downLimitData.length;
         createPayBackDto.dailyLimitQuantity = dailyLimitData.length;
         createPayBackDto.marketHeight = evenBoardData.maxHeight;
         createPayBackDto.board1 = board1;

@@ -32,10 +32,10 @@ export class FundsService {
 
     if (todayDataFromDB) {
       this.logger.debug('crawlfundsData is isExist!');
-      return {
-        code: 'isExist',
-        msg: todayDateStr + ' 数据已存在！',
-      }
+      // return {
+      //   code: 'isExist',
+      //   msg: todayDateStr + ' 数据已存在！',
+      // }
     }
     let fundsData: CreateFundsDataDto;
     try {
