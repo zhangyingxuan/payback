@@ -4,9 +4,18 @@ import { CreateFundsDataDto } from '../dto/create-funds-data.dto';
 import commonUtil from './commonUtil';
 import fundsUtil from './fundsUtil';
 import { iwencaiUrl, params } from './config';
+import { Logger } from '@nestjs/common';
+import { CreatePayBackDto } from '../dto/create-pay-back.dto';
+import transformDataUtil from '../utils/transformDataUtil';
+
+const logger = new Logger('playWrightUtil');
+
+const browserOpenTimeOut = 60000;
+const commonTimeOut60s = 60000;
 
 const getBrowser = async () => {
   return await firefox.launch({
+    timeout: browserOpenTimeOut,
     // headless: false // setting this to true will not run the UI
   });;
 };
@@ -17,21 +26,31 @@ const getBrowser = async () => {
 */
 const waitOriginalDataByUrl = async (pageUrl, apiUrl, baseBrowser?: Browser): Promise<Response> => {
   const browser = baseBrowser ? baseBrowser : await getBrowser();
+  // 日志开始
+  logger.log('等待接口返回 start ====', apiUrl);
+
   // 打开股票行情页面  
   const page = await browser.newPage();
+
   return new Promise(async (resolve, reject) => {
+    // 没有拿到数据 退出机制
+    const forceOutTimeOut = setTimeout(() => {
+      reject('等待超时了~');
+    }, commonTimeOut60s);
+
     page.on('response', async (response: Response) => {
       // console.log(response.url())
-
       if (response.url().includes(apiUrl) && response.status() === 200) {
         // 方法自创建的 baseBrowser 需要自动关闭
         !baseBrowser && setTimeout(() => {
           browser.close();
-        }, 60000)
+        }, commonTimeOut60s)
+        clearTimeout(forceOutTimeOut);
+        logger.log('等待接口返回 end ====', apiUrl);
         resolve(response);
       }
     })
-    await page.goto(pageUrl, { timeout: 60000 });
+    await page.goto(pageUrl, { timeout: commonTimeOut60s });
   });
 };
 
@@ -129,16 +148,41 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl): Promise<CreateMarketDataDt
         browser.close();
       }, 15000)
     })
-    await page.goto(pageUrl, { timeout: 60000 });
+    await page.goto(pageUrl, { timeout: commonTimeOut60s });
   });
 };
 
+
+const getTodayData = async function (pageUrl, apiUrl, browser) {
+  const response: Response = await waitOriginalDataByUrl(pageUrl, apiUrl, browser);
+  const responseJson: any = await response.json();
+  return commonUtil.getIwencaiData(responseJson);
+}
+
 export default {
-  async getShortTermData(pageUrl, apiUrl) {
-    const response: Response = await waitOriginalDataByUrl(pageUrl, apiUrl);
-    const responseJson: any = await response.json();
-    const todayData = commonUtil.getIwencaiData(responseJson);
-    return todayData;
+  async getShortTermData(todayDateStr): Promise<CreatePayBackDto> {
+    let createPayBackDto: CreatePayBackDto = new CreatePayBackDto();
+    const browser = await getBrowser();
+    // 准备涨停数据
+    const dailyLimitData: Object[] = await getTodayData(iwencaiUrl + params.dailyLimitMoreThan1, 'chart/get-robot-data', browser);
+    // 跌停数据
+    const downLimitData: Object[] = await getTodayData(iwencaiUrl + params.downLimit, 'chart/get-robot-data', browser);
+    // console.log(dailyLimitData);
+    // console.log(downLimitData);
+
+    let { SZAmount = 0, SHAmount = 0, board1 = 0, evenBoardData } = transformDataUtil.transformShortTermSourceData(dailyLimitData, todayDateStr);
+
+    createPayBackDto.createTime = new Date();
+    createPayBackDto.downLimitQuantity = downLimitData.length;
+    createPayBackDto.dailyLimitQuantity = dailyLimitData.length;
+    createPayBackDto.marketHeight = evenBoardData.maxHeight;
+    createPayBackDto.board1 = board1;
+    createPayBackDto.evenBoardAmount = dailyLimitData.length - board1;
+    createPayBackDto.evenBoardData = JSON.stringify(evenBoardData);
+    createPayBackDto.SZAmount = SZAmount;
+    createPayBackDto.SHAmount = SHAmount;
+
+    return createPayBackDto;
   },
   /**
    * 获取 市场数据
@@ -160,8 +204,11 @@ export default {
     const hangyeFundsOutflowPromise = waitOriginalDataByUrl(iwencaiUrl + params.hangyeFundsOutflow, 'chart/get-robot-data', browser);
     const gaiNianFundsInflowPromise = waitOriginalDataByUrl(iwencaiUrl + params.gailianFundsInflow, 'chart/get-robot-data', browser);
     const gaiNianFundsOutflowPromise = waitOriginalDataByUrl(iwencaiUrl + params.gailianFundsOutflow, 'chart/get-robot-data', browser);
-    const [responseForeignFunds, responseMarketTurnover, hangyeFundsInflow, hangyeFundsOutflow, gaiNianFundsInflow, gaiNianFundsOutflow] =
-      await Promise.all([foreignFundsPromise, marketTurnoverPromise, hangyeFundsInflowPromise, hangyeFundsOutflowPromise, gaiNianFundsInflowPromise, gaiNianFundsOutflowPromise]);
+    // 分成两步执行，避免轻量服务器CPU负载过高假死
+    const [responseForeignFunds, responseMarketTurnover, hangyeFundsInflow] =
+      await Promise.all([foreignFundsPromise, marketTurnoverPromise, hangyeFundsInflowPromise]);
+    const [hangyeFundsOutflow, gaiNianFundsInflow, gaiNianFundsOutflow] =
+      await Promise.all([hangyeFundsOutflowPromise, gaiNianFundsInflowPromise, gaiNianFundsOutflowPromise]);
 
     const foreignFunds: any = await fundsUtil.transformForeignFunds(responseForeignFunds);
     const marketTurnover: any = await fundsUtil.getMarketTurnover(responseMarketTurnover);

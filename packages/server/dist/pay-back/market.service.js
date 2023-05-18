@@ -40,9 +40,15 @@ let MarketService = MarketService_1 = class MarketService {
                 msg: todayDateStr + ' 数据已存在！',
             };
         }
-        const marketData = await playWrightUtil_1.default.getMarketData(config_1.marketUrl, '/api.php');
-        await this.marketDataRp.save(marketData);
-        this.logger.debug('Called is success!');
+        let marketData;
+        try {
+            marketData = await playWrightUtil_1.default.getMarketData(config_1.marketUrl, '/api.php');
+            await this.marketDataRp.save(marketData);
+            this.logger.debug('Called is success!');
+        }
+        catch (e) {
+            this.logger.error('出错啦！！！', e);
+        }
         return marketData;
     }
     async findAll() {

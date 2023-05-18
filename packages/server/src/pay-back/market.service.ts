@@ -37,10 +37,14 @@ export class MarketService {
         msg: todayDateStr + ' 数据已存在！',
       }
     }
-
-    const marketData: CreateMarketDataDto = await playWrightUtil.getMarketData(marketUrl, '/api.php');
-    await this.marketDataRp.save(marketData);
-    this.logger.debug('Called is success!');
+    let marketData: CreateMarketDataDto;
+    try {
+      marketData = await playWrightUtil.getMarketData(marketUrl, '/api.php');
+      await this.marketDataRp.save(marketData);
+      this.logger.debug('Called is success!');
+    } catch (e) {
+      this.logger.error('出错啦！！！', e)
+    }
     // 深圳 还是 上海涨停的多 SZ. SH
     return marketData;
   }

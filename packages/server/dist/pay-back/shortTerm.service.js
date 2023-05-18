@@ -15,13 +15,10 @@ var PayBackService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PayBackService = void 0;
 const common_1 = require("@nestjs/common");
-const create_pay_back_dto_1 = require("./dto/create-pay-back.dto");
 const typeorm_1 = require("typeorm");
 const shortTermData_entity_1 = require("./entities/shortTermData.entity");
 const typeorm_2 = require("@nestjs/typeorm");
 const playWrightUtil_1 = require("./utils/playWrightUtil");
-const config_1 = require("./utils/config");
-const transformDataUtil_1 = require("./utils/transformDataUtil");
 const dayjs = require("dayjs");
 const schedule_1 = require("@nestjs/schedule");
 let PayBackService = PayBackService_1 = class PayBackService {
@@ -43,21 +40,15 @@ let PayBackService = PayBackService_1 = class PayBackService {
                 msg: todayDateStr + ' 数据已存在！',
             };
         }
-        let createPayBackDto = new create_pay_back_dto_1.CreatePayBackDto();
-        const dailyLimitData = await playWrightUtil_1.default.getShortTermData(config_1.iwencaiUrl + config_1.params.dailyLimitMoreThan1, 'chart/get-robot-data');
-        const downLimitData = await playWrightUtil_1.default.getShortTermData(config_1.iwencaiUrl + config_1.params.downLimit, 'chart/get-robot-data');
-        let { SZAmount = 0, SHAmount = 0, board1 = 0, evenBoardData } = transformDataUtil_1.default.transformShortTermSourceData(dailyLimitData, todayDateStr);
-        createPayBackDto.createTime = new Date();
-        createPayBackDto.downLimitQuantity = downLimitData.length;
-        createPayBackDto.dailyLimitQuantity = dailyLimitData.length;
-        createPayBackDto.marketHeight = evenBoardData.maxHeight;
-        createPayBackDto.board1 = board1;
-        createPayBackDto.evenBoardAmount = dailyLimitData.length - board1;
-        createPayBackDto.evenBoardData = JSON.stringify(evenBoardData);
-        createPayBackDto.SZAmount = SZAmount;
-        createPayBackDto.SHAmount = SHAmount;
-        await this.shortTermDataRp.save(createPayBackDto);
-        this.logger.debug('Called is success!');
+        let createPayBackDto;
+        try {
+            createPayBackDto = await playWrightUtil_1.default.getShortTermData(todayDateStr);
+            await this.shortTermDataRp.save(createPayBackDto);
+            this.logger.debug('Called is success!');
+        }
+        catch (e) {
+            this.logger.error('出错啦！！！', e);
+        }
         return createPayBackDto;
     }
     async findAll() {

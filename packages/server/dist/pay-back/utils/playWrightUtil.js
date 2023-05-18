@@ -6,23 +6,37 @@ const create_funds_data_dto_1 = require("../dto/create-funds-data.dto");
 const commonUtil_1 = require("./commonUtil");
 const fundsUtil_1 = require("./fundsUtil");
 const config_1 = require("./config");
+const common_1 = require("@nestjs/common");
+const create_pay_back_dto_1 = require("../dto/create-pay-back.dto");
+const transformDataUtil_1 = require("../utils/transformDataUtil");
+const logger = new common_1.Logger('playWrightUtil');
+const browserOpenTimeOut = 60000;
+const commonTimeOut60s = 60000;
 const getBrowser = async () => {
-    return await playwright_1.firefox.launch({});
+    return await playwright_1.firefox.launch({
+        timeout: browserOpenTimeOut,
+    });
     ;
 };
 const waitOriginalDataByUrl = async (pageUrl, apiUrl, baseBrowser) => {
     const browser = baseBrowser ? baseBrowser : await getBrowser();
+    logger.log('等待接口返回 start ====', apiUrl);
     const page = await browser.newPage();
     return new Promise(async (resolve, reject) => {
+        const forceOutTimeOut = setTimeout(() => {
+            reject('等待超时了~');
+        }, commonTimeOut60s);
         page.on('response', async (response) => {
             if (response.url().includes(apiUrl) && response.status() === 200) {
                 !baseBrowser && setTimeout(() => {
                     browser.close();
-                }, 60000);
+                }, commonTimeOut60s);
+                clearTimeout(forceOutTimeOut);
+                logger.log('等待接口返回 end ====', apiUrl);
                 resolve(response);
             }
         });
-        await page.goto(pageUrl, { timeout: 60000 });
+        await page.goto(pageUrl, { timeout: commonTimeOut60s });
     });
 };
 function getPoint(data) {
@@ -97,15 +111,31 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl) => {
                 browser.close();
             }, 15000);
         });
-        await page.goto(pageUrl, { timeout: 60000 });
+        await page.goto(pageUrl, { timeout: commonTimeOut60s });
     });
 };
+const getTodayData = async function (pageUrl, apiUrl, browser) {
+    const response = await waitOriginalDataByUrl(pageUrl, apiUrl, browser);
+    const responseJson = await response.json();
+    return commonUtil_1.default.getIwencaiData(responseJson);
+};
 exports.default = {
-    async getShortTermData(pageUrl, apiUrl) {
-        const response = await waitOriginalDataByUrl(pageUrl, apiUrl);
-        const responseJson = await response.json();
-        const todayData = commonUtil_1.default.getIwencaiData(responseJson);
-        return todayData;
+    async getShortTermData(todayDateStr) {
+        let createPayBackDto = new create_pay_back_dto_1.CreatePayBackDto();
+        const browser = await getBrowser();
+        const dailyLimitData = await getTodayData(config_1.iwencaiUrl + config_1.params.dailyLimitMoreThan1, 'chart/get-robot-data', browser);
+        const downLimitData = await getTodayData(config_1.iwencaiUrl + config_1.params.downLimit, 'chart/get-robot-data', browser);
+        let { SZAmount = 0, SHAmount = 0, board1 = 0, evenBoardData } = transformDataUtil_1.default.transformShortTermSourceData(dailyLimitData, todayDateStr);
+        createPayBackDto.createTime = new Date();
+        createPayBackDto.downLimitQuantity = downLimitData.length;
+        createPayBackDto.dailyLimitQuantity = dailyLimitData.length;
+        createPayBackDto.marketHeight = evenBoardData.maxHeight;
+        createPayBackDto.board1 = board1;
+        createPayBackDto.evenBoardAmount = dailyLimitData.length - board1;
+        createPayBackDto.evenBoardData = JSON.stringify(evenBoardData);
+        createPayBackDto.SZAmount = SZAmount;
+        createPayBackDto.SHAmount = SHAmount;
+        return createPayBackDto;
     },
     async getMarketData(pageUrl, apiUrls) {
         const response = await waitMarketDataByUrls(pageUrl, apiUrls);
@@ -119,7 +149,8 @@ exports.default = {
         const hangyeFundsOutflowPromise = waitOriginalDataByUrl(config_1.iwencaiUrl + config_1.params.hangyeFundsOutflow, 'chart/get-robot-data', browser);
         const gaiNianFundsInflowPromise = waitOriginalDataByUrl(config_1.iwencaiUrl + config_1.params.gailianFundsInflow, 'chart/get-robot-data', browser);
         const gaiNianFundsOutflowPromise = waitOriginalDataByUrl(config_1.iwencaiUrl + config_1.params.gailianFundsOutflow, 'chart/get-robot-data', browser);
-        const [responseForeignFunds, responseMarketTurnover, hangyeFundsInflow, hangyeFundsOutflow, gaiNianFundsInflow, gaiNianFundsOutflow] = await Promise.all([foreignFundsPromise, marketTurnoverPromise, hangyeFundsInflowPromise, hangyeFundsOutflowPromise, gaiNianFundsInflowPromise, gaiNianFundsOutflowPromise]);
+        const [responseForeignFunds, responseMarketTurnover, hangyeFundsInflow] = await Promise.all([foreignFundsPromise, marketTurnoverPromise, hangyeFundsInflowPromise]);
+        const [hangyeFundsOutflow, gaiNianFundsInflow, gaiNianFundsOutflow] = await Promise.all([hangyeFundsOutflowPromise, gaiNianFundsInflowPromise, gaiNianFundsOutflowPromise]);
         const foreignFunds = await fundsUtil_1.default.transformForeignFunds(responseForeignFunds);
         const marketTurnover = await fundsUtil_1.default.getMarketTurnover(responseMarketTurnover);
         const hangyeFundsInflowTop3 = await fundsUtil_1.default.getPlateTop3(hangyeFundsInflow, dateStr);

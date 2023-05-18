@@ -4,9 +4,7 @@ import { UpdatePayBackDto } from './dto/update-pay-back.dto';
 import { Repository } from 'typeorm';
 import { shortTermData } from './entities/shortTermData.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import playWrightUtil from './utils/playWrightUtil'
-import { params, iwencaiUrl } from './utils/config';
-import transformDataUtil from './utils/transformDataUtil';
+import playWrightUtil from './utils/playWrightUtil';
 import * as dayjs from 'dayjs';
 import { Cron } from '@nestjs/schedule';
 
@@ -40,29 +38,16 @@ export class PayBackService {
         msg: todayDateStr + ' 数据已存在！',
       }
     }
+    let createPayBackDto: CreatePayBackDto;
+    try {
+      createPayBackDto = await playWrightUtil.getShortTermData(todayDateStr);
+      // console.log(createPayBackDto)
+      await this.shortTermDataRp.save(createPayBackDto)
+      this.logger.debug('Called is success!');
+    } catch (e) {
+      this.logger.error('出错啦！！！', e)
+    }
 
-    let createPayBackDto: CreatePayBackDto = new CreatePayBackDto();
-    // 准备涨停数据
-    const dailyLimitData: Object[] = await playWrightUtil.getShortTermData(iwencaiUrl + params.dailyLimitMoreThan1, 'chart/get-robot-data');
-    // 跌停数据
-    const downLimitData: Object[] = await playWrightUtil.getShortTermData(iwencaiUrl + params.downLimit, 'chart/get-robot-data');
-    // console.log(dailyLimitData);
-    // console.log(downLimitData);
-
-    let { SZAmount = 0, SHAmount = 0, board1 = 0, evenBoardData } = transformDataUtil.transformShortTermSourceData(dailyLimitData, todayDateStr);
-
-    createPayBackDto.createTime = new Date();
-    createPayBackDto.downLimitQuantity = downLimitData.length;
-    createPayBackDto.dailyLimitQuantity = dailyLimitData.length;
-    createPayBackDto.marketHeight = evenBoardData.maxHeight;
-    createPayBackDto.board1 = board1;
-    createPayBackDto.evenBoardAmount = dailyLimitData.length - board1;
-    createPayBackDto.evenBoardData = JSON.stringify(evenBoardData);
-    createPayBackDto.SZAmount = SZAmount;
-    createPayBackDto.SHAmount = SHAmount;
-    // console.log(createPayBackDto)
-    await this.shortTermDataRp.save(createPayBackDto)
-    this.logger.debug('Called is success!');
     return createPayBackDto;
   }
 

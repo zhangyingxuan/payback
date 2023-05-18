@@ -40,9 +40,15 @@ let FundsService = FundsService_1 = class FundsService {
                 msg: todayDateStr + ' 数据已存在！',
             };
         }
-        const fundsData = await playWrightUtil_1.default.getFundsData(dayjs(todayDateStr).format('YYYYMMDD'));
-        await this.fundsDataRp.save(fundsData);
-        this.logger.debug('crawlfundsData is success!');
+        let fundsData;
+        try {
+            fundsData = await playWrightUtil_1.default.getFundsData(dayjs(todayDateStr).format('YYYYMMDD'));
+            await this.fundsDataRp.save(fundsData);
+            this.logger.debug('crawlfundsData is success!');
+        }
+        catch (e) {
+            this.logger.error('出错啦！！！', e);
+        }
         return fundsData;
     }
     async findAll() {

@@ -37,10 +37,14 @@ export class FundsService {
         msg: todayDateStr + ' 数据已存在！',
       }
     }
-
-    const fundsData: CreateFundsDataDto = await playWrightUtil.getFundsData(dayjs(todayDateStr).format('YYYYMMDD'));
-    await this.fundsDataRp.save(fundsData);
-    this.logger.debug('crawlfundsData is success!');
+    let fundsData: CreateFundsDataDto;
+    try {
+      fundsData = await playWrightUtil.getFundsData(dayjs(todayDateStr).format('YYYYMMDD'));
+      await this.fundsDataRp.save(fundsData);
+      this.logger.debug('crawlfundsData is success!');
+    } catch (e) {
+      this.logger.error('出错啦！！！', e)
+    }
     // 深圳 还是 上海涨停的多 SZ. SH
     return fundsData;
   }
