@@ -24,6 +24,7 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType, baseBrowser
     const page = await browser.newPage();
     return new Promise((resolve, reject) => {
         !baseBrowser && setTimeout(() => {
+            logger.log('接口返回超时，自动关闭browser ====');
             browser.close();
         }, commonTimeOut60s);
         page.on('response', async (response) => {

@@ -42,8 +42,9 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType: 'text' | 'j
   return new Promise((resolve, reject) => {
     // 方法自创建的 baseBrowser 需要自动关闭
     !baseBrowser && setTimeout(() => {
+      logger.log('接口返回超时，自动关闭browser ====');
       browser.close();
-    }, commonTimeOut60s)
+    }, commonTimeOut60s);
 
     page.on('response', async (response: Response) => {
       // console.log(response.url())
