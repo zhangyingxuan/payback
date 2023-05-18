@@ -51,6 +51,7 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, baseBrowser?: Browser): Pr
       }
     })
     await page.goto(pageUrl, { timeout: commonTimeOut60s });
+    logger.log('打开页面成功 ====', pageUrl);
   });
 };
 
@@ -201,12 +202,13 @@ export default {
     const foreignFundsPromise = waitOriginalDataByUrl('https://data.eastmoney.com/hsgt/index.html', 'reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE', browser);
     const marketTurnoverPromise = waitOriginalDataByUrl('https://data.eastmoney.com/zjlx/dpzjlx.html', 'fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5', browser);
     const hangyeFundsInflowPromise = waitOriginalDataByUrl(iwencaiUrl + params.hangyeFundsInflow, 'chart/get-robot-data', browser);
-    const hangyeFundsOutflowPromise = waitOriginalDataByUrl(iwencaiUrl + params.hangyeFundsOutflow, 'chart/get-robot-data', browser);
-    const gaiNianFundsInflowPromise = waitOriginalDataByUrl(iwencaiUrl + params.gailianFundsInflow, 'chart/get-robot-data', browser);
-    const gaiNianFundsOutflowPromise = waitOriginalDataByUrl(iwencaiUrl + params.gailianFundsOutflow, 'chart/get-robot-data', browser);
     // 分成两步执行，避免轻量服务器CPU负载过高假死
     const [responseForeignFunds, responseMarketTurnover, hangyeFundsInflow] =
       await Promise.all([foreignFundsPromise, marketTurnoverPromise, hangyeFundsInflowPromise]);
+
+    const hangyeFundsOutflowPromise = waitOriginalDataByUrl(iwencaiUrl + params.hangyeFundsOutflow, 'chart/get-robot-data', browser);
+    const gaiNianFundsInflowPromise = waitOriginalDataByUrl(iwencaiUrl + params.gailianFundsInflow, 'chart/get-robot-data', browser);
+    const gaiNianFundsOutflowPromise = waitOriginalDataByUrl(iwencaiUrl + params.gailianFundsOutflow, 'chart/get-robot-data', browser);
     const [hangyeFundsOutflow, gaiNianFundsInflow, gaiNianFundsOutflow] =
       await Promise.all([hangyeFundsOutflowPromise, gaiNianFundsInflowPromise, gaiNianFundsOutflowPromise]);
 
