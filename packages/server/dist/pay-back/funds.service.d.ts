@@ -5,7 +5,10 @@ export declare class FundsService {
     private readonly fundsDataRp;
     constructor(fundsDataRp: Repository<fundsData>);
     private readonly logger;
-    crawlfundsData(): Promise<CreateFundsDataDto>;
+    crawlfundsData(): Promise<CreateFundsDataDto | {
+        code: string;
+        msg: string;
+    }>;
     findAll(): Promise<fundsData[]>;
     findByLimit(len?: number): Promise<fundsData[]>;
 }

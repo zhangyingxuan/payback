@@ -35,6 +35,10 @@ let PayBackService = PayBackService_1 = class PayBackService {
             .getOne();
         if (todayDataFromDB) {
             this.logger.debug('crawlShortTermData is end![isExist]');
+            return {
+                code: 'isExist',
+                msg: todayDateStr + ' 数据已存在！',
+            };
         }
         let createPayBackDto;
         try {

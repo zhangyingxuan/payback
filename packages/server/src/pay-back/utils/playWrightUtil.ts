@@ -31,7 +31,7 @@ const getBrowser = async () => {
 * @param url
 * @returns 
 */
-const waitOriginalDataByUrl = async (pageUrl, apiUrl, baseBrowser?: Browser): Promise<OriginalResponse> => {
+const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType: 'text' | 'json', baseBrowser?: Browser): Promise<String> => {
   const browser = baseBrowser ? baseBrowser : await getBrowser();
   // 日志开始
   logger.log('等待接口返回 start ====', apiUrl);
@@ -40,22 +40,24 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, baseBrowser?: Browser): Pr
   const page = await browser.newPage();
 
   return new Promise((resolve, reject) => {
-    // 没有拿到数据 退出机制
-    const forceOutTimeOut = setTimeout(() => {
+    // 方法自创建的 baseBrowser 需要自动关闭
+    !baseBrowser && setTimeout(() => {
       browser.close();
-      reject('等待超时了~');
-    }, commonTimeOut60s);
+    }, commonTimeOut60s)
 
     page.on('response', async (response: Response) => {
       // console.log(response.url())
       if (response.url().includes(apiUrl) && response.status() === 200) {
-        // 方法自创建的 baseBrowser 需要自动关闭
-        !baseBrowser && setTimeout(() => {
-          browser.close();
-        }, commonTimeOut60s)
-        clearTimeout(forceOutTimeOut);
         logger.log('等待接口返回 end ====', apiUrl);
-        resolve({ response, page });
+        let responseData;
+        if (transfromType == 'json') {
+          responseData = await response.json();
+        } else {
+          responseData = await response.text();
+        }
+        // 获取数据后，关闭page 节约内存开销
+        await page.close();
+        resolve(responseData);
       }
     });
     page.goto(pageUrl, { timeout: commonTimeOut60s, waitUntil: "domcontentloaded" });
@@ -163,9 +165,7 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl): Promise<CreateMarketDataDt
 
 
 const getTodayData = async function (pageUrl, apiUrl) {
-  const originalResponse: OriginalResponse = await waitOriginalDataByUrl(pageUrl, apiUrl);
-  const responseJson: any = JSON.parse(JSON.stringify(await originalResponse.response.json()));
-  await originalResponse.page.close();
+  const responseJson: any = await waitOriginalDataByUrl(pageUrl, apiUrl, 'json');
   return commonUtil.getIwencaiData(responseJson);
 }
 
@@ -206,16 +206,16 @@ export default {
   async getFundsData(dateStr) {
     const browser = await getBrowser();
     // 北向资金、南向资金 获取
-    const foreignFundsPromise = waitOriginalDataByUrl('https://data.eastmoney.com/hsgt/index.html', 'reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE', browser);
-    const marketTurnoverPromise = waitOriginalDataByUrl('https://data.eastmoney.com/zjlx/dpzjlx.html', 'fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5', browser);
-    const hangyeFundsInflowPromise = waitOriginalDataByUrl(iwencaiUrl + params.hangyeFundsInflow, 'chart/get-robot-data', browser);
+    const foreignFundsPromise = waitOriginalDataByUrl('https://data.eastmoney.com/hsgt/index.html', 'reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE', 'text', browser);
+    const marketTurnoverPromise = waitOriginalDataByUrl('https://data.eastmoney.com/zjlx/dpzjlx.html', 'fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5', 'text', browser);
+    const hangyeFundsInflowPromise = waitOriginalDataByUrl(iwencaiUrl + params.hangyeFundsInflow, 'chart/get-robot-data', 'text', browser);
     // 分成两步执行，避免轻量服务器CPU负载过高假死
     const [responseForeignFunds, responseMarketTurnover, hangyeFundsInflow] =
       await Promise.all([foreignFundsPromise, marketTurnoverPromise, hangyeFundsInflowPromise]);
 
-    const hangyeFundsOutflowPromise = waitOriginalDataByUrl(iwencaiUrl + params.hangyeFundsOutflow, 'chart/get-robot-data', browser);
-    const gaiNianFundsInflowPromise = waitOriginalDataByUrl(iwencaiUrl + params.gailianFundsInflow, 'chart/get-robot-data', browser);
-    const gaiNianFundsOutflowPromise = waitOriginalDataByUrl(iwencaiUrl + params.gailianFundsOutflow, 'chart/get-robot-data', browser);
+    const hangyeFundsOutflowPromise = waitOriginalDataByUrl(iwencaiUrl + params.hangyeFundsOutflow, 'chart/get-robot-data', 'text', browser);
+    const gaiNianFundsInflowPromise = waitOriginalDataByUrl(iwencaiUrl + params.gailianFundsInflow, 'chart/get-robot-data', 'text', browser);
+    const gaiNianFundsOutflowPromise = waitOriginalDataByUrl(iwencaiUrl + params.gailianFundsOutflow, 'chart/get-robot-data', 'text', browser);
     const [hangyeFundsOutflow, gaiNianFundsInflow, gaiNianFundsOutflow] =
       await Promise.all([hangyeFundsOutflowPromise, gaiNianFundsInflowPromise, gaiNianFundsOutflowPromise]);
 

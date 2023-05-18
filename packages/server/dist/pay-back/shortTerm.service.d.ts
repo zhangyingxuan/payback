@@ -6,7 +6,10 @@ export declare class PayBackService {
     private readonly shortTermDataRp;
     constructor(shortTermDataRp: Repository<shortTermData>);
     private readonly logger;
-    crawlShortTermData(): Promise<CreatePayBackDto>;
+    crawlShortTermData(): Promise<CreatePayBackDto | {
+        code: string;
+        msg: string;
+    }>;
     findAll(): Promise<shortTermData[]>;
     findByLimit(len?: number): Promise<shortTermData[]>;
     findOne(id: number): Promise<string>;
