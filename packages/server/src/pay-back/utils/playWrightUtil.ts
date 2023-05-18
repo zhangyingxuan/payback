@@ -29,7 +29,7 @@ const getBrowser = async () => {
 const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType: 'text' | 'json', baseBrowser?: Browser): Promise<String> => {
   const browser = baseBrowser ? baseBrowser : await getBrowser();
   // 日志开始
-  logger.log('等待接口返回 start ====', apiUrl);
+  logger.log('等待接口返回 start ====', pageUrl);
   // 打开股票行情页面  
   const page = await browser.newPage();
 
@@ -43,7 +43,7 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType: 'text' | 'j
     page.on('response', async (response: Response) => {
       // console.log(response.url())
       if (response.url().includes(apiUrl) && response.status() === 200) {
-        logger.log('等待接口返回 end ====', apiUrl);
+        logger.log('等待接口返回 end ====', pageUrl);
         let responseData;
         if (transfromType == 'json') {
           responseData = await response.json();
@@ -186,8 +186,8 @@ export default {
     createPayBackDto.SZAmount = SZAmount;
     createPayBackDto.SHAmount = SHAmount;
 
-    setTimeout(() => {
-      browser.close();
+    setTimeout(async () => {
+      await browser.close();
     }, 5000);
 
     return createPayBackDto;
@@ -204,23 +204,26 @@ export default {
    */
   async getFundsData(dateStr) {
     const browser = await getBrowser();
+    setTimeout(async () => {
+      await browser.close();
+    }, 90000);
     // TODO 轻量服务器，无法同时打开多个page ，所以待优化，promise.all 方案实施失败
     // 北向资金、南向资金 获取
     const responseForeignFunds = await waitOriginalDataByUrl('https://data.eastmoney.com/hsgt/index.html', 'reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE', 'text', browser);
     const responseMarketTurnover = await waitOriginalDataByUrl('https://data.eastmoney.com/zjlx/dpzjlx.html', 'fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5', 'text', browser);
-    const hangyeFundsInflow = await waitOriginalDataByUrl(iwencaiUrl + params.hangyeFundsInflow, 'chart/get-robot-data', 'text', browser);
 
-    const hangyeFundsOutflow = await waitOriginalDataByUrl(iwencaiUrl + params.hangyeFundsOutflow, 'chart/get-robot-data', 'text', browser);
-    const gaiNianFundsInflow = await waitOriginalDataByUrl(iwencaiUrl + params.gailianFundsInflow, 'chart/get-robot-data', 'text', browser);
-    const gaiNianFundsOutflow =await waitOriginalDataByUrl(iwencaiUrl + params.gailianFundsOutflow, 'chart/get-robot-data', 'text', browser);
+    const hangyeFundsInflow = await waitOriginalDataByUrl(iwencaiUrl + params.hangyeFundsInflow, 'chart/get-robot-data', 'json', browser);
+    const hangyeFundsOutflow = await waitOriginalDataByUrl(iwencaiUrl + params.hangyeFundsOutflow, 'chart/get-robot-data', 'json', browser);
+    const gaiNianFundsInflow = await waitOriginalDataByUrl(iwencaiUrl + params.gailianFundsInflow, 'chart/get-robot-data', 'json', browser);
+    const gaiNianFundsOutflow = await waitOriginalDataByUrl(iwencaiUrl + params.gailianFundsOutflow, 'chart/get-robot-data', 'json', browser);
 
-    const foreignFunds: any = await fundsUtil.transformForeignFunds(responseForeignFunds);
-    const marketTurnover: any = await fundsUtil.getMarketTurnover(responseMarketTurnover);
+    const foreignFunds: any = fundsUtil.transformForeignFunds(responseForeignFunds);
+    const marketTurnover: any = fundsUtil.getMarketTurnover(responseMarketTurnover);
     // 获取行业板块流入 Top3
-    const hangyeFundsInflowTop3 = await fundsUtil.getPlateTop3(hangyeFundsInflow, dateStr);
-    const hangyeFundsOutflowTop3 = await fundsUtil.getPlateTop3(hangyeFundsOutflow, dateStr);
-    const gainianFundsInflowTop3 = await fundsUtil.getPlateTop3(gaiNianFundsInflow, dateStr);
-    const gainianFundsOutflowTop3 = await fundsUtil.getPlateTop3(gaiNianFundsOutflow, dateStr);
+    const hangyeFundsInflowTop3 = fundsUtil.getPlateTop3(hangyeFundsInflow, dateStr);
+    const hangyeFundsOutflowTop3 = fundsUtil.getPlateTop3(hangyeFundsOutflow, dateStr);
+    const gainianFundsInflowTop3 = fundsUtil.getPlateTop3(gaiNianFundsInflow, dateStr);
+    const gainianFundsOutflowTop3 = fundsUtil.getPlateTop3(gaiNianFundsOutflow, dateStr);
 
     const createFundsDataDto = new CreateFundsDataDto();
     createFundsDataDto.createTime = new Date();
@@ -231,12 +234,7 @@ export default {
     createFundsDataDto.marketTurnover = +(marketTurnover / 10000 / 10000 / 10000).toFixed(2);
     createFundsDataDto.hangyeFundsTop = JSON.stringify({ in: hangyeFundsInflowTop3, out: hangyeFundsOutflowTop3 });
     createFundsDataDto.gainianFundsTop = JSON.stringify({ in: gainianFundsInflowTop3, out: gainianFundsOutflowTop3 });
-
     // console.log(createFundsDataDto);
-
-    setTimeout(() => {
-      browser.close();
-    }, 5000);
 
     return createFundsDataDto;
   }

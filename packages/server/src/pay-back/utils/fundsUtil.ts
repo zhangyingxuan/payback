@@ -6,8 +6,7 @@ export default {
    * @param response 
    * @returns 
    */
-  async transformForeignFunds(response) {
-    let dataStr = await response.text();
+  async transformForeignFunds(dataStr) {
     // 单位 万元
     // 净流入
     let northFundsAmtIn = 0;
@@ -45,14 +44,12 @@ export default {
    * 获取 市场总成交额 
    * @param response 
    */
-  async getMarketTurnover(response) {
-    let responseMarketTurnoverStr = await response.text();
+  getMarketTurnover(responseMarketTurnoverStr) {
     const marketTurnoverStr = responseMarketTurnoverStr.substring(responseMarketTurnoverStr.indexOf('(') + 1, responseMarketTurnoverStr.length - 2);
     const responseMarketTurnoverJson = JSON.parse(marketTurnoverStr).data.diff;
     return responseMarketTurnoverJson[0].f6 + responseMarketTurnoverJson[1].f6;
   },
-  async getPlateTop3(response, dateStr) {
-    const responseJson = await response.json();
+  getPlateTop3(responseJson, dateStr) {
     const platesData = commonUtil.getIwencaiData(responseJson);
 
     return platesData.splice(0, 3).map((item) => {
