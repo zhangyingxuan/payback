@@ -10,11 +10,6 @@ import { Logger } from '@nestjs/common';
 import { CreatePayBackDto } from '../dto/create-pay-back.dto';
 import transformDataUtil from '../utils/transformDataUtil';
 
-interface OriginalResponse {
-  response: Response,
-  page: Page,
-}
-
 const logger = new Logger('playWrightUtil');
 
 const browserOpenTimeOut = 60000;
@@ -209,19 +204,15 @@ export default {
    */
   async getFundsData(dateStr) {
     const browser = await getBrowser();
+    // TODO 轻量服务器，无法同时打开多个page ，所以待优化，promise.all 方案实施失败
     // 北向资金、南向资金 获取
-    const foreignFundsPromise = waitOriginalDataByUrl('https://data.eastmoney.com/hsgt/index.html', 'reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE', 'text', browser);
-    const marketTurnoverPromise = waitOriginalDataByUrl('https://data.eastmoney.com/zjlx/dpzjlx.html', 'fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5', 'text', browser);
-    const hangyeFundsInflowPromise = waitOriginalDataByUrl(iwencaiUrl + params.hangyeFundsInflow, 'chart/get-robot-data', 'text', browser);
-    // 分成两步执行，避免轻量服务器CPU负载过高假死
-    const [responseForeignFunds, responseMarketTurnover, hangyeFundsInflow] =
-      await Promise.all([foreignFundsPromise, marketTurnoverPromise, hangyeFundsInflowPromise]);
+    const responseForeignFunds = await waitOriginalDataByUrl('https://data.eastmoney.com/hsgt/index.html', 'reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE', 'text', browser);
+    const responseMarketTurnover = await waitOriginalDataByUrl('https://data.eastmoney.com/zjlx/dpzjlx.html', 'fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5', 'text', browser);
+    const hangyeFundsInflow = await waitOriginalDataByUrl(iwencaiUrl + params.hangyeFundsInflow, 'chart/get-robot-data', 'text', browser);
 
-    const hangyeFundsOutflowPromise = waitOriginalDataByUrl(iwencaiUrl + params.hangyeFundsOutflow, 'chart/get-robot-data', 'text', browser);
-    const gaiNianFundsInflowPromise = waitOriginalDataByUrl(iwencaiUrl + params.gailianFundsInflow, 'chart/get-robot-data', 'text', browser);
-    const gaiNianFundsOutflowPromise = waitOriginalDataByUrl(iwencaiUrl + params.gailianFundsOutflow, 'chart/get-robot-data', 'text', browser);
-    const [hangyeFundsOutflow, gaiNianFundsInflow, gaiNianFundsOutflow] =
-      await Promise.all([hangyeFundsOutflowPromise, gaiNianFundsInflowPromise, gaiNianFundsOutflowPromise]);
+    const hangyeFundsOutflow = await waitOriginalDataByUrl(iwencaiUrl + params.hangyeFundsOutflow, 'chart/get-robot-data', 'text', browser);
+    const gaiNianFundsInflow = await waitOriginalDataByUrl(iwencaiUrl + params.gailianFundsInflow, 'chart/get-robot-data', 'text', browser);
+    const gaiNianFundsOutflow =await waitOriginalDataByUrl(iwencaiUrl + params.gailianFundsOutflow, 'chart/get-robot-data', 'text', browser);
 
     const foreignFunds: any = await fundsUtil.transformForeignFunds(responseForeignFunds);
     const marketTurnover: any = await fundsUtil.getMarketTurnover(responseMarketTurnover);

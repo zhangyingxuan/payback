@@ -150,14 +150,12 @@ exports.default = {
     },
     async getFundsData(dateStr) {
         const browser = await getBrowser();
-        const foreignFundsPromise = waitOriginalDataByUrl('https://data.eastmoney.com/hsgt/index.html', 'reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE', 'text', browser);
-        const marketTurnoverPromise = waitOriginalDataByUrl('https://data.eastmoney.com/zjlx/dpzjlx.html', 'fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5', 'text', browser);
-        const hangyeFundsInflowPromise = waitOriginalDataByUrl(config_1.iwencaiUrl + config_1.params.hangyeFundsInflow, 'chart/get-robot-data', 'text', browser);
-        const [responseForeignFunds, responseMarketTurnover, hangyeFundsInflow] = await Promise.all([foreignFundsPromise, marketTurnoverPromise, hangyeFundsInflowPromise]);
-        const hangyeFundsOutflowPromise = waitOriginalDataByUrl(config_1.iwencaiUrl + config_1.params.hangyeFundsOutflow, 'chart/get-robot-data', 'text', browser);
-        const gaiNianFundsInflowPromise = waitOriginalDataByUrl(config_1.iwencaiUrl + config_1.params.gailianFundsInflow, 'chart/get-robot-data', 'text', browser);
-        const gaiNianFundsOutflowPromise = waitOriginalDataByUrl(config_1.iwencaiUrl + config_1.params.gailianFundsOutflow, 'chart/get-robot-data', 'text', browser);
-        const [hangyeFundsOutflow, gaiNianFundsInflow, gaiNianFundsOutflow] = await Promise.all([hangyeFundsOutflowPromise, gaiNianFundsInflowPromise, gaiNianFundsOutflowPromise]);
+        const responseForeignFunds = await waitOriginalDataByUrl('https://data.eastmoney.com/hsgt/index.html', 'reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE', 'text', browser);
+        const responseMarketTurnover = await waitOriginalDataByUrl('https://data.eastmoney.com/zjlx/dpzjlx.html', 'fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5', 'text', browser);
+        const hangyeFundsInflow = await waitOriginalDataByUrl(config_1.iwencaiUrl + config_1.params.hangyeFundsInflow, 'chart/get-robot-data', 'text', browser);
+        const hangyeFundsOutflow = await waitOriginalDataByUrl(config_1.iwencaiUrl + config_1.params.hangyeFundsOutflow, 'chart/get-robot-data', 'text', browser);
+        const gaiNianFundsInflow = await waitOriginalDataByUrl(config_1.iwencaiUrl + config_1.params.gailianFundsInflow, 'chart/get-robot-data', 'text', browser);
+        const gaiNianFundsOutflow = await waitOriginalDataByUrl(config_1.iwencaiUrl + config_1.params.gailianFundsOutflow, 'chart/get-robot-data', 'text', browser);
         const foreignFunds = await fundsUtil_1.default.transformForeignFunds(responseForeignFunds);
         const marketTurnover = await fundsUtil_1.default.getMarketTurnover(responseMarketTurnover);
         const hangyeFundsInflowTop3 = await fundsUtil_1.default.getPlateTop3(hangyeFundsInflow, dateStr);
