@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const commonUtil_1 = require("./commonUtil");
 exports.default = {
-    async transformForeignFunds(dataStr) {
+    transformForeignFunds(dataStr) {
         let northFundsAmtIn = 0;
         let southFundsAmtIn = 0;
         let northFundsBuyAmt = 0;

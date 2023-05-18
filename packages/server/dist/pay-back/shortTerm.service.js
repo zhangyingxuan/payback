@@ -34,6 +34,11 @@ let PayBackService = PayBackService_1 = class PayBackService {
             .where("short_term_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
             .getOne();
         if (todayDataFromDB) {
+            this.logger.debug('crawlShortTermData is end![isExist]');
+            return {
+                code: 'isExist',
+                msg: todayDateStr + ' 数据已存在！',
+            };
         }
         let createPayBackDto;
         try {

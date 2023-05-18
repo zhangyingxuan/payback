@@ -1,10 +1,10 @@
 declare const _default: {
-    transformForeignFunds(dataStr: any): Promise<{
+    transformForeignFunds(dataStr: any): {
         northFundsAmtIn: number;
         southFundsAmtIn: number;
         northFundsBuyAmt: number;
         southFundsBuyAmt: number;
-    }>;
+    };
     getMarketTurnover(responseMarketTurnoverStr: any): any;
     getPlateTop3(responseJson: any, dateStr: any): {
         name: any;

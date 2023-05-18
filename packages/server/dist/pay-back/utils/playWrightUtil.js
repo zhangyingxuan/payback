@@ -38,7 +38,9 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType, baseBrowser
                     responseData = await response.text();
                 }
                 await page.close();
-                resolve(responseData);
+                setTimeout(() => {
+                    resolve(responseData);
+                }, 2000);
             }
         });
         page.goto(pageUrl, { timeout: commonTimeOut60s, waitUntil: "domcontentloaded" });
@@ -150,9 +152,6 @@ exports.default = {
     },
     async getFundsData(dateStr) {
         const browser = await getBrowser();
-        setTimeout(async () => {
-            await browser.close();
-        }, 90000);
         const responseForeignFunds = await waitOriginalDataByUrl('https://data.eastmoney.com/hsgt/index.html', 'reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE', 'text', browser);
         const responseMarketTurnover = await waitOriginalDataByUrl('https://data.eastmoney.com/zjlx/dpzjlx.html', 'fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5', 'text', browser);
         const hangyeFundsInflow = await waitOriginalDataByUrl(config_1.iwencaiUrl + config_1.params.hangyeFundsInflow, 'chart/get-robot-data', 'json', browser);
@@ -174,6 +173,9 @@ exports.default = {
         createFundsDataDto.marketTurnover = +(marketTurnover / 10000 / 10000 / 10000).toFixed(2);
         createFundsDataDto.hangyeFundsTop = JSON.stringify({ in: hangyeFundsInflowTop3, out: hangyeFundsOutflowTop3 });
         createFundsDataDto.gainianFundsTop = JSON.stringify({ in: gainianFundsInflowTop3, out: gainianFundsOutflowTop3 });
+        setTimeout(async () => {
+            await browser.close();
+        }, 5000);
         return createFundsDataDto;
     }
 };

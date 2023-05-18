@@ -52,7 +52,9 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType: 'text' | 'j
         }
         // 获取数据后，关闭page 节约内存开销
         await page.close();
-        resolve(responseData);
+        setTimeout(() => {
+          resolve(responseData);
+        }, 2000)
       }
     });
     page.goto(pageUrl, { timeout: commonTimeOut60s, waitUntil: "domcontentloaded" });
@@ -204,9 +206,7 @@ export default {
    */
   async getFundsData(dateStr) {
     const browser = await getBrowser();
-    setTimeout(async () => {
-      await browser.close();
-    }, 90000);
+
     // TODO 轻量服务器，无法同时打开多个page ，所以待优化，promise.all 方案实施失败
     // 北向资金、南向资金 获取
     const responseForeignFunds = await waitOriginalDataByUrl('https://data.eastmoney.com/hsgt/index.html', 'reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE', 'text', browser);
@@ -227,6 +227,7 @@ export default {
 
     const createFundsDataDto = new CreateFundsDataDto();
     createFundsDataDto.createTime = new Date();
+
     createFundsDataDto.northFundsAmtIn = +(foreignFunds.northFundsAmtIn / 10000).toFixed(2);
     createFundsDataDto.northFundsBuyAmt = +(foreignFunds.northFundsBuyAmt / 10000).toFixed(2);
     createFundsDataDto.southFundsAmtIn = +(foreignFunds.southFundsAmtIn / 10000).toFixed(2);
@@ -235,7 +236,9 @@ export default {
     createFundsDataDto.hangyeFundsTop = JSON.stringify({ in: hangyeFundsInflowTop3, out: hangyeFundsOutflowTop3 });
     createFundsDataDto.gainianFundsTop = JSON.stringify({ in: gainianFundsInflowTop3, out: gainianFundsOutflowTop3 });
     // console.log(createFundsDataDto);
-
+    setTimeout(async () => {
+      await browser.close();
+    }, 5000);
     return createFundsDataDto;
   }
 }

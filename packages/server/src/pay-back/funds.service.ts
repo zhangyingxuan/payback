@@ -32,14 +32,15 @@ export class FundsService {
 
     if (todayDataFromDB) {
       this.logger.debug('crawlfundsData is isExist!');
-      // return {
-      //   code: 'isExist',
-      //   msg: todayDateStr + ' 数据已存在！',
-      // }
+      return {
+        code: 'isExist',
+        msg: todayDateStr + ' 数据已存在！',
+      }
     }
     let fundsData: CreateFundsDataDto;
     try {
       fundsData = await playWrightUtil.getFundsData(dayjs(todayDateStr).format('YYYYMMDD'));
+      console.log(fundsData);
       await this.fundsDataRp.save(fundsData);
       this.logger.debug('crawlfundsData is success!');
     } catch (e) {

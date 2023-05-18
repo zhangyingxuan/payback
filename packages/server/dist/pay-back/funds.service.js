@@ -35,10 +35,15 @@ let FundsService = FundsService_1 = class FundsService {
             .getOne();
         if (todayDataFromDB) {
             this.logger.debug('crawlfundsData is isExist!');
+            return {
+                code: 'isExist',
+                msg: todayDateStr + ' 数据已存在！',
+            };
         }
         let fundsData;
         try {
             fundsData = await playWrightUtil_1.default.getFundsData(dayjs(todayDateStr).format('YYYYMMDD'));
+            console.log(fundsData);
             await this.fundsDataRp.save(fundsData);
             this.logger.debug('crawlfundsData is success!');
         }

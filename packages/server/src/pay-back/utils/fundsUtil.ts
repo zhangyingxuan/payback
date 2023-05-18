@@ -6,7 +6,7 @@ export default {
    * @param response 
    * @returns 
    */
-  async transformForeignFunds(dataStr) {
+  transformForeignFunds(dataStr) {
     // 单位 万元
     // 净流入
     let northFundsAmtIn = 0;

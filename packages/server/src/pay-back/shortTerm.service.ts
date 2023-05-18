@@ -32,11 +32,11 @@ export class PayBackService {
       .getOne();
 
     if (todayDataFromDB) {
-      // this.logger.debug('crawlShortTermData is end![isExist]');
-      // return {
-      //   code: 'isExist',
-      //   msg: todayDateStr + ' 数据已存在！',
-      // }
+      this.logger.debug('crawlShortTermData is end![isExist]');
+      return {
+        code: 'isExist',
+        msg: todayDateStr + ' 数据已存在！',
+      }
     }
     let createPayBackDto: CreatePayBackDto;
     try {
