@@ -35,7 +35,6 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType: 'text' | 'j
   const browser = baseBrowser ? baseBrowser : await getBrowser();
   // 日志开始
   logger.log('等待接口返回 start ====', apiUrl);
-
   // 打开股票行情页面  
   const page = await browser.newPage();
 
@@ -165,18 +164,19 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl): Promise<CreateMarketDataDt
 };
 
 
-const getTodayData = async function (pageUrl, apiUrl) {
-  const responseJson: any = await waitOriginalDataByUrl(pageUrl, apiUrl, 'json');
+const getTodayData = async function (pageUrl, apiUrl, browser) {
+  const responseJson: any = await waitOriginalDataByUrl(pageUrl, apiUrl, 'json', browser);
   return commonUtil.getIwencaiData(responseJson);
 }
 
 export default {
   async getShortTermData(todayDateStr): Promise<CreatePayBackDto> {
     let createPayBackDto: CreatePayBackDto = new CreatePayBackDto();
+    const browser = await getBrowser();
     // 准备涨停数据
-    const dailyLimitData: Object[] = await getTodayData(iwencaiUrl + params.dailyLimitMoreThan1, 'chart/get-robot-data');
+    const dailyLimitData: Object[] = await getTodayData(iwencaiUrl + params.dailyLimitMoreThan1, 'chart/get-robot-data', browser);
     // 跌停数据
-    const downLimitData: Object[] = await getTodayData(iwencaiUrl + params.downLimit, 'chart/get-robot-data');
+    const downLimitData: Object[] = await getTodayData(iwencaiUrl + params.downLimit, 'chart/get-robot-data', browser);
     // console.log(dailyLimitData);
     // console.log(downLimitData);
     let { SZAmount = 0, SHAmount = 0, board1 = 0, evenBoardData } = transformDataUtil.transformShortTermSourceData(dailyLimitData, todayDateStr);
@@ -198,7 +198,6 @@ export default {
    */
   async getMarketData(pageUrl, apiUrls): Promise<CreateMarketDataDto> {
     const response: CreateMarketDataDto = await waitMarketDataByUrls(pageUrl, apiUrls);
-
     return response;
   },
   /**

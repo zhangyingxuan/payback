@@ -119,15 +119,16 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl) => {
         await page.goto(pageUrl, { timeout: commonTimeOut60s });
     });
 };
-const getTodayData = async function (pageUrl, apiUrl) {
-    const responseJson = await waitOriginalDataByUrl(pageUrl, apiUrl, 'json');
+const getTodayData = async function (pageUrl, apiUrl, browser) {
+    const responseJson = await waitOriginalDataByUrl(pageUrl, apiUrl, 'json', browser);
     return commonUtil_1.default.getIwencaiData(responseJson);
 };
 exports.default = {
     async getShortTermData(todayDateStr) {
         let createPayBackDto = new create_pay_back_dto_1.CreatePayBackDto();
-        const dailyLimitData = await getTodayData(config_1.iwencaiUrl + config_1.params.dailyLimitMoreThan1, 'chart/get-robot-data');
-        const downLimitData = await getTodayData(config_1.iwencaiUrl + config_1.params.downLimit, 'chart/get-robot-data');
+        const browser = await getBrowser();
+        const dailyLimitData = await getTodayData(config_1.iwencaiUrl + config_1.params.dailyLimitMoreThan1, 'chart/get-robot-data', browser);
+        const downLimitData = await getTodayData(config_1.iwencaiUrl + config_1.params.downLimit, 'chart/get-robot-data', browser);
         let { SZAmount = 0, SHAmount = 0, board1 = 0, evenBoardData } = transformDataUtil_1.default.transformShortTermSourceData(dailyLimitData, todayDateStr);
         createPayBackDto.createTime = new Date();
         createPayBackDto.downLimitQuantity = downLimitData.length;
