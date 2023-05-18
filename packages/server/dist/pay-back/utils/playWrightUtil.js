@@ -22,11 +22,11 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType, baseBrowser
     const browser = baseBrowser ? baseBrowser : await getBrowser();
     logger.log('等待接口返回 start ====', apiUrl);
     const page = await browser.newPage();
+    !baseBrowser && setTimeout(() => {
+        logger.log('接口返回超时，自动关闭browser ====');
+        browser.close();
+    }, commonTimeOut60s);
     return new Promise((resolve, reject) => {
-        !baseBrowser && setTimeout(() => {
-            logger.log('接口返回超时，自动关闭browser ====');
-            browser.close();
-        }, commonTimeOut60s);
         page.on('response', async (response) => {
             if (response.url().includes(apiUrl) && response.status() === 200) {
                 logger.log('等待接口返回 end ====', apiUrl);

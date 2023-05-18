@@ -39,13 +39,13 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType: 'text' | 'j
   // 打开股票行情页面  
   const page = await browser.newPage();
 
-  return new Promise((resolve, reject) => {
-    // 方法自创建的 baseBrowser 需要自动关闭
-    !baseBrowser && setTimeout(() => {
-      logger.log('接口返回超时，自动关闭browser ====');
-      browser.close();
-    }, commonTimeOut60s);
+  // 方法自创建的 baseBrowser 需要自动关闭
+  !baseBrowser && setTimeout(() => {
+    logger.log('接口返回超时，自动关闭browser ====');
+    browser.close();
+  }, commonTimeOut60s);
 
+  return new Promise((resolve, reject) => {
     page.on('response', async (response: Response) => {
       // console.log(response.url())
       if (response.url().includes(apiUrl) && response.status() === 200) {
