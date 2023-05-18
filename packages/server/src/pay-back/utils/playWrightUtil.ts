@@ -1,4 +1,6 @@
-import { chromium, firefox, Browser, Response } from 'playwright';
+// 开发须知：
+// 轻量服务器 1核1G 仅支持1个 browser 1个page 同时打开，否则会阻塞执行
+import { chromium, firefox, Browser, Response, Page } from 'playwright';
 import { CreateMarketDataDto } from '../dto/create-market-data.dto';
 import { CreateFundsDataDto } from '../dto/create-funds-data.dto';
 import commonUtil from './commonUtil';
@@ -7,6 +9,11 @@ import { iwencaiUrl, params } from './config';
 import { Logger } from '@nestjs/common';
 import { CreatePayBackDto } from '../dto/create-pay-back.dto';
 import transformDataUtil from '../utils/transformDataUtil';
+
+interface OriginalResponse {
+  response: Response,
+  page: Page,
+}
 
 const logger = new Logger('playWrightUtil');
 
@@ -24,7 +31,7 @@ const getBrowser = async () => {
 * @param url
 * @returns 
 */
-const waitOriginalDataByUrl = async (pageUrl, apiUrl, baseBrowser?: Browser): Promise<Response> => {
+const waitOriginalDataByUrl = async (pageUrl, apiUrl, baseBrowser?: Browser): Promise<OriginalResponse> => {
   const browser = baseBrowser ? baseBrowser : await getBrowser();
   // 日志开始
   logger.log('等待接口返回 start ====', apiUrl);
@@ -32,7 +39,7 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, baseBrowser?: Browser): Pr
   // 打开股票行情页面  
   const page = await browser.newPage();
 
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     // 没有拿到数据 退出机制
     const forceOutTimeOut = setTimeout(() => {
       browser.close();
@@ -48,11 +55,11 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, baseBrowser?: Browser): Pr
         }, commonTimeOut60s)
         clearTimeout(forceOutTimeOut);
         logger.log('等待接口返回 end ====', apiUrl);
-        resolve(response);
+        resolve({ response, page });
       }
     });
-    await page.goto(pageUrl, { timeout: commonTimeOut60s });
-    logger.log('打开页面成功 ====', pageUrl);
+    page.goto(pageUrl, { timeout: commonTimeOut60s, waitUntil: "domcontentloaded" });
+    // logger.log('打开页面成功 ====', pageUrl);
   });
 };
 
@@ -155,27 +162,26 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl): Promise<CreateMarketDataDt
 };
 
 
-const getTodayData = async function (pageUrl, apiUrl, browser) {
-  const response: Response = await waitOriginalDataByUrl(pageUrl, apiUrl, browser);
-  const responseJson: any = await response.json();
+const getTodayData = async function (pageUrl, apiUrl) {
+  const originalResponse: OriginalResponse = await waitOriginalDataByUrl(pageUrl, apiUrl);
+  const responseJson: any = JSON.parse(JSON.stringify(await originalResponse.response.json()));
+  await originalResponse.page.close();
   return commonUtil.getIwencaiData(responseJson);
 }
 
 export default {
   async getShortTermData(todayDateStr): Promise<CreatePayBackDto> {
     let createPayBackDto: CreatePayBackDto = new CreatePayBackDto();
-    const browser = await getBrowser();
     // 准备涨停数据
-    const dailyLimitData: Object[] = await getTodayData(iwencaiUrl + params.dailyLimitMoreThan1, 'chart/get-robot-data', browser);
+    const dailyLimitData: Object[] = await getTodayData(iwencaiUrl + params.dailyLimitMoreThan1, 'chart/get-robot-data');
     // 跌停数据
-    // const downLimitData: Object[] = await getTodayData(iwencaiUrl + params.downLimit, 'chart/get-robot-data', browser);
+    const downLimitData: Object[] = await getTodayData(iwencaiUrl + params.downLimit, 'chart/get-robot-data');
     // console.log(dailyLimitData);
     // console.log(downLimitData);
-
     let { SZAmount = 0, SHAmount = 0, board1 = 0, evenBoardData } = transformDataUtil.transformShortTermSourceData(dailyLimitData, todayDateStr);
 
     createPayBackDto.createTime = new Date();
-    // createPayBackDto.downLimitQuantity = downLimitData.length;
+    createPayBackDto.downLimitQuantity = downLimitData.length;
     createPayBackDto.dailyLimitQuantity = dailyLimitData.length;
     createPayBackDto.marketHeight = evenBoardData.maxHeight;
     createPayBackDto.board1 = board1;
