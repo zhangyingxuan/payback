@@ -191,6 +191,10 @@ export default {
     createPayBackDto.SZAmount = SZAmount;
     createPayBackDto.SHAmount = SHAmount;
 
+    setTimeout(() => {
+      browser.close();
+    }, 5000);
+
     return createPayBackDto;
   },
   /**

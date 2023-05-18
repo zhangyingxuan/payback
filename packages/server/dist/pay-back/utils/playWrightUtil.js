@@ -139,6 +139,9 @@ exports.default = {
         createPayBackDto.evenBoardData = JSON.stringify(evenBoardData);
         createPayBackDto.SZAmount = SZAmount;
         createPayBackDto.SHAmount = SHAmount;
+        setTimeout(() => {
+            browser.close();
+        }, 5000);
         return createPayBackDto;
     },
     async getMarketData(pageUrl, apiUrls) {
