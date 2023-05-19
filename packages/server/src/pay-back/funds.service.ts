@@ -20,7 +20,7 @@ export class FundsService {
   // * 10 * * * *：每小时一次，十分钟开始
   // 0 */30 9-17 * * *：上午九时至下午五时，每三十分钟一次
   // 0 30 11 * * 1-5：星期一至星期五上午11:30
-  @Cron('0 30 15 * * 1-5')
+  @Cron('0 0 18 * * 1-5')
   async crawlfundsData() {
     this.logger.debug('crawlfundsData is Begining!');
     // 如果存在数据，则返回已有该数据
