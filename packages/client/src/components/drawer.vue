@@ -32,11 +32,13 @@ import { iwencaiUrl } from '../views/charts/config';
  */
 const iwencaiCollect = {
   // 我最喜欢的股票的关键字
-  iLikeWord:
-    '上升趋势或横盘突破，流通市值低于80亿，股价低于20元，放量初期&querytype=stock',
-  tupo: '平台突破，筹码集中&querytype=stock',
+  like1: '上升趋势，放量初期，非创业板，非科创板',
+  like2: '横盘突破，放量初期，非创业板，非科创板&querytype=stock',
+  tupo: '平台突破，筹码集中，非创业板，非科创板&querytype=stock',
+  beiliang:
+    '跳空高开，成交量倍量，行业概念，非ST，非创业板，非科创板，非京A&querytype=stock',
   xuangu:
-    '涨停股价低于20，流通市值低于80亿，行业概念，非ST，涨停时间正序&querytype=stock',
+    '涨停股价低于20，流通市值低于80亿，筹码集中，行业概念，非ST，非创业板，非科创板，涨停时间正序&querytype=stock',
   // xuangu: '首次涨停股价低于20，流通市值低于80亿高于10亿，行业板块，非ST&querytype=stock',
   // iLikeWord: '箱体突破或横盘突破，流通市值低于80亿，大于10亿，股价低于20元，放量初期&querytype=stock',
   // 市场变化：成交量 变化、风格
