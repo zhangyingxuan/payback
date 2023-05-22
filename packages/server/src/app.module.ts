@@ -8,6 +8,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
 const envFilePath = `.env.${process.env.NODE_ENV || 'prod'}`;
 
+function atob(a) {
+  return new Buffer(a, 'base64').toString('binary');
+};
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -21,11 +25,11 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'prod'}`;
       useFactory: (config: ConfigService) => {
         return {
           type: 'mysql',
-          host: config.get('DATABASE_HOST'),
-          port: config.get('DATABASE_PORT'),
-          username: config.get('DATABASE_USER'),
-          password: config.get('DATABASE_PASSWORD'),
-          database: config.get('DATABASE_DATABASE'),
+          host: config.get('DDD_HOST'),
+          port: config.get('DDD_PORT'),
+          username: config.get('DDD_USER'),
+          password: atob(config.get('DDD_PD')),
+          database: config.get('DDD_NAME'),
           entities: [__dirname + '/**/*.entity{.ts,.js}'],
           synchronize: true,
         } as TypeOrmModuleOptions;
