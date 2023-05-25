@@ -11,77 +11,68 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var PayBackService_1;
+var MarketService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PayBackService = void 0;
+exports.MarketService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("typeorm");
-const shortTermData_entity_1 = require("./entities/shortTermData.entity");
+const marketData_entity_1 = require("../entities/marketData.entity");
 const typeorm_2 = require("@nestjs/typeorm");
-const playWrightUtil_1 = require("./utils/playWrightUtil");
+const playWrightUtil_1 = require("../utils/playWrightUtil");
+const config_1 = require("../utils/config");
 const dayjs = require("dayjs");
 const schedule_1 = require("@nestjs/schedule");
-let PayBackService = PayBackService_1 = class PayBackService {
-    constructor(shortTermDataRp) {
-        this.shortTermDataRp = shortTermDataRp;
-        this.logger = new common_1.Logger(PayBackService_1.name);
+let MarketService = MarketService_1 = class MarketService {
+    constructor(marketDataRp) {
+        this.marketDataRp = marketDataRp;
+        this.logger = new common_1.Logger(MarketService_1.name);
     }
-    async crawlShortTermData() {
-        this.logger.debug('crawlShortTermData is Begining!');
+    async crawlMarketData() {
+        this.logger.debug('crawlMarketData is Begining!');
         const todayDateStr = new Date().toLocaleDateString();
-        const todayDataFromDB = await this.shortTermDataRp
-            .createQueryBuilder('short_term_data')
-            .where("short_term_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
+        const todayDataFromDB = await this.marketDataRp
+            .createQueryBuilder('market_data')
+            .where("market_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
             .getOne();
         if (todayDataFromDB) {
-            this.logger.debug('crawlShortTermData is end![isExist]');
             return {
                 code: 'isExist',
                 msg: todayDateStr + ' 数据已存在！',
             };
         }
-        let createPayBackDto;
+        let marketData;
         try {
-            createPayBackDto = await playWrightUtil_1.default.getShortTermData(todayDateStr);
-            await this.shortTermDataRp.save(createPayBackDto);
+            marketData = await playWrightUtil_1.default.getMarketData(config_1.marketUrl, '/api.php');
+            await this.marketDataRp.save(marketData);
             this.logger.debug('Called is success!');
         }
         catch (e) {
             this.logger.error('出错啦！！！', e);
         }
-        return createPayBackDto;
+        return marketData;
     }
     async findAll() {
-        return await this.shortTermDataRp.find();
+        return await this.marketDataRp.find();
     }
     async findByLimit(len = 20) {
-        return await this.shortTermDataRp
+        return await this.marketDataRp
             .createQueryBuilder('short_term_data')
             .offset(0)
             .limit(len)
             .orderBy('createTime', 'DESC')
             .getMany();
     }
-    async findOne(id) {
-        return `This action findOne a #${id} payBack`;
-    }
-    async update(id, updatePayBackDto) {
-        return await this.shortTermDataRp.update(id, updatePayBackDto);
-    }
-    async remove(id) {
-        return `This action removes a #${id} payBack`;
-    }
 };
 __decorate([
-    (0, schedule_1.Cron)('0 0 17 * * 1-5'),
+    (0, schedule_1.Cron)('0 0 16 * * 1-5'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
-], PayBackService.prototype, "crawlShortTermData", null);
-PayBackService = PayBackService_1 = __decorate([
+], MarketService.prototype, "crawlMarketData", null);
+MarketService = MarketService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_2.InjectRepository)(shortTermData_entity_1.shortTermData)),
+    __param(0, (0, typeorm_2.InjectRepository)(marketData_entity_1.marketData)),
     __metadata("design:paramtypes", [typeorm_1.Repository])
-], PayBackService);
-exports.PayBackService = PayBackService;
-//# sourceMappingURL=shortTerm.service.js.map
+], MarketService);
+exports.MarketService = MarketService;
+//# sourceMappingURL=market.service.js.map

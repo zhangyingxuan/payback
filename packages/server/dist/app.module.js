@@ -14,12 +14,17 @@ const typeorm_1 = require("@nestjs/typeorm");
 const pay_back_module_1 = require("./pay-back/pay-back.module");
 const schedule_1 = require("@nestjs/schedule");
 const config_1 = require("@nestjs/config");
+const users_module_1 = require("./users/users.module");
+const auth_module_1 = require("./auth/auth.module");
+const core_1 = require("@nestjs/core");
+const jwt_auth_guard_1 = require("./auth/jwt-auth.guard");
 const envFilePath = `.env.${process.env.NODE_ENV || 'prod'}`;
 function atob(a) {
     return new Buffer(a, 'base64').toString('binary');
 }
 ;
 let AppModule = class AppModule {
+    configure(consumer) { }
 };
 AppModule = __decorate([
     (0, common_1.Module)({
@@ -45,10 +50,17 @@ AppModule = __decorate([
                 },
             }),
             pay_back_module_1.PayBackModule,
-            schedule_1.ScheduleModule.forRoot()
+            schedule_1.ScheduleModule.forRoot(),
+            auth_module_1.AuthModule,
+            users_module_1.UsersModule,
         ],
         controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService],
+        providers: [app_service_1.AppService,
+            {
+                provide: core_1.APP_GUARD,
+                useClass: jwt_auth_guard_1.JwtAuthGuard,
+            }
+        ],
     })
 ], AppModule);
 exports.AppModule = AppModule;

@@ -8,9 +8,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PayBackModule = void 0;
 const common_1 = require("@nestjs/common");
-const shortTerm_service_1 = require("./shortTerm.service");
-const market_service_1 = require("./market.service");
-const funds_service_1 = require("./funds.service");
+const shortTerm_service_1 = require("./service/shortTerm.service");
+const market_service_1 = require("./service/market.service");
+const funds_service_1 = require("./service/funds.service");
 const pay_back_controller_1 = require("./pay-back.controller");
 const typeorm_1 = require("@nestjs/typeorm");
 const shortTermData_entity_1 = require("./entities/shortTermData.entity");

@@ -1,10 +1,14 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { PayBackModule } from './pay-back/pay-back.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
 
 const envFilePath = `.env.${process.env.NODE_ENV || 'prod'}`;
 
@@ -48,9 +52,16 @@ function atob(a) {
     //   synchronize: true,
     // }),
     PayBackModule,
-    ScheduleModule.forRoot()
+    ScheduleModule.forRoot(),
+    AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    }
+  ],
 })
-export class AppModule { }
+export class AppModule { configure(consumer: MiddlewareConsumer) { } }

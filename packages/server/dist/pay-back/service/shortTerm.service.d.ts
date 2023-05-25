@@ -1,7 +1,7 @@
-import { CreatePayBackDto } from './dto/create-pay-back.dto';
-import { UpdatePayBackDto } from './dto/update-pay-back.dto';
+import { CreatePayBackDto } from '../dto/create-pay-back.dto';
+import { UpdatePayBackDto } from '../dto/update-pay-back.dto';
 import { Repository } from 'typeorm';
-import { shortTermData } from './entities/shortTermData.entity';
+import { shortTermData } from '../entities/shortTermData.entity';
 export declare class PayBackService {
     private readonly shortTermDataRp;
     constructor(shortTermDataRp: Repository<shortTermData>);

@@ -11,51 +11,52 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var MarketService_1;
+var FundsService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MarketService = void 0;
+exports.FundsService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("typeorm");
-const marketData_entity_1 = require("./entities/marketData.entity");
+const fundsData_entity_1 = require("../entities/fundsData.entity");
 const typeorm_2 = require("@nestjs/typeorm");
-const playWrightUtil_1 = require("./utils/playWrightUtil");
-const config_1 = require("./utils/config");
+const playWrightUtil_1 = require("../utils/playWrightUtil");
 const dayjs = require("dayjs");
 const schedule_1 = require("@nestjs/schedule");
-let MarketService = MarketService_1 = class MarketService {
-    constructor(marketDataRp) {
-        this.marketDataRp = marketDataRp;
-        this.logger = new common_1.Logger(MarketService_1.name);
+let FundsService = FundsService_1 = class FundsService {
+    constructor(fundsDataRp) {
+        this.fundsDataRp = fundsDataRp;
+        this.logger = new common_1.Logger(FundsService_1.name);
     }
-    async crawlMarketData() {
-        this.logger.debug('crawlMarketData is Begining!');
+    async crawlfundsData() {
+        this.logger.debug('crawlfundsData is Begining!');
         const todayDateStr = new Date().toLocaleDateString();
-        const todayDataFromDB = await this.marketDataRp
+        const todayDataFromDB = await this.fundsDataRp
             .createQueryBuilder('market_data')
             .where("market_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
             .getOne();
         if (todayDataFromDB) {
+            this.logger.debug('crawlfundsData is isExist!');
             return {
                 code: 'isExist',
                 msg: todayDateStr + ' 数据已存在！',
             };
         }
-        let marketData;
+        let fundsData;
         try {
-            marketData = await playWrightUtil_1.default.getMarketData(config_1.marketUrl, '/api.php');
-            await this.marketDataRp.save(marketData);
-            this.logger.debug('Called is success!');
+            fundsData = await playWrightUtil_1.default.getFundsData(dayjs(todayDateStr).format('YYYYMMDD'));
+            console.log(fundsData);
+            await this.fundsDataRp.save(fundsData);
+            this.logger.debug('crawlfundsData is success!');
         }
         catch (e) {
             this.logger.error('出错啦！！！', e);
         }
-        return marketData;
+        return fundsData;
     }
     async findAll() {
-        return await this.marketDataRp.find();
+        return await this.fundsDataRp.find();
     }
     async findByLimit(len = 20) {
-        return await this.marketDataRp
+        return await this.fundsDataRp
             .createQueryBuilder('short_term_data')
             .offset(0)
             .limit(len)
@@ -64,15 +65,15 @@ let MarketService = MarketService_1 = class MarketService {
     }
 };
 __decorate([
-    (0, schedule_1.Cron)('0 0 16 * * 1-5'),
+    (0, schedule_1.Cron)('0 0 18 * * 1-5'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
-], MarketService.prototype, "crawlMarketData", null);
-MarketService = MarketService_1 = __decorate([
+], FundsService.prototype, "crawlfundsData", null);
+FundsService = FundsService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_2.InjectRepository)(marketData_entity_1.marketData)),
+    __param(0, (0, typeorm_2.InjectRepository)(fundsData_entity_1.fundsData)),
     __metadata("design:paramtypes", [typeorm_1.Repository])
-], MarketService);
-exports.MarketService = MarketService;
-//# sourceMappingURL=market.service.js.map
+], FundsService);
+exports.FundsService = FundsService;
+//# sourceMappingURL=funds.service.js.map

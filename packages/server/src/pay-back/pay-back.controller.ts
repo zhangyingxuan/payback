@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
-import { PayBackService } from './shortTerm.service';
-import { MarketService } from './market.service';
-import { FundsService } from './funds.service';
+import { PayBackService } from './service/shortTerm.service';
+import { MarketService } from './service/market.service';
+import { FundsService } from './service/funds.service';
 import { UpdatePayBackDto } from './dto/update-pay-back.dto';
 
 @Controller('pay-back')

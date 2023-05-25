@@ -1,10 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { CreatePayBackDto } from './dto/create-pay-back.dto';
-import { UpdatePayBackDto } from './dto/update-pay-back.dto';
+import { CreatePayBackDto } from '../dto/create-pay-back.dto';
+import { UpdatePayBackDto } from '../dto/update-pay-back.dto';
 import { Repository } from 'typeorm';
-import { shortTermData } from './entities/shortTermData.entity';
+import { shortTermData } from '../entities/shortTermData.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import playWrightUtil from './utils/playWrightUtil';
+import playWrightUtil from '../utils/playWrightUtil';
 import * as dayjs from 'dayjs';
 import { Cron } from '@nestjs/schedule';
 

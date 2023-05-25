@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
-import { fundsData } from './entities/fundsData.entity';
-import { CreateFundsDataDto } from './dto/create-funds-data.dto';
+import { fundsData } from '../entities/fundsData.entity';
+import { CreateFundsDataDto } from '../dto/create-funds-data.dto';
 export declare class FundsService {
     private readonly fundsDataRp;
     constructor(fundsDataRp: Repository<fundsData>);

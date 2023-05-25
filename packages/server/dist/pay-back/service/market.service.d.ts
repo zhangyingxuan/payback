@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
-import { marketData } from './entities/marketData.entity';
-import { CreateMarketDataDto } from './dto/create-market-data.dto';
+import { marketData } from '../entities/marketData.entity';
+import { CreateMarketDataDto } from '../dto/create-market-data.dto';
 export declare class MarketService {
     private readonly marketDataRp;
     constructor(marketDataRp: Repository<marketData>);
