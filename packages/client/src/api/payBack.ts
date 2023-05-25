@@ -18,3 +18,7 @@ export const fetchChartData = (params: any | null) => {
 export const fetchData = (params: any | null) => {
   return http.request<ChartResult>("get", `${baseUrl}/list`, { params });
 }
+
+export const fetchTodayData = () => {
+  return http.request<ChartResult>("get", `${baseUrl}/crawlTodayData`);
+}

@@ -50,7 +50,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
 let superData = defineProps({
   evenBoardList: {
     type: Array as unknown as PropType<EvenBoard[]>,

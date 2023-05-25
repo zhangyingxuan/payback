@@ -22,6 +22,14 @@
         <el-button
           type="primary"
           style="margin-right: 16px"
+          @click="refreshTodayData"
+          size="small"
+        >
+          更新今日数据
+        </el-button>
+        <el-button
+          type="primary"
+          style="margin-right: 16px"
           @click="switchDrawerVisible"
           size="small"
         >
@@ -78,6 +86,8 @@ import { useSidebarStore } from '../store/sidebar';
 import MyDrawer from './drawer.vue';
 import { useRouter } from 'vue-router';
 import imgurl from '../assets/img/img.jpg';
+import { fetchTodayData } from '../api/payBack';
+import { clearLogin } from '../router/auth';
 
 const username: string | null = localStorage.getItem('ms_username');
 const message = 2;
@@ -110,6 +120,9 @@ const drawerVisible = ref(false);
 function switchDrawerVisible() {
   drawerVisible.value = !drawerVisible.value;
 }
+function refreshTodayData() {
+  fetchTodayData();
+}
 
 const sidebar = useSidebarStore();
 // 侧边栏折叠
@@ -130,7 +143,7 @@ onMounted(() => {
 const router = useRouter();
 const handleCommand = (command: string) => {
   if (command == 'loginout') {
-    localStorage.removeItem('ms_username');
+    clearLogin();
     router.push('/login');
   } else if (command == 'user') {
     router.push('/user');

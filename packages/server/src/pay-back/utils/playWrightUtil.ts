@@ -39,6 +39,7 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType: 'text' | 'j
     browser.close();
   }, commonTimeOut60s);
 
+
   return new Promise((resolve, reject) => {
     page.on('response', async (response: Response) => {
       // console.log(response.url())

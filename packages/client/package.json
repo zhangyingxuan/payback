@@ -21,6 +21,7 @@
     "dayjs": "^1.11.7",
     "echarts": "^5.4.2",
     "element-plus": "^2.2.14",
+    "js-cookie": "^3.0.5",
     "lodash-es": "^4.17.21",
     "md-editor-v3": "^2.2.1",
     "pinia": "^2.0.20",
@@ -32,6 +33,7 @@
     "vue-schart": "^2.0.0"
   },
   "devDependencies": {
+    "@types/js-cookie": "^3.0.3",
     "@types/node": "^18.11.18",
     "@types/qs": "^6.9.7",
     "@typescript-eslint/eslint-plugin": "^5.46.1",

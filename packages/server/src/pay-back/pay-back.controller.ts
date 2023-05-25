@@ -11,6 +11,18 @@ export class PayBackController {
     private readonly fundsService: FundsService,
     private readonly marketService: MarketService) { }
 
+  @Get('/crawlTodayData')
+  async crawlTodayData() {
+    const shortData = await this.payBackService.crawlShortTermData();
+    const marketData = await this.marketService.crawlMarketData();
+    const fundsData = await this.fundsService.crawlfundsData();
+    return {
+      shortData,
+      fundsData,
+      marketData
+    };
+  }
+
   @Get('/crawlShortTerm')
   crawlShortTerm() {
     return this.payBackService.crawlShortTermData();

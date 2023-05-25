@@ -10,6 +10,7 @@ import {
   PureHttpRequestConfig
 } from "./types.d";
 import { stringify } from "qs";
+import { getToken, clearLogin } from '../router/auth'
 
 // 相关配置请参考：www.axios-js.com/zh-cn/docs/#axios-request-config-1
 const defaultConfig: AxiosRequestConfig = {
@@ -39,6 +40,11 @@ class PureHttp {
   private httpInterceptorsRequest(): void {
     PureHttp.axiosInstance.interceptors.request.use(
       (config) => {
+        const token = getToken();
+        if (token) {
+          config.headers.Authorization = 'Bearer ' + token;
+        }
+        // 添加token 如果有的话
         return config;
       },
       error => {
@@ -55,6 +61,14 @@ class PureHttp {
         return response.data;
       },
       (error: PureHttpError) => {
+        console.log(error);
+        // 解析错误码
+        const { statusCode }: any = error.response?.data;
+        // 如果返回401，则 清空storage 及 cookie，跳转至登录页
+        if (statusCode === 401) {
+          clearLogin();
+          location.href = '/login';
+        }
         const $error = error;
         $error.isCancelRequest = Axios.isCancel($error);
         // 所有的响应异常 区分来源为取消请求/非取消请求
@@ -72,6 +86,7 @@ class PureHttp {
   ): Promise<T> {
     const config = {
       method,
+      baseURL: 'blowsysun',
       url,
       ...param,
       ...axiosConfig

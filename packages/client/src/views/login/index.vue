@@ -9,8 +9,8 @@
         label-width="0px"
         class="ms-content"
       >
-        <el-form-item prop="username">
-          <el-input v-model="param.username" placeholder="username">
+        <el-form-item prop="account">
+          <el-input v-model="param.account" placeholder="account">
             <template #prepend>
               <el-button :icon="User"></el-button>
             </template>
@@ -45,20 +45,18 @@ import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import type { FormInstance, FormRules } from 'element-plus';
 import { Lock, User } from '@element-plus/icons-vue';
-
-interface LoginInfo {
-  username: string;
-  password: string;
-}
+import { authLogin } from '@/api/user';
+import { UserModel } from '@/api/model/UserModel';
+import { setToken } from '@/router/auth';
 
 const router = useRouter();
-const param = reactive<LoginInfo>({
-  username: 'admin',
-  password: '123123',
+const param = reactive<UserModel>({
+  account: 'admin',
+  password: '123',
 });
 
 const rules: FormRules = {
-  username: [
+  account: [
     {
       required: true,
       message: '请输入用户名',
@@ -71,17 +69,31 @@ const permiss = usePermissStore();
 const login = ref<FormInstance>();
 const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
-  formEl.validate((valid: boolean) => {
+  formEl.validate(async (valid: boolean) => {
     if (valid) {
-      ElMessage.success('登录成功');
-      localStorage.setItem('ms_username', param.username);
-      const keys =
-        permiss.defaultList[param.username == 'admin' ? 'admin' : 'user'];
-      permiss.handleSet(keys);
-      localStorage.setItem('ms_keys', JSON.stringify(keys));
-      router.push('/');
+      // 调用登录接口
+      const result: any = await authLogin({
+        ...param,
+        password: btoa(param.password),
+      });
+
+      console.log(result);
+
+      if (result && result.token) {
+        ElMessage.success('登录成功');
+        localStorage.setItem('ms_username', param.account);
+        const keys =
+          permiss.defaultList[param.account == 'admin' ? 'admin' : 'user'];
+        permiss.handleSet(keys);
+        localStorage.setItem('ms_keys', JSON.stringify(keys));
+        setToken(result.token, 43200);
+        router.push('/');
+      } else {
+        // 登录失败
+        ElMessage.error('登录失败，用户名或密码错误！');
+      }
     } else {
-      ElMessage.error('登录成功');
+      ElMessage.error('登录失败');
       return false;
     }
   });

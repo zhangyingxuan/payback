@@ -29,19 +29,33 @@ let AuthService = class AuthService {
         this.usersService = usersService;
         this.jwtService = jwtService;
     }
-    async validateUser(username, pass) {
-        const user = await this.usersService.findOne(username);
-        if (user && user.password === pass) {
+    async validateUser(userInfo) {
+        const user = await this.usersService.findOne(userInfo);
+        if (user) {
             const { password } = user, result = __rest(user, ["password"]);
             return result;
         }
         return null;
     }
     async login(user) {
-        const payload = { username: user.username, sub: user.userId };
-        return {
-            access_token: this.jwtService.sign(payload),
-        };
+        const result = await this.validateUser(user);
+        result && console.log('用户登录：' + result.name);
+        if (result) {
+            return {
+                code: 200,
+                data: {
+                    token: this.jwtService.sign(user),
+                }
+            };
+        }
+        else {
+            return {
+                code: 200,
+                data: {
+                    msg: '用户名或密码错误',
+                }
+            };
+        }
     }
 };
 AuthService = __decorate([

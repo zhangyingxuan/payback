@@ -20,8 +20,8 @@ let AuthController = class AuthController {
     constructor(authService) {
         this.authService = authService;
     }
-    async login(req) {
-        return this.authService.login(req.user);
+    async login(body) {
+        return this.authService.login(body);
     }
     getProfile(req) {
         return req.user;
@@ -30,7 +30,7 @@ let AuthController = class AuthController {
 __decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.Post)('login'),
-    __param(0, (0, common_1.Request)()),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)

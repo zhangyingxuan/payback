@@ -34,7 +34,7 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 			host: "0.0.0.0",
 			// 本地跨域代理 https://cn.vitejs.dev/config/server-options.html#server-proxy
 			proxy: {
-				'/pay-back/': {
+				'/blowsysun/': {
 					target: VITE_BASE_API,
 					changeOrigin: false,
 				},

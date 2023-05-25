@@ -24,6 +24,16 @@ let PayBackController = class PayBackController {
         this.fundsService = fundsService;
         this.marketService = marketService;
     }
+    async crawlTodayData() {
+        const shortData = await this.payBackService.crawlShortTermData();
+        const marketData = await this.marketService.crawlMarketData();
+        const fundsData = await this.fundsService.crawlfundsData();
+        return {
+            shortData,
+            fundsData,
+            marketData
+        };
+    }
     crawlShortTerm() {
         return this.payBackService.crawlShortTermData();
     }
@@ -60,6 +70,12 @@ let PayBackController = class PayBackController {
         return this.payBackService.remove(+id);
     }
 };
+__decorate([
+    (0, common_1.Get)('/crawlTodayData'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], PayBackController.prototype, "crawlTodayData", null);
 __decorate([
     (0, common_1.Get)('/crawlShortTerm'),
     __metadata("design:type", Function),

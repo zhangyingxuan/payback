@@ -7,6 +7,20 @@ export declare class PayBackController {
     private readonly fundsService;
     private readonly marketService;
     constructor(payBackService: PayBackService, fundsService: FundsService, marketService: MarketService);
+    crawlTodayData(): Promise<{
+        shortData: import("./dto/create-pay-back.dto").CreatePayBackDto | {
+            code: string;
+            msg: string;
+        };
+        fundsData: import("./dto/create-funds-data.dto").CreateFundsDataDto | {
+            code: string;
+            msg: string;
+        };
+        marketData: import("./dto/create-market-data.dto").CreateMarketDataDto | {
+            code: string;
+            msg: string;
+        };
+    }>;
     crawlShortTerm(): Promise<import("./dto/create-pay-back.dto").CreatePayBackDto | {
         code: string;
         msg: string;
