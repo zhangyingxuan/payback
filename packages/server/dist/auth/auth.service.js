@@ -39,7 +39,7 @@ let AuthService = class AuthService {
     }
     async login(user) {
         const result = await this.validateUser(user);
-        result && console.log('用户登录：' + result.name);
+        console.log(`用户登录：${result ? result.name : '失败'}` + user.account);
         if (result) {
             return {
                 code: 200,

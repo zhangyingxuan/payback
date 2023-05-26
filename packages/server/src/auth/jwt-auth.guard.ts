@@ -1,22 +1,18 @@
-import { ExecutionContext, Injectable } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { Observable } from 'rxjs';
 import { Reflector } from '@nestjs/core';
-import { AuthGuard } from '@nestjs/passport';
+import { AuthGuard, IAuthGuard } from '@nestjs/passport';
 import { IS_PUBLIC_KEY } from './constants';
 
 @Injectable()
-export class JwtAuthGuard extends AuthGuard('jwt') {
-  constructor(private reflector: Reflector) {
-    super();
-  }
+export class JwtAuthGuard implements CanActivate {
+  constructor(private readonly reflector: Reflector) { }
+  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+    //    在这里取metadata中的no-auth，得到的会是一个bool
+    const noAuth = this.reflector.get<boolean>(IS_PUBLIC_KEY, context.getHandler());
 
-  canActivate(context: ExecutionContext) {
-    const isPublic = this.reflector.getAllAndOverride(IS_PUBLIC_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    if (noAuth) return true;
 
-    if (isPublic) return true;
-
-    return super.canActivate(context);
+    return new (AuthGuard('jwt'))().canActivate(context);    //    执行所选策略Guard的canActivate方法
   }
 }
