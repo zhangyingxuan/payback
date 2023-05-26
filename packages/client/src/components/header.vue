@@ -1,12 +1,14 @@
 <template>
   <div class="header">
-    <!-- 折叠按钮 -->
-    <div class="collapse-btn" @click="collapseChage">
-      <el-icon v-if="sidebar.collapse"><Expand /></el-icon>
-      <el-icon v-else><Fold /></el-icon>
-    </div>
-    <div class="logo">payBack</div>
-    <div class="header-right">
+    <template v-if="!isMobile">
+      <!-- 折叠按钮 -->
+      <div class="collapse-btn" @click="collapseChage">
+        <el-icon v-if="sidebar.collapse"><Expand /></el-icon>
+        <el-icon v-else><Fold /></el-icon>
+      </div>
+      <div class="logo">payBack</div>
+    </template>
+    <div :class="isMobile ? 'mobile-right' : 'header-right'">
       <div class="header-user-con">
         <!-- 消息中心 -->
         <!-- <div class="btn-bell" @click="router.push('/tabs')">
@@ -19,61 +21,61 @@
           </el-tooltip>
           <span class="btn-bell-badge" v-if="message"></span>
         </div> -->
-        <el-button
-          type="primary"
-          style="margin-right: 16px"
-          @click="refreshTodayData"
-          size="small"
-        >
-          更新今日数据
+        <el-button type="danger" @click="openEvenBoardDialog" size="small">
+          连板情况
         </el-button>
-        <el-button
-          type="primary"
-          style="margin-right: 16px"
-          @click="switchDrawerVisible"
-          size="small"
-        >
+        <el-button type="primary" @click="switchDrawerVisible" size="small">
           我的收藏
         </el-button>
-        <!-- 数据统计天数 5 10 15 20 -->
-        <el-select
-          v-model="sidebar.countDays"
-          @change="onSelectChange"
-          placeholder="统计周期"
-          size="small"
-        >
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
-        <!-- 用户头像 -->
-        <el-avatar class="user-avator" :size="30" :src="imgurl" />
-        <!-- 用户名下拉菜单 -->
-        <el-dropdown class="user-name" trigger="click" @command="handleCommand">
-          <span class="el-dropdown-link">
-            {{ username }}
-            <el-icon class="el-icon--right">
-              <arrow-down />
-            </el-icon>
-          </span>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <a
-                href="https://gitee.com/chongqing-woteng/vue3-element-plus-vite4"
-                target="_blank"
-              >
-                <el-dropdown-item>项目仓库</el-dropdown-item>
-              </a>
-              <!-- <el-dropdown-item command="user">个人中心</el-dropdown-item> -->
-              <el-dropdown-item divided command="loginout"
-                >退出登录</el-dropdown-item
-              >
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
+        <el-button type="primary" @click="refreshTodayData" size="small">
+          更新今日数据
+        </el-button>
+
+        <template v-if="!isMobile">
+          <!-- 数据统计天数 5 10 15 20 -->
+          <el-select
+            v-model="sidebar.countDays"
+            @change="onSelectChange"
+            placeholder="统计周期"
+            size="small"
+          >
+            <el-option
+              v-for="item in options"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+          <!-- 用户头像 -->
+          <el-avatar class="user-avator" :size="30" :src="imgurl" />
+          <!-- 用户名下拉菜单 -->
+          <el-dropdown
+            class="user-name"
+            trigger="click"
+            @command="handleCommand"
+          >
+            <span class="el-dropdown-link">
+              {{ username }}
+              <el-icon class="el-icon--right">
+                <arrow-down />
+              </el-icon>
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <a
+                  href="https://gitee.com/chongqing-woteng/vue3-element-plus-vite4"
+                  target="_blank"
+                >
+                  <el-dropdown-item>项目仓库</el-dropdown-item>
+                </a>
+                <!-- <el-dropdown-item command="user">个人中心</el-dropdown-item> -->
+                <el-dropdown-item divided command="loginout"
+                  >退出登录</el-dropdown-item
+                >
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </template>
       </div>
     </div>
   </div>
@@ -88,6 +90,8 @@ import { useRouter } from 'vue-router';
 import imgurl from '../assets/img/img.jpg';
 import { fetchTodayData } from '../api/payBack';
 import { clearLogin } from '../router/auth';
+import { isMobile } from '@/core/util';
+import { ElMessageBox } from 'element-plus';
 
 const username: string | null = localStorage.getItem('ms_username');
 const message = 2;
@@ -120,8 +124,20 @@ const drawerVisible = ref(false);
 function switchDrawerVisible() {
   drawerVisible.value = !drawerVisible.value;
 }
+/**
+ * 打开连板数据
+ */
+function openEvenBoardDialog() {
+  sidebar.updateEvenBoardDialogVisible(true);
+}
 function refreshTodayData() {
-  fetchTodayData();
+  ElMessageBox.confirm('确定要更新今日数据吗？')
+    .then(() => {
+      fetchTodayData();
+    })
+    .catch(() => {
+      // catch error
+    });
 }
 
 const sidebar = useSidebarStore();
@@ -150,7 +166,7 @@ const handleCommand = (command: string) => {
   }
 };
 </script>
-<style scoped>
+<style scoped lang="less">
 .header {
   position: relative;
   box-sizing: border-box;
@@ -158,6 +174,13 @@ const handleCommand = (command: string) => {
   height: 40px;
   font-size: 22px;
   color: #fff;
+}
+.mobile-right {
+  padding: 0 5px;
+  overflow: auto;
+  .el-button {
+    margin-right: 5px;
+  }
 }
 .collapse-btn {
   display: flex;
@@ -176,6 +199,9 @@ const handleCommand = (command: string) => {
 .header-right {
   float: right;
   padding-right: 50px;
+  .el-button {
+    margin-right: 15px;
+  }
 }
 .header-user-con {
   display: flex;

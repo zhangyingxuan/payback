@@ -3,6 +3,7 @@
     v-model="superData.drawerVisible"
     title="我的收藏语句"
     :with-header="false"
+    :size="isMobile ? '90%' : '50%'"
     @close="onDrawerClose"
   >
     <div><el-tag class="ml-2" type="success">同花顺爱问财收藏</el-tag></div>
@@ -26,7 +27,8 @@
   </el-drawer>
 </template>
 <script lang="ts" setup>
-import { iwencaiUrl } from '../views/charts/config';
+import { iwencaiUrl } from '../views/charts/utils/config';
+import { isMobile } from '@/core/util';
 /**
  * 爱问财 收藏语句
  */

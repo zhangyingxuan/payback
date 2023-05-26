@@ -1,7 +1,7 @@
 
-import { FundsModel } from '../../api/model/FundsModel';
-import { ShortTermModel } from '../../api/model/shortTermModel';
-import { FundsKey } from './index.d';
+import { FundsModel } from '../../../api/model/FundsModel';
+import { ShortTermModel } from '../../../api/model/shortTermModel';
+import { FundsKey } from '.';
 import dayjs from 'dayjs';
 import _ from 'lodash-es';
 

@@ -42,7 +42,7 @@
               <el-menu-item
                 v-else
                 :index="subItem.index"
-                :key="subItem.index"
+                :key="'el-menu-item' + subItem.index"
                 v-permiss="item.permiss"
               >
                 {{ subItem.title }}

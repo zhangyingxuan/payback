@@ -1,8 +1,4 @@
 <template>
-  <!-- 连板梯队数据 -->
-  <el-card shadow="hover" class="mgb15" :body-style="{ padding: '15px' }">
-    <EvenBoardTable :evenBoardList="evenBoard.value" />
-  </el-card>
   <div class="chartList__container">
     <!-- 热点题材 统计 -->
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
@@ -47,11 +43,23 @@
       </template> -->
       <div ref="fundsByGainianChart" :style="data.styleBig"></div>
     </el-card>
+
+    <!-- 连板梯队数据 -->
+    <CommonDialog
+      :visible="evenBoardTDialogVisible"
+      @onClose="handleCloseDialog"
+      width="80%"
+      top="5vh"
+    >
+      <template #header></template>
+      <EvenBoardTable :evenBoardList="evenBoard.value" />
+    </CommonDialog>
   </div>
 </template>
 <script lang="ts" setup>
 import { debounce } from 'lodash-es';
 import { storeToRefs } from 'pinia';
+import CommonDialog from '@/components/commonDialog.vue';
 import EvenBoardTable from './components/evenBoardTable.vue';
 import CardHeader from './components/cardHeader.vue';
 import { fetchChartData, ChartResult } from '@/api/payBack';
@@ -64,21 +72,23 @@ import {
   getIndexChartOption,
   getFundsChartOption,
   getSubFundsChartOption,
-} from './util';
+} from './utils/util';
 import dayjs from 'dayjs';
-import { transformFundsData, transformEvenBoardData } from './transformUtil';
-import { columnsConfig, cardUrls } from './config';
-import { FundsKey } from './index.d';
+import {
+  transformFundsData,
+  transformEvenBoardData,
+} from './utils/transformUtil';
+import { columnsConfig, cardUrls } from './utils/config';
+import { FundsKey } from './utils/index.d';
 import { useSidebarStore } from '@/store/sidebar';
 
 import { ref, onMounted, reactive, watch } from 'vue';
 //  按需引入 echarts
 import * as echarts from 'echarts';
-
-const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+import { isMobile } from '@/core/util';
 
 const siderBar = useSidebarStore();
-const { countDays } = storeToRefs(siderBar);
+const { countDays, evenBoardTDialogVisible } = storeToRefs(siderBar);
 const data = reactive({
   ...getChartStyle(),
 });
@@ -259,6 +269,10 @@ function initShortTermChart(shortTermData: ShortTermModel[]) {
   var option = getShortTermChartOption(xAxisData, yAxisData);
   // 使用刚指定的配置项和数据显示图表。
   chartList.shortTermChart.setOption(option);
+}
+
+function handleCloseDialog() {
+  siderBar.updateEvenBoardDialogVisible(false);
 }
 </script>
 

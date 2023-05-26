@@ -20,16 +20,13 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed } from 'vue';
 import { useSidebarStore } from '../store/sidebar';
 import { useTagsStore } from '../store/tags';
 import vHeader from '../components/header.vue';
 import vSidebar from '../components/sidebar.vue';
+import { isMobile } from '@/core/util';
 // import vTags from '../components/tags.vue';
 
 const sidebar = useSidebarStore();
 const tags = useTagsStore();
-const isMobile = computed(() => {
-  return /Mobi|Android|iPhone/i.test(navigator.userAgent);
-});
 </script>

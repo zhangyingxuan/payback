@@ -78,10 +78,10 @@ import {
   getIndexChartOption,
   getFundsChartOption,
   getSubFundsChartOption,
-} from './util';
+} from './utils/util';
 import dayjs from 'dayjs';
-import { transformFundsData } from './transformUtil';
-import { FundsKey } from './index.d';
+import { transformFundsData } from './utils/transformUtil';
+import { FundsKey } from './utils';
 import { useSidebarStore } from '@/store/sidebar';
 
 // X轴 日期，20天

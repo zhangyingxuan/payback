@@ -5,6 +5,7 @@ export const useSidebarStore = defineStore('sidebar', {
     return {
       collapse: true,
       countDays: 20,
+      evenBoardTDialogVisible: false,
     };
   },
   getters: {},
@@ -14,6 +15,9 @@ export const useSidebarStore = defineStore('sidebar', {
     },
     updateCountDays(countDays: number) {
       this.countDays = countDays;
+    },
+    updateEvenBoardDialogVisible(visible: boolean) {
+      this.evenBoardTDialogVisible = visible;
     }
   }
 });

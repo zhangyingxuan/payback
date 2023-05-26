@@ -5,7 +5,7 @@
   <div class="table">
     <div class="title">连板阶梯数据</div>
     <div class="table__container">
-      <div class="date-col">
+      <div :class="['date-col', { isMobile }]">
         <div class="table-headaer">连板数</div>
         <div class="table-col">其它连板</div>
         <template v-for="height in heightArr" :key="'row1' + height">
@@ -13,7 +13,7 @@
         </template>
       </div>
       <div
-        class="date-col"
+        :class="['date-col', { isMobile }]"
         v-for="(item, index) in superData.evenBoardList"
         :key="'evenBoard' + index"
       >
@@ -39,9 +39,8 @@
               :content="stock.reason"
               :key="'stock' + index"
             >
-              <span :title="stock.reason">
-                {{ stock.name }} {{ stock.code }}
-              </span>
+              <span> {{ stock.name }} </span>
+              <!-- <span> {{ stock.name }} {{ stock.code }} </span> -->
             </el-tooltip>
           </div>
         </template>
@@ -50,6 +49,7 @@
   </div>
 </template>
 <script lang="ts" setup>
+import { isMobile } from '@/core/util';
 import { computed } from 'vue';
 let superData = defineProps({
   evenBoardList: {
@@ -92,7 +92,9 @@ const colSpan = computed(() => {
   border-left: 1px solid @tableColumsBorderColor;
   border-top: 1px solid @tableColumsBorderColor;
 }
-
+.table {
+  overflow: auto;
+}
 .table * {
   box-sizing: border-box;
 }
@@ -120,9 +122,16 @@ const colSpan = computed(() => {
     .flexCenter();
     justify-content: flex-start;
     max-width: 9%;
-  }
-  .date-col > div {
-    padding: 10px;
+    &.isMobile {
+      max-width: 33%;
+      > div {
+        padding: 2px;
+      }
+    }
+
+    > div {
+      padding: 10px;
+    }
   }
 
   .table-headaer {
@@ -132,11 +141,12 @@ const colSpan = computed(() => {
   }
   .table-col {
     width: 100%;
-    // height: 120px;
-    // overflow: scroll;
-    flex: 1;
+    height: 80px;
+    overflow: scroll;
+    // flex: 1;
     .flexCenter();
     .tableColumsBorder();
+    justify-content: flex-start;
   }
   .table-col > span {
     font-size: 12px;
