@@ -51,8 +51,8 @@ import { setToken } from '@/router/auth';
 
 const router = useRouter();
 const param = reactive<UserModel>({
-  account: 'admin',
-  password: '123',
+  account: '',
+  password: '',
 });
 
 const rules: FormRules = {

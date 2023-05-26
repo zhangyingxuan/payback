@@ -22,7 +22,6 @@ let UsersService = class UsersService {
         this.userRp = userRp;
     }
     async findOne(user) {
-        console.log(`用户登录：` + user);
         const result = await this.userRp.find({ where: { account: user.account, password: user.password } });
         return result[0];
     }

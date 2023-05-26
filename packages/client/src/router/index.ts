@@ -154,7 +154,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  document.title = `${to.meta.title} | vue-manage-system`;
+  document.title = `${to.meta.title} | pay-back`;
   const role = localStorage.getItem('ms_username');
   const permiss = usePermissStore();
   if (!role && to.path !== '/login') {
