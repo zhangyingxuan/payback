@@ -121,9 +121,11 @@ const colSpan = computed(() => {
   .date-col {
     .flexCenter();
     justify-content: flex-start;
-    max-width: 9%;
+    width: 9%;
+    min-width: 9%;
     &.isMobile {
-      max-width: 33%;
+      width: 62px;
+      min-width: 62px;
       > div {
         padding: 2px;
       }
