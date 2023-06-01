@@ -1,4 +1,5 @@
-// 同花顺热榜
+// 同花顺热榜 https://eq.10jqka.com.cn/frontend/thsTopRank/index.html?client_userid=GJkFn&back_source=wxhy&share_hxapp=isc&fontzoom=no#/
+// 大家都在看、价值投资派、趋势投资派
 import { PrimaryGeneratedColumn, Column, Entity, Timestamp } from "typeorm";
 @Entity()
 export class hotList {

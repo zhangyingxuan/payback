@@ -86,7 +86,7 @@ class PureHttp {
   ): Promise<T> {
     const config = {
       method,
-      baseURL: 'blowsysun',
+      // baseURL: 'blowsysun',
       url,
       ...param,
       ...axiosConfig

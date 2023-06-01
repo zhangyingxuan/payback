@@ -135,3 +135,38 @@ export function transformEvenBoardData(shortTermData: ShortTermModel[]): any[] {
 
   return evenBoardList;
 }
+
+/**
+ * 龙虎榜
+ * @param shortTermData 
+ */
+export function transformLonghuListData(longhuListData: any, pageSize: number): any {
+  const legendData = ['总榜净买', '机构净买', '游资净买'];
+  // const legendData = ['总榜净买', '机构净买', '游资净买','总榜成交', '机构成交', '游资成交'];
+  const data = longhuListData.splice(longhuListData.length - pageSize, pageSize);
+  const xAxisData: string[] = [];
+  const yAxisData: any[] = [[], [], []];
+  // const yAxisData: any[] = [[], [], [], [], [], []];
+  data.forEach((item: any) => {
+    xAxisData.push(item.date);
+
+    // 总榜净买
+    yAxisData[0].push(toFloat2(item.net_value));
+    // 机构净买
+    yAxisData[1].push(toFloat2(item.org_net_value));
+    // 游资净买
+    yAxisData[2].push(toFloat2(item.hot_money_net_value));
+    // // 总榜成交
+    // yAxisData[3].push(toFloat2(item.amount));
+    // // 机构成交
+    // yAxisData[4].push(toFloat2(item.org_amount));
+    // // 游资成交
+    // yAxisData[5].push(toFloat2(item.hot_money_amount));
+  });
+
+  return { xAxisData, yAxisData, legendData };
+}
+
+function toFloat2(value: number) {
+  return +(value / 100000000).toFixed(2)
+}

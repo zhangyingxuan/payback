@@ -3,7 +3,7 @@ import { ShortTermModel } from './model/ShortTermModel';
 import { MarketModel } from './model/MarketModel';
 import { FundsModel } from './model/FundsModel';
 
-const baseUrl = 'pay-back';
+const baseUrl = 'blowsysun/pay-back';
 
 export interface ChartResult {
   shortTermData: ShortTermModel[],

@@ -22,4 +22,6 @@ export const cardUrls = {
     iwencaiUrl + '行业板块主力资金；主力资金流向金额正序&querytype=zhishu',
   gainianFundsChartUrl:
     iwencaiUrl + '概念板块主力资金；主力资金流向金额正序&querytype=zhishu',
+  longhuListChartUrl:
+    'https://data.10jqka.com.cn/mobile/transaction/index.html?client_userid=GJkFn&back_source=wxhy&share_hxapp=isc&fontzoom=no#/',
 };

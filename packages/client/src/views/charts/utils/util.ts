@@ -14,6 +14,152 @@ const gridShortTerm = {
   y: 60,
 };
 
+/**
+ * 龙虎榜
+ * @param xAxisData 
+ * @param yAxisData 
+ * @returns 
+ */
+export const getLonghuListOption = function (xAxisData: any, yAxisData: any, legendData: any) {
+  const colors = ['#ED7874', '#ADDE8A', '#EFCA52', '#ED7874', '#ADDE8A', '#EFCA52'];
+  return {
+    color: colors,
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'cross',
+      },
+    },
+    grid: {
+      top: '3%',
+      left: '3%',
+      right: '3%',
+      bottom: '3%',
+      containLabel: true
+    },
+    toolbox: {
+      feature: {
+        dataView: { show: true, readOnly: false },
+        restore: { show: true },
+        saveAsImage: { show: true },
+      },
+    },
+    legend: {
+      data: legendData,
+    },
+    xAxis: [
+      {
+        type: 'category',
+        axisTick: {
+          alignWithLabel: true,
+        },
+        data: xAxisData,
+      },
+    ],
+    yAxis: [
+      {
+        type: 'value',
+        name: legendData[0],
+        position: 'left',
+        alignTicks: true,
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: colors[0],
+          },
+        },
+      },
+      {
+        type: 'value',
+        name: legendData[3],
+        position: 'right',
+        alignTicks: true,
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: colors[2],
+          },
+        },
+      },
+    ],
+    series: [
+      {
+        name: legendData[0],
+        type: 'bar',
+        stack: 'Total',
+        yAxisIndex: 1,
+        label: {
+          show: true,
+          fontSize: 8,
+          position: 'inside',
+        },
+        emphasis: {
+          focus: 'series',
+        },
+        data: yAxisData[0],
+      },
+      {
+        name: legendData[1],
+        type: 'bar',
+        stack: 'Total',
+        yAxisIndex: 1,
+        label: {
+          show: true,
+          fontSize: 8,
+          position: 'inside',
+        },
+        emphasis: {
+          focus: 'series',
+        },
+        data: yAxisData[1],
+      },
+      {
+        name: legendData[2],
+        type: 'bar',
+        stack: 'Total',
+        yAxisIndex: 1,
+        label: {
+          show: true,
+          fontSize: 8,
+          position: 'inside',
+        },
+        emphasis: {
+          focus: 'series',
+        },
+        data: yAxisData[2],
+      },
+      {
+        name: legendData[3],
+        type: 'line',
+        yAxisIndex: 0,
+        data: yAxisData[3],
+        label: {
+          show: true,
+          color: colors[3],
+          position: 'top'
+        },
+      },
+      {
+        name: legendData[4],
+        type: 'line',
+        yAxisIndex: 0,
+        data: yAxisData[4],
+      },
+      {
+        name: legendData[5],
+        type: 'line',
+        yAxisIndex: 0,
+        data: yAxisData[5],
+      },
+    ],
+  };
+}
+/**
+ * 资金数据
+ * @param xAxisData 
+ * @param yAxisData 
+ * @returns 
+ */
 export const getFundsChartOption = function (xAxisData: any, yAxisData: any) {
   const colors = ['#ED7874', '#ADDE8A', '#EFCA52'];
   const legendData = ['北向资金', '南向资金', '成交量总额'];
@@ -107,6 +253,12 @@ export const getFundsChartOption = function (xAxisData: any, yAxisData: any) {
   };
 }
 
+/**
+ * 指数趋势
+ * @param xAxisData 
+ * @param yAxisData 
+ * @returns 
+ */
 export const getIndexChartOption = function (xAxisData: any, yAxisData: any) {
   const colors = ['#ED7874', '#ADDE8A', '#EFCA52', '#52B3F5'];
   const legendData = ['上证指数', '深圳指数', '创业指数', '北证50'];
@@ -237,6 +389,12 @@ export const getIndexChartOption = function (xAxisData: any, yAxisData: any) {
   };
 }
 
+/**
+ * 大盘趋势
+ * @param xAxisData 
+ * @param yAxisData 
+ * @returns 
+ */
 export const getMarketChartOption = function (xAxisData: any, yAxisData: any) {
   const colors = ['#EFCA52', '#52B3F5', '#ED7874', '#ADDE8A'];
   const legendData = ['市场评分', '昨日涨停今日收益', '上涨家数', '下跌家数'];
@@ -343,6 +501,12 @@ export const getMarketChartOption = function (xAxisData: any, yAxisData: any) {
   };
 }
 
+/**
+ * 短线数据
+ * @param xAxisData 
+ * @param yAxisData 
+ * @returns 
+ */
 export const getShortTermChartOption = function (xAxisData: any, yAxisData: any) {
   const colors = ['#ED7874', '#ADDE8A', '#EFCA52', '#52B3F5'];
   const legendData = ['涨停', '跌停', '市场高度'];
@@ -427,6 +591,7 @@ export const getShortTermChartOption = function (xAxisData: any, yAxisData: any)
     ],
   };
 }
+
 /**
  * 行业/概念 板块主力资金Top
  * @param xAxisData 

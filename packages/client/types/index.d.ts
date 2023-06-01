@@ -6,6 +6,7 @@ interface ViteEnv {
   VITE_CDN: boolean;
   VITE_COMPRESSION: ViteCompression;
   VITE_BASE_API: string;
+  VITE_BASE_API_THS: string;
 }
 
 type RefType<T> = T | null;

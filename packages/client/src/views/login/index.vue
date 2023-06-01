@@ -86,7 +86,8 @@ const submitForm = (formEl: FormInstance | undefined) => {
           permiss.defaultList[param.account == 'admin' ? 'admin' : 'user'];
         permiss.handleSet(keys);
         localStorage.setItem('ms_keys', JSON.stringify(keys));
-        setToken(result.token, 43200);
+        // 7天
+        setToken(result.token, 604800);
         router.push('/');
       } else {
         // 登录失败

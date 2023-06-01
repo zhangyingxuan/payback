@@ -22,8 +22,32 @@
     </ul>
 
     <div><el-tag class="ml-2" type="success">当前市场高标/龙头</el-tag></div>
-    <div><el-tag class="ml-2" type="success">人气股</el-tag></div>
-    <div><el-tag class="ml-2" type="success">热门板块</el-tag></div>
+    <div>
+      <el-tag class="ml-2" type="success">龙虎榜</el-tag>
+      <ul class="iwencaiCollectList__ul">
+        <li>
+          <el-link
+            type="primary"
+            href="https://data.10jqka.com.cn/mobile/transaction/index.html?client_userid=GJkFn&back_source=wxhy&share_hxapp=isc&fontzoom=no#/"
+            target="_blank"
+            >点击查看</el-link
+          >
+        </li>
+      </ul>
+    </div>
+    <div>
+      <el-tag class="ml-2" type="success">同花顺热榜</el-tag>
+      <ul class="iwencaiCollectList__ul">
+        <li>
+          <el-link
+            type="primary"
+            href="https://eq.10jqka.com.cn/frontend/thsTopRank/index.html?client_userid=GJkFn&back_source=wxhy&share_hxapp=isc&fontzoom=no#/"
+            target="_blank"
+            >点击查看</el-link
+          >
+        </li>
+      </ul>
+    </div>
   </el-drawer>
 </template>
 <script lang="ts" setup>

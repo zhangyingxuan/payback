@@ -19,7 +19,7 @@ const alias: Record<string, string> = {
 };
 
 export default ({ command, mode }: ConfigEnv): UserConfigExport => {
-	const { VITE_CDN, VITE_PORT, VITE_COMPRESSION, VITE_PUBLIC_PATH, VITE_BASE_API } =
+	const { VITE_CDN, VITE_PORT, VITE_COMPRESSION, VITE_BASE_API_THS, VITE_BASE_API } =
 		warpperEnv(loadEnv(mode, process.cwd()));
 	return {
 		base: './',
@@ -34,9 +34,14 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 			host: "0.0.0.0",
 			// 本地跨域代理 https://cn.vitejs.dev/config/server-options.html#server-proxy
 			proxy: {
-				'/blowsysun/': {
+				'/blowsysun': {
 					target: VITE_BASE_API,
 					changeOrigin: false,
+				},
+				'/tonghuashun': {
+					target: VITE_BASE_API_THS,
+					changeOrigin: true,
+					rewrite: (path) => path.replace(/^\/tonghuashun/, ''),
 				},
 			}
 		},

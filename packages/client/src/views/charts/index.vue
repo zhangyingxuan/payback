@@ -43,6 +43,12 @@
       </template> -->
       <div ref="fundsByGainianChart" :style="data.styleBig"></div>
     </el-card>
+    <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
+      <template #header>
+        <CardHeader :url="cardUrls.longhuListChartUrl" headerTitle="龙虎榜" />
+      </template>
+      <div ref="longhuListChart" :style="data.style"></div>
+    </el-card>
 
     <!-- 连板梯队数据 -->
     <CommonDialog
@@ -63,6 +69,7 @@ import CommonDialog from '@/components/commonDialog.vue';
 import EvenBoardTable from './components/evenBoardTable.vue';
 import CardHeader from './components/cardHeader.vue';
 import { fetchChartData, ChartResult } from '@/api/payBack';
+import { fetchLonghuHistoryData } from '@/api/tonghuashun';
 import { ShortTermModel } from '../../api/model/shortTermModel';
 import { MarketModel } from '../../api/model/MarketModel';
 import { FundsModel } from '../../api/model/FundsModel';
@@ -72,11 +79,13 @@ import {
   getIndexChartOption,
   getFundsChartOption,
   getSubFundsChartOption,
+  getLonghuListOption,
 } from './utils/util';
 import dayjs from 'dayjs';
 import {
   transformFundsData,
   transformEvenBoardData,
+  transformLonghuListData,
 } from './utils/transformUtil';
 import { columnsConfig, cardUrls } from './utils/config';
 import { FundsKey } from './utils/index.d';
@@ -100,6 +109,7 @@ const chartList: any = {
   fundsChart: null,
   fundsByHangyeChart: null,
   fundsByGainianChart: null,
+  longhuListChart: null,
 };
 const shortTermChart = ref(); // 使用ref创建虚拟DOM引用，使用时用shortTermChart.value
 const marketChart = ref(); // 市场chart
@@ -107,6 +117,7 @@ const indexChart = ref(); // 指数chart
 const fundsChart = ref(); // 资金流向Chart
 const fundsByHangyeChart = ref(); // 资金流向Chart
 const fundsByGainianChart = ref(); // 资金流向Chart
+const longhuListChart = ref(); // 龙虎榜Chart
 let evenBoard = reactive<any>({ value: [] });
 
 // 监听变化，重新请求数据
@@ -127,22 +138,29 @@ onMounted(async () => {
 });
 
 async function initPage(pageSize: number) {
-  // 获取图表数据
-  const result: ChartResult = await fetchChartData({
-    limit: isMobile ? 10 : pageSize,
-  });
+  // 初始化龙虎榜数据
+  initlonghuListChart(pageSize);
 
-  const styles = getChartStyle();
-  data.style = styles.style;
-  data.styleBig = styles.styleBig;
+  try {
+    // 获取图表数据
+    const result: ChartResult = await fetchChartData({
+      limit: isMobile ? 10 : pageSize,
+    });
 
-  initShortTermChart(result.shortTermData);
-  initMarketChart(result.marketData);
-  initIndexChart(result.marketData);
-  initFundsChart(result.fundsData);
-  initHangyeFundsChart(result.fundsData);
-  initHangyeGainianFundsChart(result.fundsData);
-  evenBoard.value = transformEvenBoardData(result.shortTermData);
+    const styles = getChartStyle();
+    data.style = styles.style;
+    data.styleBig = styles.styleBig;
+
+    initShortTermChart(result.shortTermData);
+    initMarketChart(result.marketData);
+    initIndexChart(result.marketData);
+    initFundsChart(result.fundsData);
+    initHangyeFundsChart(result.fundsData);
+    initHangyeGainianFundsChart(result.fundsData);
+    evenBoard.value = transformEvenBoardData(result.shortTermData);
+  } catch (e) {
+    // console.log(e);
+  }
 
   setTimeout(() => {
     Object.keys(chartList).forEach(key => {
@@ -160,6 +178,27 @@ function getChartStyle() {
     style: `width: ${cardWidth}px; height: 260px`,
     styleBig: `width: ${cardWidth}px; height: 320px`,
   };
+}
+
+/**
+ * 初始化 行业资金图标
+ * @param fundsData
+ */
+async function initlonghuListChart(pageSize: number) {
+  // 获取龙虎榜数据
+  const response: any = await fetchLonghuHistoryData();
+
+  const { xAxisData, yAxisData, legendData } = transformLonghuListData(
+    response.items,
+    pageSize,
+  );
+
+  // 基于准备好的dom，初始化echarts实例
+  chartList.longhuListChart = echarts.init(longhuListChart.value);
+  // 指定图表的配置项和数据
+  var longhuListOption = getLonghuListOption(xAxisData, yAxisData, legendData);
+  // 使用刚指定的配置项和数据显示图表。
+  chartList.longhuListChart.setOption(longhuListOption);
 }
 
 /**
