@@ -141,14 +141,14 @@ export function transformEvenBoardData(shortTermData: ShortTermModel[]): any[] {
  * @param shortTermData 
  */
 export function transformLonghuListData(longhuListData: any, pageSize: number): any {
-  const legendData = ['总榜净买', '机构净买', '游资净买'];
+  const legendData = ['总榜净买', '机构净买', '游资净买', '游资成交'];
   // const legendData = ['总榜净买', '机构净买', '游资净买','总榜成交', '机构成交', '游资成交'];
   const data = longhuListData.splice(longhuListData.length - pageSize, pageSize);
   const xAxisData: string[] = [];
-  const yAxisData: any[] = [[], [], []];
+  const yAxisData: any[] = [[], [], [], []];
   // const yAxisData: any[] = [[], [], [], [], [], []];
   data.forEach((item: any) => {
-    xAxisData.push(item.date);
+    xAxisData.push(dayjs(item.date).format('MM/DD'));
 
     // 总榜净买
     yAxisData[0].push(toFloat2(item.net_value));
@@ -161,7 +161,7 @@ export function transformLonghuListData(longhuListData: any, pageSize: number): 
     // // 机构成交
     // yAxisData[4].push(toFloat2(item.org_amount));
     // // 游资成交
-    // yAxisData[5].push(toFloat2(item.hot_money_amount));
+    yAxisData[3].push(toFloat2(item.hot_money_amount));
   });
 
   return { xAxisData, yAxisData, legendData };

@@ -14,6 +14,15 @@ const gridShortTerm = {
   y: 60,
 };
 
+const dottedLineItemStyle = {
+  normal: {
+    lineStyle: {
+      width: 2,
+      type: 'dotted'  //'dotted'虚线 'solid'实线
+    }
+  }
+};
+
 /**
  * 龙虎榜
  * @param xAxisData 
@@ -21,7 +30,7 @@ const gridShortTerm = {
  * @returns 
  */
 export const getLonghuListOption = function (xAxisData: any, yAxisData: any, legendData: any) {
-  const colors = ['#ED7874', '#ADDE8A', '#EFCA52', '#ED7874', '#ADDE8A', '#EFCA52'];
+  const colors = ['#ED7874', '#EFCA52', '#DB2B14', '#DB2B14', '#ADDE8A', '#EFCA52'];
   return {
     color: colors,
     tooltip: {
@@ -161,7 +170,7 @@ export const getLonghuListOption = function (xAxisData: any, yAxisData: any, leg
  * @returns 
  */
 export const getFundsChartOption = function (xAxisData: any, yAxisData: any) {
-  const colors = ['#ED7874', '#ADDE8A', '#EFCA52'];
+  const colors = ['#ED7874', '#52B3F5', '#EFCA52'];
   const legendData = ['北向资金', '南向资金', '成交量总额'];
   return {
     color: colors,
@@ -237,6 +246,7 @@ export const getFundsChartOption = function (xAxisData: any, yAxisData: any) {
         type: 'line',
         yAxisIndex: 0,
         data: yAxisData[1],
+        itemStyle: dottedLineItemStyle
       },
       {
         name: legendData[2],
@@ -260,7 +270,7 @@ export const getFundsChartOption = function (xAxisData: any, yAxisData: any) {
  * @returns 
  */
 export const getIndexChartOption = function (xAxisData: any, yAxisData: any) {
-  const colors = ['#ED7874', '#ADDE8A', '#EFCA52', '#52B3F5'];
+  const colors = ['#ED7874', '#52B3F5', '#ADDE8A', '#EFCA52'];
   const legendData = ['上证指数', '深圳指数', '创业指数', '北证50'];
   return {
     color: colors,
@@ -350,7 +360,7 @@ export const getIndexChartOption = function (xAxisData: any, yAxisData: any) {
         axisLine: {
           show: true,
           lineStyle: {
-            color: colors[1],
+            color: colors[3],
           },
         },
       },
@@ -378,12 +388,14 @@ export const getIndexChartOption = function (xAxisData: any, yAxisData: any) {
         type: 'line',
         yAxisIndex: 2,
         data: yAxisData[2],
+        itemStyle: dottedLineItemStyle
       },
       {
         name: legendData[3],
         type: 'line',
         yAxisIndex: 3,
         data: yAxisData[3],
+        itemStyle: dottedLineItemStyle
       },
     ],
   };
