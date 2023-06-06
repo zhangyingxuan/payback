@@ -3,6 +3,7 @@
 import { chromium, firefox, Browser, Response, Page } from 'playwright';
 import { CreateMarketDataDto } from '../dto/create-market-data.dto';
 import { CreateFundsDataDto } from '../dto/create-funds-data.dto';
+import { CreateHotListDto } from '../dto/create-hot-list.dto';
 import commonUtil from './commonUtil';
 import fundsUtil from './fundsUtil';
 import { iwencaiUrl, params } from './config';
@@ -161,6 +162,90 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl): Promise<CreateMarketDataDt
   });
 };
 
+function transformStockData(stockList) {
+  return JSON.stringify(stockList.map(item => {
+    return {
+      code: item.code,
+      name: item.name,
+      rise_and_fall: item.rise_and_fall,
+      tag: item.tag?.concept_tag,
+    }
+  }));
+}
+
+function transformPlateData(plateList) {
+  return JSON.stringify(plateList.map(item => {
+    return {
+      code: item.code,
+      name: item.name,
+      rise_and_fall: item.rise_and_fall,
+      hot_tag: item.hot_tag,
+      tag: item.tag,
+    }
+  }));
+}
+
+/**
+* 
+* @param url 准备热榜数据
+* @returns 
+*/
+const waitHostListDataByUrls = async (pageUrl): Promise<CreateHotListDto> => {
+  const browser = await getBrowser();
+  // 打开股票行情页面  
+  const page = await browser.newPage();
+  return new Promise(async (resolve, reject) => {
+    const maxAmount10 = 10;
+    const maxAmount5 = 5;
+    const createHotListDto = new CreateHotListDto();
+    const state = {
+      // 大家都在看，小时榜
+      stockNormal: false,
+      // 价值投资
+      stockValue: false,
+      // 概念板块
+      plateConcept: false,
+      // 行业板块
+      plateIndustry: false,
+    }
+    page.on('response', async response => {
+      if (response.url().includes('stock?stock_type=a&type=hour&list_type=normal') && response.status() === 200) {
+        state.stockNormal = true;
+        const responseData = await response.json();
+        const stockList = responseData.data.stock_list.splice(0, maxAmount10);
+        createHotListDto.stockNormal = transformStockData(stockList);
+      }
+      if (response.url().includes('stock?stock_type=a&type=day&list_type=value') && response.status() === 200) {
+        state.stockValue = true;
+        const responseData = await response.json();
+        const stockList = responseData.data.stock_list.splice(0, maxAmount10);
+        createHotListDto.stockValue = transformStockData(stockList);
+      }
+      if (response.url().includes('plate?type=concept') && response.status() === 200) {
+        state.plateConcept = true;
+        const responseData = await response.json();
+        const plateList = responseData.data.plate_list.splice(0, maxAmount5);
+        createHotListDto.plateConcept = transformPlateData(plateList);
+      }
+      if (response.url().includes('plate?type=industry') && response.status() === 200) {
+        state.plateIndustry = true;
+        const responseData = await response.json();
+        const plateList = responseData.data.plate_list.splice(0, maxAmount5);
+        createHotListDto.plateIndustry = transformPlateData(plateList);
+      }
+
+      // 所有数据都返回了，则resolve
+      if (state['stockNormal'] && state['stockValue'] && state['plateConcept'] && state['plateIndustry']) {
+        resolve(createHotListDto);
+      }
+
+      setTimeout(() => {
+        browser.close();
+      }, 15000)
+    })
+    await page.goto(pageUrl, { timeout: commonTimeOut60s });
+  });
+};
 
 const getTodayData = async function (pageUrl, apiUrl, browser) {
   const responseJson: any = await waitOriginalDataByUrl(pageUrl, apiUrl, 'json', browser);
@@ -241,5 +326,9 @@ export default {
       await browser.close();
     }, 5000);
     return createFundsDataDto;
+  },
+  getHotListData(dateStr) {
+    const response = waitHostListDataByUrls('https://eq.10jqka.com.cn/frontend/thsTopRank/index.html');
+    return response;
   }
 }

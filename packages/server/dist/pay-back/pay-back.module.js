@@ -11,11 +11,13 @@ const common_1 = require("@nestjs/common");
 const shortTerm_service_1 = require("./service/shortTerm.service");
 const market_service_1 = require("./service/market.service");
 const funds_service_1 = require("./service/funds.service");
+const hotList_service_1 = require("./service/hotList.service");
 const pay_back_controller_1 = require("./pay-back.controller");
 const typeorm_1 = require("@nestjs/typeorm");
 const shortTermData_entity_1 = require("./entities/shortTermData.entity");
 const marketData_entity_1 = require("./entities/marketData.entity");
 const fundsData_entity_1 = require("./entities/fundsData.entity");
+const hotList_entity_1 = require("./entities/hotList.entity");
 let PayBackModule = class PayBackModule {
 };
 PayBackModule = __decorate([
@@ -23,10 +25,11 @@ PayBackModule = __decorate([
         imports: [
             typeorm_1.TypeOrmModule.forFeature([shortTermData_entity_1.shortTermData]),
             typeorm_1.TypeOrmModule.forFeature([marketData_entity_1.marketData]),
-            typeorm_1.TypeOrmModule.forFeature([fundsData_entity_1.fundsData])
+            typeorm_1.TypeOrmModule.forFeature([hotList_entity_1.hotList]),
+            typeorm_1.TypeOrmModule.forFeature([fundsData_entity_1.fundsData]),
         ],
         controllers: [pay_back_controller_1.PayBackController],
-        providers: [shortTerm_service_1.PayBackService, market_service_1.MarketService, funds_service_1.FundsService]
+        providers: [shortTerm_service_1.PayBackService, market_service_1.MarketService, funds_service_1.FundsService, hotList_service_1.HotListService]
     })
 ], PayBackModule);
 exports.PayBackModule = PayBackModule;

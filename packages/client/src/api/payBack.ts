@@ -11,6 +11,11 @@ export interface ChartResult {
   fundsData: FundsModel[],
 }
 
+/**
+ * 获取图表数据
+ * @param params 
+ * @returns 
+ */
 export const fetchChartData = (params: any | null) => {
   return http.request<ChartResult>("get", `${baseUrl}/list`, { params });
 }
@@ -19,6 +24,17 @@ export const fetchData = (params: any | null) => {
   return http.request<ChartResult>("get", `${baseUrl}/list`, { params });
 }
 
-export const fetchTodayData = () => {
+/**
+ * 爬取当日数据，更新至数据库
+ * @returns 
+ */
+export const crawlTodayData = () => {
   return http.request<ChartResult>("get", `${baseUrl}/crawlTodayData`);
+}
+/**
+ * 获取连板数据
+ * @returns 
+ */
+export const fetchEvenBoardData = (params: any | null) => {
+  return http.request<ChartResult>("get", `${baseUrl}/fetchEvenBoardData`, { params });
 }

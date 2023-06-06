@@ -1,14 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, } from '@nestjs/common';
 import { PayBackService } from './service/shortTerm.service';
 import { MarketService } from './service/market.service';
 import { FundsService } from './service/funds.service';
+import { HotListService } from './service/hotList.service';
 import { UpdatePayBackDto } from './dto/update-pay-back.dto';
+import { Public } from '../decorator/public.decorator';
 
 @Controller('pay-back')
 export class PayBackController {
   constructor(
     private readonly payBackService: PayBackService,
     private readonly fundsService: FundsService,
+    private readonly hotListService: HotListService,
     private readonly marketService: MarketService) { }
 
   @Get('/crawlTodayData')
@@ -23,6 +26,11 @@ export class PayBackController {
     };
   }
 
+  @Public()
+  @Get('/crawlHotListData')
+  crawlHotListData() {
+    return this.hotListService.crawlHotListData();
+  }
   @Get('/crawlShortTerm')
   crawlShortTerm() {
     return this.payBackService.crawlShortTermData();
@@ -35,7 +43,7 @@ export class PayBackController {
   crawlFunds() {
     return this.fundsService.crawlfundsData();
   }
-
+  @Public()
   @Get('list')
   async findByLimit(@Query() query) {
     const limit = +(query.limit || 20)
@@ -48,6 +56,18 @@ export class PayBackController {
         shortTermData,
         marketData,
         fundsData,
+      }
+    };
+  }
+
+  @Get('fetchEvenBoardData')
+  async fetchEvenBoardData(@Query() query) {
+    const limit = +(query.limit || 20)
+    const shortTermData = (await this.payBackService.findEvenBoardByLimit(limit)).reverse();
+    return {
+      code: 200,
+      data: {
+        shortTermData,
       }
     };
   }

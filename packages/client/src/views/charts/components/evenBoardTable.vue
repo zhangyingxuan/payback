@@ -3,9 +3,8 @@
   <!-- 行数取决于 时间范围内 最高连板 -->
   <!-- 列数取决于 日期数量 -->
   <div class="table">
-    <div class="title">连板阶梯数据</div>
     <div class="table__container">
-      <div :class="['date-col', { isMobile }]">
+      <div :class="['header-row', 'date-col', { isMobile }]">
         <div class="table-headaer">连板数</div>
         <div class="table-col">其它连板</div>
         <template v-for="height in heightArr" :key="'row1' + height">
@@ -14,7 +13,7 @@
       </div>
       <div
         :class="['date-col', { isMobile }]"
-        v-for="(item, index) in superData.evenBoardList"
+        v-for="(item, index) in evenBoard.value"
         :key="'evenBoard' + index"
       >
         <div class="table-headaer">{{ item.createTime }}</div>
@@ -49,24 +48,44 @@
   </div>
 </template>
 <script lang="ts" setup>
+import { fetchEvenBoardData } from '@/api/payBack';
+import { fetchIndustryData } from '@/api/tonghuashun';
+import { transformEvenBoardData } from '../utils/transformUtil';
+import { onMounted, reactive, watch, computed } from 'vue';
+import { useSidebarStore } from '@/store/sidebar';
+import { storeToRefs } from 'pinia';
 import { isMobile } from '@/core/util';
-import { computed } from 'vue';
-let superData = defineProps({
-  evenBoardList: {
-    type: Array as unknown as PropType<EvenBoard[]>,
-    default: [],
-  },
-});
 
 type EvenBoard = {
   maxHeight: number;
   createTime: String;
 };
+let evenBoard = reactive<any>({ value: [] });
+const siderBar = useSidebarStore();
+const { countDays } = storeToRefs(siderBar);
+
+// 监听变化，重新请求数据
+watch(countDays, async val => {
+  await initPage(val);
+});
+
+async function initPage(pageSize: number) {
+  // 获取图表数据
+  const result: any = await fetchEvenBoardData({
+    limit: isMobile ? 10 : pageSize,
+  });
+  const rs: any = await fetchIndustryData();
+  evenBoard.value = transformEvenBoardData(result.shortTermData);
+}
+
+onMounted(() => {
+  initPage(countDays.value);
+});
 
 const heightArr = computed(() => {
   let maxHeight = 0;
   // 找出 日期范围内 最高连板
-  superData.evenBoardList.forEach((item: EvenBoard) => {
+  evenBoard.value.forEach((item: EvenBoard) => {
     maxHeight = item.maxHeight > maxHeight ? item.maxHeight : maxHeight;
   });
 
@@ -76,9 +95,6 @@ const heightArr = computed(() => {
   }
 
   return heightArr;
-});
-const colSpan = computed(() => {
-  return 24 / superData.evenBoardList.length;
 });
 </script>
 
@@ -94,6 +110,7 @@ const colSpan = computed(() => {
 }
 .table {
   overflow: auto;
+  padding: 0 15px;
 }
 .table * {
   box-sizing: border-box;
@@ -101,7 +118,12 @@ const colSpan = computed(() => {
 
 .title {
   .tableContentBorder();
+  border-right: 1px solid @tableColumsBorderColor;
   padding: 5px 10px;
+}
+
+.header-row {
+  border-top: 1px solid @tableColumsBorderColor;
 }
 
 .flexCenter {
@@ -116,7 +138,8 @@ const colSpan = computed(() => {
   display: flex;
   flex-direction: row;
   text-align: center;
-  .tableContentBorder();
+  border-left: 1px solid @tableColumsBorderColor;
+  // .tableContentBorder();
 
   .date-col {
     .flexCenter();

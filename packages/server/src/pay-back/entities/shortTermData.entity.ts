@@ -41,7 +41,7 @@ export class shortTermData {
 
   @Column({ comment: '连板原始数据', type: 'text' })
   evenBoardData: string;
-  // 一板数量
+
   @Column({ comment: '1板数量', type: 'int', default: 0 })
   board1: number;
 

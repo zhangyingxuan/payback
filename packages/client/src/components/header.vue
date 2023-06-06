@@ -21,9 +21,9 @@
           </el-tooltip>
           <span class="btn-bell-badge" v-if="message"></span>
         </div> -->
-        <el-button type="danger" @click="openEvenBoardDialog" size="small">
+        <!-- <el-button type="danger" @click="openEvenBoardDialog" size="small">
           连板情况
-        </el-button>
+        </el-button> -->
         <el-button type="primary" @click="switchDrawerVisible" size="small">
           我的收藏
         </el-button>
@@ -88,7 +88,7 @@ import { useSidebarStore } from '../store/sidebar';
 import MyDrawer from './drawer.vue';
 import { useRouter } from 'vue-router';
 import imgurl from '../assets/img/img.jpg';
-import { fetchTodayData } from '../api/payBack';
+import { crawlTodayData } from '../api/payBack';
 import { clearLogin } from '../router/auth';
 import { isMobile } from '@/core/util';
 import { ElMessageBox } from 'element-plus';
@@ -133,7 +133,7 @@ function openEvenBoardDialog() {
 function refreshTodayData() {
   ElMessageBox.confirm('确定要更新今日数据吗？')
     .then(() => {
-      fetchTodayData();
+      crawlTodayData();
     })
     .catch(() => {
       // catch error

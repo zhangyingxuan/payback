@@ -23,8 +23,7 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
         });
     }
     async validate(payload) {
-        console.log('validate====', payload);
-        return { userId: payload.sub, username: payload.username };
+        return { account: payload.account };
     }
 };
 JwtStrategy = __decorate([

@@ -39,18 +39,6 @@ function atob(a) {
         } as TypeOrmModuleOptions;
       },
     }),
-    // TypeOrmModule.forRoot({
-    //   type: 'mysql',
-    //   // host: '43.154.209.141',
-    //   // devCloud
-    //   host: '9.134.243.217',
-    //   port: 3306,
-    //   username: 'root',
-    //   password: '123',
-    //   database: 'blowsysun',
-    //   entities: [__dirname + '/**/*.entity{.ts,.js}'],
-    //   synchronize: true,
-    // }),
     PayBackModule,
     ScheduleModule.forRoot(),
     AuthModule,

@@ -59,6 +59,16 @@ let PayBackService = PayBackService_1 = class PayBackService {
             .createQueryBuilder('short_term_data')
             .offset(0)
             .limit(len)
+            .select(['short_term_data.dailyLimitQuantity', 'short_term_data.downLimitQuantity', 'short_term_data.marketHeight', 'short_term_data.createTime'])
+            .orderBy('createTime', 'DESC')
+            .getMany();
+    }
+    async findEvenBoardByLimit(len = 20) {
+        return await this.shortTermDataRp
+            .createQueryBuilder('short_term_data')
+            .offset(0)
+            .limit(len)
+            .select(['short_term_data.createTime', 'short_term_data.evenBoardData'])
             .orderBy('createTime', 'DESC')
             .getMany();
     }

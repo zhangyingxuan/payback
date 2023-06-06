@@ -17,11 +17,14 @@ const common_1 = require("@nestjs/common");
 const shortTerm_service_1 = require("./service/shortTerm.service");
 const market_service_1 = require("./service/market.service");
 const funds_service_1 = require("./service/funds.service");
+const hotList_service_1 = require("./service/hotList.service");
 const update_pay_back_dto_1 = require("./dto/update-pay-back.dto");
+const public_decorator_1 = require("../decorator/public.decorator");
 let PayBackController = class PayBackController {
-    constructor(payBackService, fundsService, marketService) {
+    constructor(payBackService, fundsService, hotListService, marketService) {
         this.payBackService = payBackService;
         this.fundsService = fundsService;
+        this.hotListService = hotListService;
         this.marketService = marketService;
     }
     async crawlTodayData() {
@@ -33,6 +36,9 @@ let PayBackController = class PayBackController {
             fundsData,
             marketData
         };
+    }
+    crawlHotListData() {
+        return this.hotListService.crawlHotListData();
     }
     crawlShortTerm() {
         return this.payBackService.crawlShortTermData();
@@ -57,6 +63,16 @@ let PayBackController = class PayBackController {
             }
         };
     }
+    async fetchEvenBoardData(query) {
+        const limit = +(query.limit || 20);
+        const shortTermData = (await this.payBackService.findEvenBoardByLimit(limit)).reverse();
+        return {
+            code: 200,
+            data: {
+                shortTermData,
+            }
+        };
+    }
     findAll() {
         return this.payBackService.findAll();
     }
@@ -77,6 +93,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "crawlTodayData", null);
 __decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.Get)('/crawlHotListData'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], PayBackController.prototype, "crawlHotListData", null);
+__decorate([
     (0, common_1.Get)('/crawlShortTerm'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -95,12 +118,20 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PayBackController.prototype, "crawlFunds", null);
 __decorate([
+    (0, public_decorator_1.Public)(),
     (0, common_1.Get)('list'),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "findByLimit", null);
+__decorate([
+    (0, common_1.Get)('fetchEvenBoardData'),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], PayBackController.prototype, "fetchEvenBoardData", null);
 __decorate([
     (0, common_1.Get)('queryAll'),
     __metadata("design:type", Function),
@@ -133,6 +164,7 @@ PayBackController = __decorate([
     (0, common_1.Controller)('pay-back'),
     __metadata("design:paramtypes", [shortTerm_service_1.PayBackService,
         funds_service_1.FundsService,
+        hotList_service_1.HotListService,
         market_service_1.MarketService])
 ], PayBackController);
 exports.PayBackController = PayBackController;

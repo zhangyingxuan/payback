@@ -4,7 +4,7 @@ export const useSidebarStore = defineStore('sidebar', {
   state: () => {
     return {
       collapse: true,
-      countDays: 20,
+      countDays: 15,
       evenBoardTDialogVisible: false,
     };
   },

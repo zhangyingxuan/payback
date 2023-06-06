@@ -57,7 +57,7 @@ let FundsService = FundsService_1 = class FundsService {
     }
     async findByLimit(len = 20) {
         return await this.fundsDataRp
-            .createQueryBuilder('short_term_data')
+            .createQueryBuilder('funds_data')
             .offset(0)
             .limit(len)
             .orderBy('createTime', 'DESC')

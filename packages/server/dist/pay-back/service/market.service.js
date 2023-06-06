@@ -56,7 +56,7 @@ let MarketService = MarketService_1 = class MarketService {
     }
     async findByLimit(len = 20) {
         return await this.marketDataRp
-            .createQueryBuilder('short_term_data')
+            .createQueryBuilder('market_data')
             .offset(0)
             .limit(len)
             .orderBy('createTime', 'DESC')

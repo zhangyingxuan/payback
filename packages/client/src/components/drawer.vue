@@ -65,6 +65,10 @@ const iwencaiCollect = {
     '跳空高开，成交量倍量，行业概念，非ST，非创业板，非科创板，非京A&querytype=stock',
   xuangu:
     '涨停股价低于20，流通市值低于80亿，筹码集中，行业概念，非ST，非创业板，非科创板，涨停时间正序&querytype=stock',
+  '3板断板':
+    '3板以上，断板个股，行业概念，非ST，非创业板，非科创板，涨停时间正序&querytype=stock',
+  断板反包:
+    '断板反包涨停板，行业概念，非ST，非创业板，非科创板，涨停时间正序&querytype=stock',
   // xuangu: '首次涨停股价低于20，流通市值低于80亿高于10亿，行业板块，非ST&querytype=stock',
   // iLikeWord: '箱体突破或横盘突破，流通市值低于80亿，大于10亿，股价低于20元，放量初期&querytype=stock',
   // 市场变化：成交量 变化、风格

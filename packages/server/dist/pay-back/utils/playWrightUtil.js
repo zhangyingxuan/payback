@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const playwright_1 = require("playwright");
 const create_market_data_dto_1 = require("../dto/create-market-data.dto");
 const create_funds_data_dto_1 = require("../dto/create-funds-data.dto");
+const create_hot_list_dto_1 = require("../dto/create-hot-list.dto");
 const commonUtil_1 = require("./commonUtil");
 const fundsUtil_1 = require("./fundsUtil");
 const config_1 = require("./config");
@@ -121,6 +122,76 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl) => {
         await page.goto(pageUrl, { timeout: commonTimeOut60s });
     });
 };
+function transformStockData(stockList) {
+    return JSON.stringify(stockList.map(item => {
+        var _a;
+        return {
+            code: item.code,
+            name: item.name,
+            rise_and_fall: item.rise_and_fall,
+            tag: (_a = item.tag) === null || _a === void 0 ? void 0 : _a.concept_tag,
+        };
+    }));
+}
+function transformPlateData(plateList) {
+    return JSON.stringify(plateList.map(item => {
+        return {
+            code: item.code,
+            name: item.name,
+            rise_and_fall: item.rise_and_fall,
+            hot_tag: item.hot_tag,
+            tag: item.tag,
+        };
+    }));
+}
+const waitHostListDataByUrls = async (pageUrl) => {
+    const browser = await getBrowser();
+    const page = await browser.newPage();
+    return new Promise(async (resolve, reject) => {
+        const maxAmount10 = 10;
+        const maxAmount5 = 5;
+        const createHotListDto = new create_hot_list_dto_1.CreateHotListDto();
+        const state = {
+            stockNormal: false,
+            stockValue: false,
+            plateConcept: false,
+            plateIndustry: false,
+        };
+        page.on('response', async (response) => {
+            if (response.url().includes('stock?stock_type=a&type=hour&list_type=normal') && response.status() === 200) {
+                state.stockNormal = true;
+                const responseData = await response.json();
+                const stockList = responseData.data.stock_list.splice(0, maxAmount10);
+                createHotListDto.stockNormal = transformStockData(stockList);
+            }
+            if (response.url().includes('stock?stock_type=a&type=day&list_type=value') && response.status() === 200) {
+                state.stockValue = true;
+                const responseData = await response.json();
+                const stockList = responseData.data.stock_list.splice(0, maxAmount10);
+                createHotListDto.stockValue = transformStockData(stockList);
+            }
+            if (response.url().includes('plate?type=concept') && response.status() === 200) {
+                state.plateConcept = true;
+                const responseData = await response.json();
+                const plateList = responseData.data.plate_list.splice(0, maxAmount5);
+                createHotListDto.plateConcept = transformPlateData(plateList);
+            }
+            if (response.url().includes('plate?type=industry') && response.status() === 200) {
+                state.plateIndustry = true;
+                const responseData = await response.json();
+                const plateList = responseData.data.plate_list.splice(0, maxAmount5);
+                createHotListDto.plateIndustry = transformPlateData(plateList);
+            }
+            if (state['stockNormal'] && state['stockValue'] && state['plateConcept'] && state['plateIndustry']) {
+                resolve(createHotListDto);
+            }
+            setTimeout(() => {
+                browser.close();
+            }, 15000);
+        });
+        await page.goto(pageUrl, { timeout: commonTimeOut60s });
+    });
+};
 const getTodayData = async function (pageUrl, apiUrl, browser) {
     const responseJson = await waitOriginalDataByUrl(pageUrl, apiUrl, 'json', browser);
     return commonUtil_1.default.getIwencaiData(responseJson);
@@ -177,6 +248,10 @@ exports.default = {
             await browser.close();
         }, 5000);
         return createFundsDataDto;
+    },
+    getHotListData(dateStr) {
+        const response = waitHostListDataByUrls('https://eq.10jqka.com.cn/frontend/thsTopRank/index.html');
+        return response;
     }
 };
 //# sourceMappingURL=playWrightUtil.js.map

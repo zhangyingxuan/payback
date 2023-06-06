@@ -12,6 +12,7 @@ export declare class PayBackService {
     }>;
     findAll(): Promise<shortTermData[]>;
     findByLimit(len?: number): Promise<shortTermData[]>;
+    findEvenBoardByLimit(len?: number): Promise<shortTermData[]>;
     findOne(id: number): Promise<string>;
     update(id: number, updatePayBackDto: UpdatePayBackDto): Promise<import("typeorm").UpdateResult>;
     remove(id: number): Promise<string>;
