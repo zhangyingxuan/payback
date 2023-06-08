@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { PayBackService } from './service/shortTerm.service';
+import { ShorTermService } from './service/shortTerm.service';
 import { MarketService } from './service/market.service';
 import { FundsService } from './service/funds.service';
 import { HotListService } from './service/hotList.service';
@@ -23,6 +23,6 @@ import { hotList } from "./entities/hotList.entity";
     // }),
   ],
   controllers: [PayBackController],
-  providers: [PayBackService, MarketService, FundsService, HotListService]
+  providers: [ShorTermService, MarketService, FundsService, HotListService]
 })
 export class PayBackModule { }

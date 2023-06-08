@@ -11,9 +11,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var PayBackService_1;
+var ShorTermService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PayBackService = void 0;
+exports.ShorTermService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("typeorm");
 const shortTermData_entity_1 = require("../entities/shortTermData.entity");
@@ -21,10 +21,10 @@ const typeorm_2 = require("@nestjs/typeorm");
 const playWrightUtil_1 = require("../utils/playWrightUtil");
 const dayjs = require("dayjs");
 const schedule_1 = require("@nestjs/schedule");
-let PayBackService = PayBackService_1 = class PayBackService {
+let ShorTermService = ShorTermService_1 = class ShorTermService {
     constructor(shortTermDataRp) {
         this.shortTermDataRp = shortTermDataRp;
-        this.logger = new common_1.Logger(PayBackService_1.name);
+        this.logger = new common_1.Logger(ShorTermService_1.name);
     }
     async crawlShortTermData() {
         this.logger.debug('crawlShortTermData is Begining!');
@@ -87,11 +87,11 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
-], PayBackService.prototype, "crawlShortTermData", null);
-PayBackService = PayBackService_1 = __decorate([
+], ShorTermService.prototype, "crawlShortTermData", null);
+ShorTermService = ShorTermService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_2.InjectRepository)(shortTermData_entity_1.shortTermData)),
     __metadata("design:paramtypes", [typeorm_1.Repository])
-], PayBackService);
-exports.PayBackService = PayBackService;
+], ShorTermService);
+exports.ShorTermService = ShorTermService;
 //# sourceMappingURL=shortTerm.service.js.map

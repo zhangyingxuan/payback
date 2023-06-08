@@ -18,23 +18,23 @@ __decorate([
     __metadata("design:type", Number)
 ], hotList.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '热门个股大家都在看Top10', type: 'varchar', length: 255 }),
+    (0, typeorm_1.Column)({ comment: '热门个股大家都在看Top10', type: 'varchar', length: 2048, default: '' }),
     __metadata("design:type", String)
 ], hotList.prototype, "stockNormal", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '热门个股价值投资Top10', type: 'varchar', length: 255 }),
+    (0, typeorm_1.Column)({ comment: '热门个股价值投资Top10', type: 'varchar', length: 2048, default: '' }),
     __metadata("design:type", String)
 ], hotList.prototype, "stockValue", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '热门概念板块Top5', type: 'varchar', length: 255 }),
+    (0, typeorm_1.Column)({ comment: '热门概念板块Top5', type: 'varchar', length: 2048, default: '' }),
     __metadata("design:type", String)
 ], hotList.prototype, "plateConcept", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '热门行业板块Top5', type: 'varchar', length: 255 }),
+    (0, typeorm_1.Column)({ comment: '热门行业板块Top5', type: 'varchar', length: 2048, default: '' }),
     __metadata("design:type", String)
 ], hotList.prototype, "plateIndustry", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '热门Etf top5', type: 'varchar', length: 255 }),
+    (0, typeorm_1.Column)({ comment: '热门Etf Top5', type: 'varchar', length: 2048, default: '' }),
     __metadata("design:type", String)
 ], hotList.prototype, "hotEtfs", void 0);
 __decorate([

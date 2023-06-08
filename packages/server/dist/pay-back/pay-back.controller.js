@@ -21,14 +21,14 @@ const hotList_service_1 = require("./service/hotList.service");
 const update_pay_back_dto_1 = require("./dto/update-pay-back.dto");
 const public_decorator_1 = require("../decorator/public.decorator");
 let PayBackController = class PayBackController {
-    constructor(payBackService, fundsService, hotListService, marketService) {
-        this.payBackService = payBackService;
+    constructor(ShorTermService, fundsService, hotListService, marketService) {
+        this.ShorTermService = ShorTermService;
         this.fundsService = fundsService;
         this.hotListService = hotListService;
         this.marketService = marketService;
     }
     async crawlTodayData() {
-        const shortData = await this.payBackService.crawlShortTermData();
+        const shortData = await this.ShorTermService.crawlShortTermData();
         const marketData = await this.marketService.crawlMarketData();
         const fundsData = await this.fundsService.crawlfundsData();
         return {
@@ -41,7 +41,7 @@ let PayBackController = class PayBackController {
         return this.hotListService.crawlHotListData();
     }
     crawlShortTerm() {
-        return this.payBackService.crawlShortTermData();
+        return this.ShorTermService.crawlShortTermData();
     }
     crawlMarket() {
         return this.marketService.crawlMarketData();
@@ -51,7 +51,7 @@ let PayBackController = class PayBackController {
     }
     async findByLimit(query) {
         const limit = +(query.limit || 20);
-        const shortTermData = (await this.payBackService.findByLimit(limit)).reverse();
+        const shortTermData = (await this.ShorTermService.findByLimit(limit)).reverse();
         const marketData = (await this.marketService.findByLimit(limit)).reverse();
         const fundsData = (await this.fundsService.findByLimit(limit)).reverse();
         return {
@@ -65,7 +65,7 @@ let PayBackController = class PayBackController {
     }
     async fetchEvenBoardData(query) {
         const limit = +(query.limit || 20);
-        const shortTermData = (await this.payBackService.findEvenBoardByLimit(limit)).reverse();
+        const shortTermData = (await this.ShorTermService.findEvenBoardByLimit(limit)).reverse();
         return {
             code: 200,
             data: {
@@ -73,17 +73,25 @@ let PayBackController = class PayBackController {
             }
         };
     }
+    async fetchHostListData(query) {
+        const limit = +(query.limit || 20);
+        const hotListData = (await this.hotListService.findByLimit(limit)).reverse();
+        return {
+            code: 200,
+            data: hotListData,
+        };
+    }
     findAll() {
-        return this.payBackService.findAll();
+        return this.ShorTermService.findAll();
     }
     findOne(id) {
-        return this.payBackService.findOne(+id);
+        return this.ShorTermService.findOne(+id);
     }
     update(id, updatePayBackDto) {
-        return this.payBackService.update(+id, updatePayBackDto);
+        return this.ShorTermService.update(+id, updatePayBackDto);
     }
     remove(id) {
-        return this.payBackService.remove(+id);
+        return this.ShorTermService.remove(+id);
     }
 };
 __decorate([
@@ -133,6 +141,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "fetchEvenBoardData", null);
 __decorate([
+    (0, common_1.Get)('fetchHostListData'),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], PayBackController.prototype, "fetchHostListData", null);
+__decorate([
     (0, common_1.Get)('queryAll'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -162,7 +177,7 @@ __decorate([
 ], PayBackController.prototype, "remove", null);
 PayBackController = __decorate([
     (0, common_1.Controller)('pay-back'),
-    __metadata("design:paramtypes", [shortTerm_service_1.PayBackService,
+    __metadata("design:paramtypes", [shortTerm_service_1.ShorTermService,
         funds_service_1.FundsService,
         hotList_service_1.HotListService,
         market_service_1.MarketService])

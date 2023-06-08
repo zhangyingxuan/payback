@@ -67,7 +67,7 @@ let HotListService = HotListService_1 = class HotListService {
     }
 };
 __decorate([
-    (0, schedule_1.Cron)('0 0 */1 * * *'),
+    (0, schedule_1.Cron)('0 30 */1 * * *'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)

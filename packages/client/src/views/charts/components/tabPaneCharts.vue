@@ -157,7 +157,7 @@ function getChartStyle() {
   // 计算宽度；屏幕宽度 - 左侧siderBar - 边框 - cardLeft
   const columnsAmount = columnsConfig[countDays.value];
   const screenWidth = screen.width - 64 - 20 - columnsAmount * 15;
-  const cardWidth = isMobile ? screen.width - 40 : screenWidth / columnsAmount;
+  const cardWidth = isMobile ? screen.width - 30 : screenWidth / columnsAmount;
   return {
     style: `width: ${cardWidth}px; height: 260px`,
     styleBig: `width: ${cardWidth}px; height: 320px`,

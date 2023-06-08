@@ -4,8 +4,8 @@
   <!-- 列数取决于 日期数量 -->
   <div class="table">
     <div class="table__container">
-      <div :class="['header-row', 'date-col', { isMobile }]">
-        <div class="table-headaer">连板数</div>
+      <div :class="['date-col', { isMobile }]">
+        <div class="table-header">连板数</div>
         <div class="table-col">其它连板</div>
         <template v-for="height in heightArr" :key="'row1' + height">
           <div class="table-col" v-if="height != 1">{{ height }}</div>
@@ -16,7 +16,7 @@
         v-for="(item, index) in evenBoard.value"
         :key="'evenBoard' + index"
       >
-        <div class="table-headaer">{{ item.createTime }}</div>
+        <div class="table-header">{{ item.createTime }}</div>
         <!-- 高标数据 -->
         <div class="table-col">
           <el-tooltip
@@ -26,7 +26,10 @@
             :content="stock.reason"
             :key="'stock' + index"
           >
-            <span> {{ stock.name }} {{ stock.evenDays }} </span>
+            <span>
+              <span> {{ stock.name }}&nbsp;</span>
+              <span class="gray">{{ stock.evenDays }}</span>
+            </span>
           </el-tooltip>
         </div>
         <template v-for="height in heightArr">
@@ -99,7 +102,7 @@ const heightArr = computed(() => {
 </script>
 
 <style scoped lang="less">
-@tableColumsBorderColor: #000;
+@tableColumsBorderColor: #dcdcdc;
 .tableColumsBorder {
   border-right: 1px solid @tableColumsBorderColor;
   border-bottom: 1px solid @tableColumsBorderColor;
@@ -120,10 +123,6 @@ const heightArr = computed(() => {
   .tableContentBorder();
   border-right: 1px solid @tableColumsBorderColor;
   padding: 5px 10px;
-}
-
-.header-row {
-  border-top: 1px solid @tableColumsBorderColor;
 }
 
 .flexCenter {
@@ -159,10 +158,15 @@ const heightArr = computed(() => {
     }
   }
 
-  .table-headaer {
-    background-color: #ccc;
+  .gray {
+    color: #999;
+  }
+
+  .table-header {
+    background-color: #dcdcdc;
     width: 100%;
     .tableColumsBorder();
+    border-top: 1px solid @tableColumsBorderColor;
   }
   .table-col {
     width: 100%;

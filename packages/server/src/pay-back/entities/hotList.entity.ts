@@ -6,19 +6,19 @@ import { PrimaryGeneratedColumn, Column, Entity, Timestamp, CreateDateColumn, Up
 export class hotList {
   @PrimaryGeneratedColumn()
   id: number;
-  @Column({ comment: '热门个股大家都在看Top10', type: 'varchar', length: 255 })
+  @Column({ comment: '热门个股大家都在看Top10', type: 'varchar', length: 2048, default: '' })
   stockNormal: string;
 
-  @Column({ comment: '热门个股价值投资Top10', type: 'varchar', length: 255 })
+  @Column({ comment: '热门个股价值投资Top10', type: 'varchar', length: 2048, default: '' })
   stockValue: string;
 
-  @Column({ comment: '热门概念板块Top5', type: 'varchar', length: 255 })
+  @Column({ comment: '热门概念板块Top5', type: 'varchar', length: 2048, default: '' })
   plateConcept: string;
 
-  @Column({ comment: '热门行业板块Top5', type: 'varchar', length: 255 })
+  @Column({ comment: '热门行业板块Top5', type: 'varchar', length: 2048, default: '' })
   plateIndustry: string;
 
-  @Column({ comment: '热门Etf top5', type: 'varchar', length: 255 })
+  @Column({ comment: '热门Etf Top5', type: 'varchar', length: 2048, default: '' })
   hotEtfs: string;
 
   @CreateDateColumn({ type: 'timestamp', comment: '创建时间' })

@@ -29,7 +29,7 @@ PayBackModule = __decorate([
             typeorm_1.TypeOrmModule.forFeature([fundsData_entity_1.fundsData]),
         ],
         controllers: [pay_back_controller_1.PayBackController],
-        providers: [shortTerm_service_1.PayBackService, market_service_1.MarketService, funds_service_1.FundsService, hotList_service_1.HotListService]
+        providers: [shortTerm_service_1.ShorTermService, market_service_1.MarketService, funds_service_1.FundsService, hotList_service_1.HotListService]
     })
 ], PayBackModule);
 exports.PayBackModule = PayBackModule;

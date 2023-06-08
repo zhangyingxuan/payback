@@ -16,7 +16,6 @@ export class specialStock {
   @Column({ comment: '吃面效应/赚钱效应', type: 'varchar' })
   hotEtfs: string;
 
-  // @Column({ type: 'date', comment: '创建时间' })
   @Column({ type: 'timestamp', comment: '创建时间', default: () => 'current_timestamp' })
   createTime: Timestamp;
 }

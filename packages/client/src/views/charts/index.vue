@@ -1,17 +1,20 @@
 <template>
   <el-tabs type="border-card" class="reviewBoard__tabs">
     <el-tab-pane label="图表复盘">
-      <chartsTabPane />
+      <TabPaneCharts />
+    </el-tab-pane>
+    <el-tab-pane label="热榜">
+      <TabPaneHotList />
     </el-tab-pane>
     <el-tab-pane label="连板">
-      <EvenBoardTable />
+      <TabPaneEvenBoard />
     </el-tab-pane>
-    <el-tab-pane label="热榜"></el-tab-pane>
   </el-tabs>
 </template>
 <script lang="ts" setup>
-import chartsTabPane from './components/chartsTabPane.vue';
-import EvenBoardTable from './components/evenBoardTable.vue';
+import TabPaneCharts from './components/tabPaneCharts.vue';
+import TabPaneEvenBoard from './components/tabPaneEvenBoard.vue';
+import TabPaneHotList from './components/tabPaneHotList.vue';
 </script>
 
 <style scoped lang="less">

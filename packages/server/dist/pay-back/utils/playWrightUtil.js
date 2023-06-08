@@ -88,28 +88,24 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl) => {
                 const dataJson = await getRealDataJson(response, 'quotebridge_v6_time_hs_399001_last(');
                 const pre = dataJson.hs_399001.pre;
                 createMarketDataDto.shenzhengPoint = getPoint(dataJson.hs_399001.data);
-                createMarketDataDto.shenzhengFloat = getFloat(createMarketDataDto.shenzhengPoint, pre);
                 state.hs_399001 = true;
             }
             if (response.url().includes('time/hs_1A0001/last.js') && response.status() === 200) {
                 const dataJson = await getRealDataJson(response, 'quotebridge_v6_time_hs_1A0001_last(');
                 const pre = dataJson.hs_1A0001.pre;
                 createMarketDataDto.shangzhengPoint = getPoint(dataJson.hs_1A0001.data);
-                createMarketDataDto.shangzhengFloat = getFloat(createMarketDataDto.shangzhengPoint, pre);
                 state.hs_1A0001 = true;
             }
             if (response.url().includes('time/hs_399006/last.js') && response.status() === 200) {
                 const dataJson = await getRealDataJson(response, 'quotebridge_v6_time_hs_399006_last(');
                 const pre = dataJson.hs_399006.pre;
                 createMarketDataDto.chuangyePoint = getPoint(dataJson.hs_399006.data);
-                createMarketDataDto.chuangyeFloat = getFloat(createMarketDataDto.chuangyePoint, pre);
                 state.hs_399006 = true;
             }
             if (response.url().includes('time/151_899050/last.js') && response.status() === 200) {
                 const dataJson = await getRealDataJson(response, 'quotebridge_v6_time_151_899050_last(');
                 const pre = dataJson['151_899050'].pre;
                 createMarketDataDto.beizheng50Point = getPoint(dataJson['151_899050'].data);
-                createMarketDataDto.beizheng50Float = getFloat(createMarketDataDto.beizheng50Point, pre);
                 state['151_899050'] = true;
             }
             if (state['151_899050'] && state['hs_399006'] && state['hs_1A0001'] && state['hs_399001'] && state['apiUrl']) {
@@ -124,12 +120,13 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl) => {
 };
 function transformStockData(stockList) {
     return JSON.stringify(stockList.map(item => {
-        var _a;
+        var _a, _b;
         return {
             code: item.code,
             name: item.name,
             rise_and_fall: item.rise_and_fall,
             tag: (_a = item.tag) === null || _a === void 0 ? void 0 : _a.concept_tag,
+            hot_tag: (_b = item.tag) === null || _b === void 0 ? void 0 : _b.popularity_tag,
         };
     }));
 }

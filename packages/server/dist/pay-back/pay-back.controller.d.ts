@@ -1,14 +1,14 @@
-import { PayBackService } from './service/shortTerm.service';
+import { ShorTermService } from './service/shortTerm.service';
 import { MarketService } from './service/market.service';
 import { FundsService } from './service/funds.service';
 import { HotListService } from './service/hotList.service';
 import { UpdatePayBackDto } from './dto/update-pay-back.dto';
 export declare class PayBackController {
-    private readonly payBackService;
+    private readonly ShorTermService;
     private readonly fundsService;
     private readonly hotListService;
     private readonly marketService;
-    constructor(payBackService: PayBackService, fundsService: FundsService, hotListService: HotListService, marketService: MarketService);
+    constructor(ShorTermService: ShorTermService, fundsService: FundsService, hotListService: HotListService, marketService: MarketService);
     crawlTodayData(): Promise<{
         shortData: import("./dto/create-pay-back.dto").CreatePayBackDto | {
             code: string;
@@ -49,6 +49,10 @@ export declare class PayBackController {
         data: {
             shortTermData: import("./entities/shortTermData.entity").shortTermData[];
         };
+    }>;
+    fetchHostListData(query: any): Promise<{
+        code: number;
+        data: import("./entities/hotList.entity").hotList[];
     }>;
     findAll(): Promise<import("./entities/shortTermData.entity").shortTermData[]>;
     findOne(id: string): Promise<string>;

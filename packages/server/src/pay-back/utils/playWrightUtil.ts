@@ -118,7 +118,6 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl): Promise<CreateMarketDataDt
         // 昨收盘点数
         const pre = dataJson.hs_399001.pre;
         createMarketDataDto.shenzhengPoint = getPoint(dataJson.hs_399001.data);
-        createMarketDataDto.shenzhengFloat = getFloat(createMarketDataDto.shenzhengPoint, pre);
         state.hs_399001 = true;
       }
       // "上证指数" time/hs_1A0001/last.js
@@ -127,7 +126,6 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl): Promise<CreateMarketDataDt
         // 昨收盘点数
         const pre = dataJson.hs_1A0001.pre;
         createMarketDataDto.shangzhengPoint = getPoint(dataJson.hs_1A0001.data);
-        createMarketDataDto.shangzhengFloat = getFloat(createMarketDataDto.shangzhengPoint, pre);
         state.hs_1A0001 = true;
       }
       // "创业板指" time/hs_399006/last.js
@@ -136,7 +134,6 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl): Promise<CreateMarketDataDt
         // 昨收盘点数
         const pre = dataJson.hs_399006.pre;
         createMarketDataDto.chuangyePoint = getPoint(dataJson.hs_399006.data);
-        createMarketDataDto.chuangyeFloat = getFloat(createMarketDataDto.chuangyePoint, pre);
         state.hs_399006 = true;
       }
       // "北证50"   time/151_899050/last.js
@@ -145,7 +142,6 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl): Promise<CreateMarketDataDt
         // 昨收盘点数
         const pre = dataJson['151_899050'].pre;
         createMarketDataDto.beizheng50Point = getPoint(dataJson['151_899050'].data);
-        createMarketDataDto.beizheng50Float = getFloat(createMarketDataDto.beizheng50Point, pre);
         state['151_899050'] = true;
       }
 
@@ -169,6 +165,7 @@ function transformStockData(stockList) {
       name: item.name,
       rise_and_fall: item.rise_and_fall,
       tag: item.tag?.concept_tag,
+      hot_tag: item.tag?.popularity_tag,
     }
   }));
 }

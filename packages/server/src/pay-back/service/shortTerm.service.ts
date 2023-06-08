@@ -9,12 +9,12 @@ import * as dayjs from 'dayjs';
 import { Cron } from '@nestjs/schedule';
 
 @Injectable()
-export class PayBackService {
+export class ShorTermService {
   constructor(
     @InjectRepository(shortTermData) private readonly shortTermDataRp: Repository<shortTermData>,
   ) { }
 
-  private readonly logger = new Logger(PayBackService.name);
+  private readonly logger = new Logger(ShorTermService.name);
 
   // * * * * * *：每一秒 分钟 小时 日 月份 周（星期） 年份
   // 45 * * * * *：每分钟，在45秒

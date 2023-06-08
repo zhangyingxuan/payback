@@ -38,33 +38,17 @@ __decorate([
     __metadata("design:type", Number)
 ], marketData.prototype, "shangzhengPoint", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '上证涨跌幅', type: 'float', default: 0 }),
-    __metadata("design:type", Number)
-], marketData.prototype, "shangzhengFloat", void 0);
-__decorate([
     (0, typeorm_1.Column)({ comment: '深圳点数', type: 'decimal', default: 0, precision: 8, scale: 2 }),
     __metadata("design:type", Number)
 ], marketData.prototype, "shenzhengPoint", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '深证涨跌幅', type: 'float', default: 0 }),
-    __metadata("design:type", Number)
-], marketData.prototype, "shenzhengFloat", void 0);
 __decorate([
     (0, typeorm_1.Column)({ comment: '创业板点数', type: 'decimal', default: 0, precision: 8, scale: 2 }),
     __metadata("design:type", Number)
 ], marketData.prototype, "chuangyePoint", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '创业板涨跌幅', type: 'float', default: 0 }),
-    __metadata("design:type", Number)
-], marketData.prototype, "chuangyeFloat", void 0);
-__decorate([
     (0, typeorm_1.Column)({ comment: '北证50点数', type: 'decimal', default: 0, precision: 8, scale: 2 }),
     __metadata("design:type", Number)
 ], marketData.prototype, "beizheng50Point", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '北证50涨跌幅', type: 'float', default: 0 }),
-    __metadata("design:type", Number)
-], marketData.prototype, "beizheng50Float", void 0);
 __decorate([
     (0, typeorm_1.Column)({ comment: '上涨>=5%家数', type: 'int', default: 0 }),
     __metadata("design:type", Number)
@@ -73,6 +57,14 @@ __decorate([
     (0, typeorm_1.Column)({ comment: '下跌>=5%家数', type: 'int', default: 0 }),
     __metadata("design:type", Number)
 ], marketData.prototype, "fallMore5", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '上涨幅度最大的板块TOP5', type: 'varchar', length: 512, default: '' }),
+    __metadata("design:type", Number)
+], marketData.prototype, "risePlateTop5", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '下跌幅度最大的板块TOP5', type: 'varchar', length: 512, default: '' }),
+    __metadata("design:type", Number)
+], marketData.prototype, "fallPlateTop5", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'timestamp', comment: '创建时间', default: () => 'current_timestamp' }),
     __metadata("design:type", typeorm_1.Timestamp)

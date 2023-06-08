@@ -38,3 +38,10 @@ export const crawlTodayData = () => {
 export const fetchEvenBoardData = (params: any | null) => {
   return http.request<ChartResult>("get", `${baseUrl}/fetchEvenBoardData`, { params });
 }
+/**
+ * 获取热榜数据
+ * @returns 
+ */
+export const fetchHostListData = (params: any | null) => {
+  return http.request<Array<any>>("get", `${baseUrl}/fetchHostListData`, { params });
+}

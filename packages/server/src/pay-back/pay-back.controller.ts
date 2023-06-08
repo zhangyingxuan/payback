@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, } from '@nestjs/common';
-import { PayBackService } from './service/shortTerm.service';
+import { ShorTermService } from './service/shortTerm.service';
 import { MarketService } from './service/market.service';
 import { FundsService } from './service/funds.service';
 import { HotListService } from './service/hotList.service';
@@ -9,14 +9,14 @@ import { Public } from '../decorator/public.decorator';
 @Controller('pay-back')
 export class PayBackController {
   constructor(
-    private readonly payBackService: PayBackService,
+    private readonly ShorTermService: ShorTermService,
     private readonly fundsService: FundsService,
     private readonly hotListService: HotListService,
     private readonly marketService: MarketService) { }
 
   @Get('/crawlTodayData')
   async crawlTodayData() {
-    const shortData = await this.payBackService.crawlShortTermData();
+    const shortData = await this.ShorTermService.crawlShortTermData();
     const marketData = await this.marketService.crawlMarketData();
     const fundsData = await this.fundsService.crawlfundsData();
     return {
@@ -33,7 +33,7 @@ export class PayBackController {
   }
   @Get('/crawlShortTerm')
   crawlShortTerm() {
-    return this.payBackService.crawlShortTermData();
+    return this.ShorTermService.crawlShortTermData();
   }
   @Get('/crawlMarket')
   crawlMarket() {
@@ -47,7 +47,7 @@ export class PayBackController {
   @Get('list')
   async findByLimit(@Query() query) {
     const limit = +(query.limit || 20)
-    const shortTermData = (await this.payBackService.findByLimit(limit)).reverse();
+    const shortTermData = (await this.ShorTermService.findByLimit(limit)).reverse();
     const marketData = (await this.marketService.findByLimit(limit)).reverse();
     const fundsData = (await this.fundsService.findByLimit(limit)).reverse();
     return {
@@ -63,7 +63,7 @@ export class PayBackController {
   @Get('fetchEvenBoardData')
   async fetchEvenBoardData(@Query() query) {
     const limit = +(query.limit || 20)
-    const shortTermData = (await this.payBackService.findEvenBoardByLimit(limit)).reverse();
+    const shortTermData = (await this.ShorTermService.findEvenBoardByLimit(limit)).reverse();
     return {
       code: 200,
       data: {
@@ -72,23 +72,33 @@ export class PayBackController {
     };
   }
 
+  @Get('fetchHostListData')
+  async fetchHostListData(@Query() query) {
+    const limit = +(query.limit || 20)
+    const hotListData = (await this.hotListService.findByLimit(limit)).reverse();
+    return {
+      code: 200,
+      data: hotListData,
+    };
+  }
+
   @Get('queryAll')
   findAll() {
-    return this.payBackService.findAll();
+    return this.ShorTermService.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.payBackService.findOne(+id);
+    return this.ShorTermService.findOne(+id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updatePayBackDto: UpdatePayBackDto) {
-    return this.payBackService.update(+id, updatePayBackDto);
+    return this.ShorTermService.update(+id, updatePayBackDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.payBackService.remove(+id);
+    return this.ShorTermService.remove(+id);
   }
 }
