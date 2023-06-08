@@ -163,7 +163,7 @@ function transformStockData(stockList) {
     return {
       code: item.code,
       name: item.name,
-      rise_and_fall: item.rise_and_fall,
+      rise_and_fall: +(item.rise_and_fall).toFixed(2),
       tag: item.tag?.concept_tag,
       hot_tag: item.tag?.popularity_tag,
     }
@@ -175,7 +175,7 @@ function transformPlateData(plateList) {
     return {
       code: item.code,
       name: item.name,
-      rise_and_fall: item.rise_and_fall,
+      rise_and_fall: +(item.rise_and_fall).toFixed(2),
       hot_tag: item.hot_tag,
       tag: item.tag,
     }
@@ -324,7 +324,7 @@ export default {
     }, 5000);
     return createFundsDataDto;
   },
-  getHotListData(dateStr) {
+  getHotListData() {
     const response = waitHostListDataByUrls('https://eq.10jqka.com.cn/frontend/thsTopRank/index.html');
     return response;
   }

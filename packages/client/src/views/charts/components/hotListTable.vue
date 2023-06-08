@@ -18,9 +18,9 @@
           <div class="name__row flexBetween">
             <span>{{ hot.name }} </span>
             <span v-if="hot.rise_and_fall > 0" class="rise">
-              +{{ hot.rise_and_fall }}</span
+              +{{ hot.rise_and_fall }}%</span
             >
-            <span v-else class="fall"> {{ hot.rise_and_fall }}</span>
+            <span v-else class="fall"> {{ hot.rise_and_fall }}%</span>
           </div>
           <div class="flexBetween">
             <div v-if="hot.hot_tag" class="tag red">
@@ -37,7 +37,7 @@
                 {{ tag }}
               </div>
             </template>
-            <div v-else class="tag">
+            <div v-else-if="hot.tag" class="tag">
               <div class="tabBorder"></div>
               {{ hot.tag }}
             </div>
@@ -92,7 +92,7 @@ let superData = defineProps({
 }
 .table {
   overflow: auto;
-  padding: 0 15px;
+  padding: 5px;
 }
 .table * {
   box-sizing: border-box;

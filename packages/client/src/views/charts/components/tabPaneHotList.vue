@@ -44,6 +44,7 @@
   </div>
 </template>
 <script lang="ts" setup>
+import CardHeader from './cardHeader.vue';
 import { fetchHostListData } from '@/api/payBack';
 import { onMounted, reactive, watch, computed } from 'vue';
 import { isMobile } from '@/core/util';

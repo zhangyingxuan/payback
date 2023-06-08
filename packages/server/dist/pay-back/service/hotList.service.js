@@ -39,7 +39,7 @@ let HotListService = HotListService_1 = class HotListService {
         }
         let hotListData;
         try {
-            hotListData = await playWrightUtil_1.default.getHotListData(dayjs(todayDateStr).format('YYYYMMDD'));
+            hotListData = await playWrightUtil_1.default.getHotListData();
             this.logger.log(hotListData);
             if (isExist) {
                 await this.hotListRp.update(todayDataFromDB.id, hotListData);

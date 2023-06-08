@@ -6,6 +6,6 @@ declare const _default: {
     getShortTermData(todayDateStr: any): Promise<CreatePayBackDto>;
     getMarketData(pageUrl: any, apiUrls: any): Promise<CreateMarketDataDto>;
     getFundsData(dateStr: any): Promise<CreateFundsDataDto>;
-    getHotListData(dateStr: any): Promise<CreateHotListDto>;
+    getHotListData(): Promise<CreateHotListDto>;
 };
 export default _default;
