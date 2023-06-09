@@ -2,7 +2,7 @@
   <div :class="['chartList__container', { isMobile }]">
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
       <template #header>
-        <CardHeader headerTitle="行业板块" />
+        <CardHeader headerTitle="行业板块" :url="url" />
       </template>
       <HotListTable
         :data="data.hotListResult"
@@ -12,7 +12,7 @@
     </el-card>
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
       <template #header>
-        <CardHeader headerTitle="概念板块" />
+        <CardHeader headerTitle="概念板块" :url="url" />
       </template>
 
       <HotListTable
@@ -23,7 +23,7 @@
     </el-card>
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
       <template #header>
-        <CardHeader headerTitle="热门个股" />
+        <CardHeader headerTitle="热门个股" :url="url" />
       </template>
       <HotListTable
         :data="data.hotListResult"
@@ -33,7 +33,7 @@
     </el-card>
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
       <template #header>
-        <CardHeader headerTitle="价投个股" />
+        <CardHeader headerTitle="价投个股" :url="url" />
       </template>
       <HotListTable
         :data="data.hotListResult"
@@ -51,6 +51,8 @@ import { isMobile } from '@/core/util';
 import HotListTable from './hotListTable.vue';
 import dayjs from 'dayjs';
 
+const url = 'https://eq.10jqka.com.cn/frontend/thsTopRank/index.html';
+
 enum HotListKey {
   plateIndustry = 'plateIndustry',
   plateConcept = 'plateConcept',
@@ -67,7 +69,7 @@ function getChartStyle() {
   // 计算宽度；屏幕宽度 - 左侧siderBar - 边框 - cardLeft
   const columnsAmount = 2;
   const screenWidth = screen.width - 200 - columnsAmount * 15;
-  const cardWidth = isMobile ? screen.width - 40 : screenWidth / columnsAmount;
+  const cardWidth = isMobile ? screen.width - 30 : screenWidth / columnsAmount;
   return {
     style: `width: ${cardWidth}px;`,
     styleBig: `width: ${cardWidth}px;`,
@@ -98,6 +100,7 @@ onMounted(() => {});
 .chartList__container {
   display: flex;
   flex-wrap: wrap;
+  padding: 0 5px;
 
   &.isMobile {
     > .el-card {

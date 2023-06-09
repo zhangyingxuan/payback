@@ -42,9 +42,11 @@ let HotListService = HotListService_1 = class HotListService {
             hotListData = await playWrightUtil_1.default.getHotListData();
             this.logger.log(hotListData);
             if (isExist) {
+                this.logger.error('更新数据');
                 await this.hotListRp.update(todayDataFromDB.id, hotListData);
             }
             else {
+                this.logger.error('新增数据');
                 await this.hotListRp.save(hotListData);
             }
             this.logger.debug('crawlHotListData is success!');

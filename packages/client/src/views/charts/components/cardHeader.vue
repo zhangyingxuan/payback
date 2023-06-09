@@ -2,7 +2,11 @@
   <el-row>
     <el-col :span="12"> {{ superData.headerTitle }} </el-col>
     <el-col :span="12" class="headerRight">
-      <el-link type="primary" :href="superData.url" target="_blank"
+      <el-link
+        v-if="superData.url"
+        type="primary"
+        :href="superData.url"
+        target="_blank"
         >更多数据</el-link
       >
       <!-- <a :href="superData.url" target="_blank">更多数据</a> -->

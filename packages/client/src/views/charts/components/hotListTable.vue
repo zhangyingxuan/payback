@@ -92,7 +92,6 @@ let superData = defineProps({
 }
 .table {
   overflow: auto;
-  padding: 5px;
 }
 .table * {
   box-sizing: border-box;
@@ -179,6 +178,7 @@ let superData = defineProps({
     .flexCenter();
     .tableColumsBorder();
     justify-content: flex-start;
+    white-space: nowrap;
   }
 }
 </style>

@@ -6,9 +6,15 @@
     <div class="table__container">
       <div :class="['date-col', { isMobile }]">
         <div class="table-header">连板数</div>
-        <div class="table-col">其它连板</div>
+        <div class="table-col">其它</div>
         <template v-for="height in heightArr" :key="'row1' + height">
-          <div class="table-col" v-if="height != 1">{{ height }}</div>
+          <div
+            :class="['table-col', getClassByHeight(height)]"
+            v-if="height != 1"
+          >
+            {{ height }}
+          </div>
+          <div v-else class="table-col height7">首板</div>
         </template>
       </div>
       <div
@@ -33,7 +39,11 @@
           </el-tooltip>
         </div>
         <template v-for="height in heightArr">
-          <div class="table-col" v-if="height != 1" :key="'row' + height">
+          <div
+            :class="['table-col', getClassByHeight(height)]"
+            v-if="height != 1"
+            :key="'row' + height"
+          >
             <el-tooltip
               effect="dark"
               placement="top"
@@ -44,6 +54,9 @@
               <span> {{ stock.name }} </span>
               <!-- <span> {{ stock.name }} {{ stock.code }} </span> -->
             </el-tooltip>
+          </div>
+          <div v-else class="table-col height7">
+            <span>{{ item.evenBoardData[1].length }}</span>
           </div>
         </template>
       </div>
@@ -99,6 +112,23 @@ const heightArr = computed(() => {
 
   return heightArr;
 });
+
+function getClassByHeight(height: any) {
+  switch (height) {
+    case 2:
+      return 'height2';
+    case 3:
+      return 'height3';
+    case 4:
+    case 5:
+    case 6:
+      return 'height4';
+    case 7:
+    case 8:
+    default:
+      return 'height7';
+  }
+}
 </script>
 
 <style scoped lang="less">
@@ -151,13 +181,16 @@ const heightArr = computed(() => {
       > div {
         padding: 2px;
       }
+
+      .gray {
+        display: inline-block;
+      }
     }
 
     > div {
       padding: 10px;
     }
   }
-
   .gray {
     color: #999;
   }
@@ -176,6 +209,20 @@ const heightArr = computed(() => {
     .flexCenter();
     .tableColumsBorder();
     justify-content: flex-start;
+
+    &.height2 {
+      height: 110px;
+    }
+    &.height3 {
+      height: 75px;
+    }
+    &.height4 {
+      height: 50px;
+    }
+    &.height7 {
+      height: 30px;
+      justify-content: center;
+    }
   }
   .table-col > span {
     font-size: 12px;
