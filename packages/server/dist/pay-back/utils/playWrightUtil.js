@@ -53,9 +53,6 @@ function getPoint(data) {
     const point = data.substring(index, dataLen - 2).split(',')[1];
     return point;
 }
-function getFloat(currentPoint, pre) {
-    return +((currentPoint - pre) / currentPoint * 100).toFixed(2);
-}
 async function getRealDataJson(response, replaceStr) {
     let dataStr = await response.text();
     dataStr = dataStr.replace(replaceStr, '');
@@ -124,7 +121,7 @@ function transformStockData(stockList) {
         return {
             code: item.code,
             name: item.name,
-            rise_and_fall: +(item.rise_and_fall).toFixed(2),
+            rise_and_fall: toFixed(item.rise_and_fall),
             tag: (_a = item.tag) === null || _a === void 0 ? void 0 : _a.concept_tag,
             hot_tag: (_b = item.tag) === null || _b === void 0 ? void 0 : _b.popularity_tag,
         };
@@ -135,11 +132,16 @@ function transformPlateData(plateList) {
         return {
             code: item.code,
             name: item.name,
-            rise_and_fall: +(item.rise_and_fall).toFixed(2),
+            rise_and_fall: toFixed(item.rise_and_fall),
             hot_tag: item.hot_tag,
             tag: item.tag,
         };
     }));
+}
+function toFixed(num) {
+    if (!num)
+        return;
+    return +(num).toFixed(2);
 }
 const waitHostListDataByUrls = async (pageUrl) => {
     const browser = await getBrowser();

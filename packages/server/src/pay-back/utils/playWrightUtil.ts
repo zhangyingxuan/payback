@@ -72,10 +72,6 @@ function getPoint(data) {
   return point;
 }
 
-function getFloat(currentPoint, pre) {
-  return +((currentPoint - pre) / currentPoint * 100).toFixed(2);
-}
-
 async function getRealDataJson(response: Response, replaceStr) {
   let dataStr = await response.text();
   dataStr = dataStr.replace(replaceStr, '')
@@ -163,7 +159,7 @@ function transformStockData(stockList) {
     return {
       code: item.code,
       name: item.name,
-      rise_and_fall: +(item.rise_and_fall).toFixed(2),
+      rise_and_fall: toFixed(item.rise_and_fall),
       tag: item.tag?.concept_tag,
       hot_tag: item.tag?.popularity_tag,
     }
@@ -175,11 +171,16 @@ function transformPlateData(plateList) {
     return {
       code: item.code,
       name: item.name,
-      rise_and_fall: +(item.rise_and_fall).toFixed(2),
+      rise_and_fall: toFixed(item.rise_and_fall),
       hot_tag: item.hot_tag,
       tag: item.tag,
     }
   }));
+}
+
+function toFixed(num) {
+  if (!num) return;
+  return +(num).toFixed(2)
 }
 
 /**
