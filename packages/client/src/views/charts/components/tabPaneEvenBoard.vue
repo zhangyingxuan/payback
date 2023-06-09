@@ -56,7 +56,9 @@
             </el-tooltip>
           </div>
           <div v-else class="table-col height7">
-            <span>{{ item.evenBoardData[1].length }}</span>
+            <span v-if="item.evenBoardData && item.evenBoardData[1]">{{
+              item.evenBoardData[1].length
+            }}</span>
           </div>
         </template>
       </div>
