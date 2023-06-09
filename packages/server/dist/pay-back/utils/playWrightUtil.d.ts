@@ -4,7 +4,7 @@ import { CreateHotListDto } from '../dto/create-hot-list.dto';
 import { CreatePayBackDto } from '../dto/create-pay-back.dto';
 declare const _default: {
     getShortTermData(todayDateStr: any): Promise<CreatePayBackDto>;
-    getMarketData(pageUrl: any, apiUrls: any): Promise<CreateMarketDataDto>;
+    getMarketData(dateStr: any): Promise<CreateMarketDataDto>;
     getFundsData(dateStr: any): Promise<CreateFundsDataDto>;
     getHotListData(): Promise<CreateHotListDto>;
 };

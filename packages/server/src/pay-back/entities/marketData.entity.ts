@@ -18,10 +18,6 @@ export class marketData {
   @Column({ comment: '昨日涨停今日收益', type: 'float', default: 0 })
   dailyLimitIncome: number;
 
-  // // TODO 市场成交额
-  // @Column({ comment: '市场成交总额', type: 'float', default: 0 })
-  // marketTurnover: number;
-
   @Column({ comment: '上证点数', type: 'decimal', default: 0, precision: 8, scale: 2 })
   shangzhengPoint: number;
 
@@ -40,11 +36,14 @@ export class marketData {
   @Column({ comment: '下跌>=5%家数', type: 'int', default: 0 })
   fallMore5: number;
 
-  @Column({ comment: '上涨幅度最大的板块TOP5', type: 'varchar', length: 512, default: '' })
-  risePlateTop5: number;
-
-  @Column({ comment: '下跌幅度最大的板块TOP5', type: 'varchar', length: 512, default: '' })
-  fallPlateTop5: number;
+  @Column({ comment: '上涨幅度最大的行业板块TOP5', type: 'varchar', length: 512, default: '' })
+  gainianRiseFloat: string;
+  @Column({ comment: '下跌幅度最大的行业板块TOP5', type: 'varchar', length: 512, default: '' })
+  gainianFallFloat: string;
+  @Column({ comment: '上涨幅度最大的行业板块TOP5', type: 'varchar', length: 512, default: '' })
+  hangyeRiseFloat: string;
+  @Column({ comment: '下跌幅度最大的行业板块TOP5', type: 'varchar', length: 512, default: '' })
+  hangyeFallFloat: string;
 
   // @Column({ type: 'date', comment: '创建时间' })
   @Column({ type: 'timestamp', comment: '创建时间', default: () => 'current_timestamp' })

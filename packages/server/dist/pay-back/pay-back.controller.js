@@ -65,17 +65,24 @@ let PayBackController = class PayBackController {
     }
     async fetchEvenBoardData(query) {
         const limit = +(query.limit || 20);
-        const shortTermData = (await this.ShorTermService.findEvenBoardByLimit(limit)).reverse();
+        const isMobile = query.isMobile || 'false';
+        let shortTermData = await this.ShorTermService.findEvenBoardByLimit(limit);
+        console.log(isMobile);
+        if (isMobile == 'false') {
+            shortTermData = shortTermData.reverse();
+        }
         return {
             code: 200,
-            data: {
-                shortTermData,
-            }
+            data: shortTermData,
         };
     }
     async fetchHostListData(query) {
         const limit = +(query.limit || 20);
-        const hotListData = (await this.hotListService.findByLimit(limit)).reverse();
+        const isMobile = query.isMobile || 'false';
+        let hotListData = await this.hotListService.findByLimit(limit);
+        if (isMobile == 'false') {
+            hotListData = hotListData.reverse();
+        }
         return {
             code: 200,
             data: hotListData,
@@ -114,6 +121,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PayBackController.prototype, "crawlShortTerm", null);
 __decorate([
+    (0, public_decorator_1.Public)(),
     (0, common_1.Get)('/crawlMarket'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),

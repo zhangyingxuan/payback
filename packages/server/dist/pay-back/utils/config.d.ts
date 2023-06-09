@@ -9,8 +9,12 @@ export declare const params: {
     capitalFlows3Most10: string;
     dataCenterUrl: string;
     latestConceptPlate: string;
-    gailianFundsInflow: string;
-    gailianFundsOutflow: string;
+    gainianFundsInflow: string;
+    gainianFundsOutflow: string;
     hangyeFundsInflow: string;
     hangyeFundsOutflow: string;
+    gainianRiseFloat: string;
+    gainianFallFloat: string;
+    hangyeRiseFloat: string;
+    hangyeFallFloat: string;
 };

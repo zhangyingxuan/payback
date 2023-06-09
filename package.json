@@ -1,8 +1,8 @@
 {
   "name": "root",
   "private": true,"scripts": {
-    "start:server": "cd packages/server && pnpm start:dev",
-    "start:client": "cd packages/client && pnpm dev",
+    "start:server": "cd packages/server && pnpm start",
+    "start:client": "cd packages/client && pnpm start",
     "start": "pnpm start:client & pnpm start:server"
   },
   "devDependencies": {

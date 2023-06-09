@@ -18,20 +18,14 @@ export declare class PayBackController {
             code: string;
             msg: string;
         };
-        marketData: import("./dto/create-market-data.dto").CreateMarketDataDto | {
-            code: string;
-            msg: string;
-        };
+        marketData: import("./dto/create-market-data.dto").CreateMarketDataDto;
     }>;
     crawlHotListData(): Promise<import("./dto/create-hot-list.dto").CreateHotListDto>;
     crawlShortTerm(): Promise<import("./dto/create-pay-back.dto").CreatePayBackDto | {
         code: string;
         msg: string;
     }>;
-    crawlMarket(): Promise<import("./dto/create-market-data.dto").CreateMarketDataDto | {
-        code: string;
-        msg: string;
-    }>;
+    crawlMarket(): Promise<import("./dto/create-market-data.dto").CreateMarketDataDto>;
     crawlFunds(): Promise<import("./dto/create-funds-data.dto").CreateFundsDataDto | {
         code: string;
         msg: string;
@@ -46,9 +40,7 @@ export declare class PayBackController {
     }>;
     fetchEvenBoardData(query: any): Promise<{
         code: number;
-        data: {
-            shortTermData: import("./entities/shortTermData.entity").shortTermData[];
-        };
+        data: import("./entities/shortTermData.entity").shortTermData[];
     }>;
     fetchHostListData(query: any): Promise<{
         code: number;

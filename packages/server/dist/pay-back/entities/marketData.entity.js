@@ -58,13 +58,21 @@ __decorate([
     __metadata("design:type", Number)
 ], marketData.prototype, "fallMore5", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '上涨幅度最大的板块TOP5', type: 'varchar', length: 512, default: '' }),
-    __metadata("design:type", Number)
-], marketData.prototype, "risePlateTop5", void 0);
+    (0, typeorm_1.Column)({ comment: '上涨幅度最大的行业板块TOP5', type: 'varchar', length: 512, default: '' }),
+    __metadata("design:type", String)
+], marketData.prototype, "gainianRiseFloat", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '下跌幅度最大的板块TOP5', type: 'varchar', length: 512, default: '' }),
-    __metadata("design:type", Number)
-], marketData.prototype, "fallPlateTop5", void 0);
+    (0, typeorm_1.Column)({ comment: '下跌幅度最大的行业板块TOP5', type: 'varchar', length: 512, default: '' }),
+    __metadata("design:type", String)
+], marketData.prototype, "gainianFallFloat", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '上涨幅度最大的行业板块TOP5', type: 'varchar', length: 512, default: '' }),
+    __metadata("design:type", String)
+], marketData.prototype, "hangyeRiseFloat", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '下跌幅度最大的行业板块TOP5', type: 'varchar', length: 512, default: '' }),
+    __metadata("design:type", String)
+], marketData.prototype, "hangyeFallFloat", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'timestamp', comment: '创建时间', default: () => 'current_timestamp' }),
     __metadata("design:type", typeorm_1.Timestamp)

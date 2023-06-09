@@ -20,7 +20,8 @@ export class HotListService {
   // * 10 * * * *：每小时一次，十分钟开始
   // 0 */30 9-17 * * *：上午九时至下午五时，每三十分钟一次
   // 0 30 11 * * 1-5：星期一至星期五上午11:30
-  @Cron('0 30 */1 * * *')
+  @Cron('0 30 */1 * * *') // 每小时执行一次，30分钟开始
+  // @Cron('0 30 0 * * *') // 每天0:30 执行
   async crawlHotListData() {
     let isExist = false;
     this.logger.debug('crawlHotListData is Begining!');
@@ -38,7 +39,6 @@ export class HotListService {
     let hotListData: CreateHotListDto;
     try {
       hotListData = await playWrightUtil.getHotListData();
-      this.logger.log(hotListData);
       if (isExist) {
         this.logger.error('更新数据')
         await this.hotListRp.update(todayDataFromDB.id, hotListData);

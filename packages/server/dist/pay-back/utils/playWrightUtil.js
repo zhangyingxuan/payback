@@ -12,21 +12,22 @@ const create_pay_back_dto_1 = require("../dto/create-pay-back.dto");
 const transformDataUtil_1 = require("../utils/transformDataUtil");
 const logger = new common_1.Logger('playWrightUtil');
 const browserOpenTimeOut = 60000;
+const browserCloseTimeOut = 30000;
 const commonTimeOut60s = 60000;
-const getBrowser = async () => {
-    return await playwright_1.firefox.launch({
+const getBrowser = async (autoCloseTime = browserCloseTimeOut) => {
+    const browser = await playwright_1.firefox.launch({
         timeout: browserOpenTimeOut,
     });
-    ;
+    setTimeout(async () => {
+        logger.log('自动关闭browser ====' + autoCloseTime);
+        await browser.close();
+    }, autoCloseTime);
+    return browser;
 };
 const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType, baseBrowser) => {
     const browser = baseBrowser ? baseBrowser : await getBrowser();
     logger.log('等待接口返回 start ====', pageUrl);
     const page = await browser.newPage();
-    !baseBrowser && setTimeout(() => {
-        logger.log('接口返回超时，自动关闭browser ====');
-        browser.close();
-    }, commonTimeOut60s);
     return new Promise((resolve, reject) => {
         page.on('response', async (response) => {
             if (response.url().includes(apiUrl) && response.status() === 200) {
@@ -59,8 +60,7 @@ async function getRealDataJson(response, replaceStr) {
     dataStr = dataStr.replace(')', '');
     return JSON.parse(dataStr);
 }
-const waitMarketDataByUrls = async (pageUrl, apiUrl) => {
-    const browser = await getBrowser();
+const waitMarketDataByUrls = async (pageUrl, apiUrl, browser) => {
     const page = await browser.newPage();
     return new Promise(async (resolve, reject) => {
         const createMarketDataDto = new create_market_data_dto_1.CreateMarketDataDto();
@@ -108,9 +108,6 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl) => {
             if (state['151_899050'] && state['hs_399006'] && state['hs_1A0001'] && state['hs_399001'] && state['apiUrl']) {
                 resolve(createMarketDataDto);
             }
-            setTimeout(() => {
-                browser.close();
-            }, 15000);
         });
         await page.goto(pageUrl, { timeout: commonTimeOut60s });
     });
@@ -144,9 +141,11 @@ function toFixed(num) {
     return +(num).toFixed(2);
 }
 const waitHostListDataByUrls = async (pageUrl) => {
-    const browser = await getBrowser();
-    const page = await browser.newPage();
     return new Promise(async (resolve, reject) => {
+        const browser = await getBrowser();
+        console.log('打开浏览器成功！');
+        const page = await browser.newPage();
+        console.log('打开热榜页面成功！');
         const maxAmount10 = 10;
         const maxAmount5 = 5;
         const createHotListDto = new create_hot_list_dto_1.CreateHotListDto();
@@ -184,9 +183,9 @@ const waitHostListDataByUrls = async (pageUrl) => {
             if (state['stockNormal'] && state['stockValue'] && state['plateConcept'] && state['plateIndustry']) {
                 resolve(createHotListDto);
             }
-            setTimeout(() => {
-                browser.close();
-            }, 15000);
+            setTimeout(async () => {
+                await browser.close();
+            }, 5000);
         });
         await page.goto(pageUrl, { timeout: commonTimeOut60s });
     });
@@ -216,24 +215,40 @@ exports.default = {
         }, 5000);
         return createPayBackDto;
     },
-    async getMarketData(pageUrl, apiUrls) {
-        const response = await waitMarketDataByUrls(pageUrl, apiUrls);
+    async getMarketData(dateStr) {
+        const browser = await getBrowser(browserCloseTimeOut * 4);
+        const response = await waitMarketDataByUrls(config_1.marketUrl, '/api.php', browser);
+        const gainianRiseFloat = await waitOriginalDataByUrl(config_1.iwencaiUrl + config_1.params.gainianRiseFloat, 'chart/get-robot-data', 'json', browser);
+        const gainianFallFloat = await waitOriginalDataByUrl(config_1.iwencaiUrl + config_1.params.gainianFallFloat, 'chart/get-robot-data', 'json', browser);
+        const hangyeRiseFloat = await waitOriginalDataByUrl(config_1.iwencaiUrl + config_1.params.hangyeRiseFloat, 'chart/get-robot-data', 'json', browser);
+        const hangyeFallFloat = await waitOriginalDataByUrl(config_1.iwencaiUrl + config_1.params.hangyeFallFloat, 'chart/get-robot-data', 'json', browser);
+        const gainianRiseFloatTop3 = fundsUtil_1.default.getPlateTop(gainianRiseFloat, dateStr, 5);
+        const gainianFallFloatTop3 = fundsUtil_1.default.getPlateTop(gainianFallFloat, dateStr, 5);
+        const hangyeRiseFloatTop3 = fundsUtil_1.default.getPlateTop(hangyeRiseFloat, dateStr, 5);
+        const hangyeFallFloatTop3 = fundsUtil_1.default.getPlateTop(hangyeFallFloat, dateStr, 5);
+        response.gainianRiseFloat = JSON.stringify(gainianRiseFloatTop3);
+        response.gainianFallFloat = JSON.stringify(gainianFallFloatTop3);
+        response.hangyeRiseFloat = JSON.stringify(hangyeRiseFloatTop3);
+        response.hangyeFallFloat = JSON.stringify(hangyeFallFloatTop3);
+        setTimeout(async () => {
+            await browser.close();
+        }, 5000);
         return response;
     },
     async getFundsData(dateStr) {
-        const browser = await getBrowser();
+        const browser = await getBrowser(browserCloseTimeOut * 5);
         const responseForeignFunds = await waitOriginalDataByUrl('https://data.eastmoney.com/hsgt/index.html', 'reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE', 'text', browser);
         const responseMarketTurnover = await waitOriginalDataByUrl('https://data.eastmoney.com/zjlx/dpzjlx.html', 'fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5', 'text', browser);
         const hangyeFundsInflow = await waitOriginalDataByUrl(config_1.iwencaiUrl + config_1.params.hangyeFundsInflow, 'chart/get-robot-data', 'json', browser);
         const hangyeFundsOutflow = await waitOriginalDataByUrl(config_1.iwencaiUrl + config_1.params.hangyeFundsOutflow, 'chart/get-robot-data', 'json', browser);
-        const gaiNianFundsInflow = await waitOriginalDataByUrl(config_1.iwencaiUrl + config_1.params.gailianFundsInflow, 'chart/get-robot-data', 'json', browser);
-        const gaiNianFundsOutflow = await waitOriginalDataByUrl(config_1.iwencaiUrl + config_1.params.gailianFundsOutflow, 'chart/get-robot-data', 'json', browser);
+        const gaiNianFundsInflow = await waitOriginalDataByUrl(config_1.iwencaiUrl + config_1.params.gainianFundsInflow, 'chart/get-robot-data', 'json', browser);
+        const gaiNianFundsOutflow = await waitOriginalDataByUrl(config_1.iwencaiUrl + config_1.params.gainianFundsOutflow, 'chart/get-robot-data', 'json', browser);
         const foreignFunds = fundsUtil_1.default.transformForeignFunds(responseForeignFunds);
         const marketTurnover = fundsUtil_1.default.getMarketTurnover(responseMarketTurnover);
-        const hangyeFundsInflowTop3 = fundsUtil_1.default.getPlateTop3(hangyeFundsInflow, dateStr);
-        const hangyeFundsOutflowTop3 = fundsUtil_1.default.getPlateTop3(hangyeFundsOutflow, dateStr);
-        const gainianFundsInflowTop3 = fundsUtil_1.default.getPlateTop3(gaiNianFundsInflow, dateStr);
-        const gainianFundsOutflowTop3 = fundsUtil_1.default.getPlateTop3(gaiNianFundsOutflow, dateStr);
+        const hangyeFundsInflowTop3 = fundsUtil_1.default.getPlateTop(hangyeFundsInflow, dateStr);
+        const hangyeFundsOutflowTop3 = fundsUtil_1.default.getPlateTop(hangyeFundsOutflow, dateStr);
+        const gainianFundsInflowTop3 = fundsUtil_1.default.getPlateTop(gaiNianFundsInflow, dateStr);
+        const gainianFundsOutflowTop3 = fundsUtil_1.default.getPlateTop(gaiNianFundsOutflow, dateStr);
         const createFundsDataDto = new create_funds_data_dto_1.CreateFundsDataDto();
         createFundsDataDto.createTime = new Date();
         createFundsDataDto.northFundsAmtIn = +(foreignFunds.northFundsAmtIn / 10000).toFixed(2);

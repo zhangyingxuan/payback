@@ -19,7 +19,6 @@ const typeorm_1 = require("typeorm");
 const marketData_entity_1 = require("../entities/marketData.entity");
 const typeorm_2 = require("@nestjs/typeorm");
 const playWrightUtil_1 = require("../utils/playWrightUtil");
-const config_1 = require("../utils/config");
 const dayjs = require("dayjs");
 const schedule_1 = require("@nestjs/schedule");
 let MarketService = MarketService_1 = class MarketService {
@@ -35,14 +34,10 @@ let MarketService = MarketService_1 = class MarketService {
             .where("market_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
             .getOne();
         if (todayDataFromDB) {
-            return {
-                code: 'isExist',
-                msg: todayDateStr + ' 数据已存在！',
-            };
         }
         let marketData;
         try {
-            marketData = await playWrightUtil_1.default.getMarketData(config_1.marketUrl, '/api.php');
+            marketData = await playWrightUtil_1.default.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
             await this.marketDataRp.save(marketData);
             this.logger.debug('Called is success!');
         }

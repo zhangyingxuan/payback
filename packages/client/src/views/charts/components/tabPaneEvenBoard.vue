@@ -91,9 +91,10 @@ async function initPage(pageSize: number) {
   // 获取图表数据
   const result: any = await fetchEvenBoardData({
     limit: isMobile ? 10 : pageSize,
+    isMobile,
   });
-  const rs: any = await fetchIndustryData();
-  evenBoard.value = transformEvenBoardData(result.shortTermData);
+  // const rs: any = await fetchIndustryData();
+  evenBoard.value = transformEvenBoardData(result);
 }
 
 onMounted(() => {

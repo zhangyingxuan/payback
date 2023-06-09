@@ -10,6 +10,10 @@ export declare class CreateMarketDataDto {
     shenzhengPoint: number;
     chuangyePoint: number;
     beizheng50Point: number;
+    gainianRiseFloat: string;
+    gainianFallFloat: string;
+    hangyeRiseFloat: string;
+    hangyeFallFloat: string;
     riseMore5: number;
     fallMore5: number;
     createTime: Date;

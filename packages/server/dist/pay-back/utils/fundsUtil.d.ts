@@ -6,7 +6,7 @@ declare const _default: {
         southFundsBuyAmt: number;
     };
     getMarketTurnover(responseMarketTurnoverStr: any): any;
-    getPlateTop3(responseJson: any, dateStr: any): {
+    getPlateTop(responseJson: any, dateStr: any, len?: number): {
         name: any;
         code: any;
         funds: number;

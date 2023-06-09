@@ -1,7 +1,7 @@
 <template>
   <el-row>
-    <el-col :span="12"> {{ superData.headerTitle }} </el-col>
-    <el-col :span="12" class="headerRight">
+    <el-col :span="18"> {{ superData.headerTitle }} </el-col>
+    <el-col :span="6" class="headerRight">
       <el-link
         v-if="superData.url"
         type="primary"

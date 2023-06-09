@@ -3,7 +3,6 @@ import { Repository } from 'typeorm';
 import { marketData } from '../entities/marketData.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import playWrightUtil from '../utils/playWrightUtil'
-import { marketUrl } from '../utils/config';
 import * as dayjs from 'dayjs';
 import { Cron } from '@nestjs/schedule';
 import { CreateMarketDataDto } from '../dto/create-market-data.dto';
@@ -32,14 +31,14 @@ export class MarketService {
       .getOne();
 
     if (todayDataFromDB) {
-      return {
-        code: 'isExist',
-        msg: todayDateStr + ' 数据已存在！',
-      }
+      // return {
+      //   code: 'isExist',
+      //   msg: todayDateStr + ' 数据已存在！',
+      // }
     }
     let marketData: CreateMarketDataDto;
     try {
-      marketData = await playWrightUtil.getMarketData(marketUrl, '/api.php');
+      marketData = await playWrightUtil.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
       await this.marketDataRp.save(marketData);
       this.logger.debug('Called is success!');
     } catch (e) {

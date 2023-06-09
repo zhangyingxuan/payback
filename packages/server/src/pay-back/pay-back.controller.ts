@@ -35,6 +35,7 @@ export class PayBackController {
   crawlShortTerm() {
     return this.ShorTermService.crawlShortTermData();
   }
+  @Public()
   @Get('/crawlMarket')
   crawlMarket() {
     return this.marketService.crawlMarketData();
@@ -62,20 +63,32 @@ export class PayBackController {
 
   @Get('fetchEvenBoardData')
   async fetchEvenBoardData(@Query() query) {
-    const limit = +(query.limit || 20)
-    const shortTermData = (await this.ShorTermService.findEvenBoardByLimit(limit)).reverse();
+    const limit = +(query.limit || 20);
+    // isMobile
+    const isMobile = query.isMobile || 'false';
+    let shortTermData = await this.ShorTermService.findEvenBoardByLimit(limit);
+    console.log(isMobile)
+    // 移动端 日期近的在前面，PC相反
+    if (isMobile == 'false') {
+      shortTermData = shortTermData.reverse();
+    }
     return {
       code: 200,
-      data: {
-        shortTermData,
-      }
+      data: shortTermData,
     };
   }
 
   @Get('fetchHostListData')
   async fetchHostListData(@Query() query) {
-    const limit = +(query.limit || 20)
-    const hotListData = (await this.hotListService.findByLimit(limit)).reverse();
+    const limit = +(query.limit || 20);
+    // isMobile
+    const isMobile = query.isMobile || 'false';
+    let hotListData = await this.hotListService.findByLimit(limit);
+    // 移动端 日期近的在前面，PC相反
+
+    if (isMobile == 'false') {
+      hotListData = hotListData.reverse();
+    }
     return {
       code: 200,
       data: hotListData,

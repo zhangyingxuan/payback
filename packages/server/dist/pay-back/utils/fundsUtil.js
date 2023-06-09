@@ -37,9 +37,9 @@ exports.default = {
         const responseMarketTurnoverJson = JSON.parse(marketTurnoverStr).data.diff;
         return responseMarketTurnoverJson[0].f6 + responseMarketTurnoverJson[1].f6;
     },
-    getPlateTop3(responseJson, dateStr) {
+    getPlateTop(responseJson, dateStr, len = 3) {
         const platesData = commonUtil_1.default.getIwencaiData(responseJson);
-        return platesData.splice(0, 3).map((item) => {
+        return platesData.splice(0, len).map((item) => {
             return {
                 name: item['指数简称'],
                 code: item['指数代码'],

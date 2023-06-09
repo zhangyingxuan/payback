@@ -45,7 +45,7 @@
     </el-card>
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
       <template #header>
-        <CardHeader :url="cardUrls.longhuListChartUrl" headerTitle="龙虎榜" />
+        <CardHeader :url="cardUrls.longhuListChartUrl" headerTitle="龙虎榜（净买大，成交低则反转）" />
       </template>
       <div ref="longhuListChart" :style="data.style"></div>
     </el-card>

@@ -11,7 +11,9 @@ export declare class marketData {
     beizheng50Point: number;
     riseMore5: number;
     fallMore5: number;
-    risePlateTop5: number;
-    fallPlateTop5: number;
+    gainianRiseFloat: string;
+    gainianFallFloat: string;
+    hangyeRiseFloat: string;
+    hangyeFallFloat: string;
     createTime: Timestamp;
 }

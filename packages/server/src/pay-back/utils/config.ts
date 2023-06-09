@@ -17,11 +17,19 @@ export const params = {
   // 找到最新 概念板块，爱问财 通过指数代码 最新代码最大
   latestConceptPlate: '%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%E6%A6%82%E5%BF%B5%E6%9D%BF%E5%9D%97&querytype=zhishu',
   // 概念板块 主力资金 流入排序
-  gailianFundsInflow: '概念板块主力资金；主力资金流向金额正序&querytype=zhishu',
+  gainianFundsInflow: '概念板块主力资金；主力资金流向金额正序&querytype=zhishu',
   // 概念板块 主力资金 流出排序
-  gailianFundsOutflow: '概念板块主力资金；主力资金流向金额倒序&querytype=zhishu',
+  gainianFundsOutflow: '概念板块主力资金；主力资金流向金额倒序&querytype=zhishu',
   // 概念板块 主力资金 流入排序
   hangyeFundsInflow: '行业板块主力资金；主力资金流向金额正序&querytype=zhishu',
   // 概念板块 主力资金 流出排序
   hangyeFundsOutflow: '行业板块主力资金；主力资金流向金额倒序&querytype=zhishu',
+  // 概念板块 涨幅排行
+  gainianRiseFloat: '概念板块主力资金；涨跌幅正序&querytype=zhishu',
+  // 概念板块 跌幅排行
+  gainianFallFloat: '概念板块主力资金；涨跌幅倒序&querytype=zhishu',
+  // 行业板块 涨幅排行
+  hangyeRiseFloat: '行业板块主力资金；涨跌幅正序&querytype=zhishu',
+  // 行业板块 跌幅排行
+  hangyeFallFloat: '行业板块主力资金；涨跌幅倒序&querytype=zhishu',
 }

@@ -41,6 +41,7 @@
         :style="data.style"
       />
     </el-card>
+    <el-backtop :visibility-height="100" :right="100" :bottom="100" />
   </div>
 </template>
 <script lang="ts" setup>
@@ -77,7 +78,7 @@ function getChartStyle() {
 }
 
 async function initPageData() {
-  const result = await fetchHostListData({ limit: 10 });
+  const result = await fetchHostListData({ limit: 10, isMobile });
   // 数据转换
   data.hotListResult = result.map(item => {
     return {
