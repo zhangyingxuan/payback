@@ -9,7 +9,8 @@ import fundsUtil from './fundsUtil';
 import { marketUrl, iwencaiUrl, params } from './config';
 import { Logger } from '@nestjs/common';
 import { CreatePayBackDto } from '../dto/create-pay-back.dto';
-import transformDataUtil from '../utils/transformDataUtil';
+import { transformShortTermSourceData, transformStockData, transformPlateData } from '../utils/transformDataUtil';
+import fetch from 'node-fetch';
 
 const logger = new Logger('playWrightUtil');
 
@@ -40,6 +41,11 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType: 'text' | 'j
   logger.log('等待接口返回 start ====', pageUrl);
   // 打开股票行情页面  
   const page = await browser.newPage();
+  // await page.evaluate(
+  //   `window.localStorage.setItem('PAGE_NUMBER', '100')`
+  // );
+  const storageState = await page.context().storageState();
+  console.log(storageState);
 
   return new Promise((resolve, reject) => {
     page.on('response', async (response: Response) => {
@@ -149,35 +155,6 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl, browser): Promise<CreateMar
   });
 };
 
-function transformStockData(stockList) {
-  return JSON.stringify(stockList.map(item => {
-    return {
-      code: item.code,
-      name: item.name,
-      rise_and_fall: toFixed(item.rise_and_fall),
-      tag: item.tag?.concept_tag,
-      hot_tag: item.tag?.popularity_tag,
-    }
-  }));
-}
-
-function transformPlateData(plateList) {
-  return JSON.stringify(plateList.map(item => {
-    return {
-      code: item.code,
-      name: item.name,
-      rise_and_fall: toFixed(item.rise_and_fall),
-      hot_tag: item.hot_tag,
-      tag: item.tag,
-    }
-  }));
-}
-
-function toFixed(num) {
-  if (!num) return;
-  return +(num).toFixed(2)
-}
-
 /**
 * 
 * @param url 准备热榜数据
@@ -257,7 +234,7 @@ export default {
     const downLimitData: Object[] = await getTodayData(iwencaiUrl + params.downLimit, 'chart/get-robot-data', browser);
     // console.log(dailyLimitData);
     // console.log(downLimitData);
-    let { SZAmount = 0, SHAmount = 0, board1 = 0, evenBoardData } = transformDataUtil.transformShortTermSourceData(dailyLimitData, todayDateStr);
+    let { SZAmount = 0, SHAmount = 0, board1 = 0, evenBoardData } = transformShortTermSourceData(dailyLimitData, todayDateStr);
 
     createPayBackDto.createTime = new Date();
     createPayBackDto.downLimitQuantity = downLimitData.length;
@@ -337,7 +314,11 @@ export default {
     }, 5000);
     return createFundsDataDto;
   },
-  getHotListData() {
+  /**
+   * 通过页面获取 热门数据（耗费资源） - 已废弃
+   * @returns 
+   */
+  async getHotListData() {
     const response = waitHostListDataByUrls('https://eq.10jqka.com.cn/frontend/thsTopRank/index.html');
     return response;
   }

@@ -31,10 +31,10 @@ export class MarketService {
       .getOne();
 
     if (todayDataFromDB) {
-      // return {
-      //   code: 'isExist',
-      //   msg: todayDateStr + ' 数据已存在！',
-      // }
+      return {
+        code: 'isExist',
+        msg: todayDateStr + ' 数据已存在！',
+      }
     }
     let marketData: CreateMarketDataDto;
     try {

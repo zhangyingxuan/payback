@@ -3,6 +3,7 @@ import { ShorTermService } from './service/shortTerm.service';
 import { MarketService } from './service/market.service';
 import { FundsService } from './service/funds.service';
 import { HotListService } from './service/hotList.service';
+import { ApiTestService } from './service/apiTest.service';
 import { UpdatePayBackDto } from './dto/update-pay-back.dto';
 import { Public } from '../decorator/public.decorator';
 
@@ -12,8 +13,18 @@ export class PayBackController {
     private readonly ShorTermService: ShorTermService,
     private readonly fundsService: FundsService,
     private readonly hotListService: HotListService,
+    private readonly apiTestService: ApiTestService,
     private readonly marketService: MarketService) { }
 
+  @Public()
+  @Get('testApi')
+  async testApi() {
+    this.apiTestService.fetchHotList();
+    // this.apiTestService.fetchExternalData();
+    // this.apiTestService.getTodos();
+  }
+
+  @Public()
   @Get('/crawlTodayData')
   async crawlTodayData() {
     const shortData = await this.ShorTermService.crawlShortTermData();
@@ -31,11 +42,11 @@ export class PayBackController {
   crawlHotListData() {
     return this.hotListService.crawlHotListData();
   }
+  @Public()
   @Get('/crawlShortTerm')
   crawlShortTerm() {
     return this.ShorTermService.crawlShortTermData();
   }
-  @Public()
   @Get('/crawlMarket')
   crawlMarket() {
     return this.marketService.crawlMarketData();
@@ -44,7 +55,7 @@ export class PayBackController {
   crawlFunds() {
     return this.fundsService.crawlfundsData();
   }
-  @Public()
+
   @Get('list')
   async findByLimit(@Query() query) {
     const limit = +(query.limit || 20)
@@ -61,13 +72,13 @@ export class PayBackController {
     };
   }
 
+
   @Get('fetchEvenBoardData')
   async fetchEvenBoardData(@Query() query) {
     const limit = +(query.limit || 20);
     // isMobile
     const isMobile = query.isMobile || 'false';
     let shortTermData = await this.ShorTermService.findEvenBoardByLimit(limit);
-    console.log(isMobile)
     // 移动端 日期近的在前面，PC相反
     if (isMobile == 'false') {
       shortTermData = shortTermData.reverse();
@@ -81,14 +92,8 @@ export class PayBackController {
   @Get('fetchHostListData')
   async fetchHostListData(@Query() query) {
     const limit = +(query.limit || 20);
-    // isMobile
-    const isMobile = query.isMobile || 'false';
     let hotListData = await this.hotListService.findByLimit(limit);
     // 移动端 日期近的在前面，PC相反
-
-    if (isMobile == 'false') {
-      hotListData = hotListData.reverse();
-    }
     return {
       code: 200,
       data: hotListData,

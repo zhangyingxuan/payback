@@ -409,7 +409,7 @@ export const getIndexChartOption = function (xAxisData: any, yAxisData: any) {
  */
 export const getMarketChartOption = function (xAxisData: any, yAxisData: any) {
   const colors = ['#EFCA52', '#52B3F5', '#ED7874', '#ADDE8A'];
-  const legendData = ['市场评分', '昨日涨停今日收益', '上涨家数', '下跌家数'];
+  const legendData = ['评分', '昨涨停今收益', '上涨家数', '下跌家数'];
   return {
     color: colors,
     tooltip: {
@@ -418,7 +418,14 @@ export const getMarketChartOption = function (xAxisData: any, yAxisData: any) {
         type: 'cross',
       },
     },
-    grid,
+    grid: {
+      right: 60,
+      // top: '30%',
+      x2: 0,
+      y2: 30,
+      x: 30,
+      y: 50,
+    },
     toolbox: {
       feature: {
         dataView: { show: true, readOnly: false },
@@ -521,7 +528,7 @@ export const getMarketChartOption = function (xAxisData: any, yAxisData: any) {
  */
 export const getShortTermChartOption = function (xAxisData: any, yAxisData: any) {
   const colors = ['#ED7874', '#ADDE8A', '#EFCA52', '#52B3F5'];
-  const legendData = ['涨停', '跌停', '市场高度'];
+  const legendData = ['涨停', '跌停', '连板数量', '市场高度'];
   return {
     color: colors,
     tooltip: {
@@ -596,9 +603,22 @@ export const getShortTermChartOption = function (xAxisData: any, yAxisData: any)
       },
       {
         name: legendData[2],
+        type: 'line',
+        yAxisIndex: 0,
+        data: yAxisData[2],
+        label: {
+          show: true,
+          position: 'top',
+          fontSize: 14,
+          color: colors[2],
+        },
+        itemStyle: dottedLineItemStyle
+      },
+      {
+        name: legendData[3],
         type: 'bar',
         yAxisIndex: 1,
-        data: yAxisData[2],
+        data: yAxisData[3],
       },
     ],
   };

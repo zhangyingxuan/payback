@@ -2,13 +2,16 @@ import { ShorTermService } from './service/shortTerm.service';
 import { MarketService } from './service/market.service';
 import { FundsService } from './service/funds.service';
 import { HotListService } from './service/hotList.service';
+import { ApiTestService } from './service/apiTest.service';
 import { UpdatePayBackDto } from './dto/update-pay-back.dto';
 export declare class PayBackController {
     private readonly ShorTermService;
     private readonly fundsService;
     private readonly hotListService;
+    private readonly apiTestService;
     private readonly marketService;
-    constructor(ShorTermService: ShorTermService, fundsService: FundsService, hotListService: HotListService, marketService: MarketService);
+    constructor(ShorTermService: ShorTermService, fundsService: FundsService, hotListService: HotListService, apiTestService: ApiTestService, marketService: MarketService);
+    testApi(): Promise<void>;
     crawlTodayData(): Promise<{
         shortData: import("./dto/create-pay-back.dto").CreatePayBackDto | {
             code: string;
@@ -18,14 +21,20 @@ export declare class PayBackController {
             code: string;
             msg: string;
         };
-        marketData: import("./dto/create-market-data.dto").CreateMarketDataDto;
+        marketData: import("./dto/create-market-data.dto").CreateMarketDataDto | {
+            code: string;
+            msg: string;
+        };
     }>;
     crawlHotListData(): Promise<import("./dto/create-hot-list.dto").CreateHotListDto>;
     crawlShortTerm(): Promise<import("./dto/create-pay-back.dto").CreatePayBackDto | {
         code: string;
         msg: string;
     }>;
-    crawlMarket(): Promise<import("./dto/create-market-data.dto").CreateMarketDataDto>;
+    crawlMarket(): Promise<import("./dto/create-market-data.dto").CreateMarketDataDto | {
+        code: string;
+        msg: string;
+    }>;
     crawlFunds(): Promise<import("./dto/create-funds-data.dto").CreateFundsDataDto | {
         code: string;
         msg: string;

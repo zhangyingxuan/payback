@@ -18,14 +18,19 @@ const shortTerm_service_1 = require("./service/shortTerm.service");
 const market_service_1 = require("./service/market.service");
 const funds_service_1 = require("./service/funds.service");
 const hotList_service_1 = require("./service/hotList.service");
+const apiTest_service_1 = require("./service/apiTest.service");
 const update_pay_back_dto_1 = require("./dto/update-pay-back.dto");
 const public_decorator_1 = require("../decorator/public.decorator");
 let PayBackController = class PayBackController {
-    constructor(ShorTermService, fundsService, hotListService, marketService) {
+    constructor(ShorTermService, fundsService, hotListService, apiTestService, marketService) {
         this.ShorTermService = ShorTermService;
         this.fundsService = fundsService;
         this.hotListService = hotListService;
+        this.apiTestService = apiTestService;
         this.marketService = marketService;
+    }
+    async testApi() {
+        this.apiTestService.fetchHotList();
     }
     async crawlTodayData() {
         const shortData = await this.ShorTermService.crawlShortTermData();
@@ -67,7 +72,6 @@ let PayBackController = class PayBackController {
         const limit = +(query.limit || 20);
         const isMobile = query.isMobile || 'false';
         let shortTermData = await this.ShorTermService.findEvenBoardByLimit(limit);
-        console.log(isMobile);
         if (isMobile == 'false') {
             shortTermData = shortTermData.reverse();
         }
@@ -78,11 +82,7 @@ let PayBackController = class PayBackController {
     }
     async fetchHostListData(query) {
         const limit = +(query.limit || 20);
-        const isMobile = query.isMobile || 'false';
         let hotListData = await this.hotListService.findByLimit(limit);
-        if (isMobile == 'false') {
-            hotListData = hotListData.reverse();
-        }
         return {
             code: 200,
             data: hotListData,
@@ -102,6 +102,14 @@ let PayBackController = class PayBackController {
     }
 };
 __decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.Get)('testApi'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], PayBackController.prototype, "testApi", null);
+__decorate([
+    (0, public_decorator_1.Public)(),
     (0, common_1.Get)('/crawlTodayData'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -115,13 +123,13 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PayBackController.prototype, "crawlHotListData", null);
 __decorate([
+    (0, public_decorator_1.Public)(),
     (0, common_1.Get)('/crawlShortTerm'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], PayBackController.prototype, "crawlShortTerm", null);
 __decorate([
-    (0, public_decorator_1.Public)(),
     (0, common_1.Get)('/crawlMarket'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -134,7 +142,6 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PayBackController.prototype, "crawlFunds", null);
 __decorate([
-    (0, public_decorator_1.Public)(),
     (0, common_1.Get)('list'),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
@@ -188,6 +195,7 @@ PayBackController = __decorate([
     __metadata("design:paramtypes", [shortTerm_service_1.ShorTermService,
         funds_service_1.FundsService,
         hotList_service_1.HotListService,
+        apiTest_service_1.ApiTestService,
         market_service_1.MarketService])
 ], PayBackController);
 exports.PayBackController = PayBackController;

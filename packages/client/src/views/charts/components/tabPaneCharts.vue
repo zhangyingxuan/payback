@@ -45,7 +45,10 @@
     </el-card>
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
       <template #header>
-        <CardHeader :url="cardUrls.longhuListChartUrl" headerTitle="龙虎榜（净买大，成交低则反转）" />
+        <CardHeader
+          :url="cardUrls.longhuListChartUrl"
+          headerTitle="龙虎榜（净买大，成交低则反转）"
+        />
       </template>
       <div ref="longhuListChart" :style="data.style"></div>
     </el-card>
@@ -107,7 +110,7 @@ const longhuListChart = ref(); // 龙虎榜Chart
 
 // 监听变化，重新请求数据
 watch(countDays, async val => {
-  // await initPage(val);
+  await initPage(val);
 });
 
 onMounted(async () => {
@@ -282,8 +285,8 @@ function initShortTermChart(shortTermData: ShortTermModel[]) {
     xAxisData.push(dayjs(item.createTime).format('MM/DD'));
     yAxisData[0].push(item.dailyLimitQuantity);
     yAxisData[1].push(item.downLimitQuantity);
-    yAxisData[2].push(item.marketHeight);
-    // yAxisData[3].push(item.dailyLimitQuantity);
+    yAxisData[2].push(item.evenBoardAmount);
+    yAxisData[3].push(item.marketHeight);
   });
 
   // 基于准备好的dom，初始化echarts实例

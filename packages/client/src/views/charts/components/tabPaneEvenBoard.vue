@@ -4,7 +4,7 @@
   <!-- 列数取决于 日期数量 -->
   <div class="table">
     <div class="table__container">
-      <div :class="['date-col', { isMobile }]">
+      <div :class="['date-col first-col', { isMobile }]">
         <div class="table-header">连板数</div>
         <div class="table-col">其它</div>
         <template v-for="height in heightArr" :key="'row1' + height">
@@ -67,7 +67,7 @@
 </template>
 <script lang="ts" setup>
 import { fetchEvenBoardData } from '@/api/payBack';
-import { fetchIndustryData } from '@/api/tonghuashun';
+// import { fetchIndustryData } from '@/api/tonghuashun';
 import { transformEvenBoardData } from '../utils/transformUtil';
 import { onMounted, reactive, watch, computed } from 'vue';
 import { useSidebarStore } from '@/store/sidebar';
@@ -83,14 +83,15 @@ const siderBar = useSidebarStore();
 const { countDays } = storeToRefs(siderBar);
 
 // 监听变化，重新请求数据
-watch(countDays, async val => {
-  await initPage(val);
-});
+// watch(countDays, async val => {
+//   await initPage(val);
+// });
 
 async function initPage(pageSize: number) {
   // 获取图表数据
   const result: any = await fetchEvenBoardData({
-    limit: isMobile ? 10 : pageSize,
+    limit: 10,
+    // limit: isMobile ? 10 : pageSize,
     isMobile,
   });
   // const rs: any = await fetchIndustryData();
@@ -145,7 +146,6 @@ function getClassByHeight(height: any) {
   border-top: 1px solid @tableColumsBorderColor;
 }
 .table {
-  overflow: auto;
   padding: 0 15px;
 }
 .table * {
@@ -167,6 +167,7 @@ function getClassByHeight(height: any) {
 }
 
 .table__container {
+  overflow: auto;
   display: flex;
   flex-direction: row;
   text-align: center;
@@ -178,6 +179,16 @@ function getClassByHeight(height: any) {
     justify-content: flex-start;
     width: 9%;
     min-width: 9%;
+    max-width: 9%;
+
+    &.first-col {
+      width: 80px;
+      min-width: 80px;
+      max-width: 80px;
+      position: sticky;
+      left: 0;
+      background-color: #fff;
+    }
     &.isMobile {
       width: 62px;
       min-width: 62px;

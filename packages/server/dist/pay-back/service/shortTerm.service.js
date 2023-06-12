@@ -43,6 +43,7 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
         let createPayBackDto;
         try {
             createPayBackDto = await playWrightUtil_1.default.getShortTermData(todayDateStr);
+            console.log(createPayBackDto);
             await this.shortTermDataRp.save(createPayBackDto);
             this.logger.debug('Called is success!');
         }
@@ -59,7 +60,11 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
             .createQueryBuilder('short_term_data')
             .offset(0)
             .limit(len)
-            .select(['short_term_data.dailyLimitQuantity', 'short_term_data.downLimitQuantity', 'short_term_data.marketHeight', 'short_term_data.createTime'])
+            .select(['short_term_data.dailyLimitQuantity',
+            'short_term_data.downLimitQuantity',
+            'short_term_data.marketHeight',
+            'short_term_data.evenBoardAmount',
+            'short_term_data.createTime'])
             .orderBy('createTime', 'DESC')
             .getMany();
     }

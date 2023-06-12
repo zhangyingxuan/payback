@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { hotList } from '../entities/hotList.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import playWrightUtil from '../utils/playWrightUtil'
+import { getHotListData } from '../utils/hotListUtil'
 import { CreateHotListDto } from '../dto/create-hot-list.dto';
 import * as dayjs from 'dayjs';
 import { Cron } from '@nestjs/schedule';
@@ -38,12 +38,12 @@ export class HotListService {
     }
     let hotListData: CreateHotListDto;
     try {
-      hotListData = await playWrightUtil.getHotListData();
+      hotListData = await getHotListData();
       if (isExist) {
-        this.logger.error('更新数据')
+        this.logger.log('更新数据')
         await this.hotListRp.update(todayDataFromDB.id, hotListData);
       } else {
-        this.logger.error('新增数据')
+        this.logger.log('新增数据')
         await this.hotListRp.save(hotListData);
       }
       this.logger.debug('crawlHotListData is success!');

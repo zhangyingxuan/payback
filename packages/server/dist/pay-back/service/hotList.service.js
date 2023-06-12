@@ -18,7 +18,7 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("typeorm");
 const hotList_entity_1 = require("../entities/hotList.entity");
 const typeorm_2 = require("@nestjs/typeorm");
-const playWrightUtil_1 = require("../utils/playWrightUtil");
+const hotListUtil_1 = require("../utils/hotListUtil");
 const dayjs = require("dayjs");
 const schedule_1 = require("@nestjs/schedule");
 let HotListService = HotListService_1 = class HotListService {
@@ -39,13 +39,13 @@ let HotListService = HotListService_1 = class HotListService {
         }
         let hotListData;
         try {
-            hotListData = await playWrightUtil_1.default.getHotListData();
+            hotListData = await (0, hotListUtil_1.getHotListData)();
             if (isExist) {
-                this.logger.error('更新数据');
+                this.logger.log('更新数据');
                 await this.hotListRp.update(todayDataFromDB.id, hotListData);
             }
             else {
-                this.logger.error('新增数据');
+                this.logger.log('新增数据');
                 await this.hotListRp.save(hotListData);
             }
             this.logger.debug('crawlHotListData is success!');

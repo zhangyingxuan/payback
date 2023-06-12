@@ -34,6 +34,10 @@ let MarketService = MarketService_1 = class MarketService {
             .where("market_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
             .getOne();
         if (todayDataFromDB) {
+            return {
+                code: 'isExist',
+                msg: todayDateStr + ' 数据已存在！',
+            };
         }
         let marketData;
         try {

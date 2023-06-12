@@ -28,6 +28,8 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType, baseBrowser
     const browser = baseBrowser ? baseBrowser : await getBrowser();
     logger.log('等待接口返回 start ====', pageUrl);
     const page = await browser.newPage();
+    const storageState = await page.context().storageState();
+    console.log(storageState);
     return new Promise((resolve, reject) => {
         page.on('response', async (response) => {
             if (response.url().includes(apiUrl) && response.status() === 200) {
@@ -112,34 +114,6 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl, browser) => {
         await page.goto(pageUrl, { timeout: commonTimeOut60s });
     });
 };
-function transformStockData(stockList) {
-    return JSON.stringify(stockList.map(item => {
-        var _a, _b;
-        return {
-            code: item.code,
-            name: item.name,
-            rise_and_fall: toFixed(item.rise_and_fall),
-            tag: (_a = item.tag) === null || _a === void 0 ? void 0 : _a.concept_tag,
-            hot_tag: (_b = item.tag) === null || _b === void 0 ? void 0 : _b.popularity_tag,
-        };
-    }));
-}
-function transformPlateData(plateList) {
-    return JSON.stringify(plateList.map(item => {
-        return {
-            code: item.code,
-            name: item.name,
-            rise_and_fall: toFixed(item.rise_and_fall),
-            hot_tag: item.hot_tag,
-            tag: item.tag,
-        };
-    }));
-}
-function toFixed(num) {
-    if (!num)
-        return;
-    return +(num).toFixed(2);
-}
 const waitHostListDataByUrls = async (pageUrl) => {
     return new Promise(async (resolve, reject) => {
         const browser = await getBrowser();
@@ -160,25 +134,25 @@ const waitHostListDataByUrls = async (pageUrl) => {
                 state.stockNormal = true;
                 const responseData = await response.json();
                 const stockList = responseData.data.stock_list.splice(0, maxAmount10);
-                createHotListDto.stockNormal = transformStockData(stockList);
+                createHotListDto.stockNormal = (0, transformDataUtil_1.transformStockData)(stockList);
             }
             if (response.url().includes('stock?stock_type=a&type=day&list_type=value') && response.status() === 200) {
                 state.stockValue = true;
                 const responseData = await response.json();
                 const stockList = responseData.data.stock_list.splice(0, maxAmount10);
-                createHotListDto.stockValue = transformStockData(stockList);
+                createHotListDto.stockValue = (0, transformDataUtil_1.transformStockData)(stockList);
             }
             if (response.url().includes('plate?type=concept') && response.status() === 200) {
                 state.plateConcept = true;
                 const responseData = await response.json();
                 const plateList = responseData.data.plate_list.splice(0, maxAmount5);
-                createHotListDto.plateConcept = transformPlateData(plateList);
+                createHotListDto.plateConcept = (0, transformDataUtil_1.transformPlateData)(plateList);
             }
             if (response.url().includes('plate?type=industry') && response.status() === 200) {
                 state.plateIndustry = true;
                 const responseData = await response.json();
                 const plateList = responseData.data.plate_list.splice(0, maxAmount5);
-                createHotListDto.plateIndustry = transformPlateData(plateList);
+                createHotListDto.plateIndustry = (0, transformDataUtil_1.transformPlateData)(plateList);
             }
             if (state['stockNormal'] && state['stockValue'] && state['plateConcept'] && state['plateIndustry']) {
                 resolve(createHotListDto);
@@ -200,7 +174,7 @@ exports.default = {
         const browser = await getBrowser();
         const dailyLimitData = await getTodayData(config_1.iwencaiUrl + config_1.params.dailyLimitMoreThan1, 'chart/get-robot-data', browser);
         const downLimitData = await getTodayData(config_1.iwencaiUrl + config_1.params.downLimit, 'chart/get-robot-data', browser);
-        let { SZAmount = 0, SHAmount = 0, board1 = 0, evenBoardData } = transformDataUtil_1.default.transformShortTermSourceData(dailyLimitData, todayDateStr);
+        let { SZAmount = 0, SHAmount = 0, board1 = 0, evenBoardData } = (0, transformDataUtil_1.transformShortTermSourceData)(dailyLimitData, todayDateStr);
         createPayBackDto.createTime = new Date();
         createPayBackDto.downLimitQuantity = downLimitData.length;
         createPayBackDto.dailyLimitQuantity = dailyLimitData.length;
@@ -263,7 +237,7 @@ exports.default = {
         }, 5000);
         return createFundsDataDto;
     },
-    getHotListData() {
+    async getHotListData() {
         const response = waitHostListDataByUrls('https://eq.10jqka.com.cn/frontend/thsTopRank/index.html');
         return response;
     }
