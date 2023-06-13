@@ -10,8 +10,6 @@ const logger = new Logger('hotListUtil');
  * @returns 
  */
 export async function getHotListData() {
-  // const response = waitHostListDataByUrls('https://eq.10jqka.com.cn/frontend/thsTopRank/index.html');
-
   const createHotListDto = new CreateHotListDto();
   const baseUrl = 'https://dq.10jqka.com.cn/fuyao/hot_list_data/out/hot_list/v1';
   const normal = fetch(baseUrl + "/stock?stock_type=a&type=hour&list_type=normal");
@@ -32,6 +30,7 @@ export async function getHotListData() {
   createHotListDto.stockValue = transformStockData(stockValue);
   createHotListDto.plateConcept = transformPlateData(plateConcept);
   createHotListDto.plateIndustry = transformPlateData(plateIndustry);
+  createHotListDto.createTime = new Date();
 
   return createHotListDto;
 }

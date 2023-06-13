@@ -82,7 +82,7 @@ async function initPageData() {
   // 数据转换
   data.hotListResult = result.map(item => {
     return {
-      createTime: dayjs(item.createTime).format('MM/DD'),
+      createTime: dayjs(item.updateTime).format('MM/DD HH:MM'),
       plateIndustry: JSON.parse(item.plateIndustry),
       stockNormal: JSON.parse(item.stockNormal),
       stockValue: JSON.parse(item.stockValue),

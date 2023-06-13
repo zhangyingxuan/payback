@@ -19,8 +19,8 @@ export class PayBackController {
   @Public()
   @Get('testApi')
   async testApi() {
-    this.apiTestService.fetchHotList();
-    // this.apiTestService.fetchExternalData();
+    // this.apiTestService.fetchHotList();
+    return await this.apiTestService.fetchExternalData();
     // this.apiTestService.getTodos();
   }
 

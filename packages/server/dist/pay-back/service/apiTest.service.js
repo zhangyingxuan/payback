@@ -34,11 +34,11 @@ let ApiTestService = ApiTestService_1 = class ApiTestService {
             "headers": {
                 "accept": "application/json, text/plain, */*",
                 "content-type": "application/json",
-                "hexin-v": "Axq2opcfKpP9_6Y_lQ66qG3gbcs5S54nEM8SySSTxq14l7R1DNvuNeBfYtz3",
+                "hexin-v": "AxW5U8Rm3S1L3vkv3t4NCY55IhrKEsi4k8et1pe60jTb9DtEX2LZ9CMWvVsk",
             },
             "body": "{\"source\":\"Ths_iwencai_Xuangu\",\"version\":\"2.0\",\"query_area\":\"\",\"block_list\":\"\",\"add_info\":\"{\\\"urp\\\":{\\\"scene\\\":1,\\\"company\\\":1,\\\"business\\\":1},\\\"contentType\\\":\\\"json\\\",\\\"searchInfo\\\":true}\",\"question\":\"行业板块主力资金；涨跌幅倒序\",\"perpage\":\"50\",\"page\":1,\"secondary_intent\":\"\",\"log_info\":\"{\\\"input_type\\\":\\\"click\\\"}\",\"rsh\":\"Ths_iwencai_Xuangu_cj7r4l37naa3g54vm4j6pk04xq86kyvq\"}",
             "method": "POST",
-        }).then(response => response.json()).then(data => { var _a; return console.log(JSON.stringify((_a = data === null || data === void 0 ? void 0 : data.data) === null || _a === void 0 ? void 0 : _a.answer)); }).catch(e => console.error(e));
+        }).then(response => response.json()).then(data => console.log(data)).catch(e => console.error(e));
     }
     async fetchHotList() {
         (0, node_fetch_1.default)("https://dq.10jqka.com.cn/fuyao/hot_list_data/out/hot_list/v1/stock?stock_type=a&type=hour&list_type=normal").then(response => response.json()).then(data => console.log(data)).catch(e => console.error(e));

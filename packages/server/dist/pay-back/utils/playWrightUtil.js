@@ -27,9 +27,18 @@ const getBrowser = async (autoCloseTime = browserCloseTimeOut) => {
 const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType, baseBrowser) => {
     const browser = baseBrowser ? baseBrowser : await getBrowser();
     logger.log('等待接口返回 start ====', pageUrl);
-    const page = await browser.newPage();
-    const storageState = await page.context().storageState();
-    console.log(storageState);
+    let page;
+    if (apiUrl === 'chart/get-robot-data') {
+        const browserContext = await browser.newContext({ storageState: undefined });
+        const pageNumber = pageUrl.includes(config_1.params.dailyLimitMoreThan1) ? '100' : '10';
+        await browserContext.addInitScript((pageNumber) => {
+            window.localStorage.setItem('PAGE_NUMBER', pageNumber);
+        }, pageNumber);
+        page = await browserContext.newPage();
+    }
+    else {
+        page = await browser.newPage();
+    }
     return new Promise((resolve, reject) => {
         page.on('response', async (response) => {
             if (response.url().includes(apiUrl) && response.status() === 200) {
@@ -111,7 +120,7 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl, browser) => {
                 resolve(createMarketDataDto);
             }
         });
-        await page.goto(pageUrl, { timeout: commonTimeOut60s });
+        page.goto(pageUrl, { timeout: commonTimeOut60s });
     });
 };
 const waitHostListDataByUrls = async (pageUrl) => {
@@ -156,12 +165,12 @@ const waitHostListDataByUrls = async (pageUrl) => {
             }
             if (state['stockNormal'] && state['stockValue'] && state['plateConcept'] && state['plateIndustry']) {
                 resolve(createHotListDto);
+                setTimeout(async () => {
+                    await browser.close();
+                }, 5000);
             }
-            setTimeout(async () => {
-                await browser.close();
-            }, 5000);
         });
-        await page.goto(pageUrl, { timeout: commonTimeOut60s });
+        page.goto(pageUrl, { timeout: commonTimeOut60s });
     });
 };
 const getTodayData = async function (pageUrl, apiUrl, browser) {
@@ -190,7 +199,7 @@ exports.default = {
         return createPayBackDto;
     },
     async getMarketData(dateStr) {
-        const browser = await getBrowser(browserCloseTimeOut * 4);
+        const browser = await getBrowser(browserCloseTimeOut * 5);
         const response = await waitMarketDataByUrls(config_1.marketUrl, '/api.php', browser);
         const gainianRiseFloat = await waitOriginalDataByUrl(config_1.iwencaiUrl + config_1.params.gainianRiseFloat, 'chart/get-robot-data', 'json', browser);
         const gainianFallFloat = await waitOriginalDataByUrl(config_1.iwencaiUrl + config_1.params.gainianFallFloat, 'chart/get-robot-data', 'json', browser);

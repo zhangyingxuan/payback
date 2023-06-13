@@ -10,7 +10,6 @@ import { marketUrl, iwencaiUrl, params } from './config';
 import { Logger } from '@nestjs/common';
 import { CreatePayBackDto } from '../dto/create-pay-back.dto';
 import { transformShortTermSourceData, transformStockData, transformPlateData } from '../utils/transformDataUtil';
-import fetch from 'node-fetch';
 
 const logger = new Logger('playWrightUtil');
 
@@ -39,13 +38,21 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType: 'text' | 'j
   const browser = baseBrowser ? baseBrowser : await getBrowser();
   // 日志开始
   logger.log('等待接口返回 start ====', pageUrl);
-  // 打开股票行情页面  
-  const page = await browser.newPage();
-  // await page.evaluate(
-  //   `window.localStorage.setItem('PAGE_NUMBER', '100')`
-  // );
-  const storageState = await page.context().storageState();
-  console.log(storageState);
+
+  let page;
+  // fix： 修复爱问财默认50条数据分页 的问题
+  if (apiUrl === 'chart/get-robot-data') {
+    const browserContext = await browser.newContext({ storageState: undefined });
+    // 只有 涨停数据 需要100/ 页；其他页面只需要 10条即可
+    const pageNumber = pageUrl.includes(params.dailyLimitMoreThan1) ? '100' : '10';
+    await browserContext.addInitScript((pageNumber) => {
+      window.localStorage.setItem('PAGE_NUMBER', pageNumber);
+    }, pageNumber);
+    page = await browserContext.newPage();
+  } else {
+    page = await browser.newPage();
+  }
+
 
   return new Promise((resolve, reject) => {
     page.on('response', async (response: Response) => {
@@ -151,7 +158,7 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl, browser): Promise<CreateMar
         resolve(createMarketDataDto);
       }
     })
-    await page.goto(pageUrl, { timeout: commonTimeOut60s });
+    page.goto(pageUrl, { timeout: commonTimeOut60s });
   });
 };
 
@@ -209,13 +216,13 @@ const waitHostListDataByUrls = async (pageUrl): Promise<CreateHotListDto> => {
       // 所有数据都返回了，则resolve
       if (state['stockNormal'] && state['stockValue'] && state['plateConcept'] && state['plateIndustry']) {
         resolve(createHotListDto);
-      }
 
-      setTimeout(async () => {
-        await browser.close();
-      }, 5000)
+        setTimeout(async () => {
+          await browser.close();
+        }, 5000)
+      }
     })
-    await page.goto(pageUrl, { timeout: commonTimeOut60s });
+    page.goto(pageUrl, { timeout: commonTimeOut60s });
   });
 };
 
@@ -255,7 +262,7 @@ export default {
    * 获取 市场数据
    */
   async getMarketData(dateStr): Promise<CreateMarketDataDto> {
-    const browser = await getBrowser(browserCloseTimeOut * 4);
+    const browser = await getBrowser(browserCloseTimeOut * 5);
     const response: CreateMarketDataDto = await waitMarketDataByUrls(marketUrl, '/api.php', browser);
 
     const gainianRiseFloat = await waitOriginalDataByUrl(iwencaiUrl + params.gainianRiseFloat, 'chart/get-robot-data', 'json', browser);

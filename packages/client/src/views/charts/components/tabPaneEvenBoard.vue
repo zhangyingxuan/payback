@@ -83,15 +83,15 @@ const siderBar = useSidebarStore();
 const { countDays } = storeToRefs(siderBar);
 
 // 监听变化，重新请求数据
-// watch(countDays, async val => {
-//   await initPage(val);
-// });
+watch(countDays, async val => {
+  await initPage(val);
+});
 
 async function initPage(pageSize: number) {
   // 获取图表数据
   const result: any = await fetchEvenBoardData({
-    limit: 10,
-    // limit: isMobile ? 10 : pageSize,
+    // limit: 10,
+    limit: isMobile ? 10 : pageSize,
     isMobile,
   });
   // const rs: any = await fetchIndustryData();
