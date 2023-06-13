@@ -234,7 +234,7 @@ const getTodayData = async function (pageUrl, apiUrl, browser) {
 export default {
   async getShortTermData(todayDateStr): Promise<CreatePayBackDto> {
     let createPayBackDto: CreatePayBackDto = new CreatePayBackDto();
-    const browser = await getBrowser();
+    const browser = await getBrowser(browserCloseTimeOut * 3);
     // 准备涨停数据
     const dailyLimitData: Object[] = await getTodayData(iwencaiUrl + params.dailyLimitMoreThan1, 'chart/get-robot-data', browser);
     // 跌停数据
