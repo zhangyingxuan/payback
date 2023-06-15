@@ -110,26 +110,27 @@ export function transformEvenBoardData(shortTermData: ShortTermModel[]): any[] {
   shortTermData.map(item => {
     if (item.evenBoardData) {
       const evenBoardData = JSON.parse(item.evenBoardData);
-      const ticaiData: any = {};
-
+      // const ticaiData: any = {};
       // 找出题材共性，涨停最多的 6个题材
       const maxHeight = evenBoardData.maxHeight;
-      for (let i = 1; i <= maxHeight; i++) {
-        evenBoardData[i] && evenBoardData[i].forEach((item: any) => {
-          const resons = item.reason ? item.reason.split('+') : ['其它'];
-          resons.forEach((reson: any) => {
-            !ticaiData[reson] && (ticaiData[reson] = 1);
-            ticaiData[reson]++;
-          });
-        });
-      }
+      // for (let i = 1; i <= maxHeight; i++) {
+      //   evenBoardData[i] && evenBoardData[i].forEach((item: any) => {
+      //     const resons = item.reason ? item.reason.split('+') : ['其它'];
+      //     resons.forEach((reson: any) => {
+      //       !ticaiData[reson] && (ticaiData[reson] = 1);
+      //       ticaiData[reson]++;
+      //     });
+      //   });
+      // }
       // console.log(ticaiData);
-
-      evenBoardList.push({
+      const itemData: any = {
         createTime: dayjs(item.createTime).format('MM/DD'),
-        maxHeight: evenBoardData.maxHeight,
+        maxHeight: maxHeight,
         evenBoardData,
-      });
+      };
+      item.downLimitData && (itemData.downLimit = JSON.parse(item.downLimitData));
+
+      evenBoardList.push(itemData);
     }
   });
 

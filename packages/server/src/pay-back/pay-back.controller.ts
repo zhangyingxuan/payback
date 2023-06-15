@@ -47,10 +47,12 @@ export class PayBackController {
   crawlShortTerm() {
     return this.ShorTermService.crawlShortTermData();
   }
+  @Public()
   @Get('/crawlMarket')
   crawlMarket() {
     return this.marketService.crawlMarketData();
   }
+  @Public()
   @Get('/crawlFunds')
   crawlFunds() {
     return this.fundsService.crawlfundsData();
@@ -77,12 +79,12 @@ export class PayBackController {
   async fetchEvenBoardData(@Query() query) {
     const limit = +(query.limit || 20);
     // isMobile
-    const isMobile = query.isMobile || 'false';
+    // const isMobile = query.isMobile || 'true';
     let shortTermData = await this.ShorTermService.findEvenBoardByLimit(limit);
     // 移动端 日期近的在前面，PC相反
-    if (isMobile == 'false') {
-      shortTermData = shortTermData.reverse();
-    }
+    // if (isMobile == 'true') {
+    //   shortTermData = shortTermData.reverse();
+    // }
     return {
       code: 200,
       data: shortTermData,
@@ -97,6 +99,16 @@ export class PayBackController {
     return {
       code: 200,
       data: hotListData,
+    };
+  }
+  @Get('findPlateByLimit')
+  async findPlateByLimit(@Query() query) {
+    const limit = +(query.limit || 20);
+    let palateData = await this.marketService.findPlateByLimit(limit);
+    // 移动端 日期近的在前面，PC相反
+    return {
+      code: 200,
+      data: palateData,
     };
   }
 

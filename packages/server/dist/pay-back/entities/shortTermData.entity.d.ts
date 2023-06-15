@@ -9,6 +9,7 @@ export declare class shortTermData {
     SHAmount: number;
     evenBoardAmount: number;
     evenBoardData: string;
+    downLimitData: string;
     board1: number;
     createTime: Timestamp;
 }

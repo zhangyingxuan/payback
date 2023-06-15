@@ -45,3 +45,10 @@ export const fetchEvenBoardData = (params: any | null) => {
 export const fetchHostListData = (params: any | null) => {
   return http.request<Array<any>>("get", `${baseUrl}/fetchHostListData`, { params });
 }
+/**
+ * 获取板块涨跌幅 TOP5
+ * @returns 
+ */
+export const findPlateByLimit = (params: any | null) => {
+  return http.request<Array<any>>("get", `${baseUrl}/findPlateByLimit`, { params });
+}

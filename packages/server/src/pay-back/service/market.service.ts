@@ -56,6 +56,36 @@ export class MarketService {
       .createQueryBuilder('market_data')
       .offset(0)
       .limit(len)
+      .select([
+        'market_data.createTime',
+        'market_data.marketScore',
+        'market_data.riseAmount',
+        'market_data.fallAmount',
+        'market_data.dailyLimitIncome',
+        'market_data.shangzhengPoint',
+        'market_data.shenzhengPoint',
+        'market_data.chuangyePoint',
+        'market_data.beizheng50Point'])
+      .orderBy('createTime', 'DESC')
+      .getMany();
+  }
+
+  /**
+   * 获取涨跌幅TOP5板块 根据len 长度
+   * @param len 
+   * @returns 
+   */
+  async findPlateByLimit(len: number = 20) {
+    return await this.marketDataRp
+      .createQueryBuilder('market_data')
+      .offset(0)
+      .limit(len)
+      .select([
+        'market_data.createTime',
+        'market_data.gainianRiseFloat',
+        'market_data.gainianFallFloat',
+        'market_data.hangyeRiseFloat',
+        'market_data.hangyeFallFloat'])
       .orderBy('createTime', 'DESC')
       .getMany();
   }

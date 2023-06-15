@@ -1,8 +1,7 @@
-export declare class DailyLimitStockDto {
+export declare class DownLimitStockDto {
     name: string;
     code: string;
     plateLevel2: string;
-    reason: string;
     turnover: number;
     closingFunds: number;
     evenDays: string;

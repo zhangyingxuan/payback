@@ -43,7 +43,7 @@ exports.default = {
             return {
                 name: item['指数简称'],
                 code: item['指数代码'],
-                funds: +(item[`指数@主力资金流向[${dateStr}]`] / 10000 / 10000).toFixed(2),
+                funds: commonUtil_1.default.fundsToFixed(item[`指数@主力资金流向[${dateStr}]`]),
                 quoteChange: item[`指数@涨跌幅:前复权[${dateStr}]`] || '0.0',
             };
         });

@@ -155,6 +155,8 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl, browser): Promise<CreateMar
 
       // 所有数据都返回了，则resolve
       if (state['151_899050'] && state['hs_399006'] && state['hs_1A0001'] && state['hs_399001'] && state['apiUrl']) {
+        // 日志开始
+        logger.log('接口返回数据【成功】 ====', pageUrl);
         resolve(createMarketDataDto);
       }
     })
@@ -239,9 +241,7 @@ export default {
     const dailyLimitData: Object[] = await getTodayData(iwencaiUrl + params.dailyLimitMoreThan1, 'chart/get-robot-data', browser);
     // 跌停数据
     const downLimitData: Object[] = await getTodayData(iwencaiUrl + params.downLimit, 'chart/get-robot-data', browser);
-    // console.log(dailyLimitData);
-    // console.log(downLimitData);
-    let { SZAmount = 0, SHAmount = 0, board1 = 0, evenBoardData } = transformShortTermSourceData(dailyLimitData, todayDateStr);
+    let { SZAmount = 0, SHAmount = 0, board1 = 0, evenBoardData, downLimitDataArr } = transformShortTermSourceData(dailyLimitData, downLimitData, todayDateStr);
 
     createPayBackDto.createTime = new Date();
     createPayBackDto.downLimitQuantity = downLimitData.length;
@@ -250,6 +250,7 @@ export default {
     createPayBackDto.board1 = board1;
     createPayBackDto.evenBoardAmount = dailyLimitData.length - board1;
     createPayBackDto.evenBoardData = JSON.stringify(evenBoardData);
+    createPayBackDto.downLimitData = JSON.stringify(downLimitDataArr);
     createPayBackDto.SZAmount = SZAmount;
     createPayBackDto.SHAmount = SHAmount;
 
@@ -308,11 +309,12 @@ export default {
     const createFundsDataDto = new CreateFundsDataDto();
     createFundsDataDto.createTime = new Date();
 
-    createFundsDataDto.northFundsAmtIn = +(foreignFunds.northFundsAmtIn / 10000).toFixed(2);
-    createFundsDataDto.northFundsBuyAmt = +(foreignFunds.northFundsBuyAmt / 10000).toFixed(2);
-    createFundsDataDto.southFundsAmtIn = +(foreignFunds.southFundsAmtIn / 10000).toFixed(2);
-    createFundsDataDto.southFundsBuyAmt = +(foreignFunds.southFundsBuyAmt / 10000).toFixed(2);
-    createFundsDataDto.marketTurnover = +(marketTurnover / 10000 / 10000 / 10000).toFixed(2);
+    createFundsDataDto.northFundsAmtIn = commonUtil.toFixed(foreignFunds.northFundsAmtIn / 10000);
+    createFundsDataDto.northFundsBuyAmt = commonUtil.toFixed(foreignFunds.northFundsBuyAmt / 10000);
+    createFundsDataDto.southFundsAmtIn = commonUtil.toFixed(foreignFunds.southFundsAmtIn / 10000);
+    createFundsDataDto.southFundsBuyAmt = commonUtil.toFixed(foreignFunds.southFundsBuyAmt / 10000);
+    // 万亿
+    createFundsDataDto.marketTurnover = commonUtil.toFixed(marketTurnover / 10000 / 10000 / 10000);
     createFundsDataDto.hangyeFundsTop = JSON.stringify({ in: hangyeFundsInflowTop3, out: hangyeFundsOutflowTop3 });
     createFundsDataDto.gainianFundsTop = JSON.stringify({ in: gainianFundsInflowTop3, out: gainianFundsOutflowTop3 });
     // console.log(createFundsDataDto);

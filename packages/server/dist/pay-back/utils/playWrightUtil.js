@@ -117,6 +117,7 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl, browser) => {
                 state['151_899050'] = true;
             }
             if (state['151_899050'] && state['hs_399006'] && state['hs_1A0001'] && state['hs_399001'] && state['apiUrl']) {
+                logger.log('接口返回数据【成功】 ====', pageUrl);
                 resolve(createMarketDataDto);
             }
         });
@@ -183,7 +184,7 @@ exports.default = {
         const browser = await getBrowser(browserCloseTimeOut * 3);
         const dailyLimitData = await getTodayData(config_1.iwencaiUrl + config_1.params.dailyLimitMoreThan1, 'chart/get-robot-data', browser);
         const downLimitData = await getTodayData(config_1.iwencaiUrl + config_1.params.downLimit, 'chart/get-robot-data', browser);
-        let { SZAmount = 0, SHAmount = 0, board1 = 0, evenBoardData } = (0, transformDataUtil_1.transformShortTermSourceData)(dailyLimitData, todayDateStr);
+        let { SZAmount = 0, SHAmount = 0, board1 = 0, evenBoardData, downLimitDataArr } = (0, transformDataUtil_1.transformShortTermSourceData)(dailyLimitData, downLimitData, todayDateStr);
         createPayBackDto.createTime = new Date();
         createPayBackDto.downLimitQuantity = downLimitData.length;
         createPayBackDto.dailyLimitQuantity = dailyLimitData.length;
@@ -191,6 +192,7 @@ exports.default = {
         createPayBackDto.board1 = board1;
         createPayBackDto.evenBoardAmount = dailyLimitData.length - board1;
         createPayBackDto.evenBoardData = JSON.stringify(evenBoardData);
+        createPayBackDto.downLimitData = JSON.stringify(downLimitDataArr);
         createPayBackDto.SZAmount = SZAmount;
         createPayBackDto.SHAmount = SHAmount;
         setTimeout(async () => {
@@ -234,11 +236,11 @@ exports.default = {
         const gainianFundsOutflowTop3 = fundsUtil_1.default.getPlateTop(gaiNianFundsOutflow, dateStr);
         const createFundsDataDto = new create_funds_data_dto_1.CreateFundsDataDto();
         createFundsDataDto.createTime = new Date();
-        createFundsDataDto.northFundsAmtIn = +(foreignFunds.northFundsAmtIn / 10000).toFixed(2);
-        createFundsDataDto.northFundsBuyAmt = +(foreignFunds.northFundsBuyAmt / 10000).toFixed(2);
-        createFundsDataDto.southFundsAmtIn = +(foreignFunds.southFundsAmtIn / 10000).toFixed(2);
-        createFundsDataDto.southFundsBuyAmt = +(foreignFunds.southFundsBuyAmt / 10000).toFixed(2);
-        createFundsDataDto.marketTurnover = +(marketTurnover / 10000 / 10000 / 10000).toFixed(2);
+        createFundsDataDto.northFundsAmtIn = commonUtil_1.default.toFixed(foreignFunds.northFundsAmtIn / 10000);
+        createFundsDataDto.northFundsBuyAmt = commonUtil_1.default.toFixed(foreignFunds.northFundsBuyAmt / 10000);
+        createFundsDataDto.southFundsAmtIn = commonUtil_1.default.toFixed(foreignFunds.southFundsAmtIn / 10000);
+        createFundsDataDto.southFundsBuyAmt = commonUtil_1.default.toFixed(foreignFunds.southFundsBuyAmt / 10000);
+        createFundsDataDto.marketTurnover = commonUtil_1.default.toFixed(marketTurnover / 10000 / 10000 / 10000);
         createFundsDataDto.hangyeFundsTop = JSON.stringify({ in: hangyeFundsInflowTop3, out: hangyeFundsOutflowTop3 });
         createFundsDataDto.gainianFundsTop = JSON.stringify({ in: gainianFundsInflowTop3, out: gainianFundsOutflowTop3 });
         setTimeout(async () => {

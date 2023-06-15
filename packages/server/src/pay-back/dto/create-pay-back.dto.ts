@@ -11,6 +11,8 @@ export class CreatePayBackDto {
   evenBoardAmount: number;
   // 连板原始数据
   evenBoardData: string;
+  // 跌停数据
+  downLimitData: string;
   // 一板数量
   board1: number;
 

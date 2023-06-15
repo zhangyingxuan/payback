@@ -14,6 +14,8 @@ export interface ShortTermModel {
   board1: number;
   evenBoardAmount: number,
   evenBoardData: string;
+  // 跌停数据
+  downLimitData: string;
 
   createTime: Date;
 }

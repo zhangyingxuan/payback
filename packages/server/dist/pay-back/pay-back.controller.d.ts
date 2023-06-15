@@ -55,6 +55,10 @@ export declare class PayBackController {
         code: number;
         data: import("./entities/hotList.entity").hotList[];
     }>;
+    findPlateByLimit(query: any): Promise<{
+        code: number;
+        data: import("./entities/marketData.entity").marketData[];
+    }>;
     findAll(): Promise<import("./entities/shortTermData.entity").shortTermData[]>;
     findOne(id: string): Promise<string>;
     update(id: string, updatePayBackDto: UpdatePayBackDto): Promise<import("typeorm").UpdateResult>;

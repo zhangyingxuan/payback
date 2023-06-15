@@ -14,8 +14,9 @@
           >
             {{ height }}
           </div>
-          <div v-else class="table-col height7">首板</div>
+          <div v-else class="table-col height1">首板</div>
         </template>
+        <div class="table-col downLimitStock__plate">跌停股</div>
       </div>
       <div
         :class="['date-col', { isMobile }]"
@@ -55,12 +56,32 @@
               <!-- <span> {{ stock.name }} {{ stock.code }} </span> -->
             </el-tooltip>
           </div>
-          <div v-else class="table-col height7">
+          <div v-else class="table-col height1">
             <span v-if="item.evenBoardData && item.evenBoardData[1]">{{
               item.evenBoardData[1].length
             }}</span>
           </div>
         </template>
+        <!-- 跌停数据 -->
+        <div class="table-col">
+          <el-tooltip
+            effect="dark"
+            placement="top"
+            v-for="(stock, index) in item.downLimit"
+            :content="stock.plateLevel2"
+            :key="'downLimitStock' + index"
+          >
+            <span>
+              {{ stock.name }}
+              <span
+                v-if="!isMobile"
+                class="downLimitStock__plate"
+                type="success"
+                >{{ stock.plateLevel2 }}</span
+              >
+            </span>
+          </el-tooltip>
+        </div>
       </div>
     </div>
   </div>
@@ -232,10 +253,17 @@ function getClassByHeight(height: any) {
     }
     &.height4 {
       height: 50px;
+      color: rgb(163, 5, 5);
     }
-    &.height7 {
+    &.height7,
+    &.height1 {
+      padding: 0px;
       height: 30px;
+      color: rgb(96, 3, 3);
       justify-content: center;
+    }
+    &.height1 {
+      color: rgb(216, 26, 61);
     }
   }
   .table-col > span {
@@ -245,6 +273,11 @@ function getClassByHeight(height: any) {
     /* scale: 0.6; */
     /* transform: scale(0.7);
   transform-origin: 100% 100%; */
+  }
+
+  .downLimitStock__plate {
+    padding: 2px;
+    color: rgb(45, 182, 136);
   }
 }
 </style>

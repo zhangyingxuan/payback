@@ -6,6 +6,7 @@ export declare class CreatePayBackDto {
     SZAmount: number;
     evenBoardAmount: number;
     evenBoardData: string;
+    downLimitData: string;
     board1: number;
     createTime: Date;
 }

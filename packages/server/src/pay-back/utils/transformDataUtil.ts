@@ -1,5 +1,7 @@
 
 import { DailyLimitStockDto } from '../dto/daily-limit-stock.dto';
+import { DownLimitStockDto } from '../dto/down-limit-stock.dto';
+import { toFixed, fundsToFixed } from './commonUtil';
 import * as dayjs from 'dayjs';
 
 export function transformStockData(stockList) {
@@ -26,16 +28,35 @@ export function transformPlateData(plateList) {
   }));
 }
 
-export function toFixed(num) {
-  if (!num) return;
-  return +(num).toFixed(2)
-}
+/**
+ * 转换跌停数据
+ * @param dailyLimitData 
+ * @param todayDateStr 
+ * @returns 
+ */
+function transDownLimitData(dailyLimitData, todayDateStr) {
+  const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
+  const downLimitData = [];
+  dailyLimitData.forEach(item => {
+    const dailyLimitStockDto = new DownLimitStockDto();
+    dailyLimitStockDto.name = item['股票简称'];
+    dailyLimitStockDto.code = item.code;
+    console.log(item);
+    dailyLimitStockDto.plateLevel2 = item['所属同花顺二级行业'];
+    // 封板资金 单位 亿
+    dailyLimitStockDto.closingFunds = fundsToFixed(item[`跌停封单额[${currentDate}]`]);
+    downLimitData.push(dailyLimitStockDto);
+  });
 
-export function transformShortTermSourceData(dailyLimitData, todayDateStr) {
+  return downLimitData;
+};
+
+export function transformShortTermSourceData(dailyLimitData, downLimitData, todayDateStr) {
   const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
   const evenBoardLabel = `连续涨停天数[${currentDate}]`;
   let SZAmount = 0, SHAmount = 0, board1 = 0, maxHeight = 1, currentLevel = 0;
-  let evenBoardData = { maxHeight: 1, gaobiao: [] }
+  const downLimitDataArr = transDownLimitData(downLimitData, todayDateStr);
+  let evenBoardData = { maxHeight: 1, gaobiao: [] };
   dailyLimitData.forEach(item => {
     const dailyLimitStockDto = new DailyLimitStockDto();
     // 当前股票 连板高度
@@ -57,8 +78,9 @@ export function transformShortTermSourceData(dailyLimitData, todayDateStr) {
     dailyLimitStockDto.name = item['股票简称'];
     dailyLimitStockDto.code = item.code;
     dailyLimitStockDto.reason = item[`涨停原因类别[${currentDate}]`];
-    dailyLimitStockDto.closingFunds = item[`涨停封单额[${currentDate}]`];
-    dailyLimitStockDto.turnover = item[`成交额[${currentDate}]`];
+    dailyLimitStockDto.plateLevel2 = item['所属同花顺二级行业'];
+    // 封板资金 单位 亿
+    dailyLimitStockDto.closingFunds = fundsToFixed(item[`涨停封单额[${currentDate}]`]);
     // 如果是 断板连板 则统计几天几板
     const jitianjiban = item[`几天几板[${currentDate}]`];
     // 取出 两个数字，如果不一致 则存入 evenDays字段
@@ -81,5 +103,6 @@ export function transformShortTermSourceData(dailyLimitData, todayDateStr) {
     board1,
     maxHeight,
     evenBoardData,
+    downLimitDataArr
   }
 }

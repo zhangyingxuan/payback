@@ -1,7 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.transformShortTermSourceData = exports.toFixed = exports.transformPlateData = exports.transformStockData = void 0;
+exports.transformShortTermSourceData = exports.transformPlateData = exports.transformStockData = void 0;
 const daily_limit_stock_dto_1 = require("../dto/daily-limit-stock.dto");
+const down_limit_stock_dto_1 = require("../dto/down-limit-stock.dto");
+const commonUtil_1 = require("./commonUtil");
 const dayjs = require("dayjs");
 function transformStockData(stockList) {
     return JSON.stringify(stockList.map(item => {
@@ -9,7 +11,7 @@ function transformStockData(stockList) {
         return {
             code: item.code,
             name: item.name,
-            rise_and_fall: toFixed(item.rise_and_fall),
+            rise_and_fall: (0, commonUtil_1.toFixed)(item.rise_and_fall),
             tag: (_a = item.tag) === null || _a === void 0 ? void 0 : _a.concept_tag,
             hot_tag: (_b = item.tag) === null || _b === void 0 ? void 0 : _b.popularity_tag,
         };
@@ -21,23 +23,33 @@ function transformPlateData(plateList) {
         return {
             code: item.code,
             name: item.name,
-            rise_and_fall: toFixed(item.rise_and_fall),
+            rise_and_fall: (0, commonUtil_1.toFixed)(item.rise_and_fall),
             hot_tag: item.hot_tag,
             tag: item.tag,
         };
     }));
 }
 exports.transformPlateData = transformPlateData;
-function toFixed(num) {
-    if (!num)
-        return;
-    return +(num).toFixed(2);
+function transDownLimitData(dailyLimitData, todayDateStr) {
+    const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
+    const downLimitData = [];
+    dailyLimitData.forEach(item => {
+        const dailyLimitStockDto = new down_limit_stock_dto_1.DownLimitStockDto();
+        dailyLimitStockDto.name = item['股票简称'];
+        dailyLimitStockDto.code = item.code;
+        console.log(item);
+        dailyLimitStockDto.plateLevel2 = item['所属同花顺二级行业'];
+        dailyLimitStockDto.closingFunds = (0, commonUtil_1.fundsToFixed)(item[`跌停封单额[${currentDate}]`]);
+        downLimitData.push(dailyLimitStockDto);
+    });
+    return downLimitData;
 }
-exports.toFixed = toFixed;
-function transformShortTermSourceData(dailyLimitData, todayDateStr) {
+;
+function transformShortTermSourceData(dailyLimitData, downLimitData, todayDateStr) {
     const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
     const evenBoardLabel = `连续涨停天数[${currentDate}]`;
     let SZAmount = 0, SHAmount = 0, board1 = 0, maxHeight = 1, currentLevel = 0;
+    const downLimitDataArr = transDownLimitData(downLimitData, todayDateStr);
     let evenBoardData = { maxHeight: 1, gaobiao: [] };
     dailyLimitData.forEach(item => {
         const dailyLimitStockDto = new daily_limit_stock_dto_1.DailyLimitStockDto();
@@ -57,8 +69,8 @@ function transformShortTermSourceData(dailyLimitData, todayDateStr) {
         dailyLimitStockDto.name = item['股票简称'];
         dailyLimitStockDto.code = item.code;
         dailyLimitStockDto.reason = item[`涨停原因类别[${currentDate}]`];
-        dailyLimitStockDto.closingFunds = item[`涨停封单额[${currentDate}]`];
-        dailyLimitStockDto.turnover = item[`成交额[${currentDate}]`];
+        dailyLimitStockDto.plateLevel2 = item['所属同花顺二级行业'];
+        dailyLimitStockDto.closingFunds = (0, commonUtil_1.fundsToFixed)(item[`涨停封单额[${currentDate}]`]);
         const jitianjiban = item[`几天几板[${currentDate}]`];
         if (jitianjiban && jitianjiban.indexOf('天') > -1) {
             const day = jitianjiban.split('天')[0];
@@ -79,6 +91,7 @@ function transformShortTermSourceData(dailyLimitData, todayDateStr) {
         board1,
         maxHeight,
         evenBoardData,
+        downLimitDataArr
     };
 }
 exports.transformShortTermSourceData = transformShortTermSourceData;

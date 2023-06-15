@@ -70,11 +70,7 @@ let PayBackController = class PayBackController {
     }
     async fetchEvenBoardData(query) {
         const limit = +(query.limit || 20);
-        const isMobile = query.isMobile || 'false';
         let shortTermData = await this.ShorTermService.findEvenBoardByLimit(limit);
-        if (isMobile == 'false') {
-            shortTermData = shortTermData.reverse();
-        }
         return {
             code: 200,
             data: shortTermData,
@@ -86,6 +82,14 @@ let PayBackController = class PayBackController {
         return {
             code: 200,
             data: hotListData,
+        };
+    }
+    async findPlateByLimit(query) {
+        const limit = +(query.limit || 20);
+        let palateData = await this.marketService.findPlateByLimit(limit);
+        return {
+            code: 200,
+            data: palateData,
         };
     }
     findAll() {
@@ -130,12 +134,14 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PayBackController.prototype, "crawlShortTerm", null);
 __decorate([
+    (0, public_decorator_1.Public)(),
     (0, common_1.Get)('/crawlMarket'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], PayBackController.prototype, "crawlMarket", null);
 __decorate([
+    (0, public_decorator_1.Public)(),
     (0, common_1.Get)('/crawlFunds'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -162,6 +168,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "fetchHostListData", null);
+__decorate([
+    (0, common_1.Get)('findPlateByLimit'),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], PayBackController.prototype, "findPlateByLimit", null);
 __decorate([
     (0, common_1.Get)('queryAll'),
     __metadata("design:type", Function),

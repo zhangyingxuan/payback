@@ -73,7 +73,9 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
             .createQueryBuilder('short_term_data')
             .offset(0)
             .limit(len)
-            .select(['short_term_data.createTime', 'short_term_data.evenBoardData'])
+            .select(['short_term_data.createTime',
+            'short_term_data.evenBoardData',
+            'short_term_data.downLimitData'])
             .orderBy('createTime', 'DESC')
             .getMany();
     }
