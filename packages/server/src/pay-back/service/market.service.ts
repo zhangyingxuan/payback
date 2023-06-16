@@ -31,15 +31,15 @@ export class MarketService {
       .getOne();
 
     if (todayDataFromDB) {
-      // return {
-      //   code: 'isExist',
-      //   msg: todayDateStr + ' 数据已存在！',
-      // }
+      return {
+        code: 'isExist',
+        msg: todayDateStr + ' 数据已存在！',
+      }
     }
     let marketData: CreateMarketDataDto;
     try {
       marketData = await playWrightUtil.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
-      // await this.marketDataRp.save(marketData);
+      await this.marketDataRp.save(marketData);
       this.logger.debug('Called is success!');
     } catch (e) {
       this.logger.error('出错啦！！！', e)

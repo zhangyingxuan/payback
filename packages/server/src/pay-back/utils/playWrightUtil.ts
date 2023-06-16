@@ -68,9 +68,9 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType: 'text' | 'j
         // 获取数据后，关闭page 节约内存开销
         browserContext && (await browserContext.close())
         await page.close();
-        // setTimeout(() => {
-        resolve(responseData);
-        // }, 2000)
+        setTimeout(() => {
+          resolve(responseData);
+        }, 2000)
       }
     });
     page.goto(pageUrl, { timeout: commonTimeOut60s, waitUntil: "domcontentloaded" });
@@ -158,7 +158,9 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl, browser): Promise<CreateMar
         // 日志开始
         logger.log('接口返回数据【成功】 ====' + pageUrl);
         await page.close();
-        resolve(createMarketDataDto);
+        setTimeout(() => {
+          resolve(createMarketDataDto);
+        });
       }
     })
     page.goto(pageUrl, { timeout: commonTimeOut60s, waitUntil: "domcontentloaded" });

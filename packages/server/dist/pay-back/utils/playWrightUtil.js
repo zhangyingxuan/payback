@@ -52,7 +52,9 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType, baseBrowser
                 }
                 browserContext && (await browserContext.close());
                 await page.close();
-                resolve(responseData);
+                setTimeout(() => {
+                    resolve(responseData);
+                }, 2000);
             }
         });
         page.goto(pageUrl, { timeout: commonTimeOut60s, waitUntil: "domcontentloaded" });
@@ -117,7 +119,9 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl, browser) => {
             if (state['151_899050'] && state['hs_399006'] && state['hs_1A0001'] && state['hs_399001'] && state['apiUrl']) {
                 logger.log('接口返回数据【成功】 ====' + pageUrl);
                 await page.close();
-                resolve(createMarketDataDto);
+                setTimeout(() => {
+                    resolve(createMarketDataDto);
+                });
             }
         });
         page.goto(pageUrl, { timeout: commonTimeOut60s, waitUntil: "domcontentloaded" });

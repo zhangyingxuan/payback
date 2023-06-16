@@ -5,7 +5,10 @@ export declare class MarketService {
     private readonly marketDataRp;
     constructor(marketDataRp: Repository<marketData>);
     private readonly logger;
-    crawlMarketData(): Promise<CreateMarketDataDto>;
+    crawlMarketData(): Promise<CreateMarketDataDto | {
+        code: string;
+        msg: string;
+    }>;
     findAll(): Promise<marketData[]>;
     findByLimit(len?: number): Promise<marketData[]>;
     findPlateByLimit(len?: number): Promise<marketData[]>;
