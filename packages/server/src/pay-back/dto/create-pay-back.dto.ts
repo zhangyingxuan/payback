@@ -15,6 +15,4 @@ export class CreatePayBackDto {
   downLimitData: string;
   // 一板数量
   board1: number;
-
-  createTime: Date;
 }

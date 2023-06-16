@@ -18,19 +18,23 @@ export async function getHotListData() {
   const industry = fetch(baseUrl + "/plate?type=industry");
   const maxAmount10 = 10;
   const maxAmount5 = 5;
-  const [stockNormal, stockValue, plateConcept, plateIndustry] = await Promise.all([normal, value, concept, industry]).then(async ([d1, d2, d3, d4]) => {
-    const normalStock = (await d1.json()).data.stock_list.splice(0, maxAmount10);
-    const valueStock = (await d2.json()).data.stock_list.splice(0, maxAmount10);
-    const conceptPlate = (await d3.json()).data.plate_list.splice(0, maxAmount5);
-    const industryPlate = (await d4.json()).data.plate_list.splice(0, maxAmount5);
-    return [normalStock, valueStock, conceptPlate, industryPlate];
-  });
+  try {
+    const [stockNormal, stockValue, plateConcept, plateIndustry] = await Promise.all([normal, value, concept, industry]).then(async ([d1, d2, d3, d4]) => {
+      const normalStock = (await d1.json()).data.stock_list.splice(0, maxAmount10);
+      const valueStock = (await d2.json()).data.stock_list.splice(0, maxAmount10);
+      const conceptPlate = (await d3.json()).data.plate_list.splice(0, maxAmount5);
+      const industryPlate = (await d4.json()).data.plate_list.splice(0, maxAmount5);
+      return [normalStock, valueStock, conceptPlate, industryPlate];
+    });
 
-  createHotListDto.stockNormal = transformStockData(stockNormal);
-  createHotListDto.stockValue = transformStockData(stockValue);
-  createHotListDto.plateConcept = transformPlateData(plateConcept);
-  createHotListDto.plateIndustry = transformPlateData(plateIndustry);
-  createHotListDto.createTime = new Date();
+    createHotListDto.stockNormal = transformStockData(stockNormal);
+    createHotListDto.stockValue = transformStockData(stockValue);
+    createHotListDto.plateConcept = transformPlateData(plateConcept);
+    createHotListDto.plateIndustry = transformPlateData(plateIndustry);
+    return createHotListDto;
+  } catch (e: any) {
+    console.log(e);
+  };
 
-  return createHotListDto;
+
 }

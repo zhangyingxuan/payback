@@ -3,5 +3,4 @@ export declare class CreateHotListDto {
     stockValue: string;
     plateConcept: string;
     plateIndustry: string;
-    createTime: Date;
 }

@@ -34,15 +34,10 @@ let MarketService = MarketService_1 = class MarketService {
             .where("market_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
             .getOne();
         if (todayDataFromDB) {
-            return {
-                code: 'isExist',
-                msg: todayDateStr + ' 数据已存在！',
-            };
         }
         let marketData;
         try {
             marketData = await playWrightUtil_1.default.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
-            await this.marketDataRp.save(marketData);
             this.logger.debug('Called is success!');
         }
         catch (e) {

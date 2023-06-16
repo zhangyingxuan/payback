@@ -13,6 +13,4 @@ export class CreateFundsDataDto {
   gainianFundsTop: string;
 
   marketTurnover: number;
-
-  createTime: Date;
 }

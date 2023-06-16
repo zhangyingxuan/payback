@@ -37,12 +37,12 @@ const getBrowser = async (autoCloseTime: number = browserCloseTimeOut) => {
 const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType: 'text' | 'json', baseBrowser?: Browser): Promise<String> => {
   const browser = baseBrowser ? baseBrowser : await getBrowser();
   // 日志开始
-  logger.log('等待接口返回 start ====', pageUrl);
+  logger.log('等待接口返回 start ====' + pageUrl);
 
-  let page;
+  let page, browserContext;
   // fix： 修复爱问财默认50条数据分页 的问题
   if (apiUrl === 'chart/get-robot-data') {
-    const browserContext = await browser.newContext({ storageState: undefined });
+    browserContext = await browser.newContext({ storageState: undefined });
     // 只有 涨停数据 需要100/ 页；其他页面只需要 10条即可
     const pageNumber = pageUrl.includes(params.dailyLimitMoreThan1) ? '100' : '10';
     await browserContext.addInitScript((pageNumber) => {
@@ -58,7 +58,7 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType: 'text' | 'j
     page.on('response', async (response: Response) => {
       // console.log(response.url())
       if (response.url().includes(apiUrl) && response.status() === 200) {
-        logger.log('等待接口返回 end ====', pageUrl);
+        logger.log('等待接口返回 end ====' + pageUrl);
         let responseData;
         if (transfromType == 'json') {
           responseData = await response.json();
@@ -66,10 +66,11 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType: 'text' | 'j
           responseData = await response.text();
         }
         // 获取数据后，关闭page 节约内存开销
+        browserContext && (await browserContext.close())
         await page.close();
-        setTimeout(() => {
-          resolve(responseData);
-        }, 2000)
+        // setTimeout(() => {
+        resolve(responseData);
+        // }, 2000)
       }
     });
     page.goto(pageUrl, { timeout: commonTimeOut60s, waitUntil: "domcontentloaded" });
@@ -113,7 +114,6 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl, browser): Promise<CreateMar
       // console.log(response.url())
       if (response.url().includes(apiUrl) && response.status() === 200) {
         const dataJson = await response.json();
-        createMarketDataDto.createTime = new Date();
         createMarketDataDto.dailyLimitIncome = dataJson.jrbx_data.last_zdf;
         createMarketDataDto.fallAmount = dataJson.zdfb_data.dnum;
         createMarketDataDto.riseAmount = dataJson.zdfb_data.znum;
@@ -156,11 +156,12 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl, browser): Promise<CreateMar
       // 所有数据都返回了，则resolve
       if (state['151_899050'] && state['hs_399006'] && state['hs_1A0001'] && state['hs_399001'] && state['apiUrl']) {
         // 日志开始
-        logger.log('接口返回数据【成功】 ====', pageUrl);
+        logger.log('接口返回数据【成功】 ====' + pageUrl);
+        await page.close();
         resolve(createMarketDataDto);
       }
     })
-    page.goto(pageUrl, { timeout: commonTimeOut60s });
+    page.goto(pageUrl, { timeout: commonTimeOut60s, waitUntil: "domcontentloaded" });
   });
 };
 
@@ -224,7 +225,7 @@ const waitHostListDataByUrls = async (pageUrl): Promise<CreateHotListDto> => {
         }, 5000)
       }
     })
-    page.goto(pageUrl, { timeout: commonTimeOut60s });
+    page.goto(pageUrl, { timeout: commonTimeOut60s, waitUntil: "domcontentloaded" });
   });
 };
 
@@ -243,7 +244,6 @@ export default {
     const downLimitData: Object[] = await getTodayData(iwencaiUrl + params.downLimit, 'chart/get-robot-data', browser);
     let { SZAmount = 0, SHAmount = 0, board1 = 0, evenBoardData, downLimitDataArr } = transformShortTermSourceData(dailyLimitData, downLimitData, todayDateStr);
 
-    createPayBackDto.createTime = new Date();
     createPayBackDto.downLimitQuantity = downLimitData.length;
     createPayBackDto.dailyLimitQuantity = dailyLimitData.length;
     createPayBackDto.marketHeight = evenBoardData.maxHeight;
@@ -307,7 +307,6 @@ export default {
     const gainianFundsOutflowTop3 = fundsUtil.getPlateTop(gaiNianFundsOutflow, dateStr);
 
     const createFundsDataDto = new CreateFundsDataDto();
-    createFundsDataDto.createTime = new Date();
 
     createFundsDataDto.northFundsAmtIn = commonUtil.toFixed(foreignFunds.northFundsAmtIn / 10000);
     createFundsDataDto.northFundsBuyAmt = commonUtil.toFixed(foreignFunds.northFundsBuyAmt / 10000);

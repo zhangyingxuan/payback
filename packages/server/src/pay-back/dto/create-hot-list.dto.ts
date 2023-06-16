@@ -11,6 +11,4 @@ export class CreateHotListDto {
 
   // 热门行业板块Top5
   plateIndustry: string;
-
-  createTime: Date;
 }

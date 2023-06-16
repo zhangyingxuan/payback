@@ -26,10 +26,10 @@ const getBrowser = async (autoCloseTime = browserCloseTimeOut) => {
 };
 const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType, baseBrowser) => {
     const browser = baseBrowser ? baseBrowser : await getBrowser();
-    logger.log('等待接口返回 start ====', pageUrl);
-    let page;
+    logger.log('等待接口返回 start ====' + pageUrl);
+    let page, browserContext;
     if (apiUrl === 'chart/get-robot-data') {
-        const browserContext = await browser.newContext({ storageState: undefined });
+        browserContext = await browser.newContext({ storageState: undefined });
         const pageNumber = pageUrl.includes(config_1.params.dailyLimitMoreThan1) ? '100' : '10';
         await browserContext.addInitScript((pageNumber) => {
             window.localStorage.setItem('PAGE_NUMBER', pageNumber);
@@ -42,7 +42,7 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType, baseBrowser
     return new Promise((resolve, reject) => {
         page.on('response', async (response) => {
             if (response.url().includes(apiUrl) && response.status() === 200) {
-                logger.log('等待接口返回 end ====', pageUrl);
+                logger.log('等待接口返回 end ====' + pageUrl);
                 let responseData;
                 if (transfromType == 'json') {
                     responseData = await response.json();
@@ -50,10 +50,9 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType, baseBrowser
                 else {
                     responseData = await response.text();
                 }
+                browserContext && (await browserContext.close());
                 await page.close();
-                setTimeout(() => {
-                    resolve(responseData);
-                }, 2000);
+                resolve(responseData);
             }
         });
         page.goto(pageUrl, { timeout: commonTimeOut60s, waitUntil: "domcontentloaded" });
@@ -85,7 +84,6 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl, browser) => {
         page.on('response', async (response) => {
             if (response.url().includes(apiUrl) && response.status() === 200) {
                 const dataJson = await response.json();
-                createMarketDataDto.createTime = new Date();
                 createMarketDataDto.dailyLimitIncome = dataJson.jrbx_data.last_zdf;
                 createMarketDataDto.fallAmount = dataJson.zdfb_data.dnum;
                 createMarketDataDto.riseAmount = dataJson.zdfb_data.znum;
@@ -117,11 +115,12 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl, browser) => {
                 state['151_899050'] = true;
             }
             if (state['151_899050'] && state['hs_399006'] && state['hs_1A0001'] && state['hs_399001'] && state['apiUrl']) {
-                logger.log('接口返回数据【成功】 ====', pageUrl);
+                logger.log('接口返回数据【成功】 ====' + pageUrl);
+                await page.close();
                 resolve(createMarketDataDto);
             }
         });
-        page.goto(pageUrl, { timeout: commonTimeOut60s });
+        page.goto(pageUrl, { timeout: commonTimeOut60s, waitUntil: "domcontentloaded" });
     });
 };
 const waitHostListDataByUrls = async (pageUrl) => {
@@ -171,7 +170,7 @@ const waitHostListDataByUrls = async (pageUrl) => {
                 }, 5000);
             }
         });
-        page.goto(pageUrl, { timeout: commonTimeOut60s });
+        page.goto(pageUrl, { timeout: commonTimeOut60s, waitUntil: "domcontentloaded" });
     });
 };
 const getTodayData = async function (pageUrl, apiUrl, browser) {
@@ -185,7 +184,6 @@ exports.default = {
         const dailyLimitData = await getTodayData(config_1.iwencaiUrl + config_1.params.dailyLimitMoreThan1, 'chart/get-robot-data', browser);
         const downLimitData = await getTodayData(config_1.iwencaiUrl + config_1.params.downLimit, 'chart/get-robot-data', browser);
         let { SZAmount = 0, SHAmount = 0, board1 = 0, evenBoardData, downLimitDataArr } = (0, transformDataUtil_1.transformShortTermSourceData)(dailyLimitData, downLimitData, todayDateStr);
-        createPayBackDto.createTime = new Date();
         createPayBackDto.downLimitQuantity = downLimitData.length;
         createPayBackDto.dailyLimitQuantity = dailyLimitData.length;
         createPayBackDto.marketHeight = evenBoardData.maxHeight;
@@ -235,7 +233,6 @@ exports.default = {
         const gainianFundsInflowTop3 = fundsUtil_1.default.getPlateTop(gaiNianFundsInflow, dateStr);
         const gainianFundsOutflowTop3 = fundsUtil_1.default.getPlateTop(gaiNianFundsOutflow, dateStr);
         const createFundsDataDto = new create_funds_data_dto_1.CreateFundsDataDto();
-        createFundsDataDto.createTime = new Date();
         createFundsDataDto.northFundsAmtIn = commonUtil_1.default.toFixed(foreignFunds.northFundsAmtIn / 10000);
         createFundsDataDto.northFundsBuyAmt = commonUtil_1.default.toFixed(foreignFunds.northFundsBuyAmt / 10000);
         createFundsDataDto.southFundsAmtIn = commonUtil_1.default.toFixed(foreignFunds.southFundsAmtIn / 10000);

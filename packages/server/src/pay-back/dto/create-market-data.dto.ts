@@ -26,6 +26,4 @@ export class CreateMarketDataDto {
   riseMore5: number;
 
   fallMore5: number;
-
-  createTime: Date;
 }
