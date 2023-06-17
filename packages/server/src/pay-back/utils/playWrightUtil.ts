@@ -39,19 +39,19 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType: 'text' | 'j
   // 日志开始
   logger.log('等待接口返回 start ====' + pageUrl);
 
-  let page, browserContext;
-  // fix： 修复爱问财默认50条数据分页 的问题
-  if (apiUrl === 'chart/get-robot-data') {
-    browserContext = await browser.newContext({ storageState: undefined });
-    // 只有 涨停数据 需要100/ 页；其他页面只需要 10条即可
-    const pageNumber = pageUrl.includes(params.dailyLimitMoreThan1) ? '100' : '10';
-    await browserContext.addInitScript((pageNumber) => {
-      window.localStorage.setItem('PAGE_NUMBER', pageNumber);
-    }, pageNumber);
-    page = await browserContext.newPage();
-  } else {
-    page = await browser.newPage();
-  }
+  let page = await browser.newPage(), browserContext;
+  // fix： 修复爱问财默认50条数据分页 的问题；仅 涨停进入，1核1g无法执行
+  // if (apiUrl === 'chart/get-robot-data') {
+  //   browserContext = await browser.newContext({ storageState: undefined });
+  //   // 只有 涨停数据 需要100/ 页；其他页面只需要 10条即可
+  //   const pageNumber = pageUrl.includes(params.dailyLimitMoreThan1) ? '100' : '10';
+  //   await browserContext.addInitScript((pageNumber) => {
+  //     window.localStorage.setItem('PAGE_NUMBER', pageNumber);
+  //   }, pageNumber);
+  //   page = await browserContext.newPage();
+  // } else {
+  //   page = await browser.newPage();
+  // }
 
 
   return new Promise((resolve, reject) => {
