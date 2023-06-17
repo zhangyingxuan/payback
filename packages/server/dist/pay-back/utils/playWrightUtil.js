@@ -27,18 +27,7 @@ const getBrowser = async (autoCloseTime = browserCloseTimeOut) => {
 const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType, baseBrowser) => {
     const browser = baseBrowser ? baseBrowser : await getBrowser();
     logger.log('等待接口返回 start ====' + pageUrl);
-    let page, browserContext;
-    if (apiUrl === 'chart/get-robot-data') {
-        browserContext = await browser.newContext({ storageState: undefined });
-        const pageNumber = pageUrl.includes(config_1.params.dailyLimitMoreThan1) ? '100' : '10';
-        await browserContext.addInitScript((pageNumber) => {
-            window.localStorage.setItem('PAGE_NUMBER', pageNumber);
-        }, pageNumber);
-        page = await browserContext.newPage();
-    }
-    else {
-        page = await browser.newPage();
-    }
+    let page = await browser.newPage(), browserContext;
     return new Promise((resolve, reject) => {
         page.on('response', async (response) => {
             if (response.url().includes(apiUrl) && response.status() === 200) {
@@ -50,8 +39,7 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType, baseBrowser
                 else {
                     responseData = await response.text();
                 }
-                browserContext && (await browserContext.close());
-                await page.close();
+                page.close();
                 setTimeout(() => {
                     resolve(responseData);
                 }, 2000);

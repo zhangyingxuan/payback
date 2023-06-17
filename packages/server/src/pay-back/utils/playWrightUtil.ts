@@ -66,8 +66,8 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType: 'text' | 'j
           responseData = await response.text();
         }
         // 获取数据后，关闭page 节约内存开销
-        browserContext && (await browserContext.close())
-        await page.close();
+        // browserContext && (browserContext.close())
+        page.close();
         setTimeout(() => {
           resolve(responseData);
         }, 2000)
