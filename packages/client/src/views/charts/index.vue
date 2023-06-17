@@ -9,12 +9,16 @@
     <el-tab-pane label="连板">
       <TabPaneEvenBoard />
     </el-tab-pane>
+    <el-tab-pane label="板块">
+      <TabPanePlates />
+    </el-tab-pane>
   </el-tabs>
 </template>
 <script lang="ts" setup>
 import TabPaneCharts from './components/tabPaneCharts.vue';
 import TabPaneEvenBoard from './components/tabPaneEvenBoard.vue';
 import TabPaneHotList from './components/tabPaneHotList.vue';
+import TabPanePlates from './components/tabPanePlates.vue';
 </script>
 
 <style scoped lang="less">

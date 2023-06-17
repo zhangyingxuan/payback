@@ -49,11 +49,4 @@ hotList = __decorate([
     (0, typeorm_1.Entity)()
 ], hotList);
 exports.hotList = hotList;
-const test = {
-    name: '',
-    code: '',
-    hotTag: '',
-    tag: '',
-    rise_and_fall: '',
-};
 //# sourceMappingURL=hotList.entity.js.map

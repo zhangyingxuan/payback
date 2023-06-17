@@ -31,6 +31,7 @@ export async function getHotListData() {
     createHotListDto.stockValue = transformStockData(stockValue);
     createHotListDto.plateConcept = transformPlateData(plateConcept);
     createHotListDto.plateIndustry = transformPlateData(plateIndustry);
+    createHotListDto.updatedTime = new Date();
     return createHotListDto;
   } catch (e: any) {
     console.log(e);

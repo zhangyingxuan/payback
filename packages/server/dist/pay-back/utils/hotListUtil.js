@@ -27,6 +27,7 @@ async function getHotListData() {
         createHotListDto.stockValue = (0, transformDataUtil_1.transformStockData)(stockValue);
         createHotListDto.plateConcept = (0, transformDataUtil_1.transformPlateData)(plateConcept);
         createHotListDto.plateIndustry = (0, transformDataUtil_1.transformPlateData)(plateIndustry);
+        createHotListDto.updatedTime = new Date();
         return createHotListDto;
     }
     catch (e) {

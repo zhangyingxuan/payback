@@ -197,6 +197,7 @@ exports.default = {
         createPayBackDto.downLimitData = JSON.stringify(downLimitDataArr);
         createPayBackDto.SZAmount = SZAmount;
         createPayBackDto.SHAmount = SHAmount;
+        createPayBackDto.createTime = new Date();
         setTimeout(async () => {
             await browser.close();
         }, 5000);
@@ -217,6 +218,7 @@ exports.default = {
         response.gainianFallFloat = JSON.stringify(gainianFallFloatTop3);
         response.hangyeRiseFloat = JSON.stringify(hangyeRiseFloatTop3);
         response.hangyeFallFloat = JSON.stringify(hangyeFallFloatTop3);
+        response.createTime = new Date();
         setTimeout(async () => {
             await browser.close();
         }, 5000);
@@ -244,6 +246,7 @@ exports.default = {
         createFundsDataDto.marketTurnover = commonUtil_1.default.toFixed(marketTurnover / 10000 / 10000 / 10000);
         createFundsDataDto.hangyeFundsTop = JSON.stringify({ in: hangyeFundsInflowTop3, out: hangyeFundsOutflowTop3 });
         createFundsDataDto.gainianFundsTop = JSON.stringify({ in: gainianFundsInflowTop3, out: gainianFundsOutflowTop3 });
+        createFundsDataDto.createTime = new Date();
         setTimeout(async () => {
             await browser.close();
         }, 5000);

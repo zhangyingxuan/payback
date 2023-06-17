@@ -8,4 +8,5 @@ export declare class CreatePayBackDto {
     evenBoardData: string;
     downLimitData: string;
     board1: number;
+    createTime: Date;
 }

@@ -36,7 +36,7 @@ function atob(a) {
           database: config.get('DDD_NAME'),
           entities: [__dirname + '/**/*.entity{.ts,.js}'],
           synchronize: true,
-          timezone: 'Z',
+          // timezone: 'Z',
         } as TypeOrmModuleOptions;
       },
     }),

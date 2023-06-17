@@ -27,11 +27,3 @@ export class hotList {
   @UpdateDateColumn({ type: "timestamp", comment: '更新时间' })
   updatedTime: Timestamp;
 }
-
-const test = {
-  name: '',
-  code: '',
-  hotTag: '',
-  tag: '',
-  rise_and_fall: '',
-}
