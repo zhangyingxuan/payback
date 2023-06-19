@@ -10,7 +10,7 @@ declare const _default: {
         name: any;
         code: any;
         funds: number;
-        quoteChange: any;
+        quoteChange: number;
     }[];
 };
 export default _default;

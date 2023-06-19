@@ -1,11 +1,17 @@
 
 export function toFixed(num, floatLen = 2) {
   if (!num) return;
+  if (typeof (num) == 'string') {
+    num = +num;
+  }
   return +(num).toFixed(floatLen)
 }
 
 export function fundsToFixed(num, floatLen = 2) {
   if (!num) return;
+  if (typeof (num) == 'string') {
+    num = +num;
+  }
   return +(num / 100000000).toFixed(floatLen)
 }
 

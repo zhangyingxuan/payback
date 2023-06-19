@@ -4,12 +4,18 @@ exports.fundsToFixed = exports.toFixed = void 0;
 function toFixed(num, floatLen = 2) {
     if (!num)
         return;
+    if (typeof (num) == 'string') {
+        num = +num;
+    }
     return +(num).toFixed(floatLen);
 }
 exports.toFixed = toFixed;
 function fundsToFixed(num, floatLen = 2) {
     if (!num)
         return;
+    if (typeof (num) == 'string') {
+        num = +num;
+    }
     return +(num / 100000000).toFixed(floatLen);
 }
 exports.fundsToFixed = fundsToFixed;

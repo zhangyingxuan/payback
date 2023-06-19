@@ -44,7 +44,7 @@ exports.default = {
                 name: item['指数简称'],
                 code: item['指数代码'],
                 funds: commonUtil_1.default.fundsToFixed(item[`指数@主力资金流向[${dateStr}]`]),
-                quoteChange: item[`指数@涨跌幅:前复权[${dateStr}]`] || '0.0',
+                quoteChange: commonUtil_1.default.toFixed(item[`指数@涨跌幅:前复权[${dateStr}]`] || '0.0'),
             };
         });
     }

@@ -24,8 +24,8 @@ const getBrowser = async (autoCloseTime: number = browserCloseTimeOut) => {
   });
   // 默认 15s 后强制释放浏览器
   setTimeout(async () => {
-    logger.log('自动关闭browser ====' + autoCloseTime);
     await browser.close();
+    logger.log('自动关闭browser ====' + autoCloseTime);
   }, autoCloseTime);
   return browser;
 };
@@ -41,17 +41,17 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType: 'text' | 'j
 
   let page = await browser.newPage(), browserContext;
   // fix： 修复爱问财默认50条数据分页 的问题；仅 涨停进入，1核1g无法执行
-  // if (apiUrl === 'chart/get-robot-data') {
-  //   browserContext = await browser.newContext({ storageState: undefined });
-  //   // 只有 涨停数据 需要100/ 页；其他页面只需要 10条即可
-  //   const pageNumber = pageUrl.includes(params.dailyLimitMoreThan1) ? '100' : '10';
-  //   await browserContext.addInitScript((pageNumber) => {
-  //     window.localStorage.setItem('PAGE_NUMBER', pageNumber);
-  //   }, pageNumber);
-  //   page = await browserContext.newPage();
-  // } else {
-  //   page = await browser.newPage();
-  // }
+  if (apiUrl === 'chart/get-robot-data') {
+    browserContext = await browser.newContext({ storageState: undefined });
+    // 只有 涨停数据 需要100/ 页；其他页面只需要 10条即可
+    const pageNumber = pageUrl.includes(params.dailyLimitMoreThan1) ? '100' : '10';
+    await browserContext.addInitScript((pageNumber) => {
+      window.localStorage.setItem('PAGE_NUMBER', pageNumber);
+    }, pageNumber);
+    page = await browserContext.newPage();
+  } else {
+    page = await browser.newPage();
+  }
 
 
   return new Promise((resolve, reject) => {
@@ -156,11 +156,11 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl, browser): Promise<CreateMar
       // 所有数据都返回了，则resolve
       if (state['151_899050'] && state['hs_399006'] && state['hs_1A0001'] && state['hs_399001'] && state['apiUrl']) {
         // 日志开始
-        logger.log('接口返回数据【成功】 ====' + pageUrl);
         await page.close();
+        logger.log('接口返回数据【成功】 ====' + pageUrl);
         setTimeout(() => {
           resolve(createMarketDataDto);
-        });
+        }, 2000);
       }
     })
     page.goto(pageUrl, { timeout: commonTimeOut60s, waitUntil: "domcontentloaded" });

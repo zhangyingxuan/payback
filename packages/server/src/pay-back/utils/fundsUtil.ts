@@ -51,13 +51,12 @@ export default {
   },
   getPlateTop(responseJson, dateStr, len = 3) {
     const platesData = commonUtil.getIwencaiData(responseJson);
-
     return platesData.splice(0, len).map((item) => {
       return {
         name: item['指数简称'],
         code: item['指数代码'],
         funds: commonUtil.fundsToFixed(item[`指数@主力资金流向[${dateStr}]`]),
-        quoteChange: item[`指数@涨跌幅:前复权[${dateStr}]`] || '0.0',
+        quoteChange: commonUtil.toFixed(item[`指数@涨跌幅:前复权[${dateStr}]`] || '0.0'),
       }
     });
   }

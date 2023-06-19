@@ -19,8 +19,8 @@ const getBrowser = async (autoCloseTime = browserCloseTimeOut) => {
         timeout: browserOpenTimeOut,
     });
     setTimeout(async () => {
-        logger.log('自动关闭browser ====' + autoCloseTime);
         await browser.close();
+        logger.log('自动关闭browser ====' + autoCloseTime);
     }, autoCloseTime);
     return browser;
 };
@@ -28,6 +28,17 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType, baseBrowser
     const browser = baseBrowser ? baseBrowser : await getBrowser();
     logger.log('等待接口返回 start ====' + pageUrl);
     let page = await browser.newPage(), browserContext;
+    if (apiUrl === 'chart/get-robot-data') {
+        browserContext = await browser.newContext({ storageState: undefined });
+        const pageNumber = pageUrl.includes(config_1.params.dailyLimitMoreThan1) ? '100' : '10';
+        await browserContext.addInitScript((pageNumber) => {
+            window.localStorage.setItem('PAGE_NUMBER', pageNumber);
+        }, pageNumber);
+        page = await browserContext.newPage();
+    }
+    else {
+        page = await browser.newPage();
+    }
     return new Promise((resolve, reject) => {
         page.on('response', async (response) => {
             if (response.url().includes(apiUrl) && response.status() === 200) {
@@ -105,11 +116,11 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl, browser) => {
                 state['151_899050'] = true;
             }
             if (state['151_899050'] && state['hs_399006'] && state['hs_1A0001'] && state['hs_399001'] && state['apiUrl']) {
-                logger.log('接口返回数据【成功】 ====' + pageUrl);
                 await page.close();
+                logger.log('接口返回数据【成功】 ====' + pageUrl);
                 setTimeout(() => {
                     resolve(createMarketDataDto);
-                });
+                }, 2000);
             }
         });
         page.goto(pageUrl, { timeout: commonTimeOut60s, waitUntil: "domcontentloaded" });
