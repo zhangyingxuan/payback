@@ -34,7 +34,7 @@ let FundsService = FundsService_1 = class FundsService {
             .where("market_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
             .getOne();
         if (todayDataFromDB) {
-            this.logger.debug('crawlfundsData is isExist!');
+            this.logger.debug('crawlfundsData is end![isExist]!');
             return {
                 code: 'isExist',
                 msg: todayDateStr + ' 数据已存在！',

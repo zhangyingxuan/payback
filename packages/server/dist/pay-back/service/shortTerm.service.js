@@ -45,7 +45,7 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
             createPayBackDto = await playWrightUtil_1.default.getShortTermData(todayDateStr);
             console.log(createPayBackDto);
             await this.shortTermDataRp.save(createPayBackDto);
-            this.logger.debug('Called is success!');
+            this.logger.debug('crawlShortTermData is success!');
         }
         catch (e) {
             this.logger.error('出错啦！！！', e);

@@ -31,7 +31,7 @@ export class FundsService {
       .getOne();
 
     if (todayDataFromDB) {
-      this.logger.debug('crawlfundsData is isExist!');
+      this.logger.debug('crawlfundsData is end![isExist]!');
       return {
         code: 'isExist',
         msg: todayDateStr + ' 数据已存在！',
