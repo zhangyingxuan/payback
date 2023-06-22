@@ -6,10 +6,7 @@ export declare class ShorTermService {
     private readonly shortTermDataRp;
     constructor(shortTermDataRp: Repository<shortTermData>);
     private readonly logger;
-    crawlShortTermData(): Promise<CreatePayBackDto | {
-        code: string;
-        msg: string;
-    }>;
+    crawlShortTermData(): Promise<CreatePayBackDto>;
     findAll(): Promise<shortTermData[]>;
     findByLimit(len?: number): Promise<shortTermData[]>;
     findEvenBoardByLimit(len?: number): Promise<shortTermData[]>;

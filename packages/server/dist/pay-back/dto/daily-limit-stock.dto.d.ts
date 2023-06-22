@@ -6,4 +6,9 @@ export declare class DailyLimitStockDto {
     turnover: number;
     closingFunds: number;
     evenDays: string;
+    type: number;
+    price: number;
+    circulationValue: number;
+    openTimes: number;
+    dailyTime: string;
 }

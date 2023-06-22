@@ -41,7 +41,6 @@ function transDownLimitData(dailyLimitData, todayDateStr) {
     const dailyLimitStockDto = new DownLimitStockDto();
     dailyLimitStockDto.name = item['股票简称'];
     dailyLimitStockDto.code = item.code;
-    console.log(item);
     dailyLimitStockDto.plateLevel2 = item['所属同花顺二级行业'];
     // 封板资金 单位 亿
     dailyLimitStockDto.closingFunds = fundsToFixed(item[`跌停封单额[${currentDate}]`]);
@@ -50,6 +49,22 @@ function transDownLimitData(dailyLimitData, todayDateStr) {
 
   return downLimitData;
 };
+
+/**
+ * 判断类型
+ */
+function judgeType(str) {
+  if (!str) return 2;
+
+  const num = +str;
+  if (num < 11) {
+    return 0;
+  } else if (num >= 11 && num < 21) {
+    return 1;
+  } else {
+    return 2;
+  }
+}
 
 export function transformShortTermSourceData(dailyLimitData, downLimitData, todayDateStr) {
   const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
@@ -76,11 +91,23 @@ export function transformShortTermSourceData(dailyLimitData, downLimitData, toda
     }
 
     dailyLimitStockDto.name = item['股票简称'];
-    dailyLimitStockDto.code = item.code;
+    // dailyLimitStockDto.code = item.code;
     dailyLimitStockDto.reason = item[`涨停原因类别[${currentDate}]`];
     dailyLimitStockDto.plateLevel2 = item['所属同花顺二级行业'];
     // 封板资金 单位 亿
     dailyLimitStockDto.closingFunds = fundsToFixed(item[`涨停封单额[${currentDate}]`]);
+    dailyLimitStockDto.type = judgeType(item['最新涨跌幅']);
+    dailyLimitStockDto.price = item['最新价'];
+    // 开板次数，如果未开板 则不保存
+    if (item[`涨停开板次数[${currentDate}]`] !== 0) {
+      dailyLimitStockDto.openTimes = item[`涨停开板次数[${currentDate}]`];
+    }
+    // 流通市值
+    dailyLimitStockDto.circulationValue = fundsToFixed(item[`a股市值(不含限售股)[${currentDate}]`]);
+    dailyLimitStockDto.dailyTime = item[`首次涨停时间[${currentDate}]`].trim();
+    if (dailyLimitStockDto.openTimes > 0) {
+      dailyLimitStockDto.dailyTime += (',' + item[`最终涨停时间[${currentDate}]`].trim());
+    }
     // 如果是 断板连板 则统计几天几板
     const jitianjiban = item[`几天几板[${currentDate}]`];
     // 取出 两个数字，如果不一致 则存入 evenDays字段

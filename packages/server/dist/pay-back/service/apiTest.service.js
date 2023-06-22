@@ -19,6 +19,7 @@ const typeorm_1 = require("typeorm");
 const hotList_entity_1 = require("../entities/hotList.entity");
 const typeorm_2 = require("@nestjs/typeorm");
 const node_fetch_1 = require("node-fetch");
+const hexin_v_js_1 = require("../core/hexin-v.js");
 const apiUrls = {
     conceptPlate: 'https://dq.10jqka.com.cn/fuyao/hot_list_data/out/hot_list/v1/plate',
     industryPlate: 'https://dq.10jqka.com.cn/fuyao/hot_list_data/out/hot_list/v1/plate?type=industry',
@@ -30,15 +31,26 @@ let ApiTestService = ApiTestService_1 = class ApiTestService {
         this.logger = new common_1.Logger(ApiTestService_1.name);
     }
     async fetchExternalData() {
-        (0, node_fetch_1.default)("https://www.iwencai.com/customized/chart/get-robot-data", {
+        const body = {
+            "source": "Ths_iwencai_Xuangu",
+            "version": "2.0",
+            "question": "连续涨停天数>=1；不包含新股；不包含ST；几天几板；涨停原因；封板金额；成交额；同花顺二级行业；",
+            "perpage": 100,
+            "page": 1,
+        };
+        const result = await (0, node_fetch_1.default)("https://www.iwencai.com/customized/chart/get-robot-data", {
             "headers": {
                 "accept": "application/json, text/plain, */*",
+                "accept-language": "zh-CN,zh;q=0.9",
+                "cache-control": "no-cache",
                 "content-type": "application/json",
-                "hexin-v": "AxW5U8Rm3S1L3vkv3t4NCY55IhrKEsi4k8et1pe60jTb9DtEX2LZ9CMWvVsk",
+                "hexin-v": (0, hexin_v_js_1.createV)(),
+                "pragma": "no-cache"
             },
-            "body": "{\"source\":\"Ths_iwencai_Xuangu\",\"version\":\"2.0\",\"query_area\":\"\",\"block_list\":\"\",\"add_info\":\"{\\\"urp\\\":{\\\"scene\\\":1,\\\"company\\\":1,\\\"business\\\":1},\\\"contentType\\\":\\\"json\\\",\\\"searchInfo\\\":true}\",\"question\":\"行业板块主力资金；涨跌幅倒序\",\"perpage\":\"50\",\"page\":1,\"secondary_intent\":\"\",\"log_info\":\"{\\\"input_type\\\":\\\"click\\\"}\",\"rsh\":\"Ths_iwencai_Xuangu_cj7r4l37naa3g54vm4j6pk04xq86kyvq\"}",
+            "body": JSON.stringify(body),
             "method": "POST",
-        }).then(response => response.json()).then(data => console.log(data)).catch(e => console.error(e));
+        });
+        console.log(await result.json());
     }
     async fetchHotList() {
         (0, node_fetch_1.default)("https://dq.10jqka.com.cn/fuyao/hot_list_data/out/hot_list/v1/stock?stock_type=a&type=hour&list_type=normal").then(response => response.json()).then(data => console.log(data)).catch(e => console.error(e));

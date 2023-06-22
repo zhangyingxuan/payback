@@ -37,7 +37,6 @@ function transDownLimitData(dailyLimitData, todayDateStr) {
         const dailyLimitStockDto = new down_limit_stock_dto_1.DownLimitStockDto();
         dailyLimitStockDto.name = item['股票简称'];
         dailyLimitStockDto.code = item.code;
-        console.log(item);
         dailyLimitStockDto.plateLevel2 = item['所属同花顺二级行业'];
         dailyLimitStockDto.closingFunds = (0, commonUtil_1.fundsToFixed)(item[`跌停封单额[${currentDate}]`]);
         downLimitData.push(dailyLimitStockDto);
@@ -45,6 +44,20 @@ function transDownLimitData(dailyLimitData, todayDateStr) {
     return downLimitData;
 }
 ;
+function judgeType(str) {
+    if (!str)
+        return 2;
+    const num = +str;
+    if (num < 11) {
+        return 0;
+    }
+    else if (num >= 11 && num < 21) {
+        return 1;
+    }
+    else {
+        return 2;
+    }
+}
 function transformShortTermSourceData(dailyLimitData, downLimitData, todayDateStr) {
     const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
     const evenBoardLabel = `连续涨停天数[${currentDate}]`;
@@ -67,10 +80,19 @@ function transformShortTermSourceData(dailyLimitData, downLimitData, todayDateSt
             SHAmount++;
         }
         dailyLimitStockDto.name = item['股票简称'];
-        dailyLimitStockDto.code = item.code;
         dailyLimitStockDto.reason = item[`涨停原因类别[${currentDate}]`];
         dailyLimitStockDto.plateLevel2 = item['所属同花顺二级行业'];
         dailyLimitStockDto.closingFunds = (0, commonUtil_1.fundsToFixed)(item[`涨停封单额[${currentDate}]`]);
+        dailyLimitStockDto.type = judgeType(item['最新涨跌幅']);
+        dailyLimitStockDto.price = item['最新价'];
+        if (item[`涨停开板次数[${currentDate}]`] !== 0) {
+            dailyLimitStockDto.openTimes = item[`涨停开板次数[${currentDate}]`];
+        }
+        dailyLimitStockDto.circulationValue = (0, commonUtil_1.fundsToFixed)(item[`a股市值(不含限售股)[${currentDate}]`]);
+        dailyLimitStockDto.dailyTime = item[`首次涨停时间[${currentDate}]`].trim();
+        if (dailyLimitStockDto.openTimes > 0) {
+            dailyLimitStockDto.dailyTime += (',' + item[`最终涨停时间[${currentDate}]`].trim());
+        }
         const jitianjiban = item[`几天几板[${currentDate}]`];
         if (jitianjiban && jitianjiban.indexOf('天') > -1) {
             const day = jitianjiban.split('天')[0];

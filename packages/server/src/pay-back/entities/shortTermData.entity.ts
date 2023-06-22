@@ -30,7 +30,7 @@ export class shortTermData {
   @Column({ comment: '连板原始数据', type: 'text' })
   evenBoardData: string;
 
-  @Column({ comment: '跌停数据', type: 'varchar', length: 512, default: '' })
+  @Column({ comment: '跌停数据', type: 'varchar', length: 1512, default: '' })
   downLimitData: string;
 
   @Column({ comment: '1板数量', type: 'int', default: 0 })

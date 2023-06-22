@@ -18,7 +18,7 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("typeorm");
 const shortTermData_entity_1 = require("../entities/shortTermData.entity");
 const typeorm_2 = require("@nestjs/typeorm");
-const playWrightUtil_1 = require("../utils/playWrightUtil");
+const shortTermUtil_1 = require("../utils/shortTermUtil");
 const dayjs = require("dayjs");
 const schedule_1 = require("@nestjs/schedule");
 let ShorTermService = ShorTermService_1 = class ShorTermService {
@@ -35,16 +35,10 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
             .getOne();
         if (todayDataFromDB) {
             this.logger.debug('crawlShortTermData is end![isExist]');
-            return {
-                code: 'isExist',
-                msg: todayDateStr + ' 数据已存在！',
-            };
         }
         let createPayBackDto;
         try {
-            createPayBackDto = await playWrightUtil_1.default.getShortTermData(todayDateStr);
-            console.log(createPayBackDto);
-            await this.shortTermDataRp.save(createPayBackDto);
+            createPayBackDto = await (0, shortTermUtil_1.getShortTermData)('2023-06-21 09:45:15');
             this.logger.debug('crawlShortTermData is success!');
         }
         catch (e) {

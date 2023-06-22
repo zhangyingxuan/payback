@@ -1,15 +1,13 @@
 // 开发须知：
 // 轻量服务器 1核1G 仅支持1个 browser 1个page 同时打开，否则会阻塞执行
-import { chromium, firefox, Browser, Response, Page } from 'playwright';
+import { firefox, Browser, Response } from 'playwright';
 import { CreateMarketDataDto } from '../dto/create-market-data.dto';
 import { CreateFundsDataDto } from '../dto/create-funds-data.dto';
-import { CreateHotListDto } from '../dto/create-hot-list.dto';
 import commonUtil from './commonUtil';
 import fundsUtil from './fundsUtil';
-import { marketUrl, iwencaiUrl, params } from './config';
+import { marketUrl, iwencaiUrl, params } from '../core/config';
 import { Logger } from '@nestjs/common';
-import { CreatePayBackDto } from '../dto/create-pay-back.dto';
-import { transformShortTermSourceData, transformStockData, transformPlateData } from '../utils/transformDataUtil';
+import { fetchIwencaiApi } from '../core/fetchUtil';
 
 const logger = new Logger('playWrightUtil');
 
@@ -167,112 +165,19 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl, browser): Promise<CreateMar
   });
 };
 
-/**
-* 
-* @param url 准备热榜数据
-* @returns 
-*/
-const waitHostListDataByUrls = async (pageUrl): Promise<CreateHotListDto> => {
-  return new Promise(async (resolve, reject) => {
-    const browser = await getBrowser();
-    console.log('打开浏览器成功！');
-    // 打开股票行情页面  
-    const page = await browser.newPage();
-    console.log('打开热榜页面成功！');
-    const maxAmount10 = 10;
-    const maxAmount5 = 5;
-    const createHotListDto = new CreateHotListDto();
-    const state = {
-      // 大家都在看，小时榜
-      stockNormal: false,
-      // 价值投资
-      stockValue: false,
-      // 概念板块
-      plateConcept: false,
-      // 行业板块
-      plateIndustry: false,
-    }
-    page.on('response', async response => {
-      if (response.url().includes('stock?stock_type=a&type=hour&list_type=normal') && response.status() === 200) {
-        state.stockNormal = true;
-        const responseData = await response.json();
-        const stockList = responseData.data.stock_list.splice(0, maxAmount10);
-        createHotListDto.stockNormal = transformStockData(stockList);
-      }
-      if (response.url().includes('stock?stock_type=a&type=day&list_type=value') && response.status() === 200) {
-        state.stockValue = true;
-        const responseData = await response.json();
-        const stockList = responseData.data.stock_list.splice(0, maxAmount10);
-        createHotListDto.stockValue = transformStockData(stockList);
-      }
-      if (response.url().includes('plate?type=concept') && response.status() === 200) {
-        state.plateConcept = true;
-        const responseData = await response.json();
-        const plateList = responseData.data.plate_list.splice(0, maxAmount5);
-        createHotListDto.plateConcept = transformPlateData(plateList);
-      }
-      if (response.url().includes('plate?type=industry') && response.status() === 200) {
-        state.plateIndustry = true;
-        const responseData = await response.json();
-        const plateList = responseData.data.plate_list.splice(0, maxAmount5);
-        createHotListDto.plateIndustry = transformPlateData(plateList);
-      }
-
-      // 所有数据都返回了，则resolve
-      if (state['stockNormal'] && state['stockValue'] && state['plateConcept'] && state['plateIndustry']) {
-        resolve(createHotListDto);
-
-        setTimeout(async () => {
-          await browser.close();
-        }, 5000)
-      }
-    })
-    page.goto(pageUrl, { timeout: commonTimeOut60s, waitUntil: "domcontentloaded" });
-  });
-};
-
-const getTodayData = async function (pageUrl, apiUrl, browser) {
-  const responseJson: any = await waitOriginalDataByUrl(pageUrl, apiUrl, 'json', browser);
-  return commonUtil.getIwencaiData(responseJson);
-}
-
 export default {
-  async getShortTermData(todayDateStr): Promise<CreatePayBackDto> {
-    let createPayBackDto: CreatePayBackDto = new CreatePayBackDto();
-    const browser = await getBrowser(browserCloseTimeOut * 3);
-    // 准备涨停数据
-    const dailyLimitData: Object[] = await getTodayData(iwencaiUrl + params.dailyLimitMoreThan1, 'chart/get-robot-data', browser);
-    // 跌停数据
-    const downLimitData: Object[] = await getTodayData(iwencaiUrl + params.downLimit, 'chart/get-robot-data', browser);
-    let { SZAmount = 0, SHAmount = 0, board1 = 0, evenBoardData, downLimitDataArr } = transformShortTermSourceData(dailyLimitData, downLimitData, todayDateStr);
-
-    createPayBackDto.downLimitQuantity = downLimitData.length;
-    createPayBackDto.dailyLimitQuantity = dailyLimitData.length;
-    createPayBackDto.marketHeight = evenBoardData.maxHeight;
-    createPayBackDto.board1 = board1;
-    createPayBackDto.evenBoardAmount = dailyLimitData.length - board1;
-    createPayBackDto.evenBoardData = JSON.stringify(evenBoardData);
-    createPayBackDto.downLimitData = JSON.stringify(downLimitDataArr);
-    createPayBackDto.SZAmount = SZAmount;
-    createPayBackDto.SHAmount = SHAmount;
-    createPayBackDto.createTime = new Date();
-
-    setTimeout(async () => {
-      await browser.close();
-    }, 5000);
-    return createPayBackDto;
-  },
   /**
    * 获取 市场数据
    */
   async getMarketData(dateStr): Promise<CreateMarketDataDto> {
-    const browser = await getBrowser(browserCloseTimeOut * 5);
+    const browser = await getBrowser(browserCloseTimeOut);
     const response: CreateMarketDataDto = await waitMarketDataByUrls(marketUrl, '/api.php', browser);
 
-    const gainianRiseFloat = await waitOriginalDataByUrl(iwencaiUrl + params.gainianRiseFloat, 'chart/get-robot-data', 'json', browser);
-    const gainianFallFloat = await waitOriginalDataByUrl(iwencaiUrl + params.gainianFallFloat, 'chart/get-robot-data', 'json', browser);
-    const hangyeRiseFloat = await waitOriginalDataByUrl(iwencaiUrl + params.hangyeRiseFloat, 'chart/get-robot-data', 'json', browser);
-    const hangyeFallFloat = await waitOriginalDataByUrl(iwencaiUrl + params.hangyeFallFloat, 'chart/get-robot-data', 'json', browser);
+    const gainianRiseFloat = await fetchIwencaiApi(params.gainianRiseFloat);
+    const gainianFallFloat = await fetchIwencaiApi(params.gainianFallFloat);
+    const hangyeRiseFloat = await fetchIwencaiApi(params.hangyeRiseFloat);
+    const hangyeFallFloat = await fetchIwencaiApi(params.hangyeFallFloat);
+
     const gainianRiseFloatTop3 = fundsUtil.getPlateTop(gainianRiseFloat, dateStr, 5);
     const gainianFallFloatTop3 = fundsUtil.getPlateTop(gainianFallFloat, dateStr, 5);
     const hangyeRiseFloatTop3 = fundsUtil.getPlateTop(hangyeRiseFloat, dateStr, 5);
@@ -284,23 +189,23 @@ export default {
     response.createTime = new Date();
     setTimeout(async () => {
       await browser.close();
-    }, 5000);
+    }, 2000);
     return response;
   },
   /**
    * 获取 资金数据
    */
   async getFundsData(dateStr) {
-    const browser = await getBrowser(browserCloseTimeOut * 5);
+    const browser = await getBrowser(browserCloseTimeOut * 2);
     // TODO 轻量服务器，无法同时打开多个page ，所以待优化，promise.all 方案实施失败
     // 北向资金、南向资金 获取
     const responseForeignFunds = await waitOriginalDataByUrl('https://data.eastmoney.com/hsgt/index.html', 'reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE', 'text', browser);
     const responseMarketTurnover = await waitOriginalDataByUrl('https://data.eastmoney.com/zjlx/dpzjlx.html', 'fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5', 'text', browser);
 
-    const hangyeFundsInflow = await waitOriginalDataByUrl(iwencaiUrl + params.hangyeFundsInflow, 'chart/get-robot-data', 'json', browser);
-    const hangyeFundsOutflow = await waitOriginalDataByUrl(iwencaiUrl + params.hangyeFundsOutflow, 'chart/get-robot-data', 'json', browser);
-    const gaiNianFundsInflow = await waitOriginalDataByUrl(iwencaiUrl + params.gainianFundsInflow, 'chart/get-robot-data', 'json', browser);
-    const gaiNianFundsOutflow = await waitOriginalDataByUrl(iwencaiUrl + params.gainianFundsOutflow, 'chart/get-robot-data', 'json', browser);
+    const hangyeFundsInflow = await fetchIwencaiApi(iwencaiUrl + params.hangyeFundsInflow);
+    const hangyeFundsOutflow = await fetchIwencaiApi(iwencaiUrl + params.hangyeFundsOutflow);
+    const gaiNianFundsInflow = await fetchIwencaiApi(iwencaiUrl + params.gainianFundsInflow);
+    const gaiNianFundsOutflow = await fetchIwencaiApi(iwencaiUrl + params.gainianFundsOutflow);
 
     const foreignFunds: any = fundsUtil.transformForeignFunds(responseForeignFunds);
     const marketTurnover: any = fundsUtil.getMarketTurnover(responseMarketTurnover);
@@ -311,28 +216,19 @@ export default {
     const gainianFundsOutflowTop3 = fundsUtil.getPlateTop(gaiNianFundsOutflow, dateStr);
 
     const createFundsDataDto = new CreateFundsDataDto();
-
+    // 万亿
     createFundsDataDto.northFundsAmtIn = commonUtil.toFixed(foreignFunds.northFundsAmtIn / 10000);
     createFundsDataDto.northFundsBuyAmt = commonUtil.toFixed(foreignFunds.northFundsBuyAmt / 10000);
     createFundsDataDto.southFundsAmtIn = commonUtil.toFixed(foreignFunds.southFundsAmtIn / 10000);
     createFundsDataDto.southFundsBuyAmt = commonUtil.toFixed(foreignFunds.southFundsBuyAmt / 10000);
-    // 万亿
     createFundsDataDto.marketTurnover = commonUtil.toFixed(marketTurnover / 10000 / 10000 / 10000);
     createFundsDataDto.hangyeFundsTop = JSON.stringify({ in: hangyeFundsInflowTop3, out: hangyeFundsOutflowTop3 });
     createFundsDataDto.gainianFundsTop = JSON.stringify({ in: gainianFundsInflowTop3, out: gainianFundsOutflowTop3 });
     createFundsDataDto.createTime = new Date();
-    // console.log(createFundsDataDto);
+
     setTimeout(async () => {
       await browser.close();
-    }, 5000);
+    }, 2000);
     return createFundsDataDto;
   },
-  /**
-   * 通过页面获取 热门数据（耗费资源） - 已废弃
-   * @returns 
-   */
-  async getHotListData() {
-    const response = waitHostListDataByUrls('https://eq.10jqka.com.cn/frontend/thsTopRank/index.html');
-    return response;
-  }
 }

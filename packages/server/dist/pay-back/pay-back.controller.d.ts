@@ -13,10 +13,7 @@ export declare class PayBackController {
     constructor(ShorTermService: ShorTermService, fundsService: FundsService, hotListService: HotListService, apiTestService: ApiTestService, marketService: MarketService);
     testApi(): Promise<void>;
     crawlTodayData(): Promise<{
-        shortData: import("./dto/create-pay-back.dto").CreatePayBackDto | {
-            code: string;
-            msg: string;
-        };
+        shortData: import("./dto/create-pay-back.dto").CreatePayBackDto;
         fundsData: import("./dto/create-funds-data.dto").CreateFundsDataDto | {
             code: string;
             msg: string;
@@ -27,10 +24,7 @@ export declare class PayBackController {
         };
     }>;
     crawlHotListData(): Promise<import("./dto/create-hot-list.dto").CreateHotListDto>;
-    crawlShortTerm(): Promise<import("./dto/create-pay-back.dto").CreatePayBackDto | {
-        code: string;
-        msg: string;
-    }>;
+    crawlShortTerm(): Promise<import("./dto/create-pay-back.dto").CreatePayBackDto>;
     crawlMarket(): Promise<import("./dto/create-market-data.dto").CreateMarketDataDto | {
         code: string;
         msg: string;
