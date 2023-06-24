@@ -70,6 +70,7 @@ export function transformShortTermSourceData(dailyLimitData, downLimitData, toda
   const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
   const evenBoardLabel = `连续涨停天数[${currentDate}]`;
   let SZAmount = 0, SHAmount = 0, board1 = 0, maxHeight = 1, currentLevel = 0;
+  // 跌停数据
   const downLimitDataArr = transDownLimitData(downLimitData, todayDateStr);
   let evenBoardData = { maxHeight: 1, gaobiao: [] };
   dailyLimitData.forEach(item => {
@@ -91,7 +92,7 @@ export function transformShortTermSourceData(dailyLimitData, downLimitData, toda
     }
 
     dailyLimitStockDto.name = item['股票简称'];
-    // dailyLimitStockDto.code = item.code;
+    dailyLimitStockDto.code = item.code;
     dailyLimitStockDto.reason = item[`涨停原因类别[${currentDate}]`];
     dailyLimitStockDto.plateLevel2 = item['所属同花顺二级行业'];
     // 封板资金 单位 亿

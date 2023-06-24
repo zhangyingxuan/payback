@@ -33,16 +33,16 @@ export class ShorTermService {
 
     if (todayDataFromDB) {
       this.logger.debug('crawlShortTermData is end![isExist]');
-      // return {
-      //   code: 'isExist',
-      //   msg: todayDateStr + ' 数据已存在！',
-      // }
+      return {
+        code: 'isExist',
+        msg: todayDateStr + ' 数据已存在！',
+      }
     }
     let createPayBackDto: CreatePayBackDto;
     try {
-      createPayBackDto = await getShortTermData('2023-06-21 09:45:15');
-      // console.log(createPayBackDto);
-      // await this.shortTermDataRp.save(createPayBackDto);
+      createPayBackDto = await getShortTermData(todayDateStr);
+      console.log(createPayBackDto);
+      await this.shortTermDataRp.save(createPayBackDto);
       this.logger.debug('crawlShortTermData is success!');
     } catch (e) {
       this.logger.error('出错啦！！！', e)

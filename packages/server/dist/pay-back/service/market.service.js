@@ -42,6 +42,7 @@ let MarketService = MarketService_1 = class MarketService {
         let marketData;
         try {
             marketData = await playWrightUtil_1.default.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
+            console.log(marketData);
             await this.marketDataRp.save(marketData);
             this.logger.debug('crawlMarketData is end![isExist]!');
         }

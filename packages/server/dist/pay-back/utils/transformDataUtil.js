@@ -80,6 +80,7 @@ function transformShortTermSourceData(dailyLimitData, downLimitData, todayDateSt
             SHAmount++;
         }
         dailyLimitStockDto.name = item['股票简称'];
+        dailyLimitStockDto.code = item.code;
         dailyLimitStockDto.reason = item[`涨停原因类别[${currentDate}]`];
         dailyLimitStockDto.plateLevel2 = item['所属同花顺二级行业'];
         dailyLimitStockDto.closingFunds = (0, commonUtil_1.fundsToFixed)(item[`涨停封单额[${currentDate}]`]);

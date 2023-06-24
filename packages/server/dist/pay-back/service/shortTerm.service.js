@@ -35,10 +35,16 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
             .getOne();
         if (todayDataFromDB) {
             this.logger.debug('crawlShortTermData is end![isExist]');
+            return {
+                code: 'isExist',
+                msg: todayDateStr + ' 数据已存在！',
+            };
         }
         let createPayBackDto;
         try {
-            createPayBackDto = await (0, shortTermUtil_1.getShortTermData)('2023-06-21 09:45:15');
+            createPayBackDto = await (0, shortTermUtil_1.getShortTermData)(todayDateStr);
+            console.log(createPayBackDto);
+            await this.shortTermDataRp.save(createPayBackDto);
             this.logger.debug('crawlShortTermData is success!');
         }
         catch (e) {
