@@ -209,7 +209,7 @@ const saveEdit = () => {
 };
 </script>
 
-<style scoped>
+<style scoped lang="less">
 .handle-box {
   margin-bottom: 20px;
 }
@@ -226,7 +226,7 @@ const saveEdit = () => {
   font-size: 14px;
 }
 .red {
-  color: #ff0000;
+  color: @red;
 }
 .mr10 {
   margin-right: 10px;

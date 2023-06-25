@@ -6,7 +6,7 @@
     <el-tab-pane label="热榜">
       <TabPaneHotList />
     </el-tab-pane>
-    <el-tab-pane label="连板">
+    <el-tab-pane label="短线">
       <TabPaneEvenBoard />
     </el-tab-pane>
     <el-tab-pane label="板块">

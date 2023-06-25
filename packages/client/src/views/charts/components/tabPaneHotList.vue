@@ -49,6 +49,7 @@ import CardHeader from './cardHeader.vue';
 import { fetchHostListData } from '@/api/payBack';
 import { onMounted, reactive, watch, computed } from 'vue';
 import { isMobile } from '@/core/util';
+import { getChartStyle } from '../utils/util';
 import HotListTable from './hotListTable.vue';
 import dayjs from 'dayjs';
 
@@ -62,20 +63,9 @@ enum HotListKey {
 }
 
 const data: any = reactive({
-  ...getChartStyle(),
+  ...getChartStyle(isMobile),
   hotListResult: {},
 });
-
-function getChartStyle() {
-  // 计算宽度；屏幕宽度 - 左侧siderBar - 边框 - cardLeft
-  const columnsAmount = 2;
-  const screenWidth = screen.width - 200 - columnsAmount * 15;
-  const cardWidth = isMobile ? screen.width - 30 : screenWidth / columnsAmount;
-  return {
-    style: `width: ${cardWidth}px;`,
-    styleBig: `width: ${cardWidth}px;`,
-  };
-}
 
 async function initPageData() {
   const result = await fetchHostListData({ limit: 10, isMobile });

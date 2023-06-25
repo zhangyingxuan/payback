@@ -1,12 +1,5 @@
 <template>
   <div class="chartList__container">
-    <!-- 热点题材 统计 -->
-    <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
-      <template #header>
-        <CardHeader :url="cardUrls.shortTermUrl" headerTitle="短线数据" />
-      </template>
-      <div ref="shortTermChart" :style="data.style"></div>
-    </el-card>
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
       <template #header>
         <CardHeader :url="cardUrls.marketChartUrl" headerTitle="大盘趋势" />
@@ -18,6 +11,13 @@
         <CardHeader :url="cardUrls.indexChartUrl" headerTitle="指数趋势" />
       </template>
       <div ref="indexChart" :style="data.style"></div>
+    </el-card>
+    <!-- 热点题材 统计 -->
+    <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
+      <template #header>
+        <CardHeader :url="cardUrls.shortTermUrl" headerTitle="短线数据" />
+      </template>
+      <div ref="shortTermChart" :style="data.style"></div>
     </el-card>
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
       <template #header>

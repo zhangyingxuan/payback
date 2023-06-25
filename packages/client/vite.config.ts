@@ -6,6 +6,7 @@ import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
 import { warpperEnv } from "./build";
+import path from 'path';
 
 /** 路径查找 */
 const pathResolve = (dir: string): string => {
@@ -57,6 +58,16 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 		],
 		optimizeDeps: {
 			include: ['schart.js', 'lodash']
-		}
+		},
+		css: {
+			preprocessorOptions: {
+				less: {
+					modifyVars: {
+						hack: `true; @import (reference) "${path.resolve("src/styles/variables.less")}";`,
+					},
+					javascriptEnabled: true,
+				},
+			},
+		},
 	}
 };

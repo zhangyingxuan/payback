@@ -9,6 +9,7 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     CommonDialog: typeof import('./src/components/commonDialog.vue')['default']
     Drawer: typeof import('./src/components/drawer.vue')['default']
+    DrawerUl: typeof import('./src/components/drawer-ul.vue')['default']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
     ElBacktop: typeof import('element-plus/es')['ElBacktop']
     ElButton: typeof import('element-plus/es')['ElButton']
@@ -52,6 +53,7 @@ declare module '@vue/runtime-core' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Sidebar: typeof import('./src/components/sidebar.vue')['default']
+    Stock: typeof import('./src/components/stock.vue')['default']
     Tags: typeof import('./src/components/tags.vue')['default']
   }
 }

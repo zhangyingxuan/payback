@@ -30,24 +30,13 @@ import PlateRiseFallTable from './plateRiseFallTable.vue';
 import { findPlateByLimit } from '@/api/payBack';
 import { reactive } from 'vue';
 import { isMobile } from '@/core/util';
+import { getChartStyle } from '../utils/util';
 import dayjs from 'dayjs';
 
 const data: any = reactive({
-  ...getChartStyle(),
+  ...getChartStyle(isMobile),
   plates: {},
 });
-
-function getChartStyle() {
-  // 计算宽度；屏幕宽度 - 左侧siderBar - 边框 - cardLeft
-  const columnsAmount = 2;
-  const screenWidth = screen.width - 200 - columnsAmount * 15;
-  const cardWidth = isMobile ? screen.width - 30 : screenWidth / columnsAmount;
-  return {
-    style: `width: ${cardWidth}px;`,
-    styleBig: `width: ${cardWidth}px;`,
-  };
-}
-
 async function initPageData() {
   const plates = await findPlateByLimit({ limit: 10 });
   data.plates = plates.map(plate => {

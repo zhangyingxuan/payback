@@ -127,6 +127,7 @@ export function transformEvenBoardData(shortTermData: ShortTermModel[]): any[] {
         createTime: dayjs(item.createTime).format('MM/DD'),
         maxHeight: maxHeight,
         evenBoardData,
+        evenBoardAmount: item.evenBoardAmount,
       };
       item.downLimitData && (itemData.downLimit = JSON.parse(item.downLimitData));
 

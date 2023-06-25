@@ -5,7 +5,8 @@
   <div class="table">
     <div class="table__container">
       <div :class="['date-col first-col', { isMobile }]">
-        <div class="table-header">连板数</div>
+        <div class="table-header">连板高度</div>
+        <div class="table-col height1">连板数量</div>
         <div class="table-col">其它</div>
         <template v-for="height in heightArr" :key="'row1' + height">
           <div
@@ -23,7 +24,20 @@
         v-for="(item, index) in evenBoard.value"
         :key="'evenBoard' + index"
       >
-        <div class="table-header">{{ item.createTime }}</div>
+        <div
+          :class="[
+            'table-header',
+            { isActive: item.createTime === data.currentDate },
+          ]"
+          @click="handleDateClick(item.createTime)"
+        >
+          {{ item.createTime }}
+          <el-icon>
+            <SuccessFilled />
+          </el-icon>
+        </div>
+
+        <div class="table-col height1">{{ item.evenBoardAmount }}</div>
         <!-- 高标数据 -->
         <div class="table-col">
           <el-tooltip
@@ -34,7 +48,7 @@
             :key="'stock' + index"
           >
             <span>
-              <span> {{ stock.name }}&nbsp;</span>
+              <Stock :name="stock.name" :code="stock.code" />
               <span class="gray">{{ stock.evenDays }}</span>
             </span>
           </el-tooltip>
@@ -52,8 +66,7 @@
               :content="stock.reason"
               :key="'stock' + index"
             >
-              <span> {{ stock.name }} </span>
-              <!-- <span> {{ stock.name }} {{ stock.code }} </span> -->
+              <Stock :name="stock.name" :code="stock.code" />
             </el-tooltip>
           </div>
           <div v-else class="table-col height1">
@@ -72,7 +85,7 @@
             :key="'downLimitStock' + index"
           >
             <span>
-              {{ stock.name }}
+              <Stock :name="stock.name" :code="stock.code" />
               <span
                 v-if="!isMobile"
                 class="downLimitStock__plate"
@@ -85,6 +98,9 @@
       </div>
     </div>
   </div>
+
+  <!-- 当日涨停分布，按行业板块划分 -->
+  <DailyStockTable :data="data.currentDailyStocks" />
 </template>
 <script lang="ts" setup>
 import { fetchEvenBoardData } from '@/api/payBack';
@@ -94,12 +110,22 @@ import { onMounted, reactive, watch, computed } from 'vue';
 import { useSidebarStore } from '@/store/sidebar';
 import { storeToRefs } from 'pinia';
 import { isMobile } from '@/core/util';
+import DailyStockTable from './dailyStockTable.vue';
+import dayjs from 'dayjs';
+
+// 默认选中最新日期，可点击日期切换 查看选中日期详细涨停数据；PC横着，移动端竖着展示；按行业
 
 type EvenBoard = {
   maxHeight: number;
   createTime: String;
 };
 let evenBoard = reactive<any>({ value: [] });
+
+const data = reactive({
+  currentDailyStocks: [],
+  currentDate: dayjs(new Date()).format('MM/DD'),
+});
+
 const siderBar = useSidebarStore();
 const { countDays } = storeToRefs(siderBar);
 
@@ -117,11 +143,20 @@ async function initPage(pageSize: number) {
   });
   // const rs: any = await fetchIndustryData();
   evenBoard.value = transformEvenBoardData(result);
+  // 将当日涨停个股，按连板高度、行业 做成表格
+  handleDateClick(evenBoard.value[0]?.createTime);
 }
 
 onMounted(() => {
   initPage(countDays.value);
 });
+
+function handleDateClick(date: string) {
+  data.currentDate = date;
+  data.currentDailyStocks = evenBoard.value.find(
+    (item: any) => item.createTime === date,
+  ).evenBoardData;
+}
 
 const heightArr = computed(() => {
   let maxHeight = 0;
@@ -168,15 +203,10 @@ function getClassByHeight(height: any) {
 }
 .table {
   padding: 0 15px;
+  margin-bottom: 10px;
 }
 .table * {
   box-sizing: border-box;
-}
-
-.title {
-  .tableContentBorder();
-  border-right: 1px solid @tableColumsBorderColor;
-  padding: 5px 10px;
 }
 
 .flexCenter {
@@ -198,9 +228,11 @@ function getClassByHeight(height: any) {
   .date-col {
     .flexCenter();
     justify-content: flex-start;
-    width: 9%;
-    min-width: 9%;
-    max-width: 9%;
+    // width: 9%;
+    // min-width: 9%;
+    // max-width: 9%;
+    min-width: 130px;
+    white-space: nowrap;
 
     &.first-col {
       width: 80px;
@@ -233,12 +265,24 @@ function getClassByHeight(height: any) {
   .table-header {
     background-color: #dcdcdc;
     width: 100%;
+    cursor: pointer;
     .tableColumsBorder();
     border-top: 1px solid @tableColumsBorderColor;
+
+    &.isActive {
+      color: #5a9cf8;
+      > .el-icon {
+        display: inline-block;
+      }
+    }
+    > .el-icon {
+      margin-bottom: -4px;
+      display: none;
+    }
   }
   .table-col {
     width: 100%;
-    height: 80px;
+    height: 83px;
     overflow: scroll;
     // flex: 1;
     .flexCenter();
