@@ -32,4 +32,6 @@ export const params = {
   hangyeRiseFloat: '行业板块涨跌幅正序；所属同花顺行业级别是二级行业；&querytype=zhishu',
   // 行业板块 跌幅排行
   hangyeFallFloat: '行业板块涨跌幅倒序；所属同花顺行业级别是二级行业；&querytype=zhishu',
+  // 概念板块
+  gainianPlate: '概念板块&querytype=zhishu',
 }

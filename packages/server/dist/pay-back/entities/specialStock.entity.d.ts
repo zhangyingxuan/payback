@@ -4,6 +4,7 @@ export declare class specialStock {
     skyFloor: string;
     florSky: string;
     turnUpBoard: string;
+    fundsLikeStock: string;
     hotEtfs: string;
     createTime: Timestamp;
 }

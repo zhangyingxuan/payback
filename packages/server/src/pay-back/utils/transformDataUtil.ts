@@ -51,7 +51,7 @@ function transDownLimitData(dailyLimitData, todayDateStr) {
 };
 
 /**
- * 判断类型
+ * 判断类型，10cm：0 20cm：1 其他：2
  */
 function judgeType(str) {
   if (!str) return 2;

@@ -10,6 +10,7 @@ import { shortTermData } from "./entities/shortTermData.entity";
 import { marketData } from "./entities/marketData.entity";
 import { fundsData } from "./entities/fundsData.entity";
 import { hotList } from "./entities/hotList.entity";
+import { latestConceptPlate } from "./entities/latestConceptPlate.entity";
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { hotList } from "./entities/hotList.entity";
     TypeOrmModule.forFeature([marketData]),
     TypeOrmModule.forFeature([hotList]),
     TypeOrmModule.forFeature([fundsData]),
+    TypeOrmModule.forFeature([latestConceptPlate]),
   ],
   controllers: [PayBackController],
   providers: [ShorTermService, MarketService, FundsService, HotListService, ApiTestService]

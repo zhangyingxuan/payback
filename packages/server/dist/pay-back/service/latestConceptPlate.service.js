@@ -19,7 +19,6 @@ const typeorm_1 = require("typeorm");
 const marketData_entity_1 = require("../entities/marketData.entity");
 const typeorm_2 = require("@nestjs/typeorm");
 const playWrightUtil_1 = require("../utils/playWrightUtil");
-const dayjs = require("dayjs");
 const schedule_1 = require("@nestjs/schedule");
 let MarketService = MarketService_1 = class MarketService {
     constructor(marketDataRp) {
@@ -28,66 +27,22 @@ let MarketService = MarketService_1 = class MarketService {
     }
     async crawlMarketData() {
         this.logger.debug('crawlMarketData is Begining!');
-        const todayDateStr = new Date().toLocaleDateString();
-        const todayDataFromDB = await this.marketDataRp
-            .createQueryBuilder('market_data')
-            .where("market_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
-            .getOne();
-        if (todayDataFromDB) {
-            this.logger.debug('crawlMarketData is end![isExist]!');
-            return {
-                code: 'isExist',
-                msg: todayDateStr + ' 数据已存在！',
-            };
-        }
-        let marketData, latestConceptPlate;
+        let latestConceptPlate;
         try {
-            marketData = await playWrightUtil_1.default.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
-            console.log(marketData);
-            await this.marketDataRp.save(marketData);
+            latestConceptPlate = await playWrightUtil_1.default.getLatestConceptPlate(1);
+            if (latestConceptPlate) {
+                console.log(latestConceptPlate);
+            }
+            await this.marketDataRp.save(latestConceptPlate);
             this.logger.debug('crawlMarketData is success!');
         }
         catch (e) {
             this.logger.error('出错啦！！！', e);
         }
-        return marketData;
+        return latestConceptPlate;
     }
     async findAll() {
         return await this.marketDataRp.find();
-    }
-    async findByLimit(len = 20) {
-        return await this.marketDataRp
-            .createQueryBuilder('market_data')
-            .offset(0)
-            .limit(len)
-            .select([
-            'market_data.createTime',
-            'market_data.marketScore',
-            'market_data.riseAmount',
-            'market_data.fallAmount',
-            'market_data.dailyLimitIncome',
-            'market_data.shangzhengPoint',
-            'market_data.shenzhengPoint',
-            'market_data.chuangyePoint',
-            'market_data.beizheng50Point'
-        ])
-            .orderBy('createTime', 'DESC')
-            .getMany();
-    }
-    async findPlateByLimit(len = 20) {
-        return await this.marketDataRp
-            .createQueryBuilder('market_data')
-            .offset(0)
-            .limit(len)
-            .select([
-            'market_data.createTime',
-            'market_data.gainianRiseFloat',
-            'market_data.gainianFallFloat',
-            'market_data.hangyeRiseFloat',
-            'market_data.hangyeFallFloat'
-        ])
-            .orderBy('createTime', 'DESC')
-            .getMany();
     }
 };
 __decorate([
@@ -102,4 +57,4 @@ MarketService = MarketService_1 = __decorate([
     __metadata("design:paramtypes", [typeorm_1.Repository])
 ], MarketService);
 exports.MarketService = MarketService;
-//# sourceMappingURL=market.service.js.map
+//# sourceMappingURL=latestConceptPlate.service.js.map

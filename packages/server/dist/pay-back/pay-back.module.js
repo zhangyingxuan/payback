@@ -19,6 +19,7 @@ const shortTermData_entity_1 = require("./entities/shortTermData.entity");
 const marketData_entity_1 = require("./entities/marketData.entity");
 const fundsData_entity_1 = require("./entities/fundsData.entity");
 const hotList_entity_1 = require("./entities/hotList.entity");
+const latestConceptPlate_entity_1 = require("./entities/latestConceptPlate.entity");
 let PayBackModule = class PayBackModule {
 };
 PayBackModule = __decorate([
@@ -28,6 +29,7 @@ PayBackModule = __decorate([
             typeorm_1.TypeOrmModule.forFeature([marketData_entity_1.marketData]),
             typeorm_1.TypeOrmModule.forFeature([hotList_entity_1.hotList]),
             typeorm_1.TypeOrmModule.forFeature([fundsData_entity_1.fundsData]),
+            typeorm_1.TypeOrmModule.forFeature([latestConceptPlate_entity_1.latestConceptPlate]),
         ],
         controllers: [pay_back_controller_1.PayBackController],
         providers: [shortTerm_service_1.ShorTermService, market_service_1.MarketService, funds_service_1.FundsService, hotList_service_1.HotListService, apiTest_service_1.ApiTestService]

@@ -17,4 +17,5 @@ export declare const params: {
     gainianFallFloat: string;
     hangyeRiseFloat: string;
     hangyeFallFloat: string;
+    gainianPlate: string;
 };

@@ -31,17 +31,18 @@ export class MarketService {
       .getOne();
 
     if (todayDataFromDB) {
+      this.logger.debug('crawlMarketData is end![isExist]!');
       return {
         code: 'isExist',
         msg: todayDateStr + ' 数据已存在！',
       }
     }
-    let marketData: CreateMarketDataDto;
+    let marketData: CreateMarketDataDto, latestConceptPlate: any;
     try {
       marketData = await playWrightUtil.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
       console.log(marketData);
       await this.marketDataRp.save(marketData);
-      this.logger.debug('crawlMarketData is end![isExist]!');
+      this.logger.debug('crawlMarketData is success!');
     } catch (e) {
       this.logger.error('出错啦！！！', e)
     }

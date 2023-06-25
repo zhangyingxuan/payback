@@ -20,5 +20,6 @@ exports.params = {
     gainianFallFloat: '概念板块主力资金；涨跌幅倒序&querytype=zhishu',
     hangyeRiseFloat: '行业板块涨跌幅正序；所属同花顺行业级别是二级行业；&querytype=zhishu',
     hangyeFallFloat: '行业板块涨跌幅倒序；所属同花顺行业级别是二级行业；&querytype=zhishu',
+    gainianPlate: '概念板块&querytype=zhishu',
 };
 //# sourceMappingURL=config.js.map

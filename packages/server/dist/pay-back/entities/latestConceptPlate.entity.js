@@ -9,40 +9,28 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.specialStock = void 0;
+exports.latestConceptPlate = void 0;
 const typeorm_1 = require("typeorm");
-let specialStock = class specialStock {
+let latestConceptPlate = class latestConceptPlate {
 };
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
-], specialStock.prototype, "id", void 0);
+], latestConceptPlate.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '天地板', type: 'varchar' }),
+    (0, typeorm_1.Column)({ comment: '板块名称', type: 'varchar', length: 30, default: '' }),
     __metadata("design:type", String)
-], specialStock.prototype, "skyFloor", void 0);
+], latestConceptPlate.prototype, "name", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '地天板', type: 'varchar' }),
+    (0, typeorm_1.Column)({ comment: '板块编码', type: 'varchar', length: 10, default: '' }),
     __metadata("design:type", String)
-], specialStock.prototype, "florSky", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '反包板', type: 'varchar' }),
-    __metadata("design:type", String)
-], specialStock.prototype, "turnUpBoard", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '主力净流入TOP3', type: 'varchar' }),
-    __metadata("design:type", String)
-], specialStock.prototype, "fundsLikeStock", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '吃面效应/赚钱效应', type: 'varchar' }),
-    __metadata("design:type", String)
-], specialStock.prototype, "hotEtfs", void 0);
+], latestConceptPlate.prototype, "code", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'timestamp', comment: '创建时间', default: () => 'current_timestamp' }),
     __metadata("design:type", typeorm_1.Timestamp)
-], specialStock.prototype, "createTime", void 0);
-specialStock = __decorate([
+], latestConceptPlate.prototype, "createTime", void 0);
+latestConceptPlate = __decorate([
     (0, typeorm_1.Entity)()
-], specialStock);
-exports.specialStock = specialStock;
-//# sourceMappingURL=specialStock.entity.js.map
+], latestConceptPlate);
+exports.latestConceptPlate = latestConceptPlate;
+//# sourceMappingURL=latestConceptPlate.entity.js.map
