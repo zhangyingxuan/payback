@@ -2,20 +2,22 @@
 <!-- 分类 股票（红色：连板 青色： 反包） -->
 <!-- 赤橙黄绿青蓝紫 -->
 <template>
-  <div class="table">
+  <div :class="['table', { isMobile }]">
     <div class="table__container">
-      <div class="table-header">
-        <div>行业板块</div>
-        <div>股票（红色：连板 青色： 反包）</div>
+      <div class="table-header table-row">
+        <div class="col1">行业板块</div>
+        <div class="col2">股票（红色：连板 青色： 反包）</div>
       </div>
 
       <div class="table-row" v-for="(item, key) in stockGroupByPlate">
-        <div>
-          <span class="zise">{{ item.key }}</span>
-          ，
-          <span>{{ item.value.length }}只</span>
+        <div class="col1">
+          <div>
+            <span class="zise">{{ item.key }}</span>
+            ，
+            <span>{{ item.value.length }}只</span>
+          </div>
         </div>
-        <div>
+        <div class="col2">
           <div v-for="(stock, index) in item.value" :key="'stock' + index">
             <Stock
               v-if="stock.evenBoardHeight != 1"
@@ -152,13 +154,6 @@ function sortStocks(stocks: []) {
   });
   return stocks;
 }
-
-function uniqueFunc(arr: any, uniId: string) {
-  const res = new Map();
-  return arr.filter(
-    (item: any) => !res.has(item[uniId]) && res.set(item[uniId], 1),
-  );
-}
 </script>
 
 <style scoped lang="less">
@@ -182,6 +177,16 @@ function uniqueFunc(arr: any, uniId: string) {
 .table {
   padding: 0 15px;
   font-size: 12px;
+  overflow: auto;
+
+  &.isMobile {
+    .table-row {
+      .col1 {
+        width: 100px;
+        flex: 0 0 100px;
+      }
+    }
+  }
 }
 
 .table * {
@@ -203,20 +208,20 @@ function uniqueFunc(arr: any, uniId: string) {
     .tableColumsBorder();
     border-top: 1px solid @tableColumsBorderColor;
     display: flex;
-    :first-child {
-      width: 200px;
-    }
   }
 
   .table-row {
     display: flex;
     width: 100%;
-    > :first-child {
+    .col1 {
       flex: 0 0 200px;
       width: 200px;
       display: flex;
       // justify-content: center;
       align-items: center;
+    }
+    .col2 {
+      white-space: nowrap;
     }
     > div {
       border-left: 1px solid @tableColumsBorderColor;
@@ -224,6 +229,7 @@ function uniqueFunc(arr: any, uniId: string) {
       padding: 5px 10px;
       flex: 1;
     }
+
     .evenBoard {
       color: @red;
     }

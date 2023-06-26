@@ -1,5 +1,9 @@
 <template>
   <div class="chartList__container">
+    <!-- 日期、涨停、跌停、连板、赚钱效应、亏钱效应、评分、北向南向（+-5%的个股数量）最近节日倒计时 -->
+    <!-- <el-card shadow="hover" class="mgb15" style="width: 100%">
+      <el-tag size="large" type="success">机会</el-tag>
+    </el-card> -->
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
       <template #header>
         <CardHeader :url="cardUrls.marketChartUrl" headerTitle="大盘趋势" />

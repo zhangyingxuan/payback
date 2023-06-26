@@ -5,8 +5,8 @@
   <div class="table">
     <div class="table__container">
       <div :class="['date-col first-col', { isMobile }]">
-        <div class="table-header">连板高度</div>
-        <div class="table-col height1">连板数量</div>
+        <div class="table-header">高度</div>
+        <div class="table-col height1">连板数</div>
         <div class="table-col">其它</div>
         <template v-for="height in heightArr" :key="'row1' + height">
           <div
@@ -20,7 +20,11 @@
         <div class="table-col downLimitStock__plate">跌停股</div>
       </div>
       <div
-        :class="['date-col', { isMobile }]"
+        :class="[
+          'date-col',
+          { isMobile },
+          { isMonday: judgeMonday(item.createTime) },
+        ]"
         v-for="(item, index) in evenBoard.value"
         :key="'evenBoard' + index"
       >
@@ -100,7 +104,7 @@
   </div>
 
   <!-- 当日涨停分布，按行业板块划分 -->
-  <DailyStockTable :data="data.currentDailyStocks" />
+  <DailyStockTable :data="data.currentDailyStocks" :isMobile="isMobile" />
 </template>
 <script lang="ts" setup>
 import { fetchEvenBoardData } from '@/api/payBack';
@@ -133,6 +137,11 @@ const { countDays } = storeToRefs(siderBar);
 watch(countDays, async val => {
   await initPage(val);
 });
+
+function judgeMonday(date: string) {
+  console.log(dayjs(date).day());
+  return dayjs(date).day() - 1 === 1;
+}
 
 async function initPage(pageSize: number) {
   // 获取图表数据
@@ -232,7 +241,7 @@ function getClassByHeight(height: any) {
     // min-width: 9%;
     // max-width: 9%;
     min-width: 130px;
-    white-space: nowrap;
+    // white-space: nowrap;
 
     &.first-col {
       width: 80px;
@@ -245,6 +254,11 @@ function getClassByHeight(height: any) {
     &.isMobile {
       width: 62px;
       min-width: 62px;
+      .isActive {
+        /deep/.el-icon {
+          display: none;
+        }
+      }
       > div {
         padding: 2px;
       }
@@ -260,6 +274,14 @@ function getClassByHeight(height: any) {
   }
   .gray {
     color: #999;
+  }
+
+  .isMonday {
+    border-right: 2px double #5a9cf8;
+    .table-header {
+      background-color: #5a9cf8;
+      color: #fff !important;
+    }
   }
 
   .table-header {
