@@ -52,6 +52,31 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
         }
         return createPayBackDto;
     }
+    async crawlShortTermDataByDate(todayDateStr) {
+        this.logger.debug('crawlShortTermDataByDate is Begining!');
+        const todayDataFromDB = await this.shortTermDataRp
+            .createQueryBuilder('short_term_data')
+            .where("short_term_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
+            .getOne();
+        if (todayDataFromDB) {
+            this.logger.debug('crawlShortTermData is end![isExist]');
+            return {
+                code: 'isExist',
+                msg: todayDateStr + ' 数据已存在！',
+            };
+        }
+        let createPayBackDto;
+        try {
+            createPayBackDto = await (0, shortTermUtil_1.getShortTermDataByDate)(todayDateStr);
+            console.log(createPayBackDto);
+            await this.shortTermDataRp.save(createPayBackDto);
+            this.logger.debug('crawlShortTermDataByDate is success!');
+        }
+        catch (e) {
+            this.logger.error('出错啦！！！', e);
+        }
+        return createPayBackDto;
+    }
     async findAll() {
         return await this.shortTermDataRp.find();
     }
@@ -80,14 +105,8 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
             .orderBy('createTime', 'DESC')
             .getMany();
     }
-    async findOne(id) {
-        return `This action findOne a #${id} payBack`;
-    }
     async update(id, updatePayBackDto) {
         return await this.shortTermDataRp.update(id, updatePayBackDto);
-    }
-    async remove(id) {
-        return `This action removes a #${id} payBack`;
     }
 };
 __decorate([

@@ -27,5 +27,5 @@ export async function fetchIwencaiApi(question, pageSize = 5, isPlate = true) {
 
   result = await result.json();
 
-  return isPlate ? result : getIwencaiData(result);
+  return getIwencaiData(result);
 }

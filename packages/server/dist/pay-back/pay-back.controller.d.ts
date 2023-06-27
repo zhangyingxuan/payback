@@ -2,6 +2,7 @@ import { ShorTermService } from './service/shortTerm.service';
 import { MarketService } from './service/market.service';
 import { FundsService } from './service/funds.service';
 import { HotListService } from './service/hotList.service';
+import { LatestConceptPlateService } from './service/latestConceptPlate.service';
 import { ApiTestService } from './service/apiTest.service';
 import { UpdatePayBackDto } from './dto/update-pay-back.dto';
 export declare class PayBackController {
@@ -9,8 +10,9 @@ export declare class PayBackController {
     private readonly fundsService;
     private readonly hotListService;
     private readonly apiTestService;
+    private readonly latestConceptPlateService;
     private readonly marketService;
-    constructor(ShorTermService: ShorTermService, fundsService: FundsService, hotListService: HotListService, apiTestService: ApiTestService, marketService: MarketService);
+    constructor(ShorTermService: ShorTermService, fundsService: FundsService, hotListService: HotListService, apiTestService: ApiTestService, latestConceptPlateService: LatestConceptPlateService, marketService: MarketService);
     testApi(): Promise<void>;
     crawlTodayData(): Promise<{
         shortData: import("./dto/create-pay-back.dto").CreatePayBackDto | {
@@ -31,6 +33,10 @@ export declare class PayBackController {
         code: string;
         msg: string;
     }>;
+    crawlShortTermDataByDate(query: any): Promise<import("./dto/create-pay-back.dto").CreatePayBackDto | {
+        code: string;
+        msg: string;
+    }>;
     crawlMarket(): Promise<import("./dto/create-market-data.dto").CreateMarketDataDto | {
         code: string;
         msg: string;
@@ -39,6 +45,7 @@ export declare class PayBackController {
         code: string;
         msg: string;
     }>;
+    crawlLatestConceptPlate(): Promise<any>;
     findByLimit(query: any): Promise<{
         code: number;
         data: {
@@ -60,7 +67,5 @@ export declare class PayBackController {
         data: import("./entities/marketData.entity").marketData[];
     }>;
     findAll(): Promise<import("./entities/shortTermData.entity").shortTermData[]>;
-    findOne(id: string): Promise<string>;
     update(id: string, updatePayBackDto: UpdatePayBackDto): Promise<import("typeorm").UpdateResult>;
-    remove(id: string): Promise<string>;
 }

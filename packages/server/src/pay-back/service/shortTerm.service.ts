@@ -4,7 +4,7 @@ import { UpdatePayBackDto } from '../dto/update-pay-back.dto';
 import { Repository } from 'typeorm';
 import { shortTermData } from '../entities/shortTermData.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getShortTermData } from '../utils/shortTermUtil';
+import { getShortTermData, getShortTermDataByDate } from '../utils/shortTermUtil';
 import * as dayjs from 'dayjs';
 import { Cron } from '@nestjs/schedule';
 
@@ -51,6 +51,34 @@ export class ShorTermService {
     return createPayBackDto;
   }
 
+  async crawlShortTermDataByDate(todayDateStr) {
+    this.logger.debug('crawlShortTermDataByDate is Begining!');
+    const todayDataFromDB = await this.shortTermDataRp
+      .createQueryBuilder('short_term_data')
+      .where("short_term_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
+      .getOne();
+
+    if (todayDataFromDB) {
+      this.logger.debug('crawlShortTermData is end![isExist]');
+      return {
+        code: 'isExist',
+        msg: todayDateStr + ' 数据已存在！',
+      }
+    }
+
+    let createPayBackDto: CreatePayBackDto;
+    try {
+      createPayBackDto = await getShortTermDataByDate(todayDateStr);
+      console.log(createPayBackDto);
+      await this.shortTermDataRp.save(createPayBackDto);
+      this.logger.debug('crawlShortTermDataByDate is success!');
+    } catch (e) {
+      this.logger.error('出错啦！！！', e)
+    }
+
+    return createPayBackDto;
+  }
+
   async findAll() {
     return await this.shortTermDataRp.find();
   }
@@ -82,18 +110,7 @@ export class ShorTermService {
       .getMany();
   }
 
-  async findOne(id: number) {
-    return `This action findOne a #${id} payBack`;
-    // return await this.shortTermDataRp.findOne({ id });
-  }
-
   async update(id: number, updatePayBackDto: UpdatePayBackDto) {
     return await this.shortTermDataRp.update(id, updatePayBackDto);
-  }
-
-  async remove(id: number) {
-    // const currentOne = await this.shortTermDataRp.findOne({ id })
-    // return await this.shortTermDataRp.remove(currentOne);
-    return `This action removes a #${id} payBack`;
   }
 }

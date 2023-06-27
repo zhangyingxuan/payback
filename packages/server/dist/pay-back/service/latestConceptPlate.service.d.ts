@@ -1,9 +1,10 @@
 import { Repository } from 'typeorm';
-import { marketData } from '../entities/marketData.entity';
-export declare class MarketService {
-    private readonly marketDataRp;
-    constructor(marketDataRp: Repository<marketData>);
+import { latestConceptPlate } from '../entities/latestConceptPlate.entity';
+export declare class LatestConceptPlateService {
+    private readonly latestConceptPlateRp;
+    constructor(latestConceptPlateRp: Repository<latestConceptPlate>);
     private readonly logger;
-    crawlMarketData(): Promise<any>;
-    findAll(): Promise<marketData[]>;
+    crawlLatestConceptPlateData(): Promise<any>;
+    findAll(): Promise<latestConceptPlate[]>;
+    findLatestOne(): Promise<latestConceptPlate>;
 }

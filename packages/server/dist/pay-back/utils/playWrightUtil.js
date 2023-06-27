@@ -173,16 +173,6 @@ exports.default = {
             await browser.close();
         }, 2000);
         return createFundsDataDto;
-    },
-    async getLatestConceptPlate(currentLatestConceptPlate) {
-        const latestConceptPlates = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.iwencaiUrl + config_1.params.gainianPlate);
-        if (currentLatestConceptPlate.code === latestConceptPlates[0]['指数代码']) {
-            return null;
-        }
-        const index = latestConceptPlates.findIndex(item => {
-            return item['指数代码'] === currentLatestConceptPlate.code;
-        });
-        const latestConceptPlatesArr = latestConceptPlates.splice(0, index + 1);
     }
 };
 //# sourceMappingURL=playWrightUtil.js.map

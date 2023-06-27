@@ -26,7 +26,7 @@ async function fetchIwencaiApi(question, pageSize = 5, isPlate = true) {
         "method": "POST",
     });
     result = await result.json();
-    return isPlate ? result : (0, commonUtil_1.getIwencaiData)(result);
+    return (0, commonUtil_1.getIwencaiData)(result);
 }
 exports.fetchIwencaiApi = fetchIwencaiApi;
 //# sourceMappingURL=fetchUtil.js.map

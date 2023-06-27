@@ -67,7 +67,9 @@ function judgeType(str) {
 }
 
 export function transformShortTermSourceData(dailyLimitData, downLimitData, todayDateStr) {
+
   const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
+  console.log(todayDateStr, currentDate)
   const evenBoardLabel = `连续涨停天数[${currentDate}]`;
   let SZAmount = 0, SHAmount = 0, board1 = 0, maxHeight = 1, currentLevel = 0;
   // 跌停数据
@@ -105,7 +107,7 @@ export function transformShortTermSourceData(dailyLimitData, downLimitData, toda
     }
     // 流通市值
     dailyLimitStockDto.circulationValue = fundsToFixed(item[`a股市值(不含限售股)[${currentDate}]`]);
-    dailyLimitStockDto.dailyTime = item[`首次涨停时间[${currentDate}]`].trim();
+    dailyLimitStockDto.dailyTime = item[`首次涨停时间[${currentDate}]`] ? item[`首次涨停时间[${currentDate}]`].trim() : '-';
     if (dailyLimitStockDto.openTimes > 0) {
       dailyLimitStockDto.dailyTime += (',' + item[`最终涨停时间[${currentDate}]`].trim());
     }

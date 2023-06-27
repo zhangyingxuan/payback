@@ -18,15 +18,17 @@ const shortTerm_service_1 = require("./service/shortTerm.service");
 const market_service_1 = require("./service/market.service");
 const funds_service_1 = require("./service/funds.service");
 const hotList_service_1 = require("./service/hotList.service");
+const latestConceptPlate_service_1 = require("./service/latestConceptPlate.service");
 const apiTest_service_1 = require("./service/apiTest.service");
 const update_pay_back_dto_1 = require("./dto/update-pay-back.dto");
 const public_decorator_1 = require("../decorator/public.decorator");
 let PayBackController = class PayBackController {
-    constructor(ShorTermService, fundsService, hotListService, apiTestService, marketService) {
+    constructor(ShorTermService, fundsService, hotListService, apiTestService, latestConceptPlateService, marketService) {
         this.ShorTermService = ShorTermService;
         this.fundsService = fundsService;
         this.hotListService = hotListService;
         this.apiTestService = apiTestService;
+        this.latestConceptPlateService = latestConceptPlateService;
         this.marketService = marketService;
     }
     async testApi() {
@@ -48,11 +50,18 @@ let PayBackController = class PayBackController {
     crawlShortTerm() {
         return this.ShorTermService.crawlShortTermData();
     }
+    crawlShortTermDataByDate(query) {
+        const date = query.date || new Date();
+        return this.ShorTermService.crawlShortTermDataByDate(date);
+    }
     crawlMarket() {
         return this.marketService.crawlMarketData();
     }
     crawlFunds() {
         return this.fundsService.crawlfundsData();
+    }
+    crawlLatestConceptPlate() {
+        return this.latestConceptPlateService.crawlLatestConceptPlateData();
     }
     async findByLimit(query) {
         const limit = +(query.limit || 20);
@@ -95,14 +104,8 @@ let PayBackController = class PayBackController {
     findAll() {
         return this.ShorTermService.findAll();
     }
-    findOne(id) {
-        return this.ShorTermService.findOne(+id);
-    }
     update(id, updatePayBackDto) {
         return this.ShorTermService.update(+id, updatePayBackDto);
-    }
-    remove(id) {
-        return this.ShorTermService.remove(+id);
     }
 };
 __decorate([
@@ -135,6 +138,14 @@ __decorate([
 ], PayBackController.prototype, "crawlShortTerm", null);
 __decorate([
     (0, public_decorator_1.Public)(),
+    (0, common_1.Get)('/crawlShortTermByDate'),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], PayBackController.prototype, "crawlShortTermDataByDate", null);
+__decorate([
+    (0, public_decorator_1.Public)(),
     (0, common_1.Get)('/crawlMarket'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -147,6 +158,13 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], PayBackController.prototype, "crawlFunds", null);
+__decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.Get)('/crawlLatestConceptPlate'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], PayBackController.prototype, "crawlLatestConceptPlate", null);
 __decorate([
     (0, common_1.Get)('list'),
     __param(0, (0, common_1.Query)()),
@@ -182,13 +200,6 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PayBackController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], PayBackController.prototype, "findOne", null);
-__decorate([
     (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
@@ -196,19 +207,13 @@ __decorate([
     __metadata("design:paramtypes", [String, update_pay_back_dto_1.UpdatePayBackDto]),
     __metadata("design:returntype", void 0)
 ], PayBackController.prototype, "update", null);
-__decorate([
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], PayBackController.prototype, "remove", null);
 PayBackController = __decorate([
     (0, common_1.Controller)('pay-back'),
     __metadata("design:paramtypes", [shortTerm_service_1.ShorTermService,
         funds_service_1.FundsService,
         hotList_service_1.HotListService,
         apiTest_service_1.ApiTestService,
+        latestConceptPlate_service_1.LatestConceptPlateService,
         market_service_1.MarketService])
 ], PayBackController);
 exports.PayBackController = PayBackController;

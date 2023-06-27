@@ -50,7 +50,7 @@ __decorate([
     __metadata("design:type", String)
 ], shortTermData.prototype, "evenBoardData", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '跌停数据', type: 'varchar', length: 1512, default: '' }),
+    (0, typeorm_1.Column)({ comment: '跌停数据', type: 'varchar', length: 3072, default: '' }),
     __metadata("design:type", String)
 ], shortTermData.prototype, "downLimitData", void 0);
 __decorate([

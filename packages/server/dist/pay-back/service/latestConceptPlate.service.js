@@ -11,50 +11,60 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var MarketService_1;
+var LatestConceptPlateService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MarketService = void 0;
+exports.LatestConceptPlateService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("typeorm");
-const marketData_entity_1 = require("../entities/marketData.entity");
+const latestConceptPlate_entity_1 = require("../entities/latestConceptPlate.entity");
 const typeorm_2 = require("@nestjs/typeorm");
-const playWrightUtil_1 = require("../utils/playWrightUtil");
+const latestConceptPlateUtil_1 = require("../utils/latestConceptPlateUtil");
 const schedule_1 = require("@nestjs/schedule");
-let MarketService = MarketService_1 = class MarketService {
-    constructor(marketDataRp) {
-        this.marketDataRp = marketDataRp;
-        this.logger = new common_1.Logger(MarketService_1.name);
+let LatestConceptPlateService = LatestConceptPlateService_1 = class LatestConceptPlateService {
+    constructor(latestConceptPlateRp) {
+        this.latestConceptPlateRp = latestConceptPlateRp;
+        this.logger = new common_1.Logger(LatestConceptPlateService_1.name);
     }
-    async crawlMarketData() {
-        this.logger.debug('crawlMarketData is Begining!');
-        let latestConceptPlate;
+    async crawlLatestConceptPlateData() {
+        this.logger.debug('crawlLatestConceptPlateData is Begining!');
+        const conceptPlate = await this.findLatestOne();
+        let latestConceptPlates;
         try {
-            latestConceptPlate = await playWrightUtil_1.default.getLatestConceptPlate(1);
-            if (latestConceptPlate) {
-                console.log(latestConceptPlate);
+            latestConceptPlates = await (0, latestConceptPlateUtil_1.getLatestConceptPlate)(conceptPlate);
+            console.log(latestConceptPlates);
+            if (latestConceptPlates) {
+                latestConceptPlates.forEach(async (latestConceptPlate) => {
+                    await this.latestConceptPlateRp.save(latestConceptPlate);
+                });
             }
-            await this.marketDataRp.save(latestConceptPlate);
-            this.logger.debug('crawlMarketData is success!');
+            this.logger.debug('crawlLatestConceptPlateData is success!');
         }
         catch (e) {
             this.logger.error('出错啦！！！', e);
         }
-        return latestConceptPlate;
+        return latestConceptPlates;
     }
     async findAll() {
-        return await this.marketDataRp.find();
+        return await this.latestConceptPlateRp.find();
+    }
+    async findLatestOne() {
+        return await this.latestConceptPlateRp.createQueryBuilder('short_term_data')
+            .offset(0)
+            .limit(1)
+            .orderBy('createTime', 'DESC')
+            .getOne();
     }
 };
 __decorate([
-    (0, schedule_1.Cron)('0 0 16 * * 1-5'),
+    (0, schedule_1.Cron)('0 15 16 * * 1-5'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
-], MarketService.prototype, "crawlMarketData", null);
-MarketService = MarketService_1 = __decorate([
+], LatestConceptPlateService.prototype, "crawlLatestConceptPlateData", null);
+LatestConceptPlateService = LatestConceptPlateService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_2.InjectRepository)(marketData_entity_1.marketData)),
+    __param(0, (0, typeorm_2.InjectRepository)(latestConceptPlate_entity_1.latestConceptPlate)),
     __metadata("design:paramtypes", [typeorm_1.Repository])
-], MarketService);
-exports.MarketService = MarketService;
+], LatestConceptPlateService);
+exports.LatestConceptPlateService = LatestConceptPlateService;
 //# sourceMappingURL=latestConceptPlate.service.js.map

@@ -10,10 +10,12 @@ export declare class ShorTermService {
         code: string;
         msg: string;
     }>;
+    crawlShortTermDataByDate(todayDateStr: any): Promise<CreatePayBackDto | {
+        code: string;
+        msg: string;
+    }>;
     findAll(): Promise<shortTermData[]>;
     findByLimit(len?: number): Promise<shortTermData[]>;
     findEvenBoardByLimit(len?: number): Promise<shortTermData[]>;
-    findOne(id: number): Promise<string>;
     update(id: number, updatePayBackDto: UpdatePayBackDto): Promise<import("typeorm").UpdateResult>;
-    remove(id: number): Promise<string>;
 }
