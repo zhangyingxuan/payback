@@ -26,7 +26,13 @@ function handleClick() {
     timer = null;
   } else {
     timer = window.setTimeout(() => {
-      window.open(thsUrl.replace('${code}', superData.code), '_blank');
+      window.open(
+        thsUrl.replace(
+          '${code}',
+          superData.code ? superData.code.split('.')[0] : '',
+        ),
+        '_blank',
+      );
     }, 300);
   }
 }
@@ -35,13 +41,7 @@ function handleDblClick() {
     window.clearTimeout(timer);
     timer = null;
   }
-  window.open(
-    iwencaiUrl.replace(
-      '${code}',
-      superData.code ? superData.code.split('.')[0] : '',
-    ),
-    '_blank',
-  );
+  window.open(iwencaiUrl.replace('${code}', superData.code), '_blank');
 }
 </script>
 
