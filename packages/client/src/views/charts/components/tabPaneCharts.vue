@@ -1,6 +1,9 @@
 <template>
   <div class="chartList__container">
-    <!-- 日期、涨停、跌停、连板、赚钱效应、亏钱效应、评分、北向南向（+-5%的个股数量）最近节日倒计时 -->
+    <!-- 市场：日期、赚钱效应、亏钱效应、评分、北向南向；（+-5%的个股数量）最近节日倒计时 -->
+    <!-- 短线：涨停、跌停、连板、最强板块、最强概念 -->
+    <!-- 板块：涨幅、资金、热度 -->
+    <!-- 个股：最高股（换手率是否可参考） -->
     <!-- <el-card shadow="hover" class="mgb15" style="width: 100%">
       <el-tag size="large" type="success">机会</el-tag>
     </el-card> -->

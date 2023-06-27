@@ -9,6 +9,7 @@ import { usePermissStore } from './store/permiss';
 import 'element-plus/dist/index.css';
 import './assets/css/icon.css';
 import Stock from './components/stock.vue';
+import Plate from './components/plate.vue';
 
 const app = createApp(App);
 
@@ -32,5 +33,6 @@ app.directive('permiss', {
 });
 // 全局组件注册
 app.component('Stock', Stock);
+app.component('Plate', Plate);
 
 app.mount('#app');

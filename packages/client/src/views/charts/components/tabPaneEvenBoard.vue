@@ -269,7 +269,7 @@ function getClassByHeight(height: any) {
     }
 
     > div {
-      padding: 10px;
+      padding: 5px;
     }
   }
   .gray {

@@ -16,9 +16,9 @@ let superData = defineProps({
   },
 });
 
-const thsUrl = 'http://stockpage.10jqka.com.cn/${code}/';
+const thsUrl = 'http://q.10jqka.com.cn/thshy/detail/code/${code}/';
 const iwencaiUrl =
-  'https://www.iwencai.com/unifiedwap/result?w=${code}%20&querytype=stock';
+  'https://www.iwencai.com/unifiedwap/result?w=${code}%20&querytype=zhishu';
 
 function handleClick() {
   if (timer) {
@@ -26,7 +26,7 @@ function handleClick() {
     timer = null;
   } else {
     timer = window.setTimeout(() => {
-      window.open(iwencaiUrl.replace('${code}', superData.code), '_blank');
+      window.open(thsUrl.replace('${code}', superData.code), '_blank');
     }, 300);
   }
 }
@@ -35,7 +35,13 @@ function handleDblClick() {
     window.clearTimeout(timer);
     timer = null;
   }
-  window.open(thsUrl.replace('${code}', superData.code), '_blank');
+  window.open(
+    iwencaiUrl.replace(
+      '${code}',
+      superData.code ? superData.code.split('.')[0] : '',
+    ),
+    '_blank',
+  );
 }
 </script>
 

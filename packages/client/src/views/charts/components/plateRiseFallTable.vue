@@ -21,7 +21,7 @@
           class="table-col"
           :key="'row' + index"
         >
-          {{ plate.name }}
+          <Plate :code="plate.code" :name="plate.name" />
           <span v-if="plate.quoteChange > 0" class="rise">
             +{{ plate.quoteChange }}%
           </span>
@@ -35,7 +35,7 @@
           class="table-col"
           :key="'row' + index"
         >
-          {{ plate.name }}
+          <Plate :code="plate.code" :name="plate.name" />
           <span v-if="plate.quoteChange > 0" class="rise">
             +{{ plate.quoteChange }}%
           </span>
