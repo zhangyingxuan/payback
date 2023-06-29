@@ -1,12 +1,5 @@
 <template>
   <div class="chartList__container">
-    <!-- 市场：日期、赚钱效应、亏钱效应、评分、北向南向；（+-5%的个股数量）最近节日倒计时 -->
-    <!-- 短线：涨停、跌停、连板、最强板块、最强概念 -->
-    <!-- 板块：涨幅、资金、热度 -->
-    <!-- 个股：最高股（换手率是否可参考） -->
-    <!-- <el-card shadow="hover" class="mgb15" style="width: 100%">
-      <el-tag size="large" type="success">机会</el-tag>
-    </el-card> -->
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
       <template #header>
         <CardHeader :url="cardUrls.marketChartUrl" headerTitle="大盘趋势" />
@@ -61,10 +54,11 @@
     </el-card>
   </div>
 </template>
+
 <script lang="ts" setup>
 import { debounce } from 'lodash-es';
 import { storeToRefs } from 'pinia';
-import CardHeader from './cardHeader.vue';
+import CardHeader from './components/cardHeader.vue';
 import { fetchChartData, ChartResult } from '@/api/payBack';
 import { fetchLonghuHistoryData } from '@/api/tonghuashun';
 import { ShortTermModel } from '@/api/model/shortTermModel';
@@ -77,14 +71,14 @@ import {
   getFundsChartOption,
   getSubFundsChartOption,
   getLonghuListOption,
-} from '../utils/util';
+} from './utils/util';
 import dayjs from 'dayjs';
 import {
   transformFundsData,
   transformLonghuListData,
-} from '../utils/transformUtil';
-import { columnsConfig, cardUrls } from '../utils/config';
-import { FundsKey } from '../utils/index.d';
+} from './utils/transformUtil';
+import { columnsConfig, cardUrls } from './utils/config';
+import { FundsKey } from './utils/index.d';
 import { useSidebarStore } from '@/store/sidebar';
 
 import { ref, onMounted, reactive, watch } from 'vue';

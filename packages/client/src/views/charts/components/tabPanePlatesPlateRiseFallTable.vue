@@ -3,22 +3,21 @@
     <div>{{ superData.title }}</div>
     <div class="table__container">
       <div
-        :class="['date-col', { isMobile: superData.isMobile }]"
-        v-for="(item, index) in superData.data"
+        :class="[
+          'date-col',
+          { isMobile: superData.isMobile },
+          { isMonday: judgeMonday(item.createTime) },
+        ]"
+        v-for="(item, index) in data"
         :key="'evenBoard' + index"
       >
         <div class="table__header">{{ item.createTime }}</div>
-
-        <!-- gainianRiseFloat: string;
-  gainianFallFloat: string;
-  hangyeRiseFloat: string;
-  hangyeFallFloat: string; -->
         <!-- 行业涨 -->
         <div
           v-for="(plate, index) in item[
             superData.isHangye ? 'hangyeRiseFloat' : 'gainianRiseFloat'
           ]"
-          class="table-col"
+          :class="['table-col', plate.class]"
           :key="'row' + index"
         >
           <Plate :code="plate.code" :name="plate.name" />
@@ -27,12 +26,13 @@
           </span>
           <span v-else class="fall"> {{ plate.quoteChange }}%</span>
         </div>
+        <div class="line"></div>
         <!-- 行业跌 -->
         <div
           v-for="(plate, index) in item[
             superData.isHangye ? 'hangyeFallFloat' : 'gainianFallFloat'
           ]"
-          class="table-col"
+          :class="['table-col', plate.class]"
           :key="'row' + index"
         >
           <Plate :code="plate.code" :name="plate.name" />
@@ -46,6 +46,9 @@
   </div>
 </template>
 <script lang="ts" setup>
+import _ from 'lodash-es';
+import { judgeMonday } from '../utils';
+
 let superData = defineProps({
   data: {
     type: Array<any>,
@@ -97,6 +100,21 @@ let superData = defineProps({
 }
 .table * {
   box-sizing: border-box;
+}
+
+.isMonday {
+  border-right: 2px double red;
+  .table__header {
+    background-color: red !important;
+    color: #fff !important;
+  }
+}
+.line {
+  width: 100%;
+  border-bottom: 2px double red;
+  height: 1px;
+  margin: 0px;
+  padding: 0 !important;
 }
 
 .table__container {
@@ -154,5 +172,81 @@ let superData = defineProps({
     justify-content: flex-start;
     white-space: nowrap;
   }
+
+  .plate1 {
+    color: #fff;
+    background-image: linear-gradient(#2afadf, #2261f3);
+  }
+  .plate2 {
+    color: #fff;
+    background-image: linear-gradient(#5efce8, #736efe);
+  }
+  .plate3 {
+    color: #fff;
+    background-image: linear-gradient(#abdcff, #0396ff);
+  }
+  // .plate4 {
+  //   background-image: linear-gradient(#cdcfd0, #00eaff);
+  //   color: #fff;
+  // }
+  // .plate5 {
+  //   color: #fff;
+  //   background-image: linear-gradient(#65fdf0, #1d6fa3);
+  // }
+
+  // .plate6 {
+  //   background-image: linear-gradient(#90f7ec, #32ccbc);
+  // }
+
+  // .plate7 {
+  //   background-image: linear-gradient(#81fbb8, #28c76f);
+  // }
+  // .plate8 {
+  //   background-image: linear-gradient(#fff720, #3cd500);
+  // }
+  // .plate9 {
+  //   background-image: linear-gradient(#f0ff00, #58cffb);
+  // }
+  // .plate10 {
+  //   background-image: linear-gradient(#70f570, #49c628);
+  // }
+
+  // .plate1 {
+  //   color: #fff;
+  //   background-image: linear-gradient(#abdcff, #0396ff);
+  // }
+  // .plate2 {
+  //   color: #fff;
+  //   background-image: linear-gradient(#736efe, #5efce8);
+  // }
+  // .plate3 {
+  //   color: #fff;
+  //   background-image: linear-gradient(#465efb, #c2ffd8);
+  // }
+  // .plate4 {
+  //   color: #fff;
+  //   background-image: linear-gradient(#90f7ec, #32ccbc);
+  // }
+  // .plate5 {
+  //   color: #fff;
+  //   background-image: linear-gradient(#fff720, #3cd500);
+  // }
+
+  .plate6 {
+    background-image: linear-gradient(#ff96f9, #c32bac);
+  }
+
+  .plate7 {
+    background-image: linear-gradient(#f6d242, #ff52e5);
+  }
+  .plate8 {
+    background-image: linear-gradient(#fff6b7, #f6416c);
+  }
+  // .plate9 {
+  //   background-image: linear-gradient(#feb692, #ea5455);
+  // }
+  // .plate10 {
+  //   background-image: linear-gradient(#fccf31, #f55555);
+  // }
 }
 </style>

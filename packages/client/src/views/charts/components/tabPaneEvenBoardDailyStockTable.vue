@@ -6,10 +6,14 @@
     <div class="table__container">
       <div class="table-header table-row">
         <div class="col1">行业板块</div>
-        <div class="col2">股票（红色：连板 青色： 反包）</div>
+        <div class="col2 red">涨停个股</div>
       </div>
 
-      <div class="table-row" v-for="(item, key) in stockGroupByPlate">
+      <div
+        class="table-row"
+        v-for="(item, key) in stockGroupByPlate"
+        :key="key"
+      >
         <div class="col1">
           <div>
             <span class="zise">{{ item.key }}</span>
@@ -21,7 +25,7 @@
           <div v-for="(stock, index) in item.value" :key="'stock' + index">
             <Stock
               v-if="stock.evenBoardHeight != 1"
-              class="evenBoard"
+              class="red"
               :name="stock.name + '(' + stock.evenBoardHeight + ')'"
               :code="stock.code"
             />
@@ -208,6 +212,10 @@ function sortStocks(stocks: []) {
     .tableColumsBorder();
     border-top: 1px solid @tableColumsBorderColor;
     display: flex;
+
+    &.table-row > .col2 {
+      font-size: 14px;
+    }
   }
 
   .table-row {
@@ -222,29 +230,13 @@ function sortStocks(stocks: []) {
     }
     .col2 {
       white-space: nowrap;
+      font-size: 12px;
     }
     > div {
       border-left: 1px solid @tableColumsBorderColor;
       border-bottom: 1px solid @tableColumsBorderColor;
       padding: 5px 10px;
       flex: 1;
-    }
-
-    .evenBoard {
-      color: @red;
-    }
-
-    .lvse {
-      color: @green;
-    }
-    .lanse {
-      color: @blue;
-    }
-    .zise {
-      color: @purple;
-    }
-    .orange {
-      color: @orange;
     }
   }
 }

@@ -15,10 +15,10 @@
   </el-tabs>
 </template>
 <script lang="ts" setup>
-import TabPaneCharts from './components/tabPaneCharts.vue';
-import TabPaneEvenBoard from './components/tabPaneEvenBoard.vue';
-import TabPaneHotList from './components/tabPaneHotList.vue';
-import TabPanePlates from './components/tabPanePlates.vue';
+import TabPaneCharts from './tabPaneCharts.vue';
+import TabPaneEvenBoard from './tabPaneEvenBoard.vue';
+import TabPaneHotList from './tabPaneHotList.vue';
+import TabPanePlates from './tabPanePlates.vue';
 </script>
 
 <style scoped lang="less">

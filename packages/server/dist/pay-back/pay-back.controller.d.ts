@@ -23,10 +23,7 @@ export declare class PayBackController {
             code: string;
             msg: string;
         };
-        marketData: import("./dto/create-market-data.dto").CreateMarketDataDto | {
-            code: string;
-            msg: string;
-        };
+        marketData: import("./dto/create-market-data.dto").CreateMarketDataDto;
     }>;
     crawlHotListData(): Promise<import("./dto/create-hot-list.dto").CreateHotListDto>;
     crawlShortTerm(): Promise<import("./dto/create-pay-back.dto").CreatePayBackDto | {
@@ -37,10 +34,7 @@ export declare class PayBackController {
         code: string;
         msg: string;
     }>;
-    crawlMarket(): Promise<import("./dto/create-market-data.dto").CreateMarketDataDto | {
-        code: string;
-        msg: string;
-    }>;
+    crawlMarket(): Promise<import("./dto/create-market-data.dto").CreateMarketDataDto>;
     crawlFunds(): Promise<import("./dto/create-funds-data.dto").CreateFundsDataDto | {
         code: string;
         msg: string;

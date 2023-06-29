@@ -1,9 +1,9 @@
 
 import { FundsModel } from '../../../api/model/FundsModel';
 import { ShortTermModel } from '../../../api/model/shortTermModel';
-import { FundsKey } from '.';
 import dayjs from 'dayjs';
 import _ from 'lodash-es';
+import { FundsKey } from '../utils/index.d';
 
 /**
  * 转换 行业、概念资金 图标数据
@@ -129,7 +129,7 @@ export function transformEvenBoardData(shortTermData: ShortTermModel[]): any[] {
         evenBoardData,
         evenBoardAmount: item.evenBoardAmount,
       };
-      item.downLimitData && (itemData.downLimit = JSON.parse(item.downLimitData));
+      item.downLimitData && (itemData.downLimitData = JSON.parse(item.downLimitData));
 
       evenBoardList.push(itemData);
     }

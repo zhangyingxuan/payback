@@ -70,6 +70,7 @@ async function getRealDataJson(response, replaceStr) {
     return JSON.parse(dataStr);
 }
 const waitMarketDataByUrls = async (pageUrl, apiUrl, browser) => {
+    logger.log('等待接口返回 start ====' + pageUrl);
     const page = await browser.newPage();
     return new Promise(async (resolve, reject) => {
         const createMarketDataDto = new create_market_data_dto_1.CreateMarketDataDto();
@@ -118,7 +119,7 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl, browser) => {
                 logger.log('接口返回数据【成功】 ====' + pageUrl);
                 setTimeout(() => {
                     resolve(createMarketDataDto);
-                }, 2000);
+                }, 1000);
             }
         });
         page.goto(pageUrl, { timeout: commonTimeOut60s, waitUntil: "domcontentloaded" });

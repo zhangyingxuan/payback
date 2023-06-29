@@ -34,17 +34,11 @@ let MarketService = MarketService_1 = class MarketService {
             .where("market_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
             .getOne();
         if (todayDataFromDB) {
-            this.logger.debug('crawlMarketData is end![isExist]!');
-            return {
-                code: 'isExist',
-                msg: todayDateStr + ' 数据已存在！',
-            };
         }
-        let marketData, latestConceptPlate;
+        let marketData;
         try {
             marketData = await playWrightUtil_1.default.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
             console.log(marketData);
-            await this.marketDataRp.save(marketData);
             this.logger.debug('crawlMarketData is success!');
         }
         catch (e) {

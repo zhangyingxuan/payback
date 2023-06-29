@@ -105,16 +105,19 @@
 
   <!-- 当日涨停分布，按行业板块划分 -->
   <DailyStockTable :data="data.currentDailyStocks" :isMobile="isMobile" />
+  <DownStockTable :data="data.currentDownStocks" :isMobile="isMobile" />
 </template>
 <script lang="ts" setup>
 import { fetchEvenBoardData } from '@/api/payBack';
 // import { fetchIndustryData } from '@/api/tonghuashun';
-import { transformEvenBoardData } from '../utils/transformUtil';
+import { judgeMonday } from './utils';
+import { transformEvenBoardData } from './utils/transformUtil';
 import { onMounted, reactive, watch, computed } from 'vue';
 import { useSidebarStore } from '@/store/sidebar';
 import { storeToRefs } from 'pinia';
 import { isMobile } from '@/core/util';
-import DailyStockTable from './dailyStockTable.vue';
+import DailyStockTable from './components/tabPaneEvenBoardDailyStockTable.vue';
+import DownStockTable from './components/tabPaneEvenBoardDownStockTable.vue';
 import dayjs from 'dayjs';
 
 // 默认选中最新日期，可点击日期切换 查看选中日期详细涨停数据；PC横着，移动端竖着展示；按行业
@@ -127,6 +130,7 @@ let evenBoard = reactive<any>({ value: [] });
 
 const data = reactive({
   currentDailyStocks: [],
+  currentDownStocks: [],
   currentDate: dayjs(new Date()).format('MM/DD'),
 });
 
@@ -137,11 +141,6 @@ const { countDays } = storeToRefs(siderBar);
 watch(countDays, async val => {
   await initPage(val);
 });
-
-function judgeMonday(date: string) {
-  console.log(dayjs(date).day());
-  return dayjs(date).day() - 1 === 1;
-}
 
 async function initPage(pageSize: number) {
   // 获取图表数据
@@ -165,6 +164,9 @@ function handleDateClick(date: string) {
   data.currentDailyStocks = evenBoard.value.find(
     (item: any) => item.createTime === date,
   ).evenBoardData;
+  data.currentDownStocks = evenBoard.value.find(
+    (item: any) => item.createTime === date,
+  ).downLimitData;
 }
 
 const heightArr = computed(() => {
@@ -271,9 +273,6 @@ function getClassByHeight(height: any) {
     > div {
       padding: 5px;
     }
-  }
-  .gray {
-    color: #999;
   }
 
   .isMonday {

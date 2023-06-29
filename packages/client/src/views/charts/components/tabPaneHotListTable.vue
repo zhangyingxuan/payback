@@ -16,7 +16,12 @@
           :key="'row' + index"
         >
           <div class="name__row flexBetween">
-            <span>{{ hot.name }} </span>
+            <Stock
+              v-if="superData.type.includes('stock')"
+              :name="hot.name"
+              :code="hot.code"
+            />
+            <Plate v-else :name="hot.name" :code="hot.code" />
             <span v-if="hot.rise_and_fall > 0" class="rise">
               +{{ hot.rise_and_fall }}%</span
             >

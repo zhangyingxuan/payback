@@ -97,6 +97,7 @@ async function getRealDataJson(response: Response, replaceStr) {
 * @returns 
 */
 const waitMarketDataByUrls = async (pageUrl, apiUrl, browser): Promise<CreateMarketDataDto> => {
+  logger.log('等待接口返回 start ====' + pageUrl);
   // 打开股票行情页面  
   const page = await browser.newPage();
   return new Promise(async (resolve, reject) => {
@@ -158,7 +159,7 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl, browser): Promise<CreateMar
         logger.log('接口返回数据【成功】 ====' + pageUrl);
         setTimeout(() => {
           resolve(createMarketDataDto);
-        }, 2000);
+        }, 1000);
       }
     })
     page.goto(pageUrl, { timeout: commonTimeOut60s, waitUntil: "domcontentloaded" });
