@@ -84,7 +84,7 @@
           <el-tooltip
             effect="dark"
             placement="top"
-            v-for="(stock, index) in item.downLimit"
+            v-for="(stock, index) in item.downLimitData"
             :content="stock.plateLevel2"
             :key="'downLimitStock' + index"
           >
