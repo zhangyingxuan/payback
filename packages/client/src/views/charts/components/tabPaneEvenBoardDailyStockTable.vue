@@ -30,12 +30,12 @@
               :code="stock.code"
             />
             <Stock v-else :name="stock.name" :code="stock.code" />
-            <!-- <el-tag v-if="item.type === 1" size="small" type="warning" round>
+            <el-tag v-if="item.type === 1" size="small" type="warning" round>
               创
             </el-tag>
             <el-tag v-else-if="item.type === 2" size="small" type="info" round>
               其它
-            </el-tag> -->
+            </el-tag>
             &nbsp;[&nbsp;<span class="orange">{{ stock.reason }}</span
             >， <span class="lanse">{{ stock.price }}</span
             >， <span class="">封单{{ stock.closingFunds }}亿</span>，
@@ -227,6 +227,9 @@ function sortStocks(stocks: []) {
     .col2 {
       white-space: nowrap;
       font-size: 12px;
+      span {
+        font-size: 12px !important;
+      }
     }
     > div {
       border-left: 1px solid @tableColumsBorderColor;
