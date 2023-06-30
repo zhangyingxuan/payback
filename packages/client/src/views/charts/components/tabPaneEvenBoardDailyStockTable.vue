@@ -17,8 +17,7 @@
         <div class="col1">
           <div>
             <span class="zise">{{ item.key }}</span>
-            ，
-            <span>{{ item.value.length }}只</span>
+            <span>&nbsp;{{ item.value.length }}</span>
           </div>
         </div>
         <div class="col2">
@@ -225,11 +224,8 @@ function sortStocks(stocks: []) {
       align-items: center;
     }
     .col2 {
-      white-space: nowrap;
+      // white-space: nowrap;
       font-size: 12px;
-      span {
-        font-size: 12px !important;
-      }
     }
     > div {
       border-left: 1px solid @tableColumsBorderColor;

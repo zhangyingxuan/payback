@@ -14,8 +14,7 @@
         <div class="col1">
           <div>
             <span class="zise">{{ item.key }}</span>
-            ，
-            <span>{{ item.value.length }}只</span>
+            <span>&nbsp;{{ item.value.length }}</span>
           </div>
         </div>
         <div class="col2">
