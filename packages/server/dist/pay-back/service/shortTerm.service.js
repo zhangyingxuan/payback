@@ -100,6 +100,7 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
             .limit(len)
             .select(['short_term_data.createTime',
             'short_term_data.evenBoardAmount',
+            'short_term_data.downLimitQuantity',
             'short_term_data.evenBoardData',
             'short_term_data.downLimitData'])
             .orderBy('createTime', 'DESC')

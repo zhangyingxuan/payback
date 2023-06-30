@@ -1,0 +1,82 @@
+.tableColumsBorder {
+  border-right: 1px solid @tableColumsBorderColor;
+  border-bottom: 1px solid @tableColumsBorderColor;
+}
+.tableContentBorder {
+  border-left: 1px solid @tableColumsBorderColor;
+  border-top: 1px solid @tableColumsBorderColor;
+}
+
+.flexCenter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+}
+
+.table {
+  padding: 0 15px;
+  font-size: 12px;
+  overflow: auto;
+
+  &.isMobile {
+    .table-row {
+      .col1 {
+        flex: 0 0 83px;
+      }
+    }
+  }
+}
+
+.table__container {
+  .flexCenter();
+  border-right: 1px solid @tableColumsBorderColor;
+  min-width: 800px;
+  width: 800px;
+
+  .table-header {
+    font-size: 14px;
+    font-weight: 500;
+    background-color: #dcdcdc;
+    width: 100%;
+    padding: 5px 10px;
+    cursor: pointer;
+    .tableColumsBorder();
+    border-top: 1px solid @tableColumsBorderColor;
+    display: flex;
+
+    &.table-row > .col2 {
+      font-size: 14px;
+    }
+  }
+
+  .table-row {
+    display: flex;
+    width: 100%;
+    .col1 {
+      flex: 0 0 200px;
+      width: 200px;
+      display: flex;
+      // justify-content: center;
+      align-items: center;
+      // position: sticky;
+      // left: 0;
+      // top: 0;
+      // background-color: #fff;
+      > div {
+        width: 100%;
+        text-align: center;
+      }
+    }
+    .col2 {
+      font-size: 12px;
+    }
+    > div {
+      border-left: 1px solid @tableColumsBorderColor;
+      border-bottom: 1px solid @tableColumsBorderColor;
+      padding: 5px 10px;
+      flex: 1;
+    }
+  }
+}

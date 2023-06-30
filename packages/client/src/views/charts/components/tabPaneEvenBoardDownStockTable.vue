@@ -14,6 +14,7 @@
         <div class="col1">
           <div>
             <span class="zise">{{ item.key }}</span>
+            <br />
             <span>&nbsp;{{ item.value.length }}</span>
           </div>
         </div>
@@ -91,79 +92,5 @@ function sortPlates(stockGroupByPlate: any) {
 </script>
 
 <style scoped lang="less">
-.tableColumsBorder {
-  border-right: 1px solid @tableColumsBorderColor;
-  border-bottom: 1px solid @tableColumsBorderColor;
-}
-.tableContentBorder {
-  border-left: 1px solid @tableColumsBorderColor;
-  border-top: 1px solid @tableColumsBorderColor;
-}
-
-.flexCenter {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  align-content: center;
-}
-
-.table {
-  padding: 0 15px;
-  font-size: 12px;
-  overflow: auto;
-
-  &.isMobile {
-    .table-row {
-      .col1 {
-        width: 100px;
-        flex: 0 0 100px;
-      }
-    }
-  }
-}
-
-.table__container {
-  overflow: auto;
-  .flexCenter();
-  border-right: 1px solid @tableColumsBorderColor;
-
-  .table-header {
-    font-size: 14px;
-    font-weight: 500;
-    background-color: #dcdcdc;
-    width: 100%;
-    padding: 5px 10px;
-    cursor: pointer;
-    .tableColumsBorder();
-    border-top: 1px solid @tableColumsBorderColor;
-    display: flex;
-
-    &.table-row > .col2 {
-      font-size: 14px;
-    }
-  }
-
-  .table-row {
-    display: flex;
-    width: 100%;
-    .col1 {
-      flex: 0 0 200px;
-      width: 200px;
-      display: flex;
-      // justify-content: center;
-      align-items: center;
-    }
-    .col2 {
-      white-space: nowrap;
-      font-size: 12px;
-    }
-    > div {
-      border-left: 1px solid @tableColumsBorderColor;
-      border-bottom: 1px solid @tableColumsBorderColor;
-      padding: 5px 10px;
-      flex: 1;
-    }
-  }
-}
+@import '../styles/tabPaneEvenBoardStockTable.less';
 </style>

@@ -7,22 +7,24 @@ import * as dayjs from 'dayjs';
 import { Cron } from '@nestjs/schedule';
 import { CreateMarketDataDto } from '../dto/create-market-data.dto';
 
+// 复盘梳理总结
+
 @Injectable()
-export class MarketService {
+export class ReviewService {
   constructor(
     @InjectRepository(marketData) private readonly marketDataRp: Repository<marketData>
   ) { }
 
-  private readonly logger = new Logger(MarketService.name);
+  private readonly logger = new Logger(ReviewService.name);
 
   // * * * * * *：每一秒
   // 45 * * * * *：每分钟，在45秒
   // * 10 * * * *：每小时一次，十分钟开始
   // 0 */30 9-17 * * *：上午九时至下午五时，每三十分钟一次
   // 0 30 11 * * 1-5：星期一至星期五上午11:30
-  @Cron('0 0 16 * * 1-5')
-  async crawlMarketData() {
-    this.logger.debug('crawlMarketData is Begining!');
+  // @Cron('0 0 16 * * 1-5')
+  async updateTodayReviewData() {
+    this.logger.debug('updateTodayReviewData is Begining!');
     // 如果存在数据，则返回已有该数据
     const todayDateStr = new Date().toLocaleDateString();
     const todayDataFromDB = await this.marketDataRp
@@ -31,7 +33,7 @@ export class MarketService {
       .getOne();
 
     if (todayDataFromDB) {
-      this.logger.debug('crawlMarketData is end![isExist]!');
+      this.logger.debug('updateTodayReviewData is end![isExist]!');
       return {
         code: 'isExist',
         msg: todayDateStr + ' 数据已存在！',
@@ -42,7 +44,7 @@ export class MarketService {
       marketData = await playWrightUtil.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
       console.log(marketData);
       await this.marketDataRp.save(marketData);
-      this.logger.debug('crawlMarketData is success!');
+      this.logger.debug('updateTodayReviewData is success!');
     } catch (e) {
       this.logger.error('出错啦！！！', e)
     }
