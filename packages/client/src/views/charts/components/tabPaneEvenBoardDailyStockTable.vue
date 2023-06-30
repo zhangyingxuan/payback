@@ -30,20 +30,21 @@
               :code="stock.code"
             />
             <Stock v-else :name="stock.name" :code="stock.code" />
-            <el-tag v-if="item.type === 1" size="small" type="warning" round>
+            &nbsp;[&nbsp;<span class="">封单{{ stock.closingFunds }}亿</span>]
+            <!-- <el-tag v-if="item.type === 1" size="small" type="warning" round>
               创
             </el-tag>
             <el-tag v-else-if="item.type === 2" size="small" type="info" round>
               其它
-            </el-tag>
-            &nbsp;[&nbsp;<span class="orange">{{ stock.reason }}</span
+            </el-tag> -->
+            <!-- &nbsp;[&nbsp;<span class="orange">{{ stock.reason }}</span
             >， <span class="lanse">{{ stock.price }}</span
             >， <span class="">封单{{ stock.closingFunds }}亿</span>，
             <span class="zise">流通{{ stock.circulationValue }}亿</span>，
             {{ stock.dailyTime }}
             <span class="lvse" v-if="stock.openTimes > 0">
               {{ stock.openTimes }}
-            </span>
+            </span> -->
             ]
           </div>
         </div>
@@ -191,10 +192,6 @@ function sortStocks(stocks: []) {
       }
     }
   }
-}
-
-.table * {
-  box-sizing: border-box;
 }
 
 .table__container {

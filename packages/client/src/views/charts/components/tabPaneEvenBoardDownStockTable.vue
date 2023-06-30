@@ -123,10 +123,6 @@ function sortPlates(stockGroupByPlate: any) {
   }
 }
 
-.table * {
-  box-sizing: border-box;
-}
-
 .table__container {
   overflow: auto;
   .flexCenter();
