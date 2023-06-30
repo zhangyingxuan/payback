@@ -24,6 +24,8 @@
     .table-row {
       .col1 {
         flex: 0 0 83px;
+        justify-content: center;
+        text-align: center;
       }
     }
   }
@@ -34,7 +36,7 @@
   .flexCenter();
   border-right: 1px solid @tableColumsBorderColor;
   min-width: 800px;
-  width: 800px;
+  width: 100%;
 
   .table-header {
     font-size: 14px;
@@ -54,9 +56,7 @@
       flex: 0 0 200px;
       width: 200px;
       display: flex;
-      justify-content: center;
       align-items: center;
-      text-align: center;
       // position: sticky;
       // left: 0;
       // top: 0;

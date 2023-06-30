@@ -163,10 +163,11 @@ function handleDateClick(date: string) {
   data.currentDate = date;
   data.currentDailyStocks = evenBoard.value.find(
     (item: any) => item.createTime === date,
-  ).evenBoardData;
+  );
   data.currentDownStocks = evenBoard.value.find(
     (item: any) => item.createTime === date,
-  ).downLimitData;
+  );
+  console.log(data.currentDailyStocks);
 }
 
 const heightArr = computed(() => {

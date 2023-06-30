@@ -3,7 +3,9 @@
     <div class="table__container">
       <div class="table-header table-row">
         <div class="col1">行业板块</div>
-        <div class="col2 green">跌停个股</div>
+        <div class="col2 green">
+          跌停个股（{{ superData.data.downLimitQuantity }}）
+        </div>
       </div>
 
       <div
@@ -14,7 +16,7 @@
         <div class="col1">
           <div>
             <span class="zise">{{ item.key }}</span>
-            <br />
+            <br v-if="isMobile" />
             <span>&nbsp;{{ item.value.length }}</span>
           </div>
         </div>
@@ -52,18 +54,19 @@ let superData = defineProps({
 });
 
 const stockGroupByPlate = computed(() => {
-  const evenBoardData = _.cloneDeep(superData.data);
-  console.log(evenBoardData);
+  const data = _.cloneDeep(superData.data);
+
   const stockGroupByPlate: any = {};
   // 按 行业板块 将涨停个股分类
-  evenBoardData.forEach((item: any) => {
-    // 按板块划分 涨停数据
-    if (!stockGroupByPlate[item.plateLevel2]) {
-      stockGroupByPlate[item.plateLevel2] = [];
-    }
+  data.downLimitData &&
+    data.downLimitData.forEach((item: any) => {
+      // 按板块划分 涨停数据
+      if (!stockGroupByPlate[item.plateLevel2]) {
+        stockGroupByPlate[item.plateLevel2] = [];
+      }
 
-    stockGroupByPlate[item.plateLevel2].push(item);
-  });
+      stockGroupByPlate[item.plateLevel2].push(item);
+    });
 
   return sortPlates(stockGroupByPlate);
 });

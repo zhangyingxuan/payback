@@ -6,7 +6,9 @@
     <div class="table__container">
       <div class="table-header table-row">
         <div class="col1">行业板块</div>
-        <div class="col2 red">涨停个股</div>
+        <div class="col2 red">
+          涨停个股（{{ superData.data.dailyLimitQuantity }}）
+        </div>
       </div>
 
       <div
@@ -17,7 +19,7 @@
         <div class="col1">
           <div>
             <span class="zise">{{ item.key }}</span>
-            <br />
+            <br v-if="isMobile" />
             <span>&nbsp;{{ item.value.length }}</span>
           </div>
         </div>
@@ -74,37 +76,39 @@ let superData = defineProps({
 });
 
 const stockGroupByPlate = computed(() => {
-  const evenBoardData = _.cloneDeep(superData.data);
+  const data = _.cloneDeep(superData.data);
+
   const stockGroupByPlate: any = {};
   // 按 行业板块 将涨停个股分类
-  Object.keys(evenBoardData).forEach((key: string) => {
-    Array.isArray(evenBoardData[key]) &&
-      evenBoardData[key].forEach((item: any) => {
-        // 按板块划分 涨停数据
-        if (!stockGroupByPlate[item.plateLevel2]) {
-          stockGroupByPlate[item.plateLevel2] = [];
-        }
-
-        let repeatStock;
-        item.evenBoardHeight = key;
-        if (key === 'gaobiao') {
-          repeatStock = stockGroupByPlate[item.plateLevel2].find(
-            (stock: any) => stock.name === item.name,
-          );
-        }
-
-        // 去重处理，合并连板数据
-        if (repeatStock) {
-          if (repeatStock.evenBoardHeight === '1') {
-            repeatStock.evenBoardHeight = item.evenDays;
-          } else {
-            repeatStock.evenBoardHeight += '，' + item.evenDays;
+  data.evenBoardData &&
+    Object.keys(data.evenBoardData).forEach((key: string) => {
+      Array.isArray(data.evenBoardData[key]) &&
+        data.evenBoardData[key].forEach((item: any) => {
+          // 按板块划分 涨停数据
+          if (!stockGroupByPlate[item.plateLevel2]) {
+            stockGroupByPlate[item.plateLevel2] = [];
           }
-        } else {
-          stockGroupByPlate[item.plateLevel2].push(item);
-        }
-      });
-  });
+
+          let repeatStock;
+          item.evenBoardHeight = key;
+          if (key === 'gaobiao') {
+            repeatStock = stockGroupByPlate[item.plateLevel2].find(
+              (stock: any) => stock.name === item.name,
+            );
+          }
+
+          // 去重处理，合并连板数据
+          if (repeatStock) {
+            if (repeatStock.evenBoardHeight === '1') {
+              repeatStock.evenBoardHeight = item.evenDays;
+            } else {
+              repeatStock.evenBoardHeight += '，' + item.evenDays;
+            }
+          } else {
+            stockGroupByPlate[item.plateLevel2].push(item);
+          }
+        });
+    });
 
   return sortPlates(stockGroupByPlate);
 });
