@@ -89,7 +89,6 @@ export class ShorTermService {
       .offset(0)
       .limit(len)
       .select(['short_term_data.dailyLimitQuantity',
-        'short_term_data.downLimitQuantity',
         'short_term_data.marketHeight',
         'short_term_data.evenBoardAmount',
         'short_term_data.createTime'])
@@ -104,6 +103,7 @@ export class ShorTermService {
       .limit(len)
       .select(['short_term_data.createTime',
         'short_term_data.evenBoardAmount',
+        'short_term_data.dailyLimitQuantity',
         'short_term_data.downLimitQuantity',
         'short_term_data.evenBoardData',
         'short_term_data.downLimitData'])
