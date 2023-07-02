@@ -344,16 +344,16 @@ const dataList = [
       }
     }
 
+    &.isMonday {
+      border-right: 2px double #5a9cf8;
+      .table__header {
+        background-color: #5a9cf8;
+        color: #fff !important;
+      }
+    }
+
     > div {
       padding: 5px;
-    }
-  }
-
-  .isMonday {
-    border-right: 2px double #5a9cf8;
-    .table__header {
-      background-color: #5a9cf8;
-      color: #fff !important;
     }
   }
 

@@ -21,10 +21,10 @@
           :key="'row' + index"
         >
           <Plate :code="plate.code" :name="plate.name" />
-          <span v-if="plate.quoteChange > 0" class="rise">
+          <span v-if="plate.quoteChange > 0" class="red">
             +{{ plate.quoteChange }}%
           </span>
-          <span v-else class="fall"> {{ plate.quoteChange }}%</span>
+          <span v-else class="green"> {{ plate.quoteChange }}%</span>
         </div>
         <div class="line"></div>
         <!-- 行业跌 -->
@@ -36,10 +36,10 @@
           :key="'row' + index"
         >
           <Plate :code="plate.code" :name="plate.name" />
-          <span v-if="plate.quoteChange > 0" class="rise">
+          <span v-if="plate.quoteChange > 0" class="red">
             +{{ plate.quoteChange }}%
           </span>
-          <span v-else class="fall"> {{ plate.quoteChange }}%</span>
+          <span v-else class="green"> {{ plate.quoteChange }}%</span>
         </div>
       </div>
     </div>
@@ -102,13 +102,6 @@ let superData = defineProps({
   box-sizing: border-box;
 }
 
-.isMonday {
-  border-right: 2px double red;
-  .table__header {
-    background-color: red !important;
-    color: #fff !important;
-  }
-}
 .line {
   width: 100%;
   border-bottom: 2px double red;
@@ -138,16 +131,16 @@ let superData = defineProps({
       }
     }
 
+    &.isMonday {
+      border-right: 2px double red;
+      .table__header {
+        background-color: red !important;
+        color: #fff !important;
+      }
+    }
+
     > div {
       padding: 10px;
-    }
-
-    .rise {
-      color: red;
-    }
-
-    .fall {
-      color: green;
     }
 
     .name__row {
