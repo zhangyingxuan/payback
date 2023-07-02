@@ -1,10 +1,11 @@
 <!-- // 涨停分类 -->
 <!-- 分类 股票（红色：连板 青色： 反包） -->
 <!-- 赤橙黄绿青蓝紫 -->
+<!-- 封单大于 1亿的 标红 -->
 <template>
   <div :class="['table', { isMobile }]">
     <div class="table__container">
-      <div class="table-header table-row">
+      <div class="table__header table-row">
         <div class="col1">行业板块</div>
         <div class="col2 red">
           涨停个股（{{ superData.data.dailyLimitQuantity }}）
@@ -32,16 +33,16 @@
               :code="stock.code"
             />
             <Stock v-else :name="stock.name" :code="stock.code" />
-            <el-tag v-if="item.type === 1" size="small" type="warning" round>
-              创
-            </el-tag>
-            <el-tag v-else-if="item.type === 2" size="small" type="info" round>
+            <el-tag v-if="stock.type === 1" size="small" round> 创 </el-tag>
+            <el-tag v-else-if="stock.type === 2" size="small" type="info" round>
               其它
             </el-tag>
             &nbsp;[&nbsp;<span class="orange">{{ stock.reason }}</span
             >， <span class="lanse">{{ stock.price }}</span
-            >， <span class="">封单{{ stock.closingFunds }}亿</span>，
-            <span class="zise">流通{{ stock.circulationValue }}亿</span>，
+            >，
+            <span :class="{ red: stock.closingFunds > 1 }"
+              >封单{{ stock.closingFunds }}亿</span
+            >， <span class="zise">流通{{ stock.circulationValue }}亿</span>，
             {{ stock.dailyTime }}
             <span class="lvse" v-if="stock.openTimes > 0">
               {{ stock.openTimes }}

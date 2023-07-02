@@ -57,16 +57,22 @@
     <br />
     <el-descriptions
       class="margin-top"
-      title="短线情绪周期"
+      title="短线情绪周期（龙头、补涨、高低切）"
       :column="isMobile ? 1 : 2"
       :size="isMobile ? 'small' : 'large'"
       border
     >
       <el-descriptions-item>
         <template #label>
+          <div class="cell-item">周期细分</div>
+        </template>
+        1、启动；2、发酵；3、分歧转一致；4、加速；5、分歧转一致；6、加速；7、见顶；8、调整；9、反包；10、衰退。
+      </el-descriptions-item>
+      <el-descriptions-item>
+        <template #label>
           <div class="cell-item">1. 启动（迷茫阶段，冰点转折）</div>
         </template>
-        特征：亏钱效应结束后，开始出现4板，连板小于10，
+        特征：犹豫中复苏，亏钱效应结束后，开始出现4板，连板小于10，
         不会出现15%以上大面，昨涨停开盘无溢价直接闷杀或昨涨停票今跌停，炸板股明显减少，甚至开始出现代表情绪好转的大长腿<br />
         机会：打首板（规避前题材） <br />
         注意：要从全局考虑
@@ -79,12 +85,12 @@
         </template>
         特征：出现一只打破空间&gt;=5，带动板块，赚钱效应启动，并出现涨停潮（情绪发酵期是龙头股选手大展身手、上仓位的最关键阶段），连板股数量&gt;=10；没有天地板、炸板大面票，昨日断板票今天会有修复，大长腿也经常出现
         <br />
-        机会：选市场选出来的空间板，或补涨2板<br />
+        机会：选市场选出来的空间板，或打代表性2板<br />
         注意：要有人气，符合当下热点，新题材
       </el-descriptions-item>
       <el-descriptions-item>
         <template #label>
-          <div class="cell-item">3. 高潮期(加速上涨龙头筑顶）【赚钱】</div>
+          <div class="cell-item">3. 高潮期(加速上涨，龙头筑顶）【赚钱】</div>
         </template>
         特征：市场总龙头开始震荡筑顶，各种加速缩量板甚至连续一字板个股出现，且出现补涨龙时，指数情绪周期彻底达到高潮。板块出现批量涨停潮，连板股数量&gt;=15；梯队整齐，几乎没有高位炸板、炸板大面、昨日涨停今天跌停、昨日涨停今天闷杀，无-&gt;10%短线大面股<br />
         机会：分支或接力龙头<br />

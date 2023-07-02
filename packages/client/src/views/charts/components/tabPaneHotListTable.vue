@@ -5,11 +5,19 @@
   <div class="table">
     <div class="table__container">
       <div
-        :class="['date-col', { isMobile: superData.isMobile }]"
+        :class="[
+          'date-col',
+          {
+            isMobile: superData.isMobile,
+            isMonday: judgeMonday(item.createTime),
+          },
+        ]"
         v-for="(item, index) in superData.data"
         :key="'evenBoard' + index"
       >
-        <div class="table__header">{{ item.createTime }}</div>
+        <div class="table__header">
+          {{ item.createTime }} {{ getCurrentDay(item.createTime) }}
+        </div>
         <div
           v-for="(hot, index) in item[superData.type]"
           class="table-col"
@@ -53,6 +61,7 @@
   </div>
 </template>
 <script lang="ts" setup>
+import { judgeMonday, getCurrentDay } from '../utils';
 let superData = defineProps({
   data: {
     type: Array<any>,
@@ -123,6 +132,14 @@ let superData = defineProps({
       }
     }
 
+    &.isMonday {
+      border-right: 2px double #5a9cf8;
+      .table__header {
+        background-color: #5a9cf8;
+        color: #fff !important;
+      }
+    }
+
     > div {
       padding: 10px;
     }
@@ -171,6 +188,7 @@ let superData = defineProps({
 
   .table__header {
     background-color: @tableColumsBorderColor;
+    min-width: 155px;
     width: 100%;
     font-size: 16px;
     .tableColumsBorder();

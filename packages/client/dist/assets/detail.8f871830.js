@@ -1,0 +1,1 @@
+import{d as t,k as o,o as n}from"./index.40230e1e.js";const c={class:"container"},s=t({name:"newsDetail"}),l=t({...s,setup(r){function e(){JSON.parse(localStorage.getItem("formData")||"{}").content}return e(),(a,_)=>(n(),o("div",c))}});export{l as default};

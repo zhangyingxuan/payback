@@ -32,13 +32,13 @@
 }
 
 .table__container {
-  overflow: auto;
+  // overflow: auto;
   .flexCenter();
   border-right: 1px solid @tableColumsBorderColor;
   min-width: 800px;
   width: 100%;
 
-  .table-header {
+  .table__header {
     font-size: 14px;
     font-weight: 500;
     background-color: #dcdcdc;
@@ -62,15 +62,12 @@
       // top: 0;
       // background-color: #fff;
     }
-    .col2 {
-      white-space: nowrap;
-      font-size: 12px;
-    }
     > div {
       border-left: 1px solid @tableColumsBorderColor;
       border-bottom: 1px solid @tableColumsBorderColor;
       padding: 5px;
       flex: 1;
+      font-size: 12px;
     }
   }
 }

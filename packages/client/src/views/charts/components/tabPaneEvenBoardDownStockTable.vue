@@ -1,7 +1,7 @@
 <template>
   <div :class="['table', { isMobile }]">
     <div class="table__container">
-      <div class="table-header table-row">
+      <div class="table__header table-row">
         <div class="col1">行业板块</div>
         <div class="col2 green">
           跌停个股（{{ superData.data.downLimitQuantity }}）

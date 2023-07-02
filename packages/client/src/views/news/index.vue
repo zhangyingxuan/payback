@@ -27,7 +27,7 @@
         border
         class="table"
         ref="multipleTable"
-        header-cell-class-name="table-header"
+        header-cell-class-name="table__header"
       >
         <el-table-column
           prop="id"

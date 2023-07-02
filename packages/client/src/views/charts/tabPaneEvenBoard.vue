@@ -2,10 +2,11 @@
   <!-- 10日连板梯队 -->
   <!-- 行数取决于 时间范围内 最高连板 -->
   <!-- 列数取决于 日期数量 -->
+  <TabPaneChartsSummaryTable :dataList="dataList" :isMobile="isMobile" />
   <div class="table">
     <div class="table__container">
       <div :class="['date-col first-col', { isMobile }]">
-        <div class="table-header">高度</div>
+        <div class="table__header">高度</div>
         <div class="table-col height1">连板数</div>
         <div class="table-col">其它</div>
         <template v-for="height in heightArr" :key="'row1' + height">
@@ -30,7 +31,7 @@
       >
         <div
           :class="[
-            'table-header',
+            'table__header',
             { isActive: item.createTime === data.currentDate },
           ]"
           @click="handleDateClick(item.createTime)"
@@ -116,6 +117,7 @@ import { onMounted, reactive, watch, computed } from 'vue';
 import { useSidebarStore } from '@/store/sidebar';
 import { storeToRefs } from 'pinia';
 import { isMobile } from '@/core/util';
+import TabPaneChartsSummaryTable from './components/tabPaneChartsSummaryTable.vue';
 import DailyStockTable from './components/tabPaneEvenBoardDailyStockTable.vue';
 import DownStockTable from './components/tabPaneEvenBoardDownStockTable.vue';
 import dayjs from 'dayjs';
@@ -201,6 +203,77 @@ function getClassByHeight(height: any) {
       return 'height7';
   }
 }
+
+// ========================================================================
+const now = dayjs();
+
+/**
+ * 获取时间周期
+ */
+function getDateCycle() {
+  const day = now.date();
+  if (day >= 1 && day <= 10) {
+    return '月初';
+  } else if (day > 10 && day <= 20) {
+    return '月中';
+  } else {
+    return '月末';
+  }
+}
+const dataList = [
+  {
+    label: '短线周期',
+    value: '高潮',
+  },
+  {
+    label: '时间周期',
+    value: getDateCycle(),
+  },
+  {
+    label: '市场评分',
+    value: '50',
+  },
+  {
+    label: '大盘情绪',
+    value: '高亢',
+  },
+  {
+    label: '涨停',
+    value: '50',
+  },
+  {
+    label: '短线跌停',
+    value: '0',
+  },
+  {
+    label: '连板',
+    value: '5',
+  },
+  {
+    label: '市场高度',
+    value: '6',
+  },
+  {
+    label: '总龙头',
+    value: '华脉科技',
+  },
+  {
+    label: '最强题材',
+    value: '机器人',
+  },
+  {
+    label: '最强板块',
+    value: '汽车零部件',
+  },
+  {
+    label: '人气股',
+    value: '热榜TOP10除涨停外个股',
+  },
+  {
+    label: '资金青睐个股',
+    value: '资金净流入top3 + 板块',
+  },
+];
 </script>
 
 <style scoped lang="less">
@@ -278,13 +351,13 @@ function getClassByHeight(height: any) {
 
   .isMonday {
     border-right: 2px double #5a9cf8;
-    .table-header {
+    .table__header {
       background-color: #5a9cf8;
       color: #fff !important;
     }
   }
 
-  .table-header {
+  .table__header {
     background-color: #dcdcdc;
     width: 100%;
     cursor: pointer;
