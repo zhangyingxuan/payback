@@ -35,7 +35,13 @@ export function arrToObject(arr: any) {
  * @returns 
  */
 export function judgeMonday(date: string) {
-  return dayjs(date).day() - 1 === 1;
+  if (date.indexOf(':') === -1) {
+    date += ' 12:00'
+  }
+  // console.log(dayjs(date).startOf('week').add(1, 'day').format('MM/DD'));
+  // 获取当前时间的周一
+  const currentDayMonday = dayjs(date).startOf('week').add(1, 'day').format('MM/DD');
+  return dayjs(date).format('MM/DD') === currentDayMonday;
 }
 
 /**
@@ -45,21 +51,6 @@ export function judgeMonday(date: string) {
  */
 export function getCurrentDay(date: string) {
   const day = dayjs(date).day();
-  switch (day) {
-    case 0:
-      return '周六';
-    case 1:
-      return '周天';
-    case 6:
-      return '周五';
-    case 5:
-      return '周四';
-    case 4:
-      return '周三';
-    case 3:
-      return '周二';
-    case 2:
-      return '周一';
-  }
-  return;
+  var week = ['日', '一', '二', '三', '四', '五', '六'];
+  return '周' + week[day];
 }

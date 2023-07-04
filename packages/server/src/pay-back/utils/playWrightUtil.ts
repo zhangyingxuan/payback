@@ -7,6 +7,7 @@ import commonUtil from './commonUtil';
 import fundsUtil from './fundsUtil';
 import { marketUrl, iwencaiUrl, params } from '../core/config';
 import { Logger } from '@nestjs/common';
+import fetch from 'node-fetch';
 import { fetchIwencaiApi } from '../core/fetchUtil';
 
 const logger = new Logger('playWrightUtil');
@@ -39,17 +40,17 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType: 'text' | 'j
 
   let page = await browser.newPage(), browserContext;
   // fix： 修复爱问财默认50条数据分页 的问题；仅 涨停进入，1核1g无法执行
-  if (apiUrl === 'chart/get-robot-data') {
-    browserContext = await browser.newContext({ storageState: undefined });
-    // 只有 涨停数据 需要100/ 页；其他页面只需要 10条即可
-    const pageNumber = pageUrl.includes(params.dailyLimitMoreThan1) ? '100' : '10';
-    await browserContext.addInitScript((pageNumber) => {
-      window.localStorage.setItem('PAGE_NUMBER', pageNumber);
-    }, pageNumber);
-    page = await browserContext.newPage();
-  } else {
-    page = await browser.newPage();
-  }
+  // if (apiUrl === 'chart/get-robot-data') {
+  //   browserContext = await browser.newContext({ storageState: undefined });
+  //   // 只有 涨停数据 需要100/ 页；其他页面只需要 10条即可
+  //   const pageNumber = pageUrl.includes(params.dailyLimitMoreThan1) ? '100' : '10';
+  //   await browserContext.addInitScript((pageNumber) => {
+  //     window.localStorage.setItem('PAGE_NUMBER', pageNumber);
+  //   }, pageNumber);
+  //   page = await browserContext.newPage();
+  // } else {
+  //   page = await browser.newPage();
+  // }
 
 
   return new Promise((resolve, reject) => {
@@ -65,7 +66,7 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType: 'text' | 'j
         }
         // 获取数据后，关闭page 节约内存开销
         // browserContext && (browserContext.close())
-        page.close();
+        // page.close();
         setTimeout(() => {
           resolve(responseData);
         }, 2000)
@@ -201,7 +202,8 @@ export default {
     // TODO 轻量服务器，无法同时打开多个page ，所以待优化，promise.all 方案实施失败
     // 北向资金、南向资金 获取
     const responseForeignFunds = await waitOriginalDataByUrl('https://data.eastmoney.com/hsgt/index.html', 'reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE', 'text', browser);
-    const responseMarketTurnover = await waitOriginalDataByUrl('https://data.eastmoney.com/zjlx/dpzjlx.html', 'fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5', 'text', browser);
+    // const responseMarketTurnover = await waitOriginalDataByUrl('https://data.eastmoney.com/zjlx/dpzjlx.html', 'fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5', 'text', browser);
+    const responseMarketTurnover = await (await fetch("https://push2.eastmoney.com/api/qt/ulist.np/get?cb=jQuery112304396074520394937_1688383194361&fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5&_=1688383194362")).text();
 
     const hangyeFundsInflow = await fetchIwencaiApi(iwencaiUrl + params.hangyeFundsInflow);
     const hangyeFundsOutflow = await fetchIwencaiApi(iwencaiUrl + params.hangyeFundsOutflow);

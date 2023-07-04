@@ -133,7 +133,7 @@ let evenBoard = reactive<any>({ value: [] });
 const data = reactive({
   currentDailyStocks: [],
   currentDownStocks: [],
-  currentDate: dayjs(new Date()).format('MM/DD'),
+  currentDate: dayjs().format('MM/DD'),
 });
 
 const siderBar = useSidebarStore();

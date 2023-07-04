@@ -7,6 +7,7 @@ const commonUtil_1 = require("./commonUtil");
 const fundsUtil_1 = require("./fundsUtil");
 const config_1 = require("../core/config");
 const common_1 = require("@nestjs/common");
+const node_fetch_1 = require("node-fetch");
 const fetchUtil_1 = require("../core/fetchUtil");
 const logger = new common_1.Logger('playWrightUtil');
 const browserOpenTimeOut = 60000;
@@ -26,17 +27,6 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType, baseBrowser
     const browser = baseBrowser ? baseBrowser : await getBrowser();
     logger.log('等待接口返回 start ====' + pageUrl);
     let page = await browser.newPage(), browserContext;
-    if (apiUrl === 'chart/get-robot-data') {
-        browserContext = await browser.newContext({ storageState: undefined });
-        const pageNumber = pageUrl.includes(config_1.params.dailyLimitMoreThan1) ? '100' : '10';
-        await browserContext.addInitScript((pageNumber) => {
-            window.localStorage.setItem('PAGE_NUMBER', pageNumber);
-        }, pageNumber);
-        page = await browserContext.newPage();
-    }
-    else {
-        page = await browser.newPage();
-    }
     return new Promise((resolve, reject) => {
         page.on('response', async (response) => {
             if (response.url().includes(apiUrl) && response.status() === 200) {
@@ -48,7 +38,6 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType, baseBrowser
                 else {
                     responseData = await response.text();
                 }
-                page.close();
                 setTimeout(() => {
                     resolve(responseData);
                 }, 2000);
@@ -150,7 +139,7 @@ exports.default = {
     async getFundsData(dateStr) {
         const browser = await getBrowser(browserCloseTimeOut * 2);
         const responseForeignFunds = await waitOriginalDataByUrl('https://data.eastmoney.com/hsgt/index.html', 'reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE', 'text', browser);
-        const responseMarketTurnover = await waitOriginalDataByUrl('https://data.eastmoney.com/zjlx/dpzjlx.html', 'fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5', 'text', browser);
+        const responseMarketTurnover = await (await (0, node_fetch_1.default)("https://push2.eastmoney.com/api/qt/ulist.np/get?cb=jQuery112304396074520394937_1688383194361&fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5&_=1688383194362")).text();
         const hangyeFundsInflow = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.iwencaiUrl + config_1.params.hangyeFundsInflow);
         const hangyeFundsOutflow = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.iwencaiUrl + config_1.params.hangyeFundsOutflow);
         const gaiNianFundsInflow = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.iwencaiUrl + config_1.params.gainianFundsInflow);

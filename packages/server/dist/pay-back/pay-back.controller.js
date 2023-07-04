@@ -32,7 +32,7 @@ let PayBackController = class PayBackController {
         this.marketService = marketService;
     }
     async testApi() {
-        return await this.apiTestService.fetchExternalData();
+        return this.apiTestService.fetchHotList();
     }
     async crawlTodayData() {
         const shortData = await this.ShorTermService.crawlShortTermData();
