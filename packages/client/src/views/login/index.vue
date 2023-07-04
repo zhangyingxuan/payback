@@ -77,8 +77,6 @@ const submitForm = (formEl: FormInstance | undefined) => {
         password: btoa(param.password),
       });
 
-      console.log(result);
-
       if (result && result.token) {
         ElMessage.success('登录成功');
         localStorage.setItem('ms_username', param.account);

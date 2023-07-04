@@ -109,8 +109,6 @@ function updateDataClass(plates: any[], isHangye: Boolean) {
     plateFallArr: any[] = sortAndSetColor(objectToArr(typeFall), 6);
   const plateRiseObj = arrToObject(plateRiseArr);
   const plateFallObj = arrToObject(plateFallArr);
-  console.log(plateRiseObj, plateFallObj);
-  console.log(plates);
   plates.forEach(dateData => {
     dateData[riseKey].forEach((plate: any) => {
       plateRiseObj[plate.code] && (plate.class = plateRiseObj[plate.code]);

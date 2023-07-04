@@ -169,7 +169,6 @@ function handleDateClick(date: string) {
   data.currentDownStocks = evenBoard.value.find(
     (item: any) => item.createTime === date,
   );
-  console.log(data.currentDailyStocks);
 }
 
 const heightArr = computed(() => {
