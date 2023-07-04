@@ -52,3 +52,10 @@ export const fetchHostListData = (params: any | null) => {
 export const findPlateByLimit = (params: any | null) => {
   return http.request<Array<any>>("get", `${baseUrl}/findPlateByLimit`, { params });
 }
+/**
+ * 获取复盘数据
+ * @returns 
+ */
+export const fetchReveiwDataByDate = (params: any | null) => {
+  return http.request<Array<any>>("get", `${baseUrl}/fetchReveiwDataByDate`, { params });
+}

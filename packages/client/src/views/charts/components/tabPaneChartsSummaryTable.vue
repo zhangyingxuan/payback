@@ -13,7 +13,7 @@
       :direction="superData.isMobile ? 'vertical' : 'horizontal'"
       :size="superData.isMobile ? 'small' : 'large'"
       border
-      :column="superData.isMobile ? 4 : 8"
+      :column="superData.isMobile ? 4 : 5"
     >
       <el-descriptions-item
         v-for="(item, index) in superData.dataList"

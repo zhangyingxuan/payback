@@ -2,11 +2,15 @@
   <!-- 10日连板梯队 -->
   <!-- 行数取决于 时间范围内 最高连板 -->
   <!-- 列数取决于 日期数量 -->
-  <TabPaneChartsSummaryTable :dataList="dataList" :isMobile="isMobile" />
+  <TabPaneChartsSummaryTable
+    :dataList="data.summaryTableData"
+    :isMobile="isMobile"
+  />
   <div class="table">
     <div class="table__container">
       <div :class="['date-col first-col', { isMobile }]">
         <div class="table__header">高度</div>
+        <div class="table-col height1">周期</div>
         <div class="table-col height1">连板数</div>
         <div class="table-col">其它</div>
         <template v-for="height in heightArr" :key="'row1' + height">
@@ -42,6 +46,7 @@
           </el-icon>
         </div>
 
+        <div class="table-col height1">{{ item.cycle }}</div>
         <div class="table-col height1">{{ item.evenBoardAmount }}</div>
         <!-- 高标数据 -->
         <div class="table-col">
@@ -105,11 +110,11 @@
   </div>
 
   <!-- 当日涨停分布，按行业板块划分 -->
-  <DailyStockTable :data="data.currentDailyStocks" :isMobile="isMobile" />
-  <DownStockTable :data="data.currentDownStocks" :isMobile="isMobile" />
+  <DailyStockTable :data="data.currentDateData" :isMobile="isMobile" />
+  <DownStockTable :data="data.currentDateData" :isMobile="isMobile" />
 </template>
 <script lang="ts" setup>
-import { fetchEvenBoardData } from '@/api/payBack';
+import { fetchEvenBoardData, fetchReveiwDataByDate } from '@/api/payBack';
 // import { fetchIndustryData } from '@/api/tonghuashun';
 import { judgeMonday } from './utils';
 import { transformEvenBoardData } from './utils/transformUtil';
@@ -130,10 +135,59 @@ type EvenBoard = {
 };
 let evenBoard = reactive<any>({ value: [] });
 
-const data = reactive({
-  currentDailyStocks: [],
-  currentDownStocks: [],
+const data: {
+  currentDateData: any;
+  currentDate: string;
+  summaryTableData: any[];
+} = reactive({
+  currentDateData: {},
   currentDate: dayjs().format('MM/DD'),
+  summaryTableData: [
+    {
+      label: '短线周期',
+      value: '高潮',
+    },
+    {
+      label: '时间周期',
+      value: '',
+    },
+    {
+      label: '市场评分',
+      value: '50',
+    },
+    {
+      label: '大盘情绪',
+      value: '高亢',
+    },
+    {
+      label: '涨停',
+      value: '50',
+    },
+    {
+      label: '短线跌停',
+      value: '0',
+    },
+    {
+      label: '总龙头',
+      value: '华脉科技',
+    },
+    {
+      label: '最强题材',
+      value: '机器人',
+    },
+    {
+      label: '最强板块',
+      value: '汽车零部件',
+    },
+    // {
+    //   label: '人气股',
+    //   value: '热榜TOP10除涨停外个股',
+    // },
+    // {
+    //   label: '资金青睐个股',
+    //   value: '资金净流入top3 + 板块',
+    // },
+  ],
 });
 
 const siderBar = useSidebarStore();
@@ -161,14 +215,23 @@ onMounted(() => {
   initPage(countDays.value);
 });
 
-function handleDateClick(date: string) {
+async function handleDateClick(date: string) {
   data.currentDate = date;
-  data.currentDailyStocks = evenBoard.value.find(
+  data.currentDateData = evenBoard.value.find(
     (item: any) => item.createTime === date,
   );
-  data.currentDownStocks = evenBoard.value.find(
-    (item: any) => item.createTime === date,
-  );
+  // 获取复盘数据
+  const result: any = await fetchReveiwDataByDate(date);
+  data.summaryTableData[0].value = result.cycle;
+  data.summaryTableData[1].value = getDateCycle();
+  data.summaryTableData[2].value = result.marketScore;
+  data.summaryTableData[3].value = result.marketMood;
+  data.summaryTableData[4].value = result.dailyLimitQuantity;
+  data.summaryTableData[5].value = result.downLimitQuantity;
+  data.summaryTableData[6].value = result.totalLeader;
+  data.summaryTableData[7].value = result.plateLeader;
+  data.summaryTableData[8].value = result.strongestPlate;
+  data.summaryTableData[9].value = result.strongestTopic;
 }
 
 const heightArr = computed(() => {
@@ -219,60 +282,6 @@ function getDateCycle() {
     return '月末';
   }
 }
-const dataList = [
-  {
-    label: '短线周期',
-    value: '高潮',
-  },
-  {
-    label: '时间周期',
-    value: getDateCycle(),
-  },
-  {
-    label: '市场评分',
-    value: '50',
-  },
-  {
-    label: '大盘情绪',
-    value: '高亢',
-  },
-  {
-    label: '涨停',
-    value: '50',
-  },
-  {
-    label: '短线跌停',
-    value: '0',
-  },
-  {
-    label: '连板',
-    value: '5',
-  },
-  {
-    label: '市场高度',
-    value: '6',
-  },
-  {
-    label: '总龙头',
-    value: '华脉科技',
-  },
-  {
-    label: '最强题材',
-    value: '机器人',
-  },
-  {
-    label: '最强板块',
-    value: '汽车零部件',
-  },
-  {
-    label: '人气股',
-    value: '热榜TOP10除涨停外个股',
-  },
-  {
-    label: '资金青睐个股',
-    value: '资金净流入top3 + 板块',
-  },
-];
 </script>
 
 <style scoped lang="less">
