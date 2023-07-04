@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { marketData } from '../entities/marketData.entity';
+import { reviewData } from '../entities/review.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import playWrightUtil from '../utils/playWrightUtil'
 import * as dayjs from 'dayjs';
@@ -12,7 +12,7 @@ import { CreateMarketDataDto } from '../dto/create-market-data.dto';
 @Injectable()
 export class ReviewService {
   constructor(
-    @InjectRepository(marketData) private readonly marketDataRp: Repository<marketData>
+    @InjectRepository(reviewData) private readonly reviewDataRp: Repository<reviewData>
   ) { }
 
   private readonly logger = new Logger(ReviewService.name);
@@ -27,7 +27,7 @@ export class ReviewService {
     this.logger.debug('updateTodayReviewData is Begining!');
     // 如果存在数据，则返回已有该数据
     const todayDateStr = new Date().toLocaleDateString();
-    const todayDataFromDB = await this.marketDataRp
+    const todayDataFromDB = await this.reviewDataRp
       .createQueryBuilder('market_data')
       .where("market_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
       .getOne();
@@ -43,7 +43,7 @@ export class ReviewService {
     try {
       marketData = await playWrightUtil.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
       console.log(marketData);
-      await this.marketDataRp.save(marketData);
+      await this.reviewDataRp.save(marketData);
       this.logger.debug('updateTodayReviewData is success!');
     } catch (e) {
       this.logger.error('出错啦！！！', e)
@@ -53,44 +53,22 @@ export class ReviewService {
   }
 
   async findAll() {
-    return await this.marketDataRp.find();
+    return await this.reviewDataRp.find();
   }
   async findByLimit(len: number = 20) {
-    return await this.marketDataRp
+    return await this.reviewDataRp
       .createQueryBuilder('market_data')
       .offset(0)
       .limit(len)
-      .select([
-        'market_data.createTime',
-        'market_data.marketScore',
-        'market_data.riseAmount',
-        'market_data.fallAmount',
-        'market_data.dailyLimitIncome',
-        'market_data.shangzhengPoint',
-        'market_data.shenzhengPoint',
-        'market_data.chuangyePoint',
-        'market_data.beizheng50Point'])
       .orderBy('createTime', 'DESC')
       .getMany();
   }
-
-  /**
-   * 获取涨跌幅TOP5板块 根据len 长度
-   * @param len 
-   * @returns 
-   */
-  async findPlateByLimit(len: number = 20) {
-    return await this.marketDataRp
+  async findByDate(date: string) {
+    return await this.reviewDataRp
       .createQueryBuilder('market_data')
       .offset(0)
-      .limit(len)
-      .select([
-        'market_data.createTime',
-        'market_data.gainianRiseFloat',
-        'market_data.gainianFallFloat',
-        'market_data.hangyeRiseFloat',
-        'market_data.hangyeFallFloat'])
+      .where("market_data.createTime like :createTime", { createTime: dayjs(date).format('YYYY-MM-DD') + '%' })
       .orderBy('createTime', 'DESC')
-      .getMany();
+      .getOne();
   }
 }

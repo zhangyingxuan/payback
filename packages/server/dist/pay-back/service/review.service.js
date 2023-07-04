@@ -16,19 +16,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReviewService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("typeorm");
-const marketData_entity_1 = require("../entities/marketData.entity");
+const review_entity_1 = require("../entities/review.entity");
 const typeorm_2 = require("@nestjs/typeorm");
 const playWrightUtil_1 = require("../utils/playWrightUtil");
 const dayjs = require("dayjs");
 let ReviewService = ReviewService_1 = class ReviewService {
-    constructor(marketDataRp) {
-        this.marketDataRp = marketDataRp;
+    constructor(reviewDataRp) {
+        this.reviewDataRp = reviewDataRp;
         this.logger = new common_1.Logger(ReviewService_1.name);
     }
     async updateTodayReviewData() {
         this.logger.debug('updateTodayReviewData is Begining!');
         const todayDateStr = new Date().toLocaleDateString();
-        const todayDataFromDB = await this.marketDataRp
+        const todayDataFromDB = await this.reviewDataRp
             .createQueryBuilder('market_data')
             .where("market_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
             .getOne();
@@ -43,7 +43,7 @@ let ReviewService = ReviewService_1 = class ReviewService {
         try {
             marketData = await playWrightUtil_1.default.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
             console.log(marketData);
-            await this.marketDataRp.save(marketData);
+            await this.reviewDataRp.save(marketData);
             this.logger.debug('updateTodayReviewData is success!');
         }
         catch (e) {
@@ -52,46 +52,28 @@ let ReviewService = ReviewService_1 = class ReviewService {
         return marketData;
     }
     async findAll() {
-        return await this.marketDataRp.find();
+        return await this.reviewDataRp.find();
     }
     async findByLimit(len = 20) {
-        return await this.marketDataRp
+        return await this.reviewDataRp
             .createQueryBuilder('market_data')
             .offset(0)
             .limit(len)
-            .select([
-            'market_data.createTime',
-            'market_data.marketScore',
-            'market_data.riseAmount',
-            'market_data.fallAmount',
-            'market_data.dailyLimitIncome',
-            'market_data.shangzhengPoint',
-            'market_data.shenzhengPoint',
-            'market_data.chuangyePoint',
-            'market_data.beizheng50Point'
-        ])
             .orderBy('createTime', 'DESC')
             .getMany();
     }
-    async findPlateByLimit(len = 20) {
-        return await this.marketDataRp
+    async findByDate(date) {
+        return await this.reviewDataRp
             .createQueryBuilder('market_data')
             .offset(0)
-            .limit(len)
-            .select([
-            'market_data.createTime',
-            'market_data.gainianRiseFloat',
-            'market_data.gainianFallFloat',
-            'market_data.hangyeRiseFloat',
-            'market_data.hangyeFallFloat'
-        ])
+            .where("market_data.createTime like :createTime", { createTime: dayjs(date).format('YYYY-MM-DD') + '%' })
             .orderBy('createTime', 'DESC')
-            .getMany();
+            .getOne();
     }
 };
 ReviewService = ReviewService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_2.InjectRepository)(marketData_entity_1.marketData)),
+    __param(0, (0, typeorm_2.InjectRepository)(review_entity_1.reviewData)),
     __metadata("design:paramtypes", [typeorm_1.Repository])
 ], ReviewService);
 exports.ReviewService = ReviewService;

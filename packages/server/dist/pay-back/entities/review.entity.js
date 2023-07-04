@@ -19,28 +19,52 @@ __decorate([
 ], reviewData.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)({ comment: '短线周期', type: 'varchar', length: 30, default: '' }),
+    __metadata("design:type", String)
+], reviewData.prototype, "cycle", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '时间周期', type: 'varchar', length: 30, default: '' }),
+    __metadata("design:type", String)
+], reviewData.prototype, "dateCycle", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '市场评分', type: 'float', default: 0 }),
     __metadata("design:type", Number)
 ], reviewData.prototype, "marketScore", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '上涨家数', type: 'int', default: 0 }),
-    __metadata("design:type", Number)
-], reviewData.prototype, "riseAmount", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '上证点数', type: 'decimal', default: 0, precision: 8, scale: 2 }),
-    __metadata("design:type", Number)
-], reviewData.prototype, "shangzhengPoint", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '深圳点数', type: 'decimal', default: 0, precision: 8, scale: 2 }),
-    __metadata("design:type", Number)
-], reviewData.prototype, "shenzhengPoint", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '上涨幅度最大的行业板块TOP5', type: 'varchar', length: 512, default: '' }),
+    (0, typeorm_1.Column)({ comment: '大盘情绪', type: 'varchar', length: 30, default: '' }),
     __metadata("design:type", String)
-], reviewData.prototype, "hangyeRiseFloat", void 0);
+], reviewData.prototype, "marketMood", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '下跌幅度最大的行业板块TOP5', type: 'varchar', length: 512, default: '' }),
+    (0, typeorm_1.Column)({ comment: '涨停数量', type: 'int', default: 0 }),
+    __metadata("design:type", Number)
+], reviewData.prototype, "dailyLimitQuantity", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '短线跌停', type: 'int', default: 0 }),
+    __metadata("design:type", Number)
+], reviewData.prototype, "downLimitQuantity", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '总龙头', type: 'varchar', length: 30, default: '' }),
     __metadata("design:type", String)
-], reviewData.prototype, "hangyeFallFloat", void 0);
+], reviewData.prototype, "totalLeader", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '板块龙头', type: 'varchar', length: 30, default: '' }),
+    __metadata("design:type", String)
+], reviewData.prototype, "plateLeader", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '最强板块', type: 'varchar', length: 30, default: '' }),
+    __metadata("design:type", String)
+], reviewData.prototype, "strongestPlate", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '最强题材', type: 'varchar', length: 30, default: '' }),
+    __metadata("design:type", String)
+], reviewData.prototype, "strongestTopic", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '人气股（热榜TOP10除涨停外个股）', type: 'varchar', length: 512, default: '' }),
+    __metadata("design:type", String)
+], reviewData.prototype, "hotStocks", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '资金青睐个股(资金净流入top3 + 板块)', type: 'varchar', length: 512, default: '' }),
+    __metadata("design:type", String)
+], reviewData.prototype, "fundsLikeStocks", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'timestamp', comment: '创建时间', default: () => 'current_timestamp' }),
     __metadata("design:type", typeorm_1.Timestamp)

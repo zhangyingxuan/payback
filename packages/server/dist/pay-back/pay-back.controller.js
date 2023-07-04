@@ -19,14 +19,16 @@ const market_service_1 = require("./service/market.service");
 const funds_service_1 = require("./service/funds.service");
 const hotList_service_1 = require("./service/hotList.service");
 const latestConceptPlate_service_1 = require("./service/latestConceptPlate.service");
+const review_service_1 = require("./service/review.service");
 const apiTest_service_1 = require("./service/apiTest.service");
 const update_pay_back_dto_1 = require("./dto/update-pay-back.dto");
 const public_decorator_1 = require("../decorator/public.decorator");
 let PayBackController = class PayBackController {
-    constructor(ShorTermService, fundsService, hotListService, apiTestService, latestConceptPlateService, marketService) {
+    constructor(ShorTermService, fundsService, hotListService, reviewService, apiTestService, latestConceptPlateService, marketService) {
         this.ShorTermService = ShorTermService;
         this.fundsService = fundsService;
         this.hotListService = hotListService;
+        this.reviewService = reviewService;
         this.apiTestService = apiTestService;
         this.latestConceptPlateService = latestConceptPlateService;
         this.marketService = marketService;
@@ -91,6 +93,14 @@ let PayBackController = class PayBackController {
         return {
             code: 200,
             data: hotListData,
+        };
+    }
+    async fetchReveiwDataByDate(query) {
+        const date = query.date || new Date();
+        let reviewData = await this.reviewService.findByDate(date);
+        return {
+            code: 200,
+            data: reviewData,
         };
     }
     async findPlateByLimit(query) {
@@ -187,6 +197,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "fetchHostListData", null);
 __decorate([
+    (0, common_1.Get)('fetchReveiwDataByDate'),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], PayBackController.prototype, "fetchReveiwDataByDate", null);
+__decorate([
     (0, common_1.Get)('findPlateByLimit'),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
@@ -212,6 +229,7 @@ PayBackController = __decorate([
     __metadata("design:paramtypes", [shortTerm_service_1.ShorTermService,
         funds_service_1.FundsService,
         hotList_service_1.HotListService,
+        review_service_1.ReviewService,
         apiTest_service_1.ApiTestService,
         latestConceptPlate_service_1.LatestConceptPlateService,
         market_service_1.MarketService])

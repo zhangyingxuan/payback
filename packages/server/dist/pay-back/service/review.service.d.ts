@@ -1,15 +1,15 @@
 import { Repository } from 'typeorm';
-import { marketData } from '../entities/marketData.entity';
+import { reviewData } from '../entities/review.entity';
 import { CreateMarketDataDto } from '../dto/create-market-data.dto';
 export declare class ReviewService {
-    private readonly marketDataRp;
-    constructor(marketDataRp: Repository<marketData>);
+    private readonly reviewDataRp;
+    constructor(reviewDataRp: Repository<reviewData>);
     private readonly logger;
     updateTodayReviewData(): Promise<CreateMarketDataDto | {
         code: string;
         msg: string;
     }>;
-    findAll(): Promise<marketData[]>;
-    findByLimit(len?: number): Promise<marketData[]>;
-    findPlateByLimit(len?: number): Promise<marketData[]>;
+    findAll(): Promise<reviewData[]>;
+    findByLimit(len?: number): Promise<reviewData[]>;
+    findByDate(date: string): Promise<reviewData>;
 }

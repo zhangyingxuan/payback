@@ -4,6 +4,7 @@ import { MarketService } from './service/market.service';
 import { FundsService } from './service/funds.service';
 import { HotListService } from './service/hotList.service';
 import { LatestConceptPlateService } from './service/latestConceptPlate.service';
+import { ReviewService } from './service/review.service';
 import { ApiTestService } from './service/apiTest.service';
 import { UpdatePayBackDto } from './dto/update-pay-back.dto';
 import { Public } from '../decorator/public.decorator';
@@ -14,6 +15,7 @@ export class PayBackController {
     private readonly ShorTermService: ShorTermService,
     private readonly fundsService: FundsService,
     private readonly hotListService: HotListService,
+    private readonly reviewService: ReviewService,
     private readonly apiTestService: ApiTestService,
     private readonly latestConceptPlateService: LatestConceptPlateService,
     private readonly marketService: MarketService) { }
@@ -110,17 +112,26 @@ export class PayBackController {
   async fetchHostListData(@Query() query) {
     const limit = +(query.limit || 20);
     let hotListData = await this.hotListService.findByLimit(limit);
-    // 移动端 日期近的在前面，PC相反
     return {
       code: 200,
       data: hotListData,
     };
   }
+
+  @Get('fetchReveiwDataByDate')
+  async fetchReveiwDataByDate(@Query() query) {
+    const date = query.date || new Date();
+    let reviewData = await this.reviewService.findByDate(date);
+    return {
+      code: 200,
+      data: reviewData,
+    };
+  }
+
   @Get('findPlateByLimit')
   async findPlateByLimit(@Query() query) {
     const limit = +(query.limit || 20);
     let palateData = await this.marketService.findPlateByLimit(limit);
-    // 移动端 日期近的在前面，PC相反
     return {
       code: 200,
       data: palateData,
