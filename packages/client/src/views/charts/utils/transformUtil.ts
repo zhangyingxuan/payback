@@ -155,7 +155,6 @@ function getCurrentCycle(item: any) {
   const cycles = ['启动', '发酵', '高潮', '退潮', '冰点'];
   // 最大高度 item.evenBoardData
   const maxHeight: any = item.evenBoardData.maxHeight;
-  console.log(item.dailyLimitQuantity)
   // 跌停数量
   if (maxHeight <= 4) {
     if (item.downLimitQuantity > 10) {

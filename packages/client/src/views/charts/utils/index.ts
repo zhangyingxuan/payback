@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { isSafari } from '@/core/util';
 
 /**
  * 对象转数组
@@ -35,13 +36,17 @@ export function arrToObject(arr: any) {
  * @returns 
  */
 export function judgeMonday(date: string) {
-  if (date.indexOf(':') === -1) {
-    date += ' 12:00'
+  if (isSafari) {
+    if (date.indexOf(':') === -1) {
+      date += ' 12:00'
+    }
+    // console.log(dayjs(date).startOf('week').add(1, 'day').format('MM/DD'));
+    // 获取当前时间的周一
+    const currentDayMonday = dayjs(date).startOf('week').add(1, 'day').format('MM/DD');
+    return dayjs(date).format('MM/DD') === currentDayMonday;
   }
-  // console.log(dayjs(date).startOf('week').add(1, 'day').format('MM/DD'));
-  // 获取当前时间的周一
-  const currentDayMonday = dayjs(date).startOf('week').add(1, 'day').format('MM/DD');
-  return dayjs(date).format('MM/DD') === currentDayMonday;
+
+  return dayjs(date).day() - 1 === 1;
 }
 
 /**
@@ -51,6 +56,10 @@ export function judgeMonday(date: string) {
  */
 export function getCurrentDay(date: string) {
   const day = dayjs(date).day();
-  var week = ['日', '一', '二', '三', '四', '五', '六'];
+  var week = ['六', '日', '一', '二', '三', '四', '五'];
+  if (isSafari) {
+    week = ['日', '一', '二', '三', '四', '五', '六']
+  }
+
   return '周' + week[day];
 }

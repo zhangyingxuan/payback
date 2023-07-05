@@ -48,7 +48,7 @@ export class LatestConceptPlateService {
    * @returns 
    */
   async findLatestOne() {
-    return await this.latestConceptPlateRp.createQueryBuilder('short_term_data')
+    return await this.latestConceptPlateRp.createQueryBuilder('latest_concept_plate')
       .offset(0)
       .limit(1)
       .orderBy('createTime', 'DESC')

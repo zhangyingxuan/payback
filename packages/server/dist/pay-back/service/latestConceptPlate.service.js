@@ -48,7 +48,7 @@ let LatestConceptPlateService = LatestConceptPlateService_1 = class LatestConcep
         return await this.latestConceptPlateRp.find();
     }
     async findLatestOne() {
-        return await this.latestConceptPlateRp.createQueryBuilder('short_term_data')
+        return await this.latestConceptPlateRp.createQueryBuilder('latest_concept_plate')
             .offset(0)
             .limit(1)
             .orderBy('createTime', 'DESC')

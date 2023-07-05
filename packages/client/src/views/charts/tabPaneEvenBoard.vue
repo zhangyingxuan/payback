@@ -222,6 +222,7 @@ async function handleDateClick(date: string) {
   );
   // 获取复盘数据
   const result: any = await fetchReveiwDataByDate(date);
+  if (!result) return;
   data.summaryTableData[0].value = result.cycle;
   data.summaryTableData[1].value = getDateCycle();
   data.summaryTableData[2].value = result.marketScore;
