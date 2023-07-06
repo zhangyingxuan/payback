@@ -102,7 +102,9 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
             'short_term_data.evenBoardAmount',
             'short_term_data.dailyLimitQuantity',
             'short_term_data.downLimitQuantity',
+            'short_term_data.sealingRate',
             'short_term_data.evenBoardData',
+            'short_term_data.cycle',
             'short_term_data.downLimitData'])
             .orderBy('createTime', 'DESC')
             .getMany();
@@ -112,7 +114,7 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
     }
 };
 __decorate([
-    (0, schedule_1.Cron)('0 0 17 * * 1-5'),
+    (0, schedule_1.Cron)('0 0 16 * * 1-5'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)

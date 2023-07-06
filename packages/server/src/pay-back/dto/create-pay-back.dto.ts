@@ -2,6 +2,10 @@
 export class CreatePayBackDto {
   // 涨停数量
   dailyLimitQuantity: number;
+  // 涨停打开数量
+  dailyLimitOpenQuantity: number;
+  // 封板率
+  sealingRate: number;
   // 跌停数量
   downLimitQuantity: number;
   // 最高连板，市场高度
@@ -15,5 +19,7 @@ export class CreatePayBackDto {
   downLimitData: string;
   // 一板数量
   board1: number;
+  // 一板数量
+  cycle: string;
   createTime: Date;
 }

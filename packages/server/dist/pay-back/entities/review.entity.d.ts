@@ -5,6 +5,8 @@ export declare class reviewData {
     dateCycle: string;
     marketScore: number;
     marketMood: string;
+    moneyMakingEffect: string;
+    moneyLossEffect: string;
     dailyLimitQuantity: number;
     downLimitQuantity: number;
     totalLeader: string;

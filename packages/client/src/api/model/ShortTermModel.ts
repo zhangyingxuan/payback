@@ -16,6 +16,7 @@ export interface ShortTermModel {
   evenBoardData: string;
   // 跌停数据
   downLimitData: string;
-
+  // 短线周期
+  cycle: string;
   createTime: Date;
 }

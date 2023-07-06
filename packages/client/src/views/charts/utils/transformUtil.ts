@@ -110,30 +110,33 @@ export function transformEvenBoardData(shortTermData: ShortTermModel[]): any[] {
   shortTermData.map(item => {
     if (item.evenBoardData) {
       const evenBoardData = JSON.parse(item.evenBoardData);
-      // const ticaiData: any = {};
       // 找出题材共性，涨停最多的 6个题材
+      const ticaiData: any = {};
       const maxHeight = evenBoardData.maxHeight;
-      // for (let i = 1; i <= maxHeight; i++) {
-      //   evenBoardData[i] && evenBoardData[i].forEach((item: any) => {
-      //     const resons = item.reason ? item.reason.split('+') : ['其它'];
-      //     resons.forEach((reson: any) => {
-      //       !ticaiData[reson] && (ticaiData[reson] = 1);
-      //       ticaiData[reson]++;
-      //     });
-      //   });
-      // }
-      // console.log(ticaiData);
+
+      for (let i = 1; i <= maxHeight; i++) {
+        evenBoardData[i] && evenBoardData[i].forEach((item: any) => {
+          const resons = item.reason ? item.reason.split('+') : ['其它'];
+          resons.forEach((reson: any) => {
+            !ticaiData[reson] && (ticaiData[reson] = 1);
+            ticaiData[reson]++;
+          });
+        });
+      }
+      console.log(ticaiData);
+
       const itemData: any = {
         createTime: dayjs(item.createTime).format('MM/DD'),
         maxHeight: maxHeight,
         evenBoardData,
+        cycle: item.cycle,
         dailyLimitQuantity: item.dailyLimitQuantity,
         downLimitQuantity: item.downLimitQuantity,
+        sealingRate: item.sealingRate,
         evenBoardAmount: item.evenBoardAmount,
       };
       item.downLimitData && (itemData.downLimitData = JSON.parse(item.downLimitData));
-
-      itemData.cycle = getCurrentCycle(itemData);
+      !itemData.cycle && (itemData.cycle = getCurrentCycle(itemData));
 
       evenBoardList.push(itemData);
     }
@@ -141,8 +144,6 @@ export function transformEvenBoardData(shortTermData: ShortTermModel[]): any[] {
 
   return evenBoardList;
 }
-
-
 
 function getCurrentCycle(item: any) {
   // 1、启动；犹豫中复苏，亏钱效应结束后，开始出现4板，连板小于10，不会出现15%以上大面；做首板

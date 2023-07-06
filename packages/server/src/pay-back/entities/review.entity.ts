@@ -17,6 +17,12 @@ export class reviewData {
   @Column({ comment: '大盘情绪', type: 'varchar', length: 30, default: '' })
   marketMood: string;
 
+  @Column({ comment: '赚钱效应', type: 'varchar', length: 30, default: '' })
+  moneyMakingEffect: string;
+
+  @Column({ comment: '亏钱效应', type: 'varchar', length: 30, default: '' })
+  moneyLossEffect: string;
+
   @Column({ comment: '涨停数量', type: 'int', default: 0 })
   dailyLimitQuantity: number;
 

@@ -34,6 +34,14 @@ __decorate([
     __metadata("design:type", String)
 ], reviewData.prototype, "marketMood", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ comment: '赚钱效应', type: 'varchar', length: 30, default: '' }),
+    __metadata("design:type", String)
+], reviewData.prototype, "moneyMakingEffect", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '亏钱效应', type: 'varchar', length: 30, default: '' }),
+    __metadata("design:type", String)
+], reviewData.prototype, "moneyLossEffect", void 0);
+__decorate([
     (0, typeorm_1.Column)({ comment: '涨停数量', type: 'int', default: 0 }),
     __metadata("design:type", Number)
 ], reviewData.prototype, "dailyLimitQuantity", void 0);

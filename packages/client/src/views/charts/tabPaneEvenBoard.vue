@@ -11,7 +11,11 @@
       <div :class="['date-col first-col', { isMobile }]">
         <div class="table__header">高度</div>
         <div class="table-col height1">周期</div>
+        <!-- <div class="table-col height1">市场</div> -->
         <div class="table-col height1">连板数</div>
+        <div class="table-col height1">涨停</div>
+        <div class="table-col height1">封板率</div>
+        <div class="table-col height1 green">跌停</div>
         <div class="table-col">其它</div>
         <template v-for="height in heightArr" :key="'row1' + height">
           <div
@@ -46,8 +50,15 @@
           </el-icon>
         </div>
 
-        <div class="table-col height1">{{ item.cycle }}</div>
+        <div class="table-col height1">
+          <el-tag class="ml-2" :type="getType(item.cycle)" effect="dark">{{
+            item.cycle
+          }}</el-tag>
+        </div>
         <div class="table-col height1">{{ item.evenBoardAmount }}</div>
+        <div class="table-col height1">{{ item.dailyLimitQuantity }}</div>
+        <div class="table-col height1">{{ item.sealingRate }}%</div>
+        <div class="table-col height1 green">{{ item.downLimitQuantity }}</div>
         <!-- 高标数据 -->
         <div class="table-col">
           <el-tooltip
@@ -198,6 +209,17 @@ watch(countDays, async val => {
   await initPage(val);
 });
 
+function getType(cycle: string) {
+  switch (cycle) {
+    case '高潮':
+      return 'danger';
+    case '冰点':
+      return 'success';
+    default:
+      return 'info';
+  }
+}
+
 async function initPage(pageSize: number) {
   // 获取图表数据
   const result: any = await fetchEvenBoardData({
@@ -223,7 +245,7 @@ async function handleDateClick(date: string) {
   // 获取复盘数据
   const result: any = await fetchReveiwDataByDate(date);
   if (!result) return;
-  data.summaryTableData[0].value = result.cycle;
+  data.summaryTableData[0].value = result.cycle ? result.cycle : getDateCycle();
   data.summaryTableData[1].value = getDateCycle();
   data.summaryTableData[2].value = result.marketScore;
   data.summaryTableData[3].value = result.marketMood;
@@ -332,6 +354,7 @@ function getDateCycle() {
       width: 80px;
       min-width: 80px;
       max-width: 80px;
+      font-weight: 500;
       position: sticky;
       left: 0;
       background-color: #fff;
@@ -407,11 +430,16 @@ function getDateCycle() {
     &.height1 {
       padding: 0px;
       height: 30px;
-      color: rgb(96, 3, 3);
-      justify-content: center;
-    }
-    &.height1 {
+      // color: rgb(96, 3, 3);
       color: rgb(216, 26, 61);
+      justify-content: center;
+
+      > span {
+        line-height: 22px;
+      }
+      &.green {
+        color: @green;
+      }
     }
   }
   .table-col > span {

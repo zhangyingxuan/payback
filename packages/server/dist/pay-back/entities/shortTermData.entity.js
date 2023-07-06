@@ -22,6 +22,10 @@ __decorate([
     __metadata("design:type", Number)
 ], shortTermData.prototype, "dailyLimitQuantity", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ comment: '涨停打开数量', type: 'int', default: 0 }),
+    __metadata("design:type", Number)
+], shortTermData.prototype, "dailyLimitOpenQuantity", void 0);
+__decorate([
     (0, typeorm_1.Column)({ comment: '涨停封板率', type: 'int', default: 0 }),
     __metadata("design:type", Number)
 ], shortTermData.prototype, "sealingRate", void 0);
@@ -57,6 +61,10 @@ __decorate([
     (0, typeorm_1.Column)({ comment: '1板数量', type: 'int', default: 0 }),
     __metadata("design:type", Number)
 ], shortTermData.prototype, "board1", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '短线周期', type: 'varchar', length: 30, default: '' }),
+    __metadata("design:type", String)
+], shortTermData.prototype, "cycle", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'timestamp', comment: '创建时间', default: () => 'current_timestamp' }),
     __metadata("design:type", typeorm_1.Timestamp)

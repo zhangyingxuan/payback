@@ -4,6 +4,7 @@ export declare const params: {
     downLimit: string;
     downLimitByDate: string;
     dailyLimitMoreThan1: string;
+    dailyLimitOpen: string;
     dailyLimitMoreThan1ByDate: string;
     capitalFlows3: string;
     dataCenterUrl: string;

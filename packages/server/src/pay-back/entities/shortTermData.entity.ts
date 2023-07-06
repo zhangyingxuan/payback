@@ -5,9 +5,11 @@ export class shortTermData {
   @PrimaryGeneratedColumn()
   id: number;
 
-  // 涨停数量
   @Column({ comment: '涨停数量', type: 'int', default: 0 })
   dailyLimitQuantity: number;
+
+  @Column({ comment: '涨停打开数量', type: 'int', default: 0 })
+  dailyLimitOpenQuantity: number;
 
   @Column({ comment: '涨停封板率', type: 'int', default: 0 })
   sealingRate: number;
@@ -35,6 +37,10 @@ export class shortTermData {
 
   @Column({ comment: '1板数量', type: 'int', default: 0 })
   board1: number;
+
+  // TODO 目前不够完善
+  @Column({ comment: '短线周期', type: 'varchar', length: 30, default: '' })
+  cycle: string;
 
   @Column({ type: 'timestamp', comment: '创建时间', default: () => 'current_timestamp' })
   createTime: Timestamp;
