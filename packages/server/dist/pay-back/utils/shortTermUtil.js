@@ -31,13 +31,13 @@ function getCurrentCycle(item) {
     const cycles = ['启动', '发酵', '高潮', '退潮', '冰点'];
     const maxHeight = item.evenBoardData.maxHeight;
     if (maxHeight <= 4) {
-        if (item.downLimitQuantity >= 10) {
+        if (item.downLimitQuantity > 10) {
             return cycles[4];
         }
-        if (item.downLimitQuantity > 1) {
-            return cycles[3];
+        if (maxHeight === 4) {
+            return cycles[0];
         }
-        return cycles[0];
+        return cycles[3];
     }
     if (maxHeight >= 5) {
         if (item.evenBoardAmount >= 10 || item.dailyLimitQuantity >= 45) {

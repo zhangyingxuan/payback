@@ -126,7 +126,8 @@ export function transformEvenBoardData(shortTermData: ShortTermModel[]): any[] {
       console.log(ticaiData);
 
       const itemData: any = {
-        createTime: dayjs(item.createTime).format('MM/DD'),
+        createTime: item.createTime,
+        createDate: dayjs(item.createTime).format('MM/DD'),
         maxHeight: maxHeight,
         evenBoardData,
         cycle: item.cycle,
@@ -161,11 +162,11 @@ function getCurrentCycle(item: any) {
     if (item.downLimitQuantity > 10) {
       return cycles[4];
     }
-    if (item.downLimitQuantity > 1) {
-      return cycles[3];
+    // 启动前 必须4板
+    if (maxHeight === 4) {
+      return cycles[0];
     }
-    // 今天的最高板没有昨天高，昨天是高潮
-    return cycles[0];
+    return cycles[3];
   }
   if (maxHeight >= 5) {
     if (item.evenBoardAmount >= 10 || item.dailyLimitQuantity >= 45) {

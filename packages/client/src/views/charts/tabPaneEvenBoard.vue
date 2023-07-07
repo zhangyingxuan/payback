@@ -3,6 +3,7 @@
   <!-- 行数取决于 时间范围内 最高连板 -->
   <!-- 列数取决于 日期数量 -->
   <TabPaneChartsSummaryTable
+    v-if="data.hasSummaryTableData"
     :dataList="data.summaryTableData"
     :isMobile="isMobile"
   />
@@ -32,7 +33,7 @@
         :class="[
           'date-col',
           { isMobile },
-          { isMonday: judgeMonday(item.createTime) },
+          { isMonday: judgeMonday(item.createDate) },
         ]"
         v-for="(item, index) in evenBoard.value"
         :key="'evenBoard' + index"
@@ -40,11 +41,11 @@
         <div
           :class="[
             'table__header',
-            { isActive: item.createTime === data.currentDate },
+            { isActive: item.createDate === data.currentDate },
           ]"
-          @click="handleDateClick(item.createTime)"
+          @click="handleDateClick(item)"
         >
-          {{ item.createTime }}
+          {{ item.createDate }}
           <el-icon>
             <SuccessFilled />
           </el-icon>
@@ -57,7 +58,12 @@
         </div>
         <div class="table-col height1">{{ item.evenBoardAmount }}</div>
         <div class="table-col height1">{{ item.dailyLimitQuantity }}</div>
-        <div class="table-col height1">{{ item.sealingRate }}%</div>
+        <div
+          class="table-col height1"
+          :class="{ green: item.sealingRate < 70 }"
+        >
+          {{ item.sealingRate }}%
+        </div>
         <div class="table-col height1 green">{{ item.downLimitQuantity }}</div>
         <!-- 高标数据 -->
         <div class="table-col">
@@ -142,7 +148,7 @@ import dayjs from 'dayjs';
 
 type EvenBoard = {
   maxHeight: number;
-  createTime: String;
+  createDate: String;
 };
 let evenBoard = reactive<any>({ value: [] });
 
@@ -150,7 +156,9 @@ const data: {
   currentDateData: any;
   currentDate: string;
   summaryTableData: any[];
+  hasSummaryTableData: boolean;
 } = reactive({
+  hasSummaryTableData: false,
   currentDateData: {},
   currentDate: dayjs().format('MM/DD'),
   summaryTableData: [
@@ -164,31 +172,27 @@ const data: {
     },
     {
       label: '市场评分',
-      value: '50',
+      value: '',
     },
     {
       label: '大盘情绪',
-      value: '高亢',
-    },
-    {
-      label: '涨停',
-      value: '50',
-    },
-    {
-      label: '短线跌停',
-      value: '0',
+      value: '',
     },
     {
       label: '总龙头',
-      value: '华脉科技',
+      value: '',
+    },
+    {
+      label: '板块龙头',
+      value: '',
     },
     {
       label: '最强题材',
-      value: '机器人',
+      value: '',
     },
     {
       label: '最强板块',
-      value: '汽车零部件',
+      value: '',
     },
     // {
     //   label: '人气股',
@@ -210,14 +214,16 @@ watch(countDays, async val => {
 });
 
 function getType(cycle: string) {
-  switch (cycle) {
-    case '高潮':
-      return 'danger';
-    case '冰点':
-      return 'success';
-    default:
-      return 'info';
+  if (cycle.indexOf('高潮') > -1) {
+    return 'danger';
   }
+  if (cycle.indexOf('冰点') > -1) {
+    return 'success';
+  }
+  if (cycle.indexOf('启动') > -1) {
+    return 'warning';
+  }
+  return 'info';
 }
 
 async function initPage(pageSize: number) {
@@ -230,31 +236,34 @@ async function initPage(pageSize: number) {
   // const rs: any = await fetchIndustryData();
   evenBoard.value = transformEvenBoardData(result);
   // 将当日涨停个股，按连板高度、行业 做成表格
-  handleDateClick(evenBoard.value[0]?.createTime);
+  handleDateClick(evenBoard.value[0]);
 }
 
 onMounted(() => {
   initPage(countDays.value);
 });
 
-async function handleDateClick(date: string) {
-  data.currentDate = date;
+async function handleDateClick(item: any) {
+  console.log(item.createTime);
+  data.currentDate = item.createDate;
   data.currentDateData = evenBoard.value.find(
-    (item: any) => item.createTime === date,
+    (item: any) => item.createDate === item.createDate,
   );
   // 获取复盘数据
-  const result: any = await fetchReveiwDataByDate(date);
-  if (!result) return;
+  const result: any = await fetchReveiwDataByDate({ date: item.createTime });
+  if (!result) {
+    data.hasSummaryTableData = false;
+    return;
+  }
+  data.hasSummaryTableData = true;
   data.summaryTableData[0].value = result.cycle ? result.cycle : getDateCycle();
   data.summaryTableData[1].value = getDateCycle();
   data.summaryTableData[2].value = result.marketScore;
   data.summaryTableData[3].value = result.marketMood;
-  data.summaryTableData[4].value = result.dailyLimitQuantity;
-  data.summaryTableData[5].value = result.downLimitQuantity;
-  data.summaryTableData[6].value = result.totalLeader;
-  data.summaryTableData[7].value = result.plateLeader;
-  data.summaryTableData[8].value = result.strongestPlate;
-  data.summaryTableData[9].value = result.strongestTopic;
+  data.summaryTableData[4].value = result.totalLeader;
+  data.summaryTableData[5].value = result.plateLeader;
+  data.summaryTableData[6].value = result.strongestPlate;
+  data.summaryTableData[7].value = result.strongestTopic;
 }
 
 const heightArr = computed(() => {

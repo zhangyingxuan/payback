@@ -50,14 +50,14 @@ function getCurrentCycle(item: any) {
   const maxHeight: any = item.evenBoardData.maxHeight;
   // 跌停数量
   if (maxHeight <= 4) {
-    if (item.downLimitQuantity >= 10) {
+    if (item.downLimitQuantity > 10) {
       return cycles[4];
     }
-    if (item.downLimitQuantity > 1) {
-      return cycles[3];
+    // 今天的最高板没有昨天高，昨天是高潮
+    if (maxHeight === 4) {
+      return cycles[0];
     }
-    // 今天的最高板没有昨天高，昨天是高潮;今天则退潮
-    return cycles[0];
+    return cycles[3];
   }
   if (maxHeight >= 5) {
     if (item.evenBoardAmount >= 10 || item.dailyLimitQuantity >= 45) {
