@@ -69,7 +69,6 @@ function judgeType(str) {
 export function transformShortTermSourceData(dailyLimitData, downLimitData, todayDateStr) {
 
   const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
-  console.log(todayDateStr, currentDate)
   const evenBoardLabel = `连续涨停天数[${currentDate}]`;
   let SZAmount = 0, SHAmount = 0, board1 = 0, maxHeight = 1, currentLevel = 0;
   // 跌停数据

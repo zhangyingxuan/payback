@@ -1,5 +1,5 @@
 <template>
-  <div class="header">
+  <div :class="['header', { monthEnd }]">
     <template v-if="!isMobile">
       <!-- 折叠按钮 -->
       <div class="collapse-btn" @click="collapseChage">
@@ -21,9 +21,6 @@
           </el-tooltip>
           <span class="btn-bell-badge" v-if="message"></span>
         </div> -->
-        <!-- <el-button type="danger" @click="openEvenBoardDialog" size="small">
-          连板情况
-        </el-button> -->
         <el-button type="primary" @click="switchDrawerVisible" size="small">
           我的收藏
         </el-button>
@@ -92,6 +89,7 @@ import { crawlTodayData } from '../api/payBack';
 import { clearLogin } from '../router/auth';
 import { isMobile } from '@/core/util';
 import { ElMessageBox } from 'element-plus';
+import dayjs from 'dayjs';
 
 const username: string | null = localStorage.getItem('ms_username');
 const message = 2;
@@ -120,15 +118,13 @@ const options = [
   },
 ];
 
+// 当前日期大于20号，则提示
+const monthEnd = dayjs().date() >= 20;
+const sidebar = useSidebarStore();
 const drawerVisible = ref(false);
+
 function switchDrawerVisible() {
   drawerVisible.value = !drawerVisible.value;
-}
-/**
- * 打开连板数据
- */
-function openEvenBoardDialog() {
-  sidebar.updateEvenBoardDialogVisible(true);
 }
 function refreshTodayData() {
   ElMessageBox.confirm('确定要更新今日数据吗？')
@@ -140,7 +136,6 @@ function refreshTodayData() {
     });
 }
 
-const sidebar = useSidebarStore();
 // 侧边栏折叠
 const collapseChage = () => {
   sidebar.handleCollapse();
@@ -174,6 +169,10 @@ const handleCommand = (command: string) => {
   height: 40px;
   font-size: 22px;
   color: #fff;
+
+  &.monthEnd {
+    background-color: #224c15;
+  }
 }
 .mobile-right {
   padding: 0 5px;

@@ -29,7 +29,7 @@ async function getShortTermData(todayDateStr) {
 exports.getShortTermData = getShortTermData;
 function getCurrentCycle(item) {
     const cycles = ['启动', '发酵', '高潮', '退潮', '冰点'];
-    const maxHeight = item.evenBoardData.maxHeight;
+    const maxHeight = item.marketHeight;
     if (maxHeight <= 4) {
         if (item.downLimitQuantity > 10) {
             return cycles[4];

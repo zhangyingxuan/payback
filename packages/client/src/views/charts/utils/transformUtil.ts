@@ -110,7 +110,7 @@ export function transformEvenBoardData(shortTermData: ShortTermModel[]): any[] {
   shortTermData.map(item => {
     if (item.evenBoardData) {
       const evenBoardData = JSON.parse(item.evenBoardData);
-      // 找出题材共性，涨停最多的 6个题材
+      // 找出题材共性，按涨停题材 排序
       const ticaiData: any = {};
       const maxHeight = evenBoardData.maxHeight;
 
@@ -123,7 +123,8 @@ export function transformEvenBoardData(shortTermData: ShortTermModel[]): any[] {
           });
         });
       }
-      console.log(ticaiData);
+      // 取出前3 题材并展示
+      // console.log(item.createTime, ticaiData, sortObj(ticaiData));
 
       const itemData: any = {
         createTime: item.createTime,
@@ -135,6 +136,7 @@ export function transformEvenBoardData(shortTermData: ShortTermModel[]): any[] {
         downLimitQuantity: item.downLimitQuantity,
         sealingRate: item.sealingRate,
         evenBoardAmount: item.evenBoardAmount,
+        ticaiData: sortObj(ticaiData).splice(0, 3)
       };
       item.downLimitData && (itemData.downLimitData = JSON.parse(item.downLimitData));
       !itemData.cycle && (itemData.cycle = getCurrentCycle(itemData));
@@ -144,6 +146,27 @@ export function transformEvenBoardData(shortTermData: ShortTermModel[]): any[] {
   });
 
   return evenBoardList;
+}
+
+/**
+ * 按板块排序 排序
+ * @param obj
+ */
+function sortObj(obj: any) {
+  // 将对象转换为数组 便于排序
+  const arr: any[] = [];
+  Object.keys(obj).forEach(key => {
+    let o = { key: '', value: 0 };
+    o.key = key;
+    o.value = obj[key];
+    arr.push(o);
+  });
+
+  // 按 行业板块 涨停数量降序
+  arr.sort((a: any, b: any) => {
+    return b.value - a.value;
+  });
+  return arr;
 }
 
 function getCurrentCycle(item: any) {
@@ -189,7 +212,6 @@ export function transformLonghuListData(longhuListData: any, pageSize: number): 
   // const yAxisData: any[] = [[], [], [], [], [], []];
   data.forEach((item: any) => {
     xAxisData.push(dayjs(item.date).format('MM/DD'));
-
     // 总榜净买
     yAxisData[0].push(toFloat2(item.net_value));
     // 机构净买

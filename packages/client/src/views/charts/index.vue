@@ -3,11 +3,11 @@
     <el-tab-pane label="图表复盘">
       <TabPaneCharts />
     </el-tab-pane>
-    <el-tab-pane label="热榜">
-      <TabPaneHotList />
-    </el-tab-pane>
     <el-tab-pane label="短线">
       <TabPaneEvenBoard />
+    </el-tab-pane>
+    <el-tab-pane label="热榜">
+      <TabPaneHotList />
     </el-tab-pane>
     <el-tab-pane label="板块">
       <TabPanePlates />

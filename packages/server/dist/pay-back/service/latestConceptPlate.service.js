@@ -56,7 +56,7 @@ let LatestConceptPlateService = LatestConceptPlateService_1 = class LatestConcep
     }
 };
 __decorate([
-    (0, schedule_1.Cron)('0 15 16 * * 1-5'),
+    (0, schedule_1.Cron)('0 00 16 * * 1-5'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)

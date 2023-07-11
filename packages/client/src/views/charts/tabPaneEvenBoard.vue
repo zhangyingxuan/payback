@@ -9,6 +9,7 @@
   />
   <div class="table">
     <div class="table__container">
+      <!-- 第一列，title -->
       <div :class="['date-col first-col', { isMobile }]">
         <div class="table__header">高度</div>
         <div class="table-col height1">周期</div>
@@ -29,6 +30,8 @@
         </template>
         <div class="table-col downLimitStock__plate">跌停股</div>
       </div>
+
+      <!-- 内容列，循环展示 -->
       <div
         :class="[
           'date-col',
@@ -38,6 +41,7 @@
         v-for="(item, index) in evenBoard.value"
         :key="'evenBoard' + index"
       >
+        <!-- 日期列 -->
         <div
           :class="[
             'table__header',
@@ -57,7 +61,12 @@
           }}</el-tag>
         </div>
         <div class="table-col height1">{{ item.evenBoardAmount }}</div>
-        <div class="table-col height1">{{ item.dailyLimitQuantity }}</div>
+        <div
+          class="table-col height1"
+          :class="{ gray: item.dailyLimitQuantity < 50 }"
+        >
+          {{ item.dailyLimitQuantity }}
+        </div>
         <div
           class="table-col height1"
           :class="{ green: item.sealingRate < 70 }"
@@ -143,8 +152,6 @@ import TabPaneChartsSummaryTable from './components/tabPaneChartsSummaryTable.vu
 import DailyStockTable from './components/tabPaneEvenBoardDailyStockTable.vue';
 import DownStockTable from './components/tabPaneEvenBoardDownStockTable.vue';
 import dayjs from 'dayjs';
-
-// 默认选中最新日期，可点击日期切换 查看选中日期详细涨停数据；PC横着，移动端竖着展示；按行业
 
 type EvenBoard = {
   maxHeight: number;
@@ -244,10 +251,9 @@ onMounted(() => {
 });
 
 async function handleDateClick(item: any) {
-  console.log(item.createTime);
   data.currentDate = item.createDate;
   data.currentDateData = evenBoard.value.find(
-    (item: any) => item.createDate === item.createDate,
+    (evenBoardItem: any) => evenBoardItem.createDate === item.createDate,
   );
   // 获取复盘数据
   const result: any = await fetchReveiwDataByDate({ date: item.createTime });
@@ -448,6 +454,9 @@ function getDateCycle() {
       }
       &.green {
         color: @green;
+      }
+      &.gray {
+        color: @gray;
       }
     }
   }

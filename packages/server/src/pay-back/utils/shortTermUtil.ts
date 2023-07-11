@@ -47,7 +47,7 @@ function getCurrentCycle(item: any) {
   // 周期定义
   const cycles = ['启动', '发酵', '高潮', '退潮', '冰点'];
   // 最大高度 item.evenBoardData
-  const maxHeight: any = item.evenBoardData.maxHeight;
+  const maxHeight: any = item.marketHeight;
   // 跌停数量
   if (maxHeight <= 4) {
     if (item.downLimitQuantity > 10) {
