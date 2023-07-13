@@ -9,10 +9,10 @@ export class marketData {
   @Column({ comment: '大盘评级', type: 'float', default: 0 })
   marketScore: number;
 
-  @Column({ comment: '上涨家数', type: 'int', default: 0 })
+  @Column({ comment: '上涨家数', type: 'smallint', default: 0 })
   riseAmount: number;
 
-  @Column({ comment: '下跌家数', type: 'int', default: 0 })
+  @Column({ comment: '下跌家数', type: 'smallint', default: 0 })
   fallAmount: number;
 
   @Column({ comment: '昨日涨停今日收益', type: 'float', default: 0 })
@@ -30,10 +30,10 @@ export class marketData {
   @Column({ comment: '北证50点数', type: 'decimal', default: 0, precision: 8, scale: 2 })
   beizheng50Point: number;
 
-  @Column({ comment: '上涨>=5%家数', type: 'int', default: 0 })
+  @Column({ comment: '上涨>=5%家数', type: 'smallint', default: 0 })
   riseMore5: number;
 
-  @Column({ comment: '下跌>=5%家数', type: 'int', default: 0 })
+  @Column({ comment: '下跌>=5%家数', type: 'smallint', default: 0 })
   fallMore5: number;
 
   @Column({ comment: '上涨幅度最大的行业板块TOP5', type: 'varchar', length: 512, default: '' })

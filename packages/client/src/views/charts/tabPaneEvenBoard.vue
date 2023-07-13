@@ -17,6 +17,7 @@
         <div class="table-col height1">连板数</div>
         <div class="table-col height1">涨停</div>
         <div class="table-col height1">封板率</div>
+        <!-- <div class="table-col height1">炸板率</div> -->
         <div class="table-col height1 green">跌停</div>
         <div class="table-col">其它</div>
         <template v-for="height in heightArr" :key="'row1' + height">
@@ -67,6 +68,7 @@
         >
           {{ item.dailyLimitQuantity }}
         </div>
+        <!-- 封板率 -->
         <div
           class="table-col height1"
           :class="{ green: item.sealingRate < 70 }"

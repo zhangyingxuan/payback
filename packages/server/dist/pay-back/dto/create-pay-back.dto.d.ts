@@ -2,10 +2,9 @@ export declare class CreatePayBackDto {
     dailyLimitQuantity: number;
     dailyLimitOpenQuantity: number;
     sealingRate: number;
+    dailyLimitReturnSealQuantity: number;
     downLimitQuantity: number;
     marketHeight: number;
-    SHAmount: number;
-    SZAmount: number;
     evenBoardAmount: number;
     evenBoardData: string;
     downLimitData: string;

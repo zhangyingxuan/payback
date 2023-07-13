@@ -61,7 +61,7 @@ function judgeType(str) {
 function transformShortTermSourceData(dailyLimitData, downLimitData, todayDateStr) {
     const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
     const evenBoardLabel = `连续涨停天数[${currentDate}]`;
-    let SZAmount = 0, SHAmount = 0, board1 = 0, maxHeight = 1, currentLevel = 0;
+    let board1 = 0, maxHeight = 1, currentLevel = 0, dailyLimitReturnSealQuantity = 0;
     const downLimitDataArr = transDownLimitData(downLimitData, todayDateStr);
     let evenBoardData = { maxHeight: 1, gaobiao: [] };
     dailyLimitData.forEach(item => {
@@ -73,12 +73,6 @@ function transformShortTermSourceData(dailyLimitData, downLimitData, todayDateSt
         if (currentLevel === 1) {
             board1++;
         }
-        if (item['股票代码'].includes('SZ')) {
-            SZAmount++;
-        }
-        else {
-            SHAmount++;
-        }
         dailyLimitStockDto.name = item['股票简称'];
         dailyLimitStockDto.code = item.code;
         dailyLimitStockDto.reason = item[`涨停原因类别[${currentDate}]`];
@@ -88,6 +82,7 @@ function transformShortTermSourceData(dailyLimitData, downLimitData, todayDateSt
         dailyLimitStockDto.price = item['最新价'];
         if (item[`涨停开板次数[${currentDate}]`] !== 0) {
             dailyLimitStockDto.openTimes = item[`涨停开板次数[${currentDate}]`];
+            dailyLimitReturnSealQuantity++;
         }
         dailyLimitStockDto.circulationValue = (0, commonUtil_1.fundsToFixed)(item[`a股市值(不含限售股)[${currentDate}]`]);
         dailyLimitStockDto.dailyTime = item[`首次涨停时间[${currentDate}]`] ? item[`首次涨停时间[${currentDate}]`].trim() : '-';
@@ -109,12 +104,10 @@ function transformShortTermSourceData(dailyLimitData, downLimitData, todayDateSt
     evenBoardData.maxHeight = maxHeight;
     evenBoardData.gaobiao.length === 0 && delete evenBoardData.gaobiao;
     return {
-        SZAmount,
-        SHAmount,
         board1,
-        maxHeight,
         evenBoardData,
-        downLimitDataArr
+        downLimitDataArr,
+        dailyLimitReturnSealQuantity,
     };
 }
 exports.transformShortTermSourceData = transformShortTermSourceData;

@@ -135,6 +135,7 @@ export function transformEvenBoardData(shortTermData: ShortTermModel[]): any[] {
         dailyLimitQuantity: item.dailyLimitQuantity,
         downLimitQuantity: item.downLimitQuantity,
         sealingRate: item.sealingRate,
+        dailyLimitReturnSealQuantity: item.dailyLimitReturnSealQuantity,
         evenBoardAmount: item.evenBoardAmount,
         ticaiData: sortObj(ticaiData).splice(0, 3)
       };

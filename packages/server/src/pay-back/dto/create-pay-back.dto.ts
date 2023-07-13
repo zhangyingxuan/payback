@@ -6,12 +6,12 @@ export class CreatePayBackDto {
   dailyLimitOpenQuantity: number;
   // 封板率
   sealingRate: number;
+  // 涨停回封数量
+  dailyLimitReturnSealQuantity: number;
   // 跌停数量
   downLimitQuantity: number;
   // 最高连板，市场高度
   marketHeight: number;
-  SHAmount: number;
-  SZAmount: number;
   evenBoardAmount: number;
   // 连板原始数据
   evenBoardData: string;

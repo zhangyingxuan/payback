@@ -16,7 +16,7 @@ export async function getShortTermData(todayDateStr): Promise<CreatePayBackDto> 
 
   const dailyLimitOpenData: any = await fetchIwencaiApi(params.dailyLimitOpen, 50, false);
 
-  let { SZAmount = 0, SHAmount = 0, board1 = 0, evenBoardData, downLimitDataArr } = transformShortTermSourceData(dailyLimitData, downLimitData, todayDateStr);
+  let { board1 = 0, evenBoardData, downLimitDataArr, dailyLimitReturnSealQuantity } = transformShortTermSourceData(dailyLimitData, downLimitData, todayDateStr);
 
   createPayBackDto.downLimitQuantity = downLimitData.length;
   createPayBackDto.dailyLimitQuantity = dailyLimitData.length;
@@ -24,13 +24,14 @@ export async function getShortTermData(todayDateStr): Promise<CreatePayBackDto> 
   createPayBackDto.dailyLimitOpenQuantity = dailyLimitOpenData.length;
   // 封板率 = 涨停数 / （涨停数 + 涨停打开数）
   createPayBackDto.sealingRate = Math.round(dailyLimitData.length / (dailyLimitData.length + dailyLimitOpenData.length) * 100);
+  // 炸板率 = （涨停打开数 + 涨停未遂数） / 涨停数
+  // 炸板率 = 炸板数/<炸板数+涨停数>
+  createPayBackDto.dailyLimitReturnSealQuantity = dailyLimitReturnSealQuantity;
   createPayBackDto.marketHeight = evenBoardData.maxHeight;
   createPayBackDto.board1 = board1;
   createPayBackDto.evenBoardAmount = dailyLimitData.length - board1;
   createPayBackDto.evenBoardData = JSON.stringify(evenBoardData);
   createPayBackDto.downLimitData = JSON.stringify(downLimitDataArr);
-  createPayBackDto.SZAmount = SZAmount;
-  createPayBackDto.SHAmount = SHAmount;
   createPayBackDto.createTime = new Date();
   createPayBackDto.cycle = getCurrentCycle(createPayBackDto);
 
@@ -76,7 +77,7 @@ export async function getShortTermDataByDate(todayDateStr): Promise<CreatePayBac
 
 
   console.log(params.dailyLimitMoreThan1ByDate.replace('${date}', todayDateStr))
-  let { SZAmount = 0, SHAmount = 0, board1 = 0, evenBoardData, downLimitDataArr } = transformShortTermSourceData(dailyLimitData, downLimitData, todayDateStr);
+  let { board1 = 0, evenBoardData, downLimitDataArr } = transformShortTermSourceData(dailyLimitData, downLimitData, todayDateStr);
 
   createPayBackDto.downLimitQuantity = downLimitData.length;
   createPayBackDto.dailyLimitQuantity = dailyLimitData.length;
@@ -85,8 +86,6 @@ export async function getShortTermDataByDate(todayDateStr): Promise<CreatePayBac
   createPayBackDto.evenBoardAmount = dailyLimitData.length - board1;
   createPayBackDto.evenBoardData = JSON.stringify(evenBoardData);
   createPayBackDto.downLimitData = JSON.stringify(downLimitDataArr);
-  createPayBackDto.SZAmount = SZAmount;
-  createPayBackDto.SHAmount = SHAmount;
   createPayBackDto.createTime = new Date(todayDateStr);
 
   return createPayBackDto;

@@ -22,11 +22,11 @@ __decorate([
     __metadata("design:type", Number)
 ], marketData.prototype, "marketScore", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '上涨家数', type: 'int', default: 0 }),
+    (0, typeorm_1.Column)({ comment: '上涨家数', type: 'smallint', default: 0 }),
     __metadata("design:type", Number)
 ], marketData.prototype, "riseAmount", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '下跌家数', type: 'int', default: 0 }),
+    (0, typeorm_1.Column)({ comment: '下跌家数', type: 'smallint', default: 0 }),
     __metadata("design:type", Number)
 ], marketData.prototype, "fallAmount", void 0);
 __decorate([
@@ -50,11 +50,11 @@ __decorate([
     __metadata("design:type", Number)
 ], marketData.prototype, "beizheng50Point", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '上涨>=5%家数', type: 'int', default: 0 }),
+    (0, typeorm_1.Column)({ comment: '上涨>=5%家数', type: 'smallint', default: 0 }),
     __metadata("design:type", Number)
 ], marketData.prototype, "riseMore5", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '下跌>=5%家数', type: 'int', default: 0 }),
+    (0, typeorm_1.Column)({ comment: '下跌>=5%家数', type: 'smallint', default: 0 }),
     __metadata("design:type", Number)
 ], marketData.prototype, "fallMore5", void 0);
 __decorate([

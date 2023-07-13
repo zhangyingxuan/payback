@@ -42,11 +42,11 @@ __decorate([
     __metadata("design:type", String)
 ], reviewData.prototype, "moneyLossEffect", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '涨停数量', type: 'int', default: 0 }),
+    (0, typeorm_1.Column)({ comment: '涨停数量', type: 'tinyint', default: 0 }),
     __metadata("design:type", Number)
 ], reviewData.prototype, "dailyLimitQuantity", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '短线跌停', type: 'int', default: 0 }),
+    (0, typeorm_1.Column)({ comment: '短线跌停', type: 'tinyint', default: 0 }),
     __metadata("design:type", Number)
 ], reviewData.prototype, "downLimitQuantity", void 0);
 __decorate([

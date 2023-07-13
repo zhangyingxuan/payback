@@ -30,13 +30,13 @@ __decorate([
     __metadata("design:type", String)
 ], specialStock.prototype, "turnUpBoard", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '主力净流入TOP3', type: 'varchar' }),
+    (0, typeorm_1.Column)({ comment: '主力净流入TOP3个股', type: 'varchar' }),
     __metadata("design:type", String)
 ], specialStock.prototype, "fundsLikeStock", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '吃面效应/赚钱效应', type: 'varchar' }),
+    (0, typeorm_1.Column)({ comment: '近1个月涨幅追高的个股Top3', type: 'varchar' }),
     __metadata("design:type", String)
-], specialStock.prototype, "hotEtfs", void 0);
+], specialStock.prototype, "heightestStock", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'timestamp', comment: '创建时间', default: () => 'current_timestamp' }),
     __metadata("design:type", typeorm_1.Timestamp)

@@ -14,11 +14,11 @@ export class specialStock {
   @Column({ comment: '反包板', type: 'varchar' })
   turnUpBoard: string;
 
-  @Column({ comment: '主力净流入TOP3', type: 'varchar' })
+  @Column({ comment: '主力净流入TOP3个股', type: 'varchar' })
   fundsLikeStock: string;
 
-  @Column({ comment: '吃面效应/赚钱效应', type: 'varchar' })
-  hotEtfs: string;
+  @Column({ comment: '近1个月涨幅追高的个股Top3', type: 'varchar' })
+  heightestStock: string;
 
   @Column({ type: 'timestamp', comment: '创建时间', default: () => 'current_timestamp' })
   createTime: Timestamp;

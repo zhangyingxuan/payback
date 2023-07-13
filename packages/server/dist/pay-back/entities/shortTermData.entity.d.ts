@@ -3,11 +3,10 @@ export declare class shortTermData {
     id: number;
     dailyLimitQuantity: number;
     dailyLimitOpenQuantity: number;
+    dailyLimitReturnSealQuantity: number;
     sealingRate: number;
     downLimitQuantity: number;
     marketHeight: number;
-    SZAmount: number;
-    SHAmount: number;
     evenBoardAmount: number;
     evenBoardData: string;
     downLimitData: string;

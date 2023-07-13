@@ -6,10 +6,10 @@ export interface ShortTermModel {
   downLimitQuantity: number;
   // 涨停封板率
   sealingRate: number;
+  // 涨停回封数量
+  dailyLimitReturnSealQuantity: number;
   // 最高连板，市场高度
   marketHeight: number;
-  SHAmount: number;
-  SZAmount: number;
   // 一板数量
   board1: number;
   evenBoardAmount: number,

@@ -5,28 +5,26 @@ export class shortTermData {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ comment: '涨停数量', type: 'int', default: 0 })
+  @Column({ comment: '涨停数量', type: 'tinyint', default: 0 })
   dailyLimitQuantity: number;
 
-  @Column({ comment: '涨停打开数量', type: 'int', default: 0 })
+  @Column({ comment: '涨停打开数量', type: 'tinyint', default: 0 })
   dailyLimitOpenQuantity: number;
 
-  @Column({ comment: '涨停封板率', type: 'int', default: 0 })
+  @Column({ comment: '涨停回封数量', type: 'tinyint', default: 0 })
+  dailyLimitReturnSealQuantity: number;
+
+  @Column({ comment: '涨停封板率', type: 'tinyint', default: 0 })
   sealingRate: number;
 
-  @Column({ comment: '跌停数量', type: 'int', default: 0 })
+
+  @Column({ comment: '跌停数量', type: 'tinyint', default: 0 })
   downLimitQuantity: number;
 
-  @Column({ comment: '最高连板，市场高度', type: 'int', default: 0 })
+  @Column({ comment: '最高连板，市场高度', type: 'tinyint', default: 0 })
   marketHeight: number;
 
-  @Column({ comment: '深圳涨停数量', type: 'int', default: 0 })
-  SZAmount: number;
-
-  @Column({ comment: '上海涨停数量', type: 'int', default: 0 })
-  SHAmount: number;
-
-  @Column({ comment: '连板数量', type: 'int', default: 0 })
+  @Column({ comment: '连板数量', type: 'tinyint', default: 0 })
   evenBoardAmount: number;
 
   @Column({ comment: '连板原始数据', type: 'text' })
@@ -35,7 +33,7 @@ export class shortTermData {
   @Column({ comment: '跌停数据', type: 'varchar', length: 3072, default: '' })
   downLimitData: string;
 
-  @Column({ comment: '1板数量', type: 'int', default: 0 })
+  @Column({ comment: '1板数量', type: 'tinyint', default: 0 })
   board1: number;
 
   // TODO 目前不够完善

@@ -34,11 +34,11 @@ __decorate([
     __metadata("design:type", Number)
 ], fundsData.prototype, "southFundsBuyAmt", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '行业板块主力资金Top', type: 'text' }),
+    (0, typeorm_1.Column)({ comment: '行业板块主力资金Top', type: 'text', nullable: true }),
     __metadata("design:type", String)
 ], fundsData.prototype, "hangyeFundsTop", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '概念板块主力资金Top', type: 'text' }),
+    (0, typeorm_1.Column)({ comment: '概念板块主力资金Top', type: 'text', nullable: true }),
     __metadata("design:type", String)
 ], fundsData.prototype, "gainianFundsTop", void 0);
 __decorate([

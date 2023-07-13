@@ -23,10 +23,10 @@ export class reviewData {
   @Column({ comment: '亏钱效应', type: 'varchar', length: 30, default: '' })
   moneyLossEffect: string;
 
-  @Column({ comment: '涨停数量', type: 'int', default: 0 })
+  @Column({ comment: '涨停数量', type: 'tinyint', default: 0 })
   dailyLimitQuantity: number;
 
-  @Column({ comment: '短线跌停', type: 'int', default: 0 })
+  @Column({ comment: '短线跌停', type: 'tinyint', default: 0 })
   downLimitQuantity: number;
 
   @Column({ comment: '总龙头', type: 'varchar', length: 30, default: '' })

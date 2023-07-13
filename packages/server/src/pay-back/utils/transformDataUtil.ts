@@ -70,7 +70,7 @@ export function transformShortTermSourceData(dailyLimitData, downLimitData, toda
 
   const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
   const evenBoardLabel = `连续涨停天数[${currentDate}]`;
-  let SZAmount = 0, SHAmount = 0, board1 = 0, maxHeight = 1, currentLevel = 0;
+  let board1 = 0, maxHeight = 1, currentLevel = 0, dailyLimitReturnSealQuantity = 0;
   // 跌停数据
   const downLimitDataArr = transDownLimitData(downLimitData, todayDateStr);
   let evenBoardData = { maxHeight: 1, gaobiao: [] };
@@ -85,12 +85,6 @@ export function transformShortTermSourceData(dailyLimitData, downLimitData, toda
     if (currentLevel === 1) {
       board1++;
     }
-    // 连板的数据
-    if (item['股票代码'].includes('SZ')) {
-      SZAmount++;
-    } else {
-      SHAmount++;
-    }
 
     dailyLimitStockDto.name = item['股票简称'];
     dailyLimitStockDto.code = item.code;
@@ -103,6 +97,7 @@ export function transformShortTermSourceData(dailyLimitData, downLimitData, toda
     // 开板次数，如果未开板 则不保存
     if (item[`涨停开板次数[${currentDate}]`] !== 0) {
       dailyLimitStockDto.openTimes = item[`涨停开板次数[${currentDate}]`];
+      dailyLimitReturnSealQuantity++;
     }
     // 流通市值
     dailyLimitStockDto.circulationValue = fundsToFixed(item[`a股市值(不含限售股)[${currentDate}]`]);
@@ -127,11 +122,9 @@ export function transformShortTermSourceData(dailyLimitData, downLimitData, toda
   evenBoardData.maxHeight = maxHeight;
   evenBoardData.gaobiao.length === 0 && delete evenBoardData.gaobiao
   return {
-    SZAmount,
-    SHAmount,
     board1,
-    maxHeight,
     evenBoardData,
-    downLimitDataArr
+    downLimitDataArr,
+    dailyLimitReturnSealQuantity,
   }
 }
