@@ -58,11 +58,11 @@ __decorate([
     __metadata("design:type", Number)
 ], marketData.prototype, "fallMore5", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '上涨幅度最大的行业板块TOP5', type: 'varchar', length: 512, default: '' }),
+    (0, typeorm_1.Column)({ comment: '上涨幅度最大的概念板块TOP5', type: 'varchar', length: 512, default: '' }),
     __metadata("design:type", String)
 ], marketData.prototype, "gainianRiseFloat", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '下跌幅度最大的行业板块TOP5', type: 'varchar', length: 512, default: '' }),
+    (0, typeorm_1.Column)({ comment: '下跌幅度最大的概念板块TOP5', type: 'varchar', length: 512, default: '' }),
     __metadata("design:type", String)
 ], marketData.prototype, "gainianFallFloat", void 0);
 __decorate([

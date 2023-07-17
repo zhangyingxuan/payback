@@ -7,6 +7,8 @@ export class DownLimitStockDto {
   // 所属同花顺二级行业
   plateLevel2: string;
   // 成交额，
+  reason: number;
+  // 成交额，
   turnover: number;
   // 封板资金
   closingFunds: number;

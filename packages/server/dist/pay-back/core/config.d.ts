@@ -3,8 +3,9 @@ export declare const marketUrl = "http://q.10jqka.com.cn";
 export declare const params: {
     downLimit: string;
     downLimitByDate: string;
-    dailyLimitMoreThan1: string;
     dailyLimitOpen: string;
+    dailyLimitOpenByDate: string;
+    dailyLimitMoreThan1: string;
     dailyLimitMoreThan1ByDate: string;
     capitalFlows3: string;
     dataCenterUrl: string;

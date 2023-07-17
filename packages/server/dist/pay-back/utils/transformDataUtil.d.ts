@@ -7,5 +7,6 @@ export declare function transformShortTermSourceData(dailyLimitData: any, downLi
         gaobiao: any[];
     };
     downLimitDataArr: any[];
+    downLimitQuantity: number;
     dailyLimitReturnSealQuantity: number;
 };

@@ -7,9 +7,10 @@ export const marketUrl = 'http://q.10jqka.com.cn';
 export const params = {
   downLimit: '跌停；非st；同花顺二级行业',
   downLimitByDate: '${date}跌停；非st；同花顺二级行业',
-  dailyLimitMoreThan1: '涨停；非ST；几天几板；涨停原因；封板金额；成交额；同花顺二级行业；',
   // 炸板个股，涨停未遂
   dailyLimitOpen: '涨停打开；非ST；成交额；同花顺二级行业；',
+  dailyLimitOpenByDate: '${date}涨停打开；非ST；成交额；同花顺二级行业；',
+  dailyLimitMoreThan1: '涨停；非ST；几天几板；涨停原因；封板金额；成交额；同花顺二级行业；',
   dailyLimitMoreThan1ByDate: '${date}涨停；非ST；几天几板；涨停原因；封板金额；成交额；同花顺二级行业；',
   // 近三日资金流向
   capitalFlows3: '近三日资金流向降序',

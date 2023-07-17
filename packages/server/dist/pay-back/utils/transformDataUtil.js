@@ -30,18 +30,27 @@ function transformPlateData(plateList) {
     }));
 }
 exports.transformPlateData = transformPlateData;
-function transDownLimitData(dailyLimitData, todayDateStr) {
-    const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
-    const downLimitData = [];
+function transformDownLimitData(dailyLimitData, currentDate) {
+    const downLimitDataArr = [];
+    let downLimitQuantity = 0;
     dailyLimitData.forEach(item => {
-        const dailyLimitStockDto = new down_limit_stock_dto_1.DownLimitStockDto();
-        dailyLimitStockDto.name = item['股票简称'];
-        dailyLimitStockDto.code = item.code;
-        dailyLimitStockDto.plateLevel2 = item['所属同花顺二级行业'];
-        dailyLimitStockDto.closingFunds = (0, commonUtil_1.fundsToFixed)(item[`跌停封单额[${currentDate}]`]);
-        downLimitData.push(dailyLimitStockDto);
+        const downLimitStockDto = new down_limit_stock_dto_1.DownLimitStockDto();
+        downLimitStockDto.name = item['股票简称'];
+        downLimitStockDto.code = item.code;
+        downLimitStockDto.plateLevel2 = item['所属同花顺二级行业'];
+        if (item[`跌停原因类型[${currentDate}]`] !== '资金出逃') {
+            downLimitStockDto.reason = item[`跌停原因类型[${currentDate}]`];
+        }
+        else {
+            downLimitQuantity++;
+        }
+        downLimitStockDto.closingFunds = (0, commonUtil_1.fundsToFixed)(item[`跌停封单额[${currentDate}]`]);
+        downLimitDataArr.push(downLimitStockDto);
     });
-    return downLimitData;
+    return {
+        downLimitDataArr,
+        downLimitQuantity,
+    };
 }
 ;
 function judgeType(str) {
@@ -58,12 +67,10 @@ function judgeType(str) {
         return 2;
     }
 }
-function transformShortTermSourceData(dailyLimitData, downLimitData, todayDateStr) {
-    const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
-    const evenBoardLabel = `连续涨停天数[${currentDate}]`;
+function transformDailyLimitData(dailyLimitData, currentDate) {
     let board1 = 0, maxHeight = 1, currentLevel = 0, dailyLimitReturnSealQuantity = 0;
-    const downLimitDataArr = transDownLimitData(downLimitData, todayDateStr);
     let evenBoardData = { maxHeight: 1, gaobiao: [] };
+    const evenBoardLabel = `连续涨停天数[${currentDate}]`;
     dailyLimitData.forEach(item => {
         const dailyLimitStockDto = new daily_limit_stock_dto_1.DailyLimitStockDto();
         currentLevel = item[evenBoardLabel];
@@ -106,7 +113,18 @@ function transformShortTermSourceData(dailyLimitData, downLimitData, todayDateSt
     return {
         board1,
         evenBoardData,
+        dailyLimitReturnSealQuantity,
+    };
+}
+function transformShortTermSourceData(dailyLimitData, downLimitData, todayDateStr) {
+    const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
+    const { downLimitDataArr, downLimitQuantity } = transformDownLimitData(downLimitData, currentDate);
+    const { board1, evenBoardData, dailyLimitReturnSealQuantity, } = transformDailyLimitData(dailyLimitData, currentDate);
+    return {
+        board1,
+        evenBoardData,
         downLimitDataArr,
+        downLimitQuantity,
         dailyLimitReturnSealQuantity,
     };
 }

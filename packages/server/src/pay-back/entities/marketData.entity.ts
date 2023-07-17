@@ -36,9 +36,9 @@ export class marketData {
   @Column({ comment: '下跌>=5%家数', type: 'smallint', default: 0 })
   fallMore5: number;
 
-  @Column({ comment: '上涨幅度最大的行业板块TOP5', type: 'varchar', length: 512, default: '' })
+  @Column({ comment: '上涨幅度最大的概念板块TOP5', type: 'varchar', length: 512, default: '' })
   gainianRiseFloat: string;
-  @Column({ comment: '下跌幅度最大的行业板块TOP5', type: 'varchar', length: 512, default: '' })
+  @Column({ comment: '下跌幅度最大的概念板块TOP5', type: 'varchar', length: 512, default: '' })
   gainianFallFloat: string;
   @Column({ comment: '上涨幅度最大的行业板块TOP5', type: 'varchar', length: 512, default: '' })
   hangyeRiseFloat: string;

@@ -4,7 +4,11 @@
       <div class="table__header table-row">
         <div class="col1">行业板块</div>
         <div class="col2 green">
-          跌停个股（{{ superData.data.downLimitQuantity }}）
+          跌停个股（{{
+            superData.data.downLimitData
+              ? superData.data.downLimitData.length
+              : 0
+          }}） 短线跌停 （{{ superData.data.downLimitQuantity }}）
         </div>
       </div>
 
@@ -23,8 +27,9 @@
         <div class="col2">
           <div v-for="(stock, index) in item.value" :key="'stock' + index">
             <Stock :name="stock.name" :code="stock.code" />
-            &nbsp;[&nbsp;<span class="lvse">封单{{ stock.closingFunds }}亿</span
-            >]
+            &nbsp;[&nbsp;<span class="orange">{{ stock.reason }}</span
+            ><span class="lvse"> 封单{{ stock.closingFunds }}亿</span>
+            ]
           </div>
         </div>
       </div>
