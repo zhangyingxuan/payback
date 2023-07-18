@@ -26,25 +26,35 @@ let MarketService = MarketService_1 = class MarketService {
         this.marketDataRp = marketDataRp;
         this.logger = new common_1.Logger(MarketService_1.name);
     }
+    async autoCrawlMarketDataLateSession() {
+        this.crawlMarketData();
+    }
+    async autoCrawlMarketDataMidday() {
+        this.crawlMarketData();
+    }
     async crawlMarketData() {
         this.logger.debug('crawlMarketData is Begining!');
+        let isExist = false;
         const todayDateStr = new Date().toLocaleDateString();
         const todayDataFromDB = await this.marketDataRp
             .createQueryBuilder('market_data')
             .where("market_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
             .getOne();
         if (todayDataFromDB) {
-            this.logger.debug('crawlMarketData is end![isExist]!');
-            return {
-                code: 'isExist',
-                msg: todayDateStr + ' 数据已存在！',
-            };
+            isExist = true;
         }
         let marketData;
         try {
             marketData = await playWrightUtil_1.default.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
             console.log(marketData);
-            await this.marketDataRp.save(marketData);
+            if (isExist) {
+                this.logger.log('crawlMarketData 更新数据');
+                await this.marketDataRp.update(todayDataFromDB.id, marketData);
+            }
+            else {
+                this.logger.log('crawlMarketData 新增数据');
+                await this.marketDataRp.save(marketData);
+            }
             this.logger.debug('crawlMarketData is success!');
         }
         catch (e) {
@@ -95,7 +105,13 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
-], MarketService.prototype, "crawlMarketData", null);
+], MarketService.prototype, "autoCrawlMarketDataLateSession", null);
+__decorate([
+    (0, schedule_1.Cron)('0 33 11 * * 1-5'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], MarketService.prototype, "autoCrawlMarketDataMidday", null);
 MarketService = MarketService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_2.InjectRepository)(marketData_entity_1.marketData)),

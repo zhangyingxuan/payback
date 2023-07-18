@@ -1,5 +1,5 @@
-export declare function transformStockData(stockList: any): string;
-export declare function transformPlateData(plateList: any): string;
+export declare function transformStockData(stockList: any): any;
+export declare function transformPlateData(plateList: any): any;
 export declare function transformShortTermSourceData(dailyLimitData: any, downLimitData: any, todayDateStr: any): {
     board1: number;
     evenBoardData: {

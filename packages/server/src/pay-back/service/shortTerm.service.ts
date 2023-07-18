@@ -22,8 +22,23 @@ export class ShorTermService {
   // 0 */30 9-17 * * *：上午九时至下午五时，每三十分钟一次
   // 0 30 11 * * 1-5：星期一至星期五上午11:30
   @Cron('0 20 15 * * 1-5')
+  async autoCrawlShortTermDataLateSession() {
+    this.crawlShortTermData();
+  }
+
+  // 午盘
+  @Cron('0 31 11 * * 1-5')
+  async autoCrawlShortTermDataMidday() {
+    this.crawlShortTermData();
+  }
+
+  /**
+   * 爬取短线数据，如果已存在则更新
+   * @returns 
+   */
   async crawlShortTermData() {
     this.logger.debug('crawlShortTermData is Begining!');
+    let isExist = false;
     // 如果存在数据，则返回已有该数据
     const todayDateStr = new Date().toLocaleDateString();
     const todayDataFromDB = await this.shortTermDataRp
@@ -32,17 +47,20 @@ export class ShorTermService {
       .getOne();
 
     if (todayDataFromDB) {
-      this.logger.debug('crawlShortTermData is end![isExist]');
-      return {
-        code: 'isExist',
-        msg: todayDateStr + ' 数据已存在！',
-      }
+      isExist = true;
     }
     let createPayBackDto: CreatePayBackDto;
     try {
       createPayBackDto = await getShortTermData(todayDateStr);
       console.log(createPayBackDto);
-      await this.shortTermDataRp.save(createPayBackDto);
+      if (isExist) {
+        this.logger.log('crawlShortTermData 更新数据')
+        await this.shortTermDataRp.update(todayDataFromDB.id, createPayBackDto);
+      } else {
+        this.logger.log('crawlShortTermData 新增数据')
+        await this.shortTermDataRp.save(createPayBackDto);
+      }
+
       this.logger.debug('crawlShortTermData is success!');
     } catch (e) {
       this.logger.error('出错啦！！！', e)

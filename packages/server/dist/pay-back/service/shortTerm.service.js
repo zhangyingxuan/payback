@@ -26,25 +26,35 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
         this.shortTermDataRp = shortTermDataRp;
         this.logger = new common_1.Logger(ShorTermService_1.name);
     }
+    async autoCrawlShortTermDataLateSession() {
+        this.crawlShortTermData();
+    }
+    async autoCrawlShortTermDataMidday() {
+        this.crawlShortTermData();
+    }
     async crawlShortTermData() {
         this.logger.debug('crawlShortTermData is Begining!');
+        let isExist = false;
         const todayDateStr = new Date().toLocaleDateString();
         const todayDataFromDB = await this.shortTermDataRp
             .createQueryBuilder('short_term_data')
             .where("short_term_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
             .getOne();
         if (todayDataFromDB) {
-            this.logger.debug('crawlShortTermData is end![isExist]');
-            return {
-                code: 'isExist',
-                msg: todayDateStr + ' 数据已存在！',
-            };
+            isExist = true;
         }
         let createPayBackDto;
         try {
             createPayBackDto = await (0, shortTermUtil_1.getShortTermData)(todayDateStr);
             console.log(createPayBackDto);
-            await this.shortTermDataRp.save(createPayBackDto);
+            if (isExist) {
+                this.logger.log('crawlShortTermData 更新数据');
+                await this.shortTermDataRp.update(todayDataFromDB.id, createPayBackDto);
+            }
+            else {
+                this.logger.log('crawlShortTermData 新增数据');
+                await this.shortTermDataRp.save(createPayBackDto);
+            }
             this.logger.debug('crawlShortTermData is success!');
         }
         catch (e) {
@@ -119,7 +129,13 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
-], ShorTermService.prototype, "crawlShortTermData", null);
+], ShorTermService.prototype, "autoCrawlShortTermDataLateSession", null);
+__decorate([
+    (0, schedule_1.Cron)('0 31 11 * * 1-5'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ShorTermService.prototype, "autoCrawlShortTermDataMidday", null);
 ShorTermService = ShorTermService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_2.InjectRepository)(shortTermData_entity_1.shortTermData)),

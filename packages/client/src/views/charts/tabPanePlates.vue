@@ -5,7 +5,9 @@
         <CardHeader
           headerTitle="行业涨跌TOP5"
           url="http://www.iwencai.com/unifiedwap/result?w=行业板块涨跌幅正序；所属同花顺行业级别是二级行业；&querytype=zhishu"
-        />
+        >
+          {{ data.latestUpdateTime }}
+        </CardHeader>
       </template>
       <PlateRiseFallTable
         :data="data.plates"
@@ -18,7 +20,9 @@
         <CardHeader
           headerTitle="概念涨跌TOP5"
           url="http://www.iwencai.com/unifiedwap/result?w=概念板块主力资金；涨跌幅正序&querytype=zhishu"
-        />
+        >
+          {{ data.latestUpdateTime }}
+        </CardHeader>
       </template>
       <PlateRiseFallTable :data="data.plates" :style="data.style" />
     </el-card>
@@ -37,9 +41,13 @@ import dayjs from 'dayjs';
 const data: any = reactive({
   ...getChartStyle(isMobile),
   plates: {},
+  latestUpdateTime: '',
 });
 async function initPageData() {
   let plates = await findPlateByLimit({ limit: 10 });
+
+  data.latestUpdateTime = dayjs(plates[0].createTime).format('MM/DD HH:mm');
+
   plates = plates.map(plate => {
     return {
       gainianRiseFloat: plate.gainianRiseFloat
@@ -57,7 +65,6 @@ async function initPageData() {
       createTime: dayjs(plate.createTime).format('MM/DD'),
     };
   });
-
   updateDataClass(plates, true);
   updateDataClass(plates, false);
 

@@ -17,36 +17,28 @@ export declare class PayBackController {
     constructor(ShorTermService: ShorTermService, fundsService: FundsService, hotListService: HotListService, reviewService: ReviewService, apiTestService: ApiTestService, latestConceptPlateService: LatestConceptPlateService, marketService: MarketService);
     testApi(): Promise<void>;
     crawlTodayData(): Promise<{
-        shortData: import("./dto/create-pay-back.dto").CreatePayBackDto | {
-            code: string;
-            msg: string;
-        };
-        fundsData: import("./dto/create-funds-data.dto").CreateFundsDataDto | {
-            code: string;
-            msg: string;
-        };
-        marketData: import("./dto/create-market-data.dto").CreateMarketDataDto | {
-            code: string;
-            msg: string;
+        shortData: import("./dto/create-pay-back.dto").CreatePayBackDto;
+        fundsData: import("./dto/create-funds-data.dto").CreateFundsDataDto;
+        marketData: import("./dto/create-market-data.dto").CreateMarketDataDto;
+    }>;
+    crawlHotListData(): Promise<{
+        code: number;
+        data: {
+            createTime: string;
+            stockNormal: string;
+            stockValue: string;
+            plateConcept: string;
+            plateIndustry: string;
+            updatedTime: Date;
         };
     }>;
-    crawlHotListData(): Promise<import("./dto/create-hot-list.dto").CreateHotListDto>;
-    crawlShortTerm(): Promise<import("./dto/create-pay-back.dto").CreatePayBackDto | {
-        code: string;
-        msg: string;
-    }>;
+    crawlShortTerm(): Promise<import("./dto/create-pay-back.dto").CreatePayBackDto>;
     crawlShortTermDataByDate(query: any): Promise<import("./dto/create-pay-back.dto").CreatePayBackDto | {
         code: string;
         msg: string;
     }>;
-    crawlMarket(): Promise<import("./dto/create-market-data.dto").CreateMarketDataDto | {
-        code: string;
-        msg: string;
-    }>;
-    crawlFunds(): Promise<import("./dto/create-funds-data.dto").CreateFundsDataDto | {
-        code: string;
-        msg: string;
-    }>;
+    crawlMarket(): Promise<import("./dto/create-market-data.dto").CreateMarketDataDto>;
+    crawlFunds(): Promise<import("./dto/create-funds-data.dto").CreateFundsDataDto>;
     crawlLatestConceptPlate(): Promise<any>;
     findByLimit(query: any): Promise<{
         code: number;

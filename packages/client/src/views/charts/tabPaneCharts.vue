@@ -2,45 +2,57 @@
   <div class="chartList__container">
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
       <template #header>
-        <CardHeader :url="cardUrls.marketChartUrl" headerTitle="大盘趋势" />
+        <CardHeader :url="cardUrls.marketChartUrl" headerTitle="大盘趋势">
+          {{ data.latestMarketUpdateTime }}
+        </CardHeader>
       </template>
       <div ref="marketChart" :style="data.style"></div>
     </el-card>
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
       <template #header>
-        <CardHeader :url="cardUrls.indexChartUrl" headerTitle="指数趋势" />
+        <CardHeader :url="cardUrls.indexChartUrl" headerTitle="指数趋势">
+          {{ data.latestMarketUpdateTime }}
+        </CardHeader>
       </template>
       <div ref="indexChart" :style="data.style"></div>
     </el-card>
     <!-- 热点题材 统计 -->
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
       <template #header>
-        <CardHeader :url="cardUrls.shortTermUrl" headerTitle="短线数据" />
+        <CardHeader :url="cardUrls.shortTermUrl" headerTitle="短线数据">
+          {{ data.latestShortTermUpdateTime }}
+        </CardHeader>
       </template>
       <div ref="shortTermChart" :style="data.style"></div>
     </el-card>
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
       <template #header>
-        <CardHeader :url="cardUrls.fundsChartUrl" headerTitle="资金流向" />
+        <CardHeader :url="cardUrls.fundsChartUrl" headerTitle="资金流向">
+          {{ data.latestFundsUpdateTime }}
+        </CardHeader>
       </template>
       <div ref="fundsChart" :style="data.style"></div>
     </el-card>
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
-      <!-- <template #header>
+      <template #header>
         <CardHeader
           :url="cardUrls.hangyeFundsChartUrl"
-          headerTitle="行业板块资金流向TOP"
-        />
-      </template> -->
+          headerTitle="行业资金流向"
+        >
+          {{ data.latestFundsUpdateTime }}
+        </CardHeader>
+      </template>
       <div ref="fundsByHangyeChart" :style="data.styleBig"></div>
     </el-card>
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
-      <!-- <template #header>
+      <template #header>
         <CardHeader
           :url="cardUrls.gainianFundsChartUrl"
-          headerTitle="概念板块资金流向TOP"
-        />
-      </template> -->
+          headerTitle="概念资金流向"
+        >
+          {{ data.latestFundsUpdateTime }}
+        </CardHeader>
+      </template>
       <div ref="fundsByGainianChart" :style="data.styleBig"></div>
     </el-card>
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
@@ -90,6 +102,9 @@ const siderBar = useSidebarStore();
 const { countDays } = storeToRefs(siderBar);
 const data = reactive({
   ...getChartStyle(),
+  latestMarketUpdateTime: '',
+  latestShortTermUpdateTime: '',
+  latestFundsUpdateTime: '',
 });
 
 const chartList: any = {
@@ -139,6 +154,15 @@ async function initPage(pageSize: number) {
     const styles = getChartStyle();
     data.style = styles.style;
     data.styleBig = styles.styleBig;
+    data.latestMarketUpdateTime = dayjs(
+      result.shortTermData[result.shortTermData.length - 1].createTime,
+    ).format('MM/DD HH:mm');
+    data.latestShortTermUpdateTime = dayjs(
+      result.marketData[result.marketData.length - 1].createTime,
+    ).format('MM/DD HH:mm');
+    data.latestFundsUpdateTime = dayjs(
+      result.fundsData[result.fundsData.length - 1].createTime,
+    ).format('MM/DD HH:mm');
 
     initShortTermChart(result.shortTermData);
     initMarketChart(result.marketData);

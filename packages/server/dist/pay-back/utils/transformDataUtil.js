@@ -6,7 +6,7 @@ const down_limit_stock_dto_1 = require("../dto/down-limit-stock.dto");
 const commonUtil_1 = require("./commonUtil");
 const dayjs = require("dayjs");
 function transformStockData(stockList) {
-    return JSON.stringify(stockList.map(item => {
+    return stockList.map(item => {
         var _a, _b;
         return {
             code: item.code,
@@ -15,11 +15,11 @@ function transformStockData(stockList) {
             tag: (_a = item.tag) === null || _a === void 0 ? void 0 : _a.concept_tag,
             hot_tag: (_b = item.tag) === null || _b === void 0 ? void 0 : _b.popularity_tag,
         };
-    }));
+    });
 }
 exports.transformStockData = transformStockData;
 function transformPlateData(plateList) {
-    return JSON.stringify(plateList.map(item => {
+    return plateList.map(item => {
         return {
             code: item.code,
             name: item.name,
@@ -27,7 +27,7 @@ function transformPlateData(plateList) {
             hot_tag: item.hot_tag,
             tag: item.tag,
         };
-    }));
+    });
 }
 exports.transformPlateData = transformPlateData;
 function transformDownLimitData(dailyLimitData, currentDate) {

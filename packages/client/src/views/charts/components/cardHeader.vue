@@ -1,7 +1,8 @@
 <template>
   <el-row>
-    <el-col :span="18"> {{ superData.headerTitle }} </el-col>
-    <el-col :span="6" class="headerRight">
+    <el-col :span="8"> {{ superData.headerTitle }} </el-col>
+    <el-col :span="16" class="headerRight">
+      <slot></slot>
       <el-link
         v-if="superData.url"
         type="primary"
@@ -31,5 +32,13 @@ let superData = defineProps({
 <style scoped>
 .headerRight {
   text-align: right;
+  line-height: 22px;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+
+  .el-link {
+    margin-left: 8px;
+  }
 }
 </style>

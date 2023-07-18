@@ -39,19 +39,30 @@ export class HotListService {
     let hotListData: CreateHotListDto;
     try {
       hotListData = await getHotListData();
+      const hotListData4Db = {
+        stockNormal: JSON.stringify(hotListData.stockNormal),
+        stockValue: JSON.stringify(hotListData.stockValue),
+        plateConcept: JSON.stringify(hotListData.plateConcept),
+        plateIndustry: JSON.stringify(hotListData.plateIndustry),
+        updatedTime: hotListData.updatedTime,
+      }
       if (isExist) {
         this.logger.log('更新数据')
-        await this.hotListRp.update(todayDataFromDB.id, hotListData);
+        await this.hotListRp.update(todayDataFromDB.id, hotListData4Db);
       } else {
         this.logger.log('新增数据')
         hotListData.createTime = new Date();
-        await this.hotListRp.save(hotListData);
+        await this.hotListRp.save(hotListData4Db);
       }
       this.logger.debug('crawlHotListData is success!');
     } catch (e) {
       this.logger.error('出错啦！！！', e)
     }
-    return hotListData;
+
+    return {
+      code: 200,
+      data: { ...hotListData, createTime: dayjs(hotListData.updatedTime).format('MM/DD HH:mm') }
+    };
   }
 
   async findAll() {

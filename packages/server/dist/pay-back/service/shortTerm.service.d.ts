@@ -6,10 +6,9 @@ export declare class ShorTermService {
     private readonly shortTermDataRp;
     constructor(shortTermDataRp: Repository<shortTermData>);
     private readonly logger;
-    crawlShortTermData(): Promise<CreatePayBackDto | {
-        code: string;
-        msg: string;
-    }>;
+    autoCrawlShortTermDataLateSession(): Promise<void>;
+    autoCrawlShortTermDataMidday(): Promise<void>;
+    crawlShortTermData(): Promise<CreatePayBackDto>;
     crawlShortTermDataByDate(todayDateStr: any): Promise<CreatePayBackDto | {
         code: string;
         msg: string;

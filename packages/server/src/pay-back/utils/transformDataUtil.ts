@@ -5,7 +5,7 @@ import { toFixed, fundsToFixed } from './commonUtil';
 import * as dayjs from 'dayjs';
 
 export function transformStockData(stockList) {
-  return JSON.stringify(stockList.map(item => {
+  return stockList.map(item => {
     return {
       code: item.code,
       name: item.name,
@@ -13,11 +13,11 @@ export function transformStockData(stockList) {
       tag: item.tag?.concept_tag,
       hot_tag: item.tag?.popularity_tag,
     }
-  }));
+  });
 }
 
 export function transformPlateData(plateList) {
-  return JSON.stringify(plateList.map(item => {
+  return plateList.map(item => {
     return {
       code: item.code,
       name: item.name,
@@ -25,7 +25,7 @@ export function transformPlateData(plateList) {
       hot_tag: item.hot_tag,
       tag: item.tag,
     }
-  }));
+  });
 }
 
 /**

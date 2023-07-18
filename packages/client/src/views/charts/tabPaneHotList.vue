@@ -2,7 +2,25 @@
   <div :class="['chartList__container', { isMobile }]">
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
       <template #header>
-        <CardHeader headerTitle="行业板块" :url="url" />
+        <CardHeader headerTitle="行业板块" :url="url">
+          <el-button
+            type="primary"
+            @click="updateHotListData"
+            size="small"
+            :loading="data.loading"
+          >
+            更新数据
+          </el-button>
+          <el-button
+            type="primary"
+            @click="refreshHotListPage"
+            size="small"
+            plain
+            :loading="data.refreshLoading"
+          >
+            刷新
+          </el-button>
+        </CardHeader>
       </template>
       <HotListTable
         :data="data.hotListResult"
@@ -46,12 +64,13 @@
 </template>
 <script lang="ts" setup>
 import CardHeader from './components/cardHeader.vue';
-import { fetchHostListData } from '@/api/payBack';
-import { onMounted, reactive, watch, computed } from 'vue';
+import { fetchHostListData, crawlHotListData } from '@/api/payBack';
+import { reactive } from 'vue';
 import { isMobile } from '@/core/util';
 import { getChartStyle } from './utils/util';
 import HotListTable from './components/tabPaneHotListTable.vue';
 import dayjs from 'dayjs';
+import { ElMessage } from 'element-plus';
 
 const url = 'https://eq.10jqka.com.cn/frontend/thsTopRank/index.html';
 
@@ -65,9 +84,12 @@ enum HotListKey {
 const data: any = reactive({
   ...getChartStyle(isMobile),
   hotListResult: {},
+  refreshLoading: false,
+  loading: false,
 });
 
-async function initPageData() {
+async function refreshHotListPage() {
+  data.refreshLoading = true;
   const result = await fetchHostListData({ limit: 10, isMobile });
   // 数据转换
   data.hotListResult = result.map(item => {
@@ -80,11 +102,28 @@ async function initPageData() {
       // hotEtfs: JSON.parse(item.hotEtfs),
     };
   });
+  data.refreshLoading = false;
 }
 
-initPageData();
+/**
+ * 爬取最新热榜数据
+ */
+async function updateHotListData() {
+  data.loading = true;
+  crawlHotListData()
+    .then(result => {
+      // 爬取成功
+      ElMessage.success('更新成功');
+      // refreshHotListPage();
+      data.hotListResult.splice(0, 1, result);
+      console.log(data.hotListResult, result);
+    })
+    .finally(() => {
+      data.loading = false;
+    });
+}
 
-onMounted(() => {});
+refreshHotListPage();
 </script>
 
 <style scoped lang="less">

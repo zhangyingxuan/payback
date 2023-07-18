@@ -15,14 +15,22 @@ export class MarketService {
 
   private readonly logger = new Logger(MarketService.name);
 
-  // * * * * * *：每一秒
-  // 45 * * * * *：每分钟，在45秒
-  // * 10 * * * *：每小时一次，十分钟开始
-  // 0 */30 9-17 * * *：上午九时至下午五时，每三十分钟一次
-  // 0 30 11 * * 1-5：星期一至星期五上午11:30
+行业板块
+
   @Cron('0 10 15 * * 1-5')
+  async autoCrawlMarketDataLateSession() {
+    this.crawlMarketData();
+  }
+
+  // 午盘
+  @Cron('0 33 11 * * 1-5')
+  async autoCrawlMarketDataMidday() {
+    this.crawlMarketData();
+  }
+
   async crawlMarketData() {
     this.logger.debug('crawlMarketData is Begining!');
+    let isExist = false;
     // 如果存在数据，则返回已有该数据
     const todayDateStr = new Date().toLocaleDateString();
     const todayDataFromDB = await this.marketDataRp
@@ -31,17 +39,21 @@ export class MarketService {
       .getOne();
 
     if (todayDataFromDB) {
-      this.logger.debug('crawlMarketData is end![isExist]!');
-      return {
-        code: 'isExist',
-        msg: todayDateStr + ' 数据已存在！',
-      }
+      isExist = true;
     }
     let marketData: CreateMarketDataDto;
     try {
+
       marketData = await playWrightUtil.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
       console.log(marketData);
-      await this.marketDataRp.save(marketData);
+      if (isExist) {
+        this.logger.log('crawlMarketData 更新数据')
+        await this.marketDataRp.update(todayDataFromDB.id, marketData);
+      } else {
+        this.logger.log('crawlMarketData 新增数据')
+        await this.marketDataRp.save(marketData);
+      }
+
       this.logger.debug('crawlMarketData is success!');
     } catch (e) {
       this.logger.error('出错啦！！！', e)

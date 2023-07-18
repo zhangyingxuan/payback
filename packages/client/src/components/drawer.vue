@@ -3,7 +3,7 @@
     v-model="superData.drawerVisible"
     title="我的收藏语句"
     :with-header="false"
-    :size="isMobile ? '90%' : '50%'"
+    :size="isMobile ? '90%' : '68%'"
     @close="onDrawerClose"
   >
     <DrawerUl
@@ -200,8 +200,4 @@ function onDrawerClose() {
 }
 </script>
 
-<style scoped lang="less">
-.iwencaiCollectList__ul {
-  padding-left: 20px;
-}
-</style>
+<style scoped lang="less"></style>

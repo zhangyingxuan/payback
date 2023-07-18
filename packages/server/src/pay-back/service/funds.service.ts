@@ -15,14 +15,27 @@ export class FundsService {
 
   private readonly logger = new Logger(FundsService.name);
 
+
+  // 尾盘
+  @Cron('0 20 16 * * 1-5')
+  async autoCrawlfundsDataLateSession() {
+    this.crawlfundsData();
+  }
+
+  // 午盘
+  @Cron('0 35 11 * * 1-5')
+  async autoCrawlfundsDataMidday() {
+    this.crawlfundsData();
+  }
+
   // * * * * * *：每一秒
   // 45 * * * * *：每分钟，在45秒
   // * 10 * * * *：每小时一次，十分钟开始
   // 0 */30 9-17 * * *：上午九时至下午五时，每三十分钟一次
   // 0 30 11 * * 1-5：星期一至星期五上午11:30
-  @Cron('0 10 16 * * 1-5')
   async crawlfundsData() {
     this.logger.debug('crawlfundsData is Begining!');
+    let isExist = false;
     // 如果存在数据，则返回已有该数据
     const todayDateStr = new Date().toLocaleDateString();
     const todayDataFromDB = await this.fundsDataRp
@@ -31,17 +44,20 @@ export class FundsService {
       .getOne();
 
     if (todayDataFromDB) {
-      this.logger.debug('crawlfundsData is end![isExist]!');
-      return {
-        code: 'isExist',
-        msg: todayDateStr + ' 数据已存在！',
-      }
+      isExist = true;
     }
     let fundsData: CreateFundsDataDto;
     try {
       fundsData = await playWrightUtil.getFundsData(dayjs(todayDateStr).format('YYYYMMDD'));
       console.log(fundsData);
-      await this.fundsDataRp.save(fundsData);
+
+      if (isExist) {
+        this.logger.log('crawlfundsData 更新数据')
+        await this.fundsDataRp.update(todayDataFromDB.id, fundsData);
+      } else {
+        this.logger.log('crawlfundsData 新增数据')
+        await this.fundsDataRp.save(fundsData);
+      }
       this.logger.debug('crawlfundsData is success!');
     } catch (e) {
       this.logger.error('出错啦！！！', e)
