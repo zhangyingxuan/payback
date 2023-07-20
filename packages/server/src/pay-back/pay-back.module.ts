@@ -5,7 +5,9 @@ import { FundsService } from './service/funds.service';
 import { HotListService } from './service/hotList.service';
 import { LatestConceptPlateService } from './service/latestConceptPlate.service';
 import { ReviewService } from './service/review.service';
+import { ThsService } from './service/ths.service';
 import { ApiTestService } from './service/apiTest.service';
+import { ThsTradeController } from './ths-trade.controller';
 import { PayBackController } from './pay-back.controller';
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { shortTermData } from "./entities/shortTermData.entity";
@@ -24,7 +26,7 @@ import { reviewData } from "./entities/review.entity";
     TypeOrmModule.forFeature([reviewData]),
     TypeOrmModule.forFeature([latestConceptPlate]),
   ],
-  controllers: [PayBackController],
-  providers: [ShorTermService, MarketService, FundsService, HotListService, LatestConceptPlateService, ReviewService, ApiTestService]
+  controllers: [PayBackController, ThsTradeController],
+  providers: [ShorTermService, MarketService, FundsService, HotListService, LatestConceptPlateService, ReviewService, ThsService, ApiTestService]
 })
 export class PayBackModule { }

@@ -14,7 +14,9 @@ const funds_service_1 = require("./service/funds.service");
 const hotList_service_1 = require("./service/hotList.service");
 const latestConceptPlate_service_1 = require("./service/latestConceptPlate.service");
 const review_service_1 = require("./service/review.service");
+const ths_service_1 = require("./service/ths.service");
 const apiTest_service_1 = require("./service/apiTest.service");
+const ths_trade_controller_1 = require("./ths-trade.controller");
 const pay_back_controller_1 = require("./pay-back.controller");
 const typeorm_1 = require("@nestjs/typeorm");
 const shortTermData_entity_1 = require("./entities/shortTermData.entity");
@@ -35,8 +37,8 @@ PayBackModule = __decorate([
             typeorm_1.TypeOrmModule.forFeature([review_entity_1.reviewData]),
             typeorm_1.TypeOrmModule.forFeature([latestConceptPlate_entity_1.latestConceptPlate]),
         ],
-        controllers: [pay_back_controller_1.PayBackController],
-        providers: [shortTerm_service_1.ShorTermService, market_service_1.MarketService, funds_service_1.FundsService, hotList_service_1.HotListService, latestConceptPlate_service_1.LatestConceptPlateService, review_service_1.ReviewService, apiTest_service_1.ApiTestService]
+        controllers: [pay_back_controller_1.PayBackController, ths_trade_controller_1.ThsTradeController],
+        providers: [shortTerm_service_1.ShorTermService, market_service_1.MarketService, funds_service_1.FundsService, hotList_service_1.HotListService, latestConceptPlate_service_1.LatestConceptPlateService, review_service_1.ReviewService, ths_service_1.ThsService, apiTest_service_1.ApiTestService]
     })
 ], PayBackModule);
 exports.PayBackModule = PayBackModule;

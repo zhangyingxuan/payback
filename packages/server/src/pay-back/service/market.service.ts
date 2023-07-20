@@ -15,8 +15,6 @@ export class MarketService {
 
   private readonly logger = new Logger(MarketService.name);
 
-行业板块
-
   @Cron('0 10 15 * * 1-5')
   async autoCrawlMarketDataLateSession() {
     this.crawlMarketData();

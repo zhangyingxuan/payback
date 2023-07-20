@@ -4,6 +4,7 @@ import { FundsService } from './service/funds.service';
 import { HotListService } from './service/hotList.service';
 import { LatestConceptPlateService } from './service/latestConceptPlate.service';
 import { ReviewService } from './service/review.service';
+import { ThsService } from './service/ths.service';
 import { ApiTestService } from './service/apiTest.service';
 import { UpdatePayBackDto } from './dto/update-pay-back.dto';
 export declare class PayBackController {
@@ -11,10 +12,11 @@ export declare class PayBackController {
     private readonly fundsService;
     private readonly hotListService;
     private readonly reviewService;
+    private readonly thsService;
     private readonly apiTestService;
     private readonly latestConceptPlateService;
     private readonly marketService;
-    constructor(ShorTermService: ShorTermService, fundsService: FundsService, hotListService: HotListService, reviewService: ReviewService, apiTestService: ApiTestService, latestConceptPlateService: LatestConceptPlateService, marketService: MarketService);
+    constructor(ShorTermService: ShorTermService, fundsService: FundsService, hotListService: HotListService, reviewService: ReviewService, thsService: ThsService, apiTestService: ApiTestService, latestConceptPlateService: LatestConceptPlateService, marketService: MarketService);
     testApi(): Promise<void>;
     crawlTodayData(): Promise<{
         shortData: import("./dto/create-pay-back.dto").CreatePayBackDto;

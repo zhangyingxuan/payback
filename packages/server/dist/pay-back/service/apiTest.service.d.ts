@@ -6,6 +6,8 @@ export declare class ApiTestService {
     private readonly logger;
     fetchExternalData(): Promise<void>;
     fetchHotList(): Promise<void>;
+    getThsSelfStocks(): Promise<void>;
+    modifyThsSelfStocks(): Promise<void>;
     findAll(): Promise<hotList[]>;
     findByLimit(len?: number): Promise<hotList[]>;
 }

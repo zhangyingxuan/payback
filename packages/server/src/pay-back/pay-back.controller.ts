@@ -5,6 +5,7 @@ import { FundsService } from './service/funds.service';
 import { HotListService } from './service/hotList.service';
 import { LatestConceptPlateService } from './service/latestConceptPlate.service';
 import { ReviewService } from './service/review.service';
+import { ThsService } from './service/ths.service';
 import { ApiTestService } from './service/apiTest.service';
 import { UpdatePayBackDto } from './dto/update-pay-back.dto';
 import { Public } from '../decorator/public.decorator';
@@ -17,6 +18,7 @@ export class PayBackController {
     private readonly fundsService: FundsService,
     private readonly hotListService: HotListService,
     private readonly reviewService: ReviewService,
+    private readonly thsService: ThsService,
     private readonly apiTestService: ApiTestService,
     private readonly latestConceptPlateService: LatestConceptPlateService,
     private readonly marketService: MarketService) { }
@@ -24,7 +26,9 @@ export class PayBackController {
   @Public()
   @Get('testApi')
   async testApi() {
-    return this.apiTestService.fetchHotList();
+    return this.apiTestService.modifyThsSelfStocks();
+    // return this.apiTestService.getThsSelfStocks();
+    // return this.apiTestService.fetchHotList();
     // return await this.apiTestService.fetchExternalData();
     // this.apiTestService.getTodos();
   }

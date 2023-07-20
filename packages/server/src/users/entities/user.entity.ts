@@ -10,6 +10,10 @@ export class User {
   account: string;
   @Column({ comment: '密码', type: 'varchar', length: 100, default: '' })
   password: string;
+  @Column({ comment: 'user', type: 'varchar', length: 520, default: '' })
+  user: string;
+  @Column({ comment: 'ticket', type: 'varchar', length: 256, default: '' })
+  ticket: string;
   // 软删除
   @Column({
     default: false

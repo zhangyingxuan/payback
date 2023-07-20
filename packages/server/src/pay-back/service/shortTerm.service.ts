@@ -5,12 +5,14 @@ import { Repository } from 'typeorm';
 import { shortTermData } from '../entities/shortTermData.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getShortTermData, getShortTermDataByDate } from '../utils/shortTermUtil';
+import { ThsService } from './ths.service';
 import * as dayjs from 'dayjs';
 import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class ShorTermService {
   constructor(
+    private readonly thsService: ThsService,
     @InjectRepository(shortTermData) private readonly shortTermDataRp: Repository<shortTermData>,
   ) { }
 
@@ -23,7 +25,8 @@ export class ShorTermService {
   // 0 30 11 * * 1-5：星期一至星期五上午11:30
   @Cron('0 20 15 * * 1-5')
   async autoCrawlShortTermDataLateSession() {
-    this.crawlShortTermData();
+    const result = await this.crawlShortTermData();
+    this.thsService.modifyThsSelfStocks(JSON.parse(result.evenBoardData), result.dailyLimitQuantity);
   }
 
   // 午盘

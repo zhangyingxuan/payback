@@ -19,15 +19,18 @@ const typeorm_1 = require("typeorm");
 const shortTermData_entity_1 = require("../entities/shortTermData.entity");
 const typeorm_2 = require("@nestjs/typeorm");
 const shortTermUtil_1 = require("../utils/shortTermUtil");
+const ths_service_1 = require("./ths.service");
 const dayjs = require("dayjs");
 const schedule_1 = require("@nestjs/schedule");
 let ShorTermService = ShorTermService_1 = class ShorTermService {
-    constructor(shortTermDataRp) {
+    constructor(thsService, shortTermDataRp) {
+        this.thsService = thsService;
         this.shortTermDataRp = shortTermDataRp;
         this.logger = new common_1.Logger(ShorTermService_1.name);
     }
     async autoCrawlShortTermDataLateSession() {
-        this.crawlShortTermData();
+        const result = await this.crawlShortTermData();
+        this.thsService.modifyThsSelfStocks(JSON.parse(result.evenBoardData), result.dailyLimitQuantity);
     }
     async autoCrawlShortTermDataMidday() {
         this.crawlShortTermData();
@@ -138,8 +141,9 @@ __decorate([
 ], ShorTermService.prototype, "autoCrawlShortTermDataMidday", null);
 ShorTermService = ShorTermService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_2.InjectRepository)(shortTermData_entity_1.shortTermData)),
-    __metadata("design:paramtypes", [typeorm_1.Repository])
+    __param(1, (0, typeorm_2.InjectRepository)(shortTermData_entity_1.shortTermData)),
+    __metadata("design:paramtypes", [ths_service_1.ThsService,
+        typeorm_1.Repository])
 ], ShorTermService);
 exports.ShorTermService = ShorTermService;
 //# sourceMappingURL=shortTerm.service.js.map

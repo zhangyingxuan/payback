@@ -20,21 +20,23 @@ const funds_service_1 = require("./service/funds.service");
 const hotList_service_1 = require("./service/hotList.service");
 const latestConceptPlate_service_1 = require("./service/latestConceptPlate.service");
 const review_service_1 = require("./service/review.service");
+const ths_service_1 = require("./service/ths.service");
 const apiTest_service_1 = require("./service/apiTest.service");
 const update_pay_back_dto_1 = require("./dto/update-pay-back.dto");
 const public_decorator_1 = require("../decorator/public.decorator");
 let PayBackController = class PayBackController {
-    constructor(ShorTermService, fundsService, hotListService, reviewService, apiTestService, latestConceptPlateService, marketService) {
+    constructor(ShorTermService, fundsService, hotListService, reviewService, thsService, apiTestService, latestConceptPlateService, marketService) {
         this.ShorTermService = ShorTermService;
         this.fundsService = fundsService;
         this.hotListService = hotListService;
         this.reviewService = reviewService;
+        this.thsService = thsService;
         this.apiTestService = apiTestService;
         this.latestConceptPlateService = latestConceptPlateService;
         this.marketService = marketService;
     }
     async testApi() {
-        return this.apiTestService.fetchHotList();
+        return this.apiTestService.modifyThsSelfStocks();
     }
     async crawlTodayData() {
         const shortData = await this.ShorTermService.crawlShortTermData();
@@ -230,6 +232,7 @@ PayBackController = __decorate([
         funds_service_1.FundsService,
         hotList_service_1.HotListService,
         review_service_1.ReviewService,
+        ths_service_1.ThsService,
         apiTest_service_1.ApiTestService,
         latestConceptPlate_service_1.LatestConceptPlateService,
         market_service_1.MarketService])

@@ -5,7 +5,6 @@ export declare class MarketService {
     private readonly marketDataRp;
     constructor(marketDataRp: Repository<marketData>);
     private readonly logger;
-    行业板块: any;
     autoCrawlMarketDataLateSession(): Promise<void>;
     autoCrawlMarketDataMidday(): Promise<void>;
     crawlMarketData(): Promise<CreateMarketDataDto>;

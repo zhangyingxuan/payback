@@ -21,10 +21,18 @@ const typeorm_2 = require("@nestjs/typeorm");
 const node_fetch_1 = require("node-fetch");
 const hexin_v_js_1 = require("../core/hexin-v.js");
 const zlib = require('node:zlib');
+const qs_1 = require("qs");
 const apiUrls = {
     conceptPlate: 'https://dq.10jqka.com.cn/fuyao/hot_list_data/out/hot_list/v1/plate',
     industryPlate: 'https://dq.10jqka.com.cn/fuyao/hot_list_data/out/hot_list/v1/plate?type=industry',
     iwencaiRoboot: 'https://www.iwencai.com/customized/chart/get-robot-data',
+};
+const thsUrl = {
+    'getSelfStockWithMarket': 'https://t.10jqka.com.cn/newcircle/group/getSelfStockWithMarket',
+    'getAllSelfStock': 'https://www.iwencai.com/unifiedwap/self-stock/plate/list',
+    'get': 'http://pop.10jqka.com.cn/getselfstockinfo.php',
+    'modify': 'http://stock.10jqka.com.cn/self.php',
+    'modifySelfStock': 'https://t.10jqka.com.cn/newcircle/group/modifySelfStock/'
 };
 let ApiTestService = ApiTestService_1 = class ApiTestService {
     constructor(hotListRp) {
@@ -55,6 +63,55 @@ let ApiTestService = ApiTestService_1 = class ApiTestService {
     }
     async fetchHotList() {
         (0, node_fetch_1.default)("https://datacenter-web.eastmoney.com/api/data/v1/get?callback=jQuery112309386087809528996_1689650979956&reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE%2CMUTUAL_TYPE%2CBOARD_TYPE%2CMUTUAL_TYPE_NAME%2CFUNDS_DIRECTION%2CINDEX_CODE%2CINDEX_NAME%2CBOARD_CODE&quoteColumns=status~07~BOARD_CODE%2CdayNetAmtIn~07~BOARD_CODE%2CdayAmtRemain~07~BOARD_CODE%2CdayAmtThreshold~07~BOARD_CODE%2Cf104~07~BOARD_CODE%2Cf105~07~BOARD_CODE%2Cf106~07~BOARD_CODE%2Cf3~03~INDEX_CODE~INDEX_f3%2CnetBuyAmt~07~BOARD_CODE&quoteType=0&pageNumber=1&pageSize=200&sortTypes=1&sortColumns=MUTUAL_TYPE&source=WEB&client=WEB&_=1689650979958")
+            .then(async (response) => await response.text()).then(data => console.log(data)).catch(e => console.error(e));
+    }
+    async getThsSelfStocks() {
+        (0, node_fetch_1.default)(thsUrl.get, {
+            "headers": {
+                "accept": "application/json, text/plain, */*",
+                "accept-language": "zh-CN,zh;q=0.9",
+                "cache-control": "no-cache",
+                "content-type": "application/json",
+                "pragma": "no-cache",
+                'Cookie': 'MDptb182MzE0MTAzMTc6Ok5vbmU6NTAwOjY0MTQxMDMxNzo3LDExMTExMTExMTExLDQwOzQ0LDExLDQwOzYsMSw0MDs1LDEsNDA7MSwxMDEsNDA7MiwxLDQwOzMsMSw0MDs1LDEsNDA7OCwwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMSw0MDsxMDIsMSw0MDoyNzo6OjYzMTQxMDMxNzoxNjg5NzUwNDI1Ojo6MTY1MDk4ODUwMDo2MDQ4MDA6MDoxOTI0MDRlYjVjZjIwMTZiNDQxMjkxZGJjZTIwMWEzZDM6ZGVmYXVsdF80OjE',
+            }
+        })
+            .then(data => console.log(data)).catch(e => console.error(e));
+    }
+    async modifyThsSelfStocks() {
+        const code = '000553';
+        const pos = '1';
+        const payload = {
+            'add': { 'stockcode': code, 'op': 'add' },
+            'del': { 'stockcode': code, 'op': 'del' },
+            'exc': { 'stockcode': code, 'op': 'exc', 'pos': pos, 'callback': 'callbacknew' }
+        };
+        console.log("https://t.10jqka.com.cn/newcircle/group/modifySelfStock/?" + (0, qs_1.stringify)(payload.add));
+        const userid = '631410317';
+        const ticket = 'e64f54692d843e69da6dbb579e220e30';
+        const user = 'MDptb182MzE0MTAzMTc6Ok5vbmU6NTAwOjY0MTQxMDMxNzo3LDExMTExMTExMTExLDQwOzQ0LDExLDQwOzYsMSw0MDs1LDEsNDA7MSwxMDEsNDA7MiwxLDQwOzMsMSw0MDs1LDEsNDA7OCwwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMSw0MDsxMDIsMSw0MDoyNzo6OjYzMTQxMDMxNzoxNjg5ODIzNzE4Ojo6MTY1MDk4ODUwMDo4NjQwMDowOjE2Y2M0ZWIzOGNhZjUzNjU5MjU2MTNiYzdhM2JlNTAzOTpkZWZhdWx0XzQ6MQ%3D%3D';
+        (0, node_fetch_1.default)("https://t.10jqka.com.cn/newcircle/group/modifySelfStock/?" + (0, qs_1.stringify)(payload.add), {
+            "headers": {
+                "accept": "application/json, text/javascript, */*; q=0.01",
+                "accept-language": "zh-CN,zh;q=0.9",
+                "cache-control": "no-cache",
+                "pragma": "no-cache",
+                "sec-ch-ua": "\"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"114\", \"Google Chrome\";v=\"114\"",
+                "sec-ch-ua-mobile": "?0",
+                "sec-ch-ua-platform": "\"macOS\"",
+                "sec-fetch-dest": "empty",
+                "sec-fetch-mode": "cors",
+                "sec-fetch-site": "same-origin",
+                "x-requested-with": "XMLHttpRequest",
+                "Cookie": `userid=${userid}; u_name=mo_${userid}; escapename=mo_${userid}; user=${user}; ticket=${ticket};`,
+            },
+            "referrer": "https://t.10jqka.com.cn/newcircle/user/userPersonal/?from=circle",
+            "referrerPolicy": "strict-origin-when-cross-origin",
+            "body": null,
+            "method": "GET",
+            "mode": "cors",
+            "credentials": "include"
+        })
             .then(async (response) => await response.text()).then(data => console.log(data)).catch(e => console.error(e));
     }
     async findAll() {

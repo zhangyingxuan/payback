@@ -30,6 +30,14 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "password", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ comment: 'user', type: 'varchar', length: 520, default: '' }),
+    __metadata("design:type", String)
+], User.prototype, "user", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: 'ticket', type: 'varchar', length: 256, default: '' }),
+    __metadata("design:type", String)
+], User.prototype, "ticket", void 0);
+__decorate([
     (0, typeorm_1.Column)({
         default: false
     }),

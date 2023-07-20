@@ -27,6 +27,13 @@
         <el-button type="primary" @click="refreshTodayData" size="small">
           更新今日数据
         </el-button>
+        <el-button
+          type="warning"
+          @click="synchronousOptionalStocks"
+          size="small"
+        >
+          同步
+        </el-button>
 
         <template v-if="!isMobile">
           <!-- 数据统计天数 5 10 15 20 -->
@@ -86,6 +93,7 @@ import MyDrawer from './drawer.vue';
 import { useRouter } from 'vue-router';
 import imgurl from '../assets/img/img.jpg';
 import { crawlTodayData } from '../api/payBack';
+import { modifyThsSelfStocks } from '../api/thsTrade';
 import { clearLogin } from '../router/auth';
 import { isMobile } from '@/core/util';
 import { ElMessageBox } from 'element-plus';
@@ -130,6 +138,16 @@ function refreshTodayData() {
   ElMessageBox.confirm('确定要更新今日数据吗？')
     .then(() => {
       crawlTodayData();
+    })
+    .catch(() => {
+      // catch error
+    });
+}
+
+function synchronousOptionalStocks() {
+  ElMessageBox.confirm('确定要同步自选个股吗？')
+    .then(() => {
+      modifyThsSelfStocks();
     })
     .catch(() => {
       // catch error

@@ -4,6 +4,8 @@ export declare class User {
     name: string;
     account: string;
     password: string;
+    user: string;
+    ticket: string;
     isDelete: boolean;
     createTime: Timestamp;
 }

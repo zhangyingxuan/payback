@@ -155,10 +155,10 @@ async function initPage(pageSize: number) {
     data.style = styles.style;
     data.styleBig = styles.styleBig;
     data.latestMarketUpdateTime = dayjs(
-      result.shortTermData[result.shortTermData.length - 1].createTime,
+      result.marketData[result.marketData.length - 1].createTime,
     ).format('MM/DD HH:mm');
     data.latestShortTermUpdateTime = dayjs(
-      result.marketData[result.marketData.length - 1].createTime,
+      result.shortTermData[result.shortTermData.length - 1].createTime,
     ).format('MM/DD HH:mm');
     data.latestFundsUpdateTime = dayjs(
       result.fundsData[result.fundsData.length - 1].createTime,
