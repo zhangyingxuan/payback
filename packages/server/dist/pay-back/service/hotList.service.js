@@ -53,8 +53,7 @@ let HotListService = HotListService_1 = class HotListService {
             }
             else {
                 this.logger.log('新增数据');
-                hotListData.createTime = new Date();
-                await this.hotListRp.save(hotListData4Db);
+                await this.hotListRp.save(Object.assign(Object.assign({}, hotListData4Db), { createTime: new Date() }));
             }
             this.logger.debug('crawlHotListData is success!');
         }

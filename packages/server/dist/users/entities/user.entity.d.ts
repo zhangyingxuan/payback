@@ -6,6 +6,7 @@ export declare class User {
     password: string;
     user: string;
     ticket: string;
+    userid: string;
     isDelete: boolean;
     createTime: Timestamp;
 }

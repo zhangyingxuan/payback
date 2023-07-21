@@ -51,8 +51,7 @@ export class HotListService {
         await this.hotListRp.update(todayDataFromDB.id, hotListData4Db);
       } else {
         this.logger.log('新增数据')
-        hotListData.createTime = new Date();
-        await this.hotListRp.save(hotListData4Db);
+        await this.hotListRp.save({ ...hotListData4Db, createTime: new Date() });
       }
       this.logger.debug('crawlHotListData is success!');
     } catch (e) {

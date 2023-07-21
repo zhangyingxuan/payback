@@ -1,9 +1,11 @@
+import { UsersService } from '../../users/users.service';
 export declare class ThsService {
-    constructor();
+    private readonly usersService;
+    constructor(usersService: UsersService);
     private readonly logger;
-    modifyThsSelfStocks(evenBoardData: any, dailyLimitQuantity: any): Promise<{
+    nextRegister(args: Array<Function>): void;
+    modifyThsSelfStocks(evenBoardData: any): Promise<{
         code: number;
         data: any;
     }>;
-    dealNetRequest(evenBoardData: any): void;
 }

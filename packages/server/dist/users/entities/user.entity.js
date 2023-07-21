@@ -38,6 +38,10 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "ticket", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ comment: 'userid', type: 'varchar', length: 256, default: '' }),
+    __metadata("design:type", String)
+], User.prototype, "userid", void 0);
+__decorate([
     (0, typeorm_1.Column)({
         default: false
     }),

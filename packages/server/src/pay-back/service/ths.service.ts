@@ -1,35 +1,113 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
 import { modifyThsSelfStocks } from '../core/fetchUtil';
+import { UsersService } from '../../users/users.service';
 
 // 投资日历 http://stock.10jqka.com.cn/fincalendar.shtml#2023-07-20
 // 交易提醒 http://stock.10jqka.com.cn/jyts_list/
 // 四大证券 新闻精华 http://stock.10jqka.com.cn/bktt_list/
-const during = 1000;
+function atob(a) {
+  return Buffer.from(a, 'base64').toString('binary');
+};
+
+class Iterator {
+  middlewares: Array<Function>;
+
+  constructor() {
+    this.middlewares = [];
+  }
+  add(fn) {
+    this.middlewares.push(fn); //存入任务
+    return this;
+  }
+  async run(ctx) {
+    function createNext(middleware, oldNext) {
+      return async () => {
+        await middleware(ctx, oldNext);
+      }
+    }
+    let len = this.middlewares.length;
+    let next = async () => {
+      return Promise.resolve();
+    };
+    for (let i = len - 1; i >= 0; i--) {
+      let currentMiddleware = this.middlewares[i];
+      next = createNext(currentMiddleware, next);
+    }
+    await next();
+  }
+}
+
+let isLogin = { value: true, index: 1 };
 
 @Injectable()
 export class ThsService {
   constructor(
+    private readonly usersService: UsersService,
   ) { }
 
   private readonly logger = new Logger(ThsService.name);
 
-  // private sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
-
-  async modifyThsSelfStocks(evenBoardData, dailyLimitQuantity) {
-    let isSuccess = true;
-    this.logger.log('同步自选 开始');
-    try {
-      let times = 3;
-      // 避免添加自选失败，重复添加3 次，直到添加完
-      while (times--) {
-        (function (i, _this) {
-          setTimeout(async () => {
-            _this.dealNetRequest(evenBoardData)
-          }, i * (dailyLimitQuantity + 1) * during);
-        })(times, this)
+  nextRegister(args: Array<Function>) {
+    var count = 0;
+    var comm = {};
+    function nextTime() {
+      count++;
+      if (count < args.length) {
+        if (args[count] && Object.prototype.toString.call(args[count]) == '[object AsyncFunction]') {
+          args[count](comm, nextTime);
+        }
       }
-      this.logger.log('同步自选 成功');
+    }
+    if (args[count] && Object.prototype.toString.call(args[count]) == '[object AsyncFunction]') {
+      args[count](comm, nextTime);
+    }
+  }
+
+  async modifyThsSelfStocks(evenBoardData) {
+    let isSuccess = true;
+    this.logger.log('同步自选');
+
+    const userInfo = await this.usersService.getUserByAccount('admin');
+    // 获取用户信息
+    const userid = atob(userInfo.userid);
+    const ticket = userInfo.ticket;
+    const user = userInfo.user;
+
+    try {
+      // const funcs = [];
+      let app = new Iterator();
+      const maxHeight = evenBoardData.maxHeight;
+      for (let i = maxHeight; i >= 1; i--) {
+        const stocks = evenBoardData[i + ''];
+
+        if (stocks) {
+          for (let j = 0; j < stocks.length; j++) {
+
+            app.add(async (ctx, next) => {
+              const result = await modifyThsSelfStocks(stocks[j].code, userid, ticket, user);
+              console.log(stocks[j].name, result);
+              if (result.errorMsg === '当前用户未登录') {
+                //  当前用户未登录，则停止之后的异步调用请求
+                isSuccess = false;
+                return;
+              }
+              next();
+            });
+            // funcs.push(async (comm, next) => {
+            //   comm = await modifyThsSelfStocks(stocks[j].code, userid, ticket, user);
+            //   if (comm.errorMsg === '当前用户未登录') {
+            //     //  当前用户未登录，则停止之后的异步调用请求
+            //     isSuccess = false;
+            //     return;
+            //   }
+            //   next();
+            // })
+          }
+        }
+
+      }
+      // this.nextRegister(funcs);
+      app.run(this);
     } catch (e) {
       isSuccess = false;
       this.logger.log('同步自选 失败了！' + e);
@@ -38,27 +116,6 @@ export class ThsService {
       code: isSuccess ? 200 : 400,
       data: evenBoardData,
     };
-  }
-
-  dealNetRequest(evenBoardData) {
-    // 如果有数据，则同步
-    // 尾盘结束后，同步数据到自选
-    const maxHeight = evenBoardData.maxHeight;
-    for (let i = 1; i <= maxHeight; i++) {
-      let stocks = evenBoardData[i + ''];
-      if (stocks) {
-        for (let j = 0; j < stocks.length; j++) {
-          // 每个方法延迟执行
-          (function (t, item) {
-            setTimeout(async () => {
-              const result = await modifyThsSelfStocks(item.code);
-              // console.log(item.name);
-              // console.log(item.name, result);
-            }, t * during);
-          })(j, stocks[j]);
-        }
-      }
-    }
   }
 }
 

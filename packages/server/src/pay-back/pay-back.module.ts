@@ -16,9 +16,11 @@ import { fundsData } from "./entities/fundsData.entity";
 import { hotList } from "./entities/hotList.entity";
 import { latestConceptPlate } from "./entities/latestConceptPlate.entity";
 import { reviewData } from "./entities/review.entity";
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
+    UsersModule,
     TypeOrmModule.forFeature([shortTermData]),
     TypeOrmModule.forFeature([marketData]),
     TypeOrmModule.forFeature([hotList]),

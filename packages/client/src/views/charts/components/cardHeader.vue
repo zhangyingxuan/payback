@@ -29,13 +29,15 @@ let superData = defineProps({
 });
 </script>
 
-<style scoped>
+<style scoped lang="less">
 .headerRight {
   text-align: right;
   line-height: 22px;
   display: flex;
   justify-content: end;
   align-items: center;
+  font-size: 12px;
+  color: @gray;
 
   .el-link {
     margin-left: 8px;

@@ -13,24 +13,84 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ThsService = void 0;
 const common_1 = require("@nestjs/common");
 const fetchUtil_1 = require("../core/fetchUtil");
-const during = 1000;
-let ThsService = ThsService_1 = class ThsService {
+const users_service_1 = require("../../users/users.service");
+function atob(a) {
+    return Buffer.from(a, 'base64').toString('binary');
+}
+;
+class Iterator {
     constructor() {
+        this.middlewares = [];
+    }
+    add(fn) {
+        this.middlewares.push(fn);
+        return this;
+    }
+    async run(ctx) {
+        function createNext(middleware, oldNext) {
+            return async () => {
+                await middleware(ctx, oldNext);
+            };
+        }
+        let len = this.middlewares.length;
+        let next = async () => {
+            return Promise.resolve();
+        };
+        for (let i = len - 1; i >= 0; i--) {
+            let currentMiddleware = this.middlewares[i];
+            next = createNext(currentMiddleware, next);
+        }
+        await next();
+    }
+}
+let isLogin = { value: true, index: 1 };
+let ThsService = ThsService_1 = class ThsService {
+    constructor(usersService) {
+        this.usersService = usersService;
         this.logger = new common_1.Logger(ThsService_1.name);
     }
-    async modifyThsSelfStocks(evenBoardData, dailyLimitQuantity) {
-        let isSuccess = true;
-        this.logger.log('同步自选 开始');
-        try {
-            let times = 3;
-            while (times--) {
-                (function (i, _this) {
-                    setTimeout(async () => {
-                        _this.dealNetRequest(evenBoardData);
-                    }, i * (dailyLimitQuantity + 1) * during);
-                })(times, this);
+    nextRegister(args) {
+        var count = 0;
+        var comm = {};
+        function nextTime() {
+            count++;
+            if (count < args.length) {
+                if (args[count] && Object.prototype.toString.call(args[count]) == '[object AsyncFunction]') {
+                    args[count](comm, nextTime);
+                }
             }
-            this.logger.log('同步自选 成功');
+        }
+        if (args[count] && Object.prototype.toString.call(args[count]) == '[object AsyncFunction]') {
+            args[count](comm, nextTime);
+        }
+    }
+    async modifyThsSelfStocks(evenBoardData) {
+        let isSuccess = true;
+        this.logger.log('同步自选');
+        const userInfo = await this.usersService.getUserByAccount('admin');
+        const userid = atob(userInfo.userid);
+        const ticket = userInfo.ticket;
+        const user = userInfo.user;
+        try {
+            let app = new Iterator();
+            const maxHeight = evenBoardData.maxHeight;
+            for (let i = maxHeight; i >= 1; i--) {
+                const stocks = evenBoardData[i + ''];
+                if (stocks) {
+                    for (let j = 0; j < stocks.length; j++) {
+                        app.add(async (ctx, next) => {
+                            const result = await (0, fetchUtil_1.modifyThsSelfStocks)(stocks[j].code, userid, ticket, user);
+                            console.log(stocks[j].name, result);
+                            if (result.errorMsg === '当前用户未登录') {
+                                isSuccess = false;
+                                return;
+                            }
+                            next();
+                        });
+                    }
+                }
+            }
+            app.run(this);
         }
         catch (e) {
             isSuccess = false;
@@ -41,25 +101,10 @@ let ThsService = ThsService_1 = class ThsService {
             data: evenBoardData,
         };
     }
-    dealNetRequest(evenBoardData) {
-        const maxHeight = evenBoardData.maxHeight;
-        for (let i = 1; i <= maxHeight; i++) {
-            let stocks = evenBoardData[i + ''];
-            if (stocks) {
-                for (let j = 0; j < stocks.length; j++) {
-                    (function (t, item) {
-                        setTimeout(async () => {
-                            const result = await (0, fetchUtil_1.modifyThsSelfStocks)(item.code);
-                        }, t * during);
-                    })(j, stocks[j]);
-                }
-            }
-        }
-    }
 };
 ThsService = ThsService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [users_service_1.UsersService])
 ], ThsService);
 exports.ThsService = ThsService;
 //# sourceMappingURL=ths.service.js.map

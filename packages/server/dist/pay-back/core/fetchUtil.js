@@ -30,16 +30,13 @@ async function fetchIwencaiApi(question, pageSize = 5, isPlate = true) {
     return (0, commonUtil_1.getIwencaiData)(result);
 }
 exports.fetchIwencaiApi = fetchIwencaiApi;
-async function modifyThsSelfStocks(code) {
+async function modifyThsSelfStocks(code, userid, ticket, user) {
     const pos = '1';
     const payload = {
         'add': { 'stockcode': code, 'op': 'add' },
         'del': { 'stockcode': code, 'op': 'del' },
         'exc': { 'stockcode': code, 'op': 'exc', 'pos': pos, 'callback': 'callbacknew' }
     };
-    const userid = '631410317';
-    const ticket = 'e64f54692d843e69da6dbb579e220e30';
-    const user = 'MDptb182MzE0MTAzMTc6Ok5vbmU6NTAwOjY0MTQxMDMxNzo3LDExMTExMTExMTExLDQwOzQ0LDExLDQwOzYsMSw0MDs1LDEsNDA7MSwxMDEsNDA7MiwxLDQwOzMsMSw0MDs1LDEsNDA7OCwwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMSw0MDsxMDIsMSw0MDoyNzo6OjYzMTQxMDMxNzoxNjg5ODIzNzE4Ojo6MTY1MDk4ODUwMDo4NjQwMDowOjE2Y2M0ZWIzOGNhZjUzNjU5MjU2MTNiYzdhM2JlNTAzOTpkZWZhdWx0XzQ6MQ%3D%3D';
     let result = await (0, node_fetch_1.default)("https://t.10jqka.com.cn/newcircle/group/modifySelfStock/?" + (0, qs_1.stringify)(payload.add), {
         "headers": {
             "accept": "application/json, text/javascript, */*; q=0.01",
@@ -62,8 +59,8 @@ async function modifyThsSelfStocks(code) {
         "mode": "cors",
         "credentials": "include"
     });
-    result = await result.json();
-    return result;
+    return await result.json();
+    ;
 }
 exports.modifyThsSelfStocks = modifyThsSelfStocks;
 function promiseLimit(promises, limit) {

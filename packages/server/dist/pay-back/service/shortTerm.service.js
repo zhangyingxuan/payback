@@ -30,7 +30,7 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
     }
     async autoCrawlShortTermDataLateSession() {
         const result = await this.crawlShortTermData();
-        this.thsService.modifyThsSelfStocks(JSON.parse(result.evenBoardData), result.dailyLimitQuantity);
+        this.thsService.modifyThsSelfStocks(JSON.parse(result.evenBoardData));
     }
     async autoCrawlShortTermDataMidday() {
         this.crawlShortTermData();

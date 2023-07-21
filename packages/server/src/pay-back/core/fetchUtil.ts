@@ -31,7 +31,7 @@ export async function fetchIwencaiApi(question, pageSize = 5, isPlate = true) {
   return getIwencaiData(result);
 }
 
-export async function modifyThsSelfStocks(code) {
+export async function modifyThsSelfStocks(code, userid, ticket, user) {
   // # 更改同花顺自选股列表
   // # method: add 添加, del 删除, exc 排序
   // # pos: 排序用的序号, 从1开始
@@ -44,9 +44,7 @@ export async function modifyThsSelfStocks(code) {
   // https://t.10jqka.com.cn/newcircle/group/modifySelfStock/?op=add&stockcode=000551_33
   // https://t.10jqka.com.cn/newcircle/group/modifySelfStock/?op=add&stockcode=000980
   // console.log("http://stock.10jqka.com.cn/self.php?" + stringify(payload.add));
-  const userid = '631410317';
-  const ticket = 'e64f54692d843e69da6dbb579e220e30';
-  const user = 'MDptb182MzE0MTAzMTc6Ok5vbmU6NTAwOjY0MTQxMDMxNzo3LDExMTExMTExMTExLDQwOzQ0LDExLDQwOzYsMSw0MDs1LDEsNDA7MSwxMDEsNDA7MiwxLDQwOzMsMSw0MDs1LDEsNDA7OCwwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMSw0MDsxMDIsMSw0MDoyNzo6OjYzMTQxMDMxNzoxNjg5ODIzNzE4Ojo6MTY1MDk4ODUwMDo4NjQwMDowOjE2Y2M0ZWIzOGNhZjUzNjU5MjU2MTNiYzdhM2JlNTAzOTpkZWZhdWx0XzQ6MQ%3D%3D';
+
   let result = await fetch("https://t.10jqka.com.cn/newcircle/group/modifySelfStock/?" + stringify(payload.add), {
     "headers": {
       "accept": "application/json, text/javascript, */*; q=0.01",
@@ -69,8 +67,7 @@ export async function modifyThsSelfStocks(code) {
     "mode": "cors",
     "credentials": "include"
   });
-  result = await result.json();
-  return result;
+  return await result.json();;
 }
 
 

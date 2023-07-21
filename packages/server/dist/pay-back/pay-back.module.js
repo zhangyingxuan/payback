@@ -25,11 +25,13 @@ const fundsData_entity_1 = require("./entities/fundsData.entity");
 const hotList_entity_1 = require("./entities/hotList.entity");
 const latestConceptPlate_entity_1 = require("./entities/latestConceptPlate.entity");
 const review_entity_1 = require("./entities/review.entity");
+const users_module_1 = require("../users/users.module");
 let PayBackModule = class PayBackModule {
 };
 PayBackModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            users_module_1.UsersModule,
             typeorm_1.TypeOrmModule.forFeature([shortTermData_entity_1.shortTermData]),
             typeorm_1.TypeOrmModule.forFeature([marketData_entity_1.marketData]),
             typeorm_1.TypeOrmModule.forFeature([hotList_entity_1.hotList]),

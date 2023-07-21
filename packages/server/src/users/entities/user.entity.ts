@@ -14,6 +14,8 @@ export class User {
   user: string;
   @Column({ comment: 'ticket', type: 'varchar', length: 256, default: '' })
   ticket: string;
+  @Column({ comment: 'userid', type: 'varchar', length: 256, default: '' })
+  userid: string;
   // 软删除
   @Column({
     default: false

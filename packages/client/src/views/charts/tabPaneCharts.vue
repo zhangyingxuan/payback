@@ -324,9 +324,6 @@ function initShortTermChart(shortTermData: ShortTermModel[]) {
 </script>
 
 <style scoped lang="less">
-.headerRight {
-  text-align: right;
-}
 .chartList__container {
   display: flex;
   flex-wrap: wrap;
