@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { modifyThsSelfStocks } from '../core/fetchUtil';
+import { modifyThsSelfStocks, clearThsSelfStocks } from '../core/fetchUtil';
 import { UsersService } from '../../users/users.service';
 
 // 投资日历 http://stock.10jqka.com.cn/fincalendar.shtml#2023-07-20
@@ -65,15 +65,20 @@ export class ThsService {
 
   async modifyThsSelfStocks(evenBoardData) {
     let isSuccess = true;
+
     this.logger.log('同步自选');
 
     const userInfo = await this.usersService.getUserByAccount('admin');
-    // 获取用户信息
+    // 1、获取用户信息
     const userid = atob(userInfo.userid);
     const ticket = userInfo.ticket;
     const user = userInfo.user;
 
     try {
+      // 2、清空自选股 TODO 暂未实现
+      // console.log(await clearThsSelfStocks(userid, ticket, user));
+      // return;
+      // 3、插入自选股
       // const funcs = [];
       let app = new Iterator();
       const maxHeight = evenBoardData.maxHeight;
@@ -82,18 +87,19 @@ export class ThsService {
 
         if (stocks) {
           for (let j = 0; j < stocks.length; j++) {
-
-            app.add(async (ctx, next) => {
+            // 仅插入 10cm的个股
+            stocks[j].type == 0 && app.add(async (ctx, next) => {
               const result = await modifyThsSelfStocks(stocks[j].code, userid, ticket, user);
               console.log(stocks[j].name, result);
               if (result.errorMsg === '当前用户未登录') {
+                this.logger.log('当前用户未登录');
                 //  当前用户未登录，则停止之后的异步调用请求
                 isSuccess = false;
                 return;
               }
               next();
             });
-            // funcs.push(async (comm, next) => {
+            // stock.type === '0' && funcs.push(async (comm, next) => {
             //   comm = await modifyThsSelfStocks(stocks[j].code, userid, ticket, user);
             //   if (comm.errorMsg === '当前用户未登录') {
             //     //  当前用户未登录，则停止之后的异步调用请求

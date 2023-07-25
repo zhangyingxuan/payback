@@ -9,7 +9,10 @@
         <div class="col1">行业板块</div>
         <div class="col2 red">
           涨停个股（{{ data.dailyLimitQuantity }}）
-          <template v-for="(item, index) in data.ticaiData">
+          <template
+            v-for="(item, index) in data.ticaiData"
+            :key="'span' + index"
+          >
             {{ item.key }}{{ item.value }}&nbsp;
           </template>
         </div>

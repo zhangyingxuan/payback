@@ -62,7 +62,8 @@ async function initPageData() {
       hangyeFallFloat: plate.hangyeFallFloat
         ? JSON.parse(plate.hangyeFallFloat)
         : '',
-      createTime: dayjs(plate.createTime).format('MM/DD'),
+      createTime: plate.createTime,
+      createDate: dayjs(plate.createTime).format('MM/DD'),
     };
   });
   updateDataClass(plates, true);

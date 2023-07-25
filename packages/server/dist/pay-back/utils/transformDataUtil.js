@@ -38,7 +38,7 @@ function transformDownLimitData(dailyLimitData, currentDate) {
         downLimitStockDto.name = item['股票简称'];
         downLimitStockDto.code = item.code;
         downLimitStockDto.plateLevel2 = item['所属同花顺二级行业'];
-        if (item[`跌停原因类型[${currentDate}]`] !== '资金出逃') {
+        if (item[`跌停原因类型[${currentDate}]`] && item[`跌停原因类型[${currentDate}]`] !== '资金出逃') {
             downLimitStockDto.reason = item[`跌停原因类型[${currentDate}]`];
         }
         else {

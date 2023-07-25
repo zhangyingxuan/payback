@@ -118,8 +118,11 @@ export function transformEvenBoardData(shortTermData: ShortTermModel[]): any[] {
         evenBoardData[i] && evenBoardData[i].forEach((item: any) => {
           const resons = item.reason ? item.reason.split('+') : ['其它'];
           resons.forEach((reson: any) => {
-            !ticaiData[reson] && (ticaiData[reson] = 1);
-            ticaiData[reson]++;
+            if (!ticaiData[reson]) {
+              ticaiData[reson] = 1;
+            } else {
+              ticaiData[reson]++;
+            }
           });
         });
       }

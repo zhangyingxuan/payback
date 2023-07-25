@@ -31,7 +31,8 @@ async function getHotListData() {
         return createHotListDto;
     }
     catch (e) {
-        console.log(e);
+        console.log('getHotListData error:', e);
+        return createHotListDto;
     }
     ;
 }

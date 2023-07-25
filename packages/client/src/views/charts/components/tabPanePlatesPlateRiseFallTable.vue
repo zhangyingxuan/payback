@@ -11,7 +11,7 @@
         v-for="(item, index) in data"
         :key="'evenBoard' + index"
       >
-        <div class="table__header">{{ item.createTime }}</div>
+        <div class="table__header">{{ item.createDate }}</div>
         <!-- 行业涨 -->
         <div
           v-for="(plate, index) in item[

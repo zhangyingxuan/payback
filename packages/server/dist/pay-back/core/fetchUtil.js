@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.promiseLimit = exports.modifyThsSelfStocks = exports.fetchIwencaiApi = void 0;
+exports.promiseLimit = exports.modifyThsSelfStocks = exports.clearThsSelfStocks = exports.fetchIwencaiApi = void 0;
 const hexin_v_js_1 = require("./hexin-v.js");
 const node_fetch_1 = require("node-fetch");
 const commonUtil_1 = require("../utils/commonUtil");
@@ -30,6 +30,24 @@ async function fetchIwencaiApi(question, pageSize = 5, isPlate = true) {
     return (0, commonUtil_1.getIwencaiData)(result);
 }
 exports.fetchIwencaiApi = fetchIwencaiApi;
+async function clearThsSelfStocks(userid, ticket, user) {
+    let result = await (0, node_fetch_1.default)("http://stock.10jqka.com.cn/self.php", {
+        "headers": {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0',
+            'Accept-Language': 'zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3',
+            'Accept-Encoding': 'gzip, deflate',
+            'Referer': 'http://stock.10jqka.com.cn/my/zixuan.shtml',
+            'Cookie': user,
+            'DNT': '1'
+        },
+        "body": null,
+        "method": "GET",
+        "mode": "cors",
+        "credentials": "include"
+    });
+    return result;
+}
+exports.clearThsSelfStocks = clearThsSelfStocks;
 async function modifyThsSelfStocks(code, userid, ticket, user) {
     const pos = '1';
     const payload = {

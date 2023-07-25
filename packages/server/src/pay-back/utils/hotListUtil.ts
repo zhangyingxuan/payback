@@ -34,7 +34,8 @@ export async function getHotListData() {
     createHotListDto.updatedTime = new Date();
     return createHotListDto;
   } catch (e: any) {
-    console.log(e);
+    console.log('getHotListData error:', e);
+    return createHotListDto;
   };
 
 

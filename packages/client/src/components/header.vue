@@ -124,6 +124,10 @@ const options = [
     value: '20',
     label: '20天',
   },
+  {
+    value: '40',
+    label: '30天',
+  },
 ];
 
 // 当前日期大于20号，则提示

@@ -78,10 +78,11 @@ let ThsService = ThsService_1 = class ThsService {
                 const stocks = evenBoardData[i + ''];
                 if (stocks) {
                     for (let j = 0; j < stocks.length; j++) {
-                        app.add(async (ctx, next) => {
+                        stocks[j].type == 0 && app.add(async (ctx, next) => {
                             const result = await (0, fetchUtil_1.modifyThsSelfStocks)(stocks[j].code, userid, ticket, user);
                             console.log(stocks[j].name, result);
                             if (result.errorMsg === '当前用户未登录') {
+                                this.logger.log('当前用户未登录');
                                 isSuccess = false;
                                 return;
                             }

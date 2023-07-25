@@ -26,7 +26,7 @@ export class ShorTermService {
   @Cron('0 20 15 * * 1-5')
   async autoCrawlShortTermDataLateSession() {
     const result = await this.crawlShortTermData();
-    this.thsService.modifyThsSelfStocks(JSON.parse(result.evenBoardData));
+    process.env.NODE_ENV !== 'dev' && this.thsService.modifyThsSelfStocks(JSON.parse(result.evenBoardData));
   }
 
   // 午盘

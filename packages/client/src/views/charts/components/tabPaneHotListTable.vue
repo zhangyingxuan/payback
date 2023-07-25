@@ -16,7 +16,7 @@
         :key="'evenBoard' + index"
       >
         <div class="table__header">
-          {{ item.createTime }} {{ getCurrentDay(item.createTime) }}
+          {{ item.updatedTime }} {{ getCurrentDay(item.createTime) }}
         </div>
         <div
           v-for="(hot, index) in item[superData.type]"

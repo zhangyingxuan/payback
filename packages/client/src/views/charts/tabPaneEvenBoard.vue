@@ -37,7 +37,7 @@
         :class="[
           'date-col',
           { isMobile },
-          { isMonday: judgeMonday(item.createDate) },
+          { isMonday: judgeMonday(item.createTime) },
         ]"
         v-for="(item, index) in evenBoard.value"
         :key="'evenBoard' + index"

@@ -31,6 +31,26 @@ export async function fetchIwencaiApi(question, pageSize = 5, isPlate = true) {
   return getIwencaiData(result);
 }
 
+export async function clearThsSelfStocks(userid, ticket, user) {
+  // # 更改同花顺自选股列表
+  // # method: add 添加, del 删除, exc 排序
+  // # pos: 排序用的序号, 从1开始
+  let result = await fetch("http://stock.10jqka.com.cn/self.php", {
+    "headers": {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0',
+      'Accept-Language': 'zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3',
+      'Accept-Encoding': 'gzip, deflate',
+      'Referer': 'http://stock.10jqka.com.cn/my/zixuan.shtml',
+      'Cookie': user,
+      'DNT': '1'
+    },
+    "body": null,
+    "method": "GET",
+    "mode": "cors",
+    "credentials": "include"
+  });
+  return result;
+}
 export async function modifyThsSelfStocks(code, userid, ticket, user) {
   // # 更改同花顺自选股列表
   // # method: add 添加, del 删除, exc 排序
