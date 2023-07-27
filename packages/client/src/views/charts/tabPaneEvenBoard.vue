@@ -138,7 +138,7 @@
   </div>
 
   <!-- 当日涨停分布，按行业板块划分 -->
-  <DailyStockTable :data="data.currentDateData" :isMobile="isMobile" />
+  <DailyStockTable v-model:data="data.currentDateData" :isMobile="isMobile" />
   <DownStockTable :data="data.currentDateData" :isMobile="isMobile" />
 </template>
 <script lang="ts" setup>
@@ -253,25 +253,26 @@ onMounted(() => {
 });
 
 async function handleDateClick(item: any) {
+  data.hasSummaryTableData = false;
   data.currentDate = item.createDate;
   data.currentDateData = evenBoard.value.find(
     (evenBoardItem: any) => evenBoardItem.createDate === item.createDate,
   );
   // 获取复盘数据
   const result: any = await fetchReveiwDataByDate({ date: item.createTime });
-  if (!result) {
-    data.hasSummaryTableData = false;
-    return;
+  if (result) {
+    data.hasSummaryTableData = true;
+    data.summaryTableData[0].value = result.cycle
+      ? result.cycle
+      : getDateCycle();
+    data.summaryTableData[1].value = getDateCycle();
+    data.summaryTableData[2].value = result.marketScore;
+    data.summaryTableData[3].value = result.marketMood;
+    data.summaryTableData[4].value = result.totalLeader;
+    data.summaryTableData[5].value = result.plateLeader;
+    data.summaryTableData[6].value = result.strongestPlate;
+    data.summaryTableData[7].value = result.strongestTopic;
   }
-  data.hasSummaryTableData = true;
-  data.summaryTableData[0].value = result.cycle ? result.cycle : getDateCycle();
-  data.summaryTableData[1].value = getDateCycle();
-  data.summaryTableData[2].value = result.marketScore;
-  data.summaryTableData[3].value = result.marketMood;
-  data.summaryTableData[4].value = result.totalLeader;
-  data.summaryTableData[5].value = result.plateLeader;
-  data.summaryTableData[6].value = result.strongestPlate;
-  data.summaryTableData[7].value = result.strongestTopic;
 }
 
 const heightArr = computed(() => {

@@ -6,21 +6,12 @@
         <el-icon v-if="sidebar.collapse"><Expand /></el-icon>
         <el-icon v-else><Fold /></el-icon>
       </div>
-      <div class="logo">payBack</div>
+      <div class="logo">
+        <Calendar />
+      </div>
     </template>
     <div :class="isMobile ? 'mobile-right' : 'header-right'">
       <div class="header-user-con">
-        <!-- 消息中心 -->
-        <!-- <div class="btn-bell" @click="router.push('/tabs')">
-          <el-tooltip
-            effect="dark"
-            :content="message ? `有${message}条未读消息` : `消息中心`"
-            placement="bottom"
-          >
-            <i class="el-icon-lx-notice"></i>
-          </el-tooltip>
-          <span class="btn-bell-badge" v-if="message"></span>
-        </div> -->
         <el-button type="primary" @click="switchDrawerVisible" size="small">
           我的收藏
         </el-button>
@@ -98,9 +89,9 @@ import { clearLogin } from '../router/auth';
 import { isMobile } from '@/core/util';
 import { ElMessageBox } from 'element-plus';
 import dayjs from 'dayjs';
+import Calendar from './calendar/index.vue';
 
 const username: string | null = localStorage.getItem('ms_username');
-const message = 2;
 
 // const countDays = ref(20);
 const options = [
@@ -213,8 +204,9 @@ const handleCommand = (command: string) => {
   cursor: pointer;
 }
 .header .logo {
+  display: flex;
   float: left;
-  width: 100px;
+  width: 400px;
   line-height: 40px;
 }
 .header-right {

@@ -112,12 +112,12 @@ async function refreshHotListPage() {
 async function updateHotListData() {
   data.loading = true;
   crawlHotListData()
-    .then(result => {
+    .then((result: any) => {
+      result.updatedTime = dayjs(result.updatedTime).format('MM/DD HH:mm');
       // 爬取成功
       ElMessage.success('更新成功');
       // refreshHotListPage();
       data.hotListResult.splice(0, 1, result);
-      console.log(data.hotListResult, result);
     })
     .finally(() => {
       data.loading = false;

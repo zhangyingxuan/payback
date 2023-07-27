@@ -14,10 +14,32 @@ exports.ThsService = void 0;
 const common_1 = require("@nestjs/common");
 const fetchUtil_1 = require("../core/fetchUtil");
 const users_service_1 = require("../../users/users.service");
+let isSuccess = true;
 function atob(a) {
     return Buffer.from(a, 'base64').toString('binary');
 }
 ;
+function isAddSelf(stock, currentLevel) {
+    if (currentLevel != 1)
+        return true;
+    return stock.type == 0 && stock.price <= 30 && (stock.circulationValue >= 20 && stock.circulationValue <= 120);
+}
+function prepareSelfStock(i, stocks, app, userid, ticket, user) {
+    if (stocks) {
+        for (let j = 0; j < stocks.length; j++) {
+            isAddSelf(stocks[j], i) && app.add(async (ctx, next) => {
+                const result = await (0, fetchUtil_1.modifyThsSelfStocks)(stocks[j].code, userid, ticket, user);
+                console.log(stocks[j].name, result);
+                if (result.errorMsg === '当前用户未登录') {
+                    this.logger.log('当前用户未登录');
+                    isSuccess = false;
+                    return;
+                }
+                next();
+            });
+        }
+    }
+}
 class Iterator {
     constructor() {
         this.middlewares = [];
@@ -43,7 +65,6 @@ class Iterator {
         await next();
     }
 }
-let isLogin = { value: true, index: 1 };
 let ThsService = ThsService_1 = class ThsService {
     constructor(usersService) {
         this.usersService = usersService;
@@ -65,7 +86,6 @@ let ThsService = ThsService_1 = class ThsService {
         }
     }
     async modifyThsSelfStocks(evenBoardData) {
-        let isSuccess = true;
         this.logger.log('同步自选');
         const userInfo = await this.usersService.getUserByAccount('admin');
         const userid = atob(userInfo.userid);
@@ -73,23 +93,11 @@ let ThsService = ThsService_1 = class ThsService {
         const user = userInfo.user;
         try {
             let app = new Iterator();
+            prepareSelfStock(9, evenBoardData['gaobiao'], app, userid, ticket, user);
             const maxHeight = evenBoardData.maxHeight;
             for (let i = maxHeight; i >= 1; i--) {
                 const stocks = evenBoardData[i + ''];
-                if (stocks) {
-                    for (let j = 0; j < stocks.length; j++) {
-                        stocks[j].type == 0 && app.add(async (ctx, next) => {
-                            const result = await (0, fetchUtil_1.modifyThsSelfStocks)(stocks[j].code, userid, ticket, user);
-                            console.log(stocks[j].name, result);
-                            if (result.errorMsg === '当前用户未登录') {
-                                this.logger.log('当前用户未登录');
-                                isSuccess = false;
-                                return;
-                            }
-                            next();
-                        });
-                    }
-                }
+                prepareSelfStock(i, stocks, app, userid, ticket, user);
             }
             app.run(this);
         }

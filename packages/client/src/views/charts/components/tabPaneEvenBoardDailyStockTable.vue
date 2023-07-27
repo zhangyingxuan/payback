@@ -9,12 +9,13 @@
         <div class="col1">行业板块</div>
         <div class="col2 red">
           涨停个股（{{ data.dailyLimitQuantity }}）
-          <template
+          <span
             v-for="(item, index) in data.ticaiData"
             :key="'span' + index"
+            @click="handleTicaiClick(item.key)"
           >
             {{ item.key }}{{ item.value }}&nbsp;
-          </template>
+          </span>
         </div>
       </div>
 
@@ -43,17 +44,20 @@
             <el-tag v-else-if="stock.type === 2" size="small" type="info" round>
               其它
             </el-tag>
-            &nbsp;[&nbsp;<span class="orange">{{ stock.reason }}</span
-            >， <span class="lanse">{{ stock.price }}</span
-            >，
-            <span :class="{ red: stock.closingFunds > 1 }"
+            &nbsp;[&nbsp;
+            <span
+              class="orange"
+              v-html="highlightKeyWord(stock.reason, keyword)"
+            ></span>
+            ，<span class="lanse">{{ stock.price }}</span> ，<span
+              :class="{ red: stock.closingFunds > 1 }"
               >封单{{ stock.closingFunds }}亿</span
             >， <span class="zise">流通{{ stock.circulationValue }}亿</span>，
             {{ stock.dailyTime }}
             <span class="lvse" v-if="stock.openTimes > 0">
               {{ stock.openTimes }}
             </span>
-            ]
+            ] <span class="red bold">{{ getExpected(stock) }}</span>
           </div>
         </div>
       </div>
@@ -63,6 +67,9 @@
 <script lang="ts" setup>
 import _ from 'lodash-es';
 import { computed } from 'vue';
+import { highlightKeyWord, getExpected } from '../utils';
+
+let emit = defineEmits(['update:data']); //自定义的更新num事件
 let superData = defineProps({
   data: {
     type: Object,
@@ -81,6 +88,8 @@ let superData = defineProps({
     default: false,
   },
 });
+
+let keyword = '';
 
 const stockGroupByPlate = computed(() => {
   const data = _.cloneDeep(superData.data);
@@ -168,6 +177,13 @@ function sortStocks(stocks: []) {
     return b.evenBoardHeight - a.evenBoardHeight;
   });
   return stocks;
+}
+
+function handleTicaiClick(key: string) {
+  keyword = key;
+
+  // 修改父组件传过来的值
+  emit('update:data', _.cloneDeep(superData.data));
 }
 </script>
 

@@ -7,6 +7,7 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    Calendar: typeof import('./src/components/calendar/index.vue')['default']
     CommonDialog: typeof import('./src/components/commonDialog.vue')['default']
     Drawer: typeof import('./src/components/drawer.vue')['default']
     DrawerUl: typeof import('./src/components/drawer-ul.vue')['default']
