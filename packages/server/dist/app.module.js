@@ -16,6 +16,7 @@ const schedule_1 = require("@nestjs/schedule");
 const config_1 = require("@nestjs/config");
 const users_module_1 = require("./users/users.module");
 const auth_module_1 = require("./auth/auth.module");
+const article_module_1 = require("./article/article.module");
 const core_1 = require("@nestjs/core");
 const jwt_auth_guard_1 = require("./auth/jwt-auth.guard");
 const envFilePath = `.env.${process.env.NODE_ENV || 'prod'}`;
@@ -49,10 +50,11 @@ AppModule = __decorate([
                     };
                 },
             }),
-            pay_back_module_1.PayBackModule,
             schedule_1.ScheduleModule.forRoot(),
+            pay_back_module_1.PayBackModule,
             auth_module_1.AuthModule,
             users_module_1.UsersModule,
+            article_module_1.ArticleModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService,

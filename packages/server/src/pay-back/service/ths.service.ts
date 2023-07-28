@@ -6,7 +6,7 @@ let isSuccess = true;
 
 // 投资日历 http://stock.10jqka.com.cn/fincalendar.shtml#2023-07-20
 // 交易提醒 http://stock.10jqka.com.cn/jyts_list/
-// 四大证券 新闻精华 http://stock.10jqka.com.cn/bktt_list/
+// 四大证券 文章精华 http://stock.10jqka.com.cn/bktt_list/
 function atob(a) {
   return Buffer.from(a, 'base64').toString('binary');
 };

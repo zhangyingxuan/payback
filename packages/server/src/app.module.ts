@@ -7,6 +7,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { ArticleModule } from './article/article.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 
@@ -40,10 +41,11 @@ function atob(a) {
         } as TypeOrmModuleOptions;
       },
     }),
-    PayBackModule,
     ScheduleModule.forRoot(),
+    PayBackModule,
     AuthModule,
     UsersModule,
+    ArticleModule,
   ],
   controllers: [AppController],
   providers: [AppService,
