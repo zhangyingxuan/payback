@@ -138,8 +138,11 @@
   </div>
 
   <!-- 当日涨停分布，按行业板块划分 -->
-  <DailyStockTable v-model:data="data.currentDateData" :isMobile="isMobile" />
-  <DownStockTable :data="data.currentDateData" :isMobile="isMobile" />
+  <DailyStockTable
+    v-model:evenBoardData="data.currentDateData"
+    :isMobile="isMobile"
+  />
+  <DownStockTable :evenBoardData="data.currentDateData" :isMobile="isMobile" />
 </template>
 <script lang="ts" setup>
 import { fetchEvenBoardData, fetchReveiwDataByDate } from '@/api/payBack';

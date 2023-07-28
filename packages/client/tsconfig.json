@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
+    "target": "esnext",
+    "module": "esnext",
     "moduleResolution": "Node",
     "strict": true,
     "jsx": "preserve",
@@ -10,10 +10,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "esModuleInterop": true,
-    "lib": [
-      "ESNext",
-      "DOM"
-    ],
+    "lib": ["esnext", "DOM"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],

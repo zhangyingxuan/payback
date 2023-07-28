@@ -40,7 +40,7 @@ interface Tree {
 const data: Tree[] = [
   {
     id: '1',
-    label: '系统首页'
+    label: '系统首页',
   },
   {
     id: '2',
@@ -48,17 +48,17 @@ const data: Tree[] = [
     children: [
       {
         id: '15',
-        label: '编辑'
+        label: '编辑',
       },
       {
         id: '16',
-        label: '删除'
-      }
-    ]
+        label: '删除',
+      },
+    ],
   },
   {
     id: '3',
-    label: 'tab选项卡'
+    label: 'tab选项卡',
   },
   {
     id: '4',
@@ -66,11 +66,11 @@ const data: Tree[] = [
     children: [
       {
         id: '5',
-        label: '基本表单'
+        label: '基本表单',
       },
       {
         id: '6',
-        label: '文件上传'
+        label: '文件上传',
       },
       {
         id: '7',
@@ -78,29 +78,29 @@ const data: Tree[] = [
         children: [
           {
             id: '8',
-            label: '富文本编辑器'
+            label: '富文本编辑器',
           },
-          {
-            id: '9',
-            label: 'markdown编辑器'
-          }
-        ]
-      }
-    ]
+        ],
+      },
+    ],
   },
   {
     id: '10',
-    label: '自定义图标'
+    label: '自定义图标',
+  },
+  {
+    id: '9',
+    label: '文章',
   },
   {
     id: '11',
-    label: 'schart图表'
+    label: '图表',
   },
 
   {
     id: '13',
-    label: '权限管理'
-  }
+    label: '权限管理',
+  },
 ];
 
 const permiss = usePermissStore();

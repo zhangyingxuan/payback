@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts" name="editor">
-import Editor from './news/components/editor.vue';
+import Editor from './article/components/editor.vue';
 </script>
 
 <style></style>

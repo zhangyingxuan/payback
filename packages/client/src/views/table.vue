@@ -190,7 +190,7 @@ let form = reactive({
 });
 let idx = -1;
 
-// 跳转添加新闻页
+// 跳转添加文章页
 const handleAdd = () => {
   // 路由跳转
   router.push({ name: 'newsEdit' });

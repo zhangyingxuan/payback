@@ -11,8 +11,22 @@ import './assets/css/icon.css';
 import Stock from './components/stock.vue';
 import Plate from './components/plate.vue';
 
+// import hljs from 'highlight.js';
+import VMdEditor from '@kangc/v-md-editor';
+import VMdPreview from '@kangc/v-md-editor/lib/preview';
+import vuepressTheme from '@kangc/v-md-editor/lib/theme/vuepress.js';
+import '@kangc/v-md-editor/lib/style/base-editor.css';
+import '@kangc/v-md-editor/lib/theme/style/vuepress.css';
+
 const app = createApp(App);
 
+VMdEditor.use(vuepressTheme);
+VMdPreview.use(vuepressTheme);
+// VMdPreview.use(vuepressTheme, {
+//   Hljs: hljs,
+// });
+app.use(VMdEditor);
+app.use(VMdPreview);
 app.use(createPinia());
 app.use(router);
 app.use(ElementPlus, {

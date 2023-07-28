@@ -5,10 +5,10 @@
         <div class="col1">行业板块</div>
         <div class="col2 green">
           跌停个股（{{
-            superData.data.downLimitData
-              ? superData.data.downLimitData.length
+            evenBoardData.downLimitData
+              ? evenBoardData.downLimitData.length
               : 0
-          }}） 短线跌停 （{{ superData.data.downLimitQuantity }}）
+          }}） 短线跌停 （{{ evenBoardData.downLimitQuantity }}）
         </div>
       </div>
 
@@ -40,7 +40,7 @@
 import _ from 'lodash-es';
 import { computed } from 'vue';
 let superData = defineProps({
-  data: {
+  evenBoardData: {
     type: Object,
     default: () => {},
   },
@@ -59,7 +59,7 @@ let superData = defineProps({
 });
 
 const stockGroupByPlate = computed(() => {
-  const data = _.cloneDeep(superData.data);
+  const data = _.cloneDeep(superData.evenBoardData);
 
   const stockGroupByPlate: any = {};
   // 按 行业板块 将涨停个股分类

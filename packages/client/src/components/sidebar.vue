@@ -76,8 +76,14 @@ const items: any = [
   {
     icon: 'PieChart',
     index: '/charts',
-    title: 'schart图表',
+    title: '图表',
     permiss: '11',
+  },
+  {
+    index: '/markdown',
+    title: '文章',
+    permiss: '9',
+    icon: 'DocumentCopy',
   },
   // {
   //   icon: 'Odometer',
@@ -85,12 +91,12 @@ const items: any = [
   //   title: '系统首页',
   //   permiss: '1',
   // },
-  // {
-  //   icon: 'Calendar',
-  //   index: '/news',
-  //   title: '新闻列表',
-  //   permiss: '2',
-  // },
+  {
+    icon: 'Calendar',
+    index: '/article',
+    title: '文章列表',
+    permiss: '2',
+  },
   // {
   //   icon: 'DocumentCopy',
   //   index: '/tabs',

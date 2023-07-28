@@ -7,14 +7,19 @@
     <div class="table__container">
       <div class="table__header table-row">
         <div class="col1">行业板块</div>
-        <div class="col2 red">
-          涨停个股（{{ data.dailyLimitQuantity }}）
+        <div class="col2 red flex__row">
+          涨停个股（{{ evenBoardData.dailyLimitQuantity }}）
           <span
-            v-for="(item, index) in data.ticaiData"
+            v-for="(item, index) in evenBoardData.ticaiData"
             :key="'span' + index"
             @click="handleTicaiClick(item.key)"
+            class="ticai__item"
           >
             {{ item.key }}{{ item.value }}&nbsp;
+          </span>
+          <span>
+            <el-checkbox v-model="data.myStrategyChecked">我的策略</el-checkbox>
+            <el-checkbox v-model="data.firstBoardChecked">只看首板</el-checkbox>
           </span>
         </div>
       </div>
@@ -66,12 +71,12 @@
 </template>
 <script lang="ts" setup>
 import _ from 'lodash-es';
-import { computed } from 'vue';
+import { reactive, computed } from 'vue';
 import { highlightKeyWord, getExpected } from '../utils';
 
-let emit = defineEmits(['update:data']); //自定义的更新num事件
+let emit = defineEmits(['update:evenBoardData']); //自定义的更新num事件
 let superData = defineProps({
-  data: {
+  evenBoardData: {
     type: Object,
     default: () => {},
   },
@@ -89,17 +94,42 @@ let superData = defineProps({
   },
 });
 
+const data = reactive({
+  // 首板
+  firstBoardChecked: false,
+  // 我的策略
+  myStrategyChecked: false,
+});
+
 let keyword = '';
 
+/**
+ * 是否加入自选
+ * 连板全部加入
+ * 首板：流通市值大于30亿 且小于120亿，涨停10cm的个股，股价低于30
+ */
+function isAddSelf(stock: any, currentLevel: number) {
+  if (currentLevel != 1) return true;
+  // 连板全部加入
+  return (
+    stock.type == 0 &&
+    stock.price <= 30 &&
+    stock.circulationValue >= 20 &&
+    stock.circulationValue <= 120
+  );
+}
+
 const stockGroupByPlate = computed(() => {
-  const data = _.cloneDeep(superData.data);
+  const evenBoardData = _.cloneDeep(superData.evenBoardData);
 
   const stockGroupByPlate: any = {};
+  let isAdd = true;
   // 按 行业板块 将涨停个股分类
-  data.evenBoardData &&
-    Object.keys(data.evenBoardData).forEach((key: string) => {
-      Array.isArray(data.evenBoardData[key]) &&
-        data.evenBoardData[key].forEach((item: any) => {
+  evenBoardData.evenBoardData &&
+    Object.keys(evenBoardData.evenBoardData).forEach((key: string) => {
+      Array.isArray(evenBoardData.evenBoardData[key]) &&
+        evenBoardData.evenBoardData[key].forEach((item: any) => {
+          isAdd = true;
           // 按板块划分 涨停数据
           if (!stockGroupByPlate[item.plateLevel2]) {
             stockGroupByPlate[item.plateLevel2] = [];
@@ -121,7 +151,14 @@ const stockGroupByPlate = computed(() => {
               repeatStock.evenBoardHeight += '，' + item.evenDays;
             }
           } else {
-            stockGroupByPlate[item.plateLevel2].push(item);
+            // 需按照首板/我的策略 进行过滤处理
+            if (data.firstBoardChecked) {
+              isAdd = item.evenBoardHeight == 1;
+            }
+            if (data.myStrategyChecked && isAdd) {
+              isAdd = isAddSelf(item, item.evenBoardHeight);
+            }
+            isAdd && stockGroupByPlate[item.plateLevel2].push(item);
           }
         });
     });
@@ -183,10 +220,20 @@ function handleTicaiClick(key: string) {
   keyword = key;
 
   // 修改父组件传过来的值
-  emit('update:data', _.cloneDeep(superData.data));
+  emit('update:evenBoardData', _.cloneDeep(superData.evenBoardData));
 }
 </script>
 
 <style scoped lang="less">
 @import '../styles/tabPaneEvenBoardStockTable.less';
+
+.flex__row {
+  display: flex;
+  align-items: center;
+}
+
+.ticai__item:hover {
+  color: #000;
+  background-color: yellow;
+}
 </style>

@@ -7,6 +7,7 @@ import Components from 'unplugin-vue-components/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
 import { warpperEnv } from "./build";
 import path from 'path';
+import markdownLoader from './build/markdownLoader'
 
 /** 路径查找 */
 const pathResolve = (dir: string): string => {
@@ -47,6 +48,7 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 			}
 		},
 		plugins: [
+			markdownLoader(),
 			vue(),
 			VueSetupExtend(),
 			AutoImport({
