@@ -18,7 +18,7 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("typeorm");
 const marketData_entity_1 = require("../entities/marketData.entity");
 const typeorm_2 = require("@nestjs/typeorm");
-const playWrightUtil_1 = require("../utils/playWrightUtil");
+const marketUtil_1 = require("../utils/marketUtil");
 const dayjs = require("dayjs");
 const schedule_1 = require("@nestjs/schedule");
 let MarketService = MarketService_1 = class MarketService {
@@ -45,7 +45,7 @@ let MarketService = MarketService_1 = class MarketService {
         }
         let marketData;
         try {
-            marketData = await playWrightUtil_1.default.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
+            marketData = await marketUtil_1.default.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
             console.log(marketData);
             if (isExist) {
                 this.logger.log('crawlMarketData 更新数据');

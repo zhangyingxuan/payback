@@ -39,7 +39,7 @@ export class HotListService {
     let hotListData: CreateHotListDto;
     try {
       hotListData = await getHotListData();
-      const hotListData4Db = {
+      const hotListData4Db: any = {
         stockNormal: JSON.stringify(hotListData.stockNormal),
         stockValue: JSON.stringify(hotListData.stockValue),
         plateConcept: JSON.stringify(hotListData.plateConcept),
@@ -51,7 +51,8 @@ export class HotListService {
         await this.hotListRp.update(todayDataFromDB.id, hotListData4Db);
       } else {
         this.logger.log('新增数据')
-        await this.hotListRp.save({ ...hotListData4Db, createTime: new Date() });
+        hotListData4Db.createTime = hotListData4Db.updatedTime;
+        await this.hotListRp.save(hotListData4Db);
       }
       this.logger.debug('crawlHotListData is success!');
     } catch (e) {

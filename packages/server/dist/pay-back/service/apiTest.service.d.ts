@@ -8,6 +8,7 @@ export declare class ApiTestService {
     fetchHotList(): Promise<void>;
     getThsSelfStocks(): Promise<void>;
     modifyThsSelfStocks(): Promise<void>;
+    datacenterWeb(): Promise<void>;
     findAll(): Promise<hotList[]>;
     findByLimit(len?: number): Promise<hotList[]>;
 }

@@ -116,8 +116,12 @@ const options = [
     label: '20天',
   },
   {
-    value: '40',
+    value: '30',
     label: '30天',
+  },
+  {
+    value: '45',
+    label: '45天',
   },
 ];
 

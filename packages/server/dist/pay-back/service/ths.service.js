@@ -31,7 +31,7 @@ function prepareSelfStock(i, stocks, app, userid, ticket, user) {
                 const result = await (0, fetchUtil_1.modifyThsSelfStocks)(stocks[j].code, userid, ticket, user);
                 console.log(stocks[j].name, result);
                 if (result.errorMsg === '当前用户未登录') {
-                    this.logger.log('当前用户未登录');
+                    ctx.logger.log('当前用户未登录：https://www.10jqka.com.cn/');
                     isSuccess = false;
                     return;
                 }

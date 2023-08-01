@@ -132,6 +132,32 @@ export class ApiTestService {
     })
       .then(async (response) => await response.text()).then(data => console.log(data)).catch(e => console.error(e));
   }
+  async datacenterWeb() {
+    const dateTime = new Date().getTime();
+    const url = `https://datacenter-web.eastmoney.com/api/data/v1/get?callback=jQuery112304542900785353563_${dateTime}&reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE%2CMUTUAL_TYPE%2CBOARD_TYPE%2CMUTUAL_TYPE_NAME%2CFUNDS_DIRECTION%2CINDEX_CODE%2CINDEX_NAME%2CBOARD_CODE&quoteColumns=status~07~BOARD_CODE%2CdayNetAmtIn~07~BOARD_CODE%2CdayAmtRemain~07~BOARD_CODE%2CdayAmtThreshold~07~BOARD_CODE%2Cf104~07~BOARD_CODE%2Cf105~07~BOARD_CODE%2Cf106~07~BOARD_CODE%2Cf3~03~INDEX_CODE~INDEX_f3%2CnetBuyAmt~07~BOARD_CODE&quoteType=0&pageNumber=1&pageSize=200&sortTypes=1&sortColumns=MUTUAL_TYPE&source=WEB&client=WEB&_=${dateTime}`;
+    console.log(url);
+    fetch(url, {
+      "headers": {
+        "accept": "*/*",
+        "accept-language": "zh-CN,zh;q=0.9",
+        "cache-control": "no-cache",
+        "pragma": "no-cache",
+        "sec-ch-ua": "\"Not/A)Brand\";v=\"99\", \"Google Chrome\";v=\"115\", \"Chromium\";v=\"115\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"macOS\"",
+        "sec-fetch-dest": "script",
+        "sec-fetch-mode": "no-cors",
+        "sec-fetch-site": "same-site"
+      },
+      "referrer": "https://data.eastmoney.com/hsgt/index.html",
+      "referrerPolicy": "unsafe-url",
+      "body": null,
+      "method": "GET",
+      "mode": "cors",
+      "credentials": "include"
+    })
+      .then(async (response) => await response.text()).then(data => console.log(data)).catch(e => console.error(e));
+  }
 
   async findAll() {
     return await this.hotListRp.find();

@@ -15,6 +15,8 @@
 import { reactive, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { findOne } from '@/api/article';
+import dayjs from 'dayjs';
+import { dateTimeFormat } from './config';
 
 const { query } = useRoute();
 const router = useRouter();
@@ -34,7 +36,7 @@ function initPage() {
       data.title = result.title;
       data.content = result.content;
       data.createTime = result.createTime;
-      data.updatedTime = result.updatedTime;
+      data.updatedTime = dayjs(result.updatedTime).format(dateTimeFormat);
     });
   }
 }
@@ -42,7 +44,9 @@ function initPage() {
 initPage();
 
 const goBack = () => {
-  router.go(-1);
+  router.push({
+    name: 'article',
+  });
 };
 </script>
 
@@ -58,11 +62,16 @@ const goBack = () => {
   color: gray;
   width: 100%;
   text-align: right;
+  margin-right: 1rem;
 }
 
 .handle-box {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+/deep/ .vuepress-markdown-body {
+  padding: 1rem;
 }
 </style>

@@ -79,7 +79,8 @@ const date1001 = dayjs(currentDate + ' 10:01:00');
 const date1300 = dayjs(currentDate + ' 13:00:00');
 const expectedArr = ['5%', '4%', '3%', '-2%-2%', '0%--2%'];
 export function getExpected(stock: DailyLimitStockDto) {
-  let currentTime: any = stock.openTimes === 0 ? stock.dailyTime : stock.dailyTime.split(',')[0];
+  let currentTime: any = stock.openTimes == 0 ? stock.dailyTime : stock.dailyTime.split(',')[1];
+  // console.log(stock.name, stock.openTimes, stock.dailyTime, currentTime);
   currentTime = dayjs(currentDate + ' ' + currentTime);
   // 1、昨日一字板或开盘秒板的。第二天正常预期高开5%以上。
   // 2、昨日10点前涨停的，第二天正常预期高开4%左右。
@@ -88,6 +89,7 @@ export function getExpected(stock: DailyLimitStockDto) {
   // 5、昨日烂板（开板5次），第二天预计低开（0--2%）
   // openTimes、dailyTime
   // 开板5次以上，烂板
+
   if (stock.openTimes >= 5) {
     return expectedArr[4];
   }

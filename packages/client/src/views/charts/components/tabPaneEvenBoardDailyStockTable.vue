@@ -18,7 +18,17 @@
             {{ item.key }}{{ item.value }}&nbsp;
           </span>
           <span>
-            <el-checkbox v-model="data.myStrategyChecked">我的策略</el-checkbox>
+            <el-checkbox v-model="data.myStrategyChecked"
+              >我的策略
+              <el-tooltip
+                class="box-item"
+                effect="dark"
+                content="价格低于30元，流通市值20-120亿，非ST，非科创，非创业板"
+                placement="top"
+              >
+                <el-icon><InfoFilled /></el-icon>
+              </el-tooltip>
+            </el-checkbox>
             <el-checkbox v-model="data.firstBoardChecked">只看首板</el-checkbox>
           </span>
         </div>
@@ -59,6 +69,7 @@
               >封单{{ stock.closingFunds }}亿</span
             >， <span class="zise">流通{{ stock.circulationValue }}亿</span>，
             {{ stock.dailyTime }}
+            <span class="red">{{ stock.turnoverType }}</span>
             <span class="lvse" v-if="stock.openTimes > 0">
               {{ stock.openTimes }}
             </span>

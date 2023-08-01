@@ -80,10 +80,16 @@ const items: any = [
     permiss: '11',
   },
   {
+    icon: 'DocumentCopy',
+    index: '/article',
+    title: '文章列表',
+    permiss: '2',
+  },
+  {
+    icon: 'Odometer',
     index: '/markdown',
     title: '文章',
     permiss: '9',
-    icon: 'DocumentCopy',
   },
   // {
   //   icon: 'Odometer',
@@ -91,12 +97,6 @@ const items: any = [
   //   title: '系统首页',
   //   permiss: '1',
   // },
-  {
-    icon: 'Calendar',
-    index: '/article',
-    title: '文章列表',
-    permiss: '2',
-  },
   // {
   //   icon: 'DocumentCopy',
   //   index: '/tabs',

@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { marketData } from '../entities/marketData.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import playWrightUtil from '../utils/playWrightUtil'
+import marketUtil from '../utils/marketUtil'
 import * as dayjs from 'dayjs';
 import { Cron } from '@nestjs/schedule';
 import { CreateMarketDataDto } from '../dto/create-market-data.dto';
@@ -42,7 +42,7 @@ export class MarketService {
     let marketData: CreateMarketDataDto;
     try {
 
-      marketData = await playWrightUtil.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
+      marketData = await marketUtil.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
       console.log(marketData);
       if (isExist) {
         this.logger.log('crawlMarketData 更新数据')

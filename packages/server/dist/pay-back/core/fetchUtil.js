@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.promiseLimit = exports.modifyThsSelfStocks = exports.clearThsSelfStocks = exports.fetchIwencaiApi = void 0;
+exports.promiseLimit = exports.modifyThsSelfStocks = exports.fetchNorhFunds = exports.fetchMarketPoint = exports.clearThsSelfStocks = exports.fetchMarketData = exports.fetchIwencaiApi = void 0;
 const hexin_v_js_1 = require("./hexin-v.js");
 const node_fetch_1 = require("node-fetch");
 const commonUtil_1 = require("../utils/commonUtil");
@@ -30,7 +30,27 @@ async function fetchIwencaiApi(question, pageSize = 5, isPlate = true) {
     return (0, commonUtil_1.getIwencaiData)(result);
 }
 exports.fetchIwencaiApi = fetchIwencaiApi;
-async function clearThsSelfStocks(userid, ticket, user) {
+async function fetchMarketData() {
+    let result = await (0, node_fetch_1.default)("http://q.10jqka.com.cn/api.php?t=indexflash&", {
+        "headers": {
+            "accept": "*/*",
+            "accept-language": "zh-CN,zh;q=0.9",
+            "cache-control": "no-cache",
+            "hexin-v": (0, hexin_v_js_1.createV)(),
+            "pragma": "no-cache",
+            "x-requested-with": "XMLHttpRequest"
+        },
+        "referrer": "http://q.10jqka.com.cn/",
+        "referrerPolicy": "strict-origin-when-cross-origin",
+        "body": null,
+        "method": "GET",
+        "mode": "cors",
+        "credentials": "include"
+    });
+    return await result.json();
+}
+exports.fetchMarketData = fetchMarketData;
+async function clearThsSelfStocks(user) {
     let result = await (0, node_fetch_1.default)("http://stock.10jqka.com.cn/self.php", {
         "headers": {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0',
@@ -48,6 +68,53 @@ async function clearThsSelfStocks(userid, ticket, user) {
     return result;
 }
 exports.clearThsSelfStocks = clearThsSelfStocks;
+async function fetchMarketPoint(apiUrl, key) {
+    let result = await (0, node_fetch_1.default)(apiUrl, {
+        "headers": {
+            "accept": "*/*",
+            "accept-language": "zh-CN,zh;q=0.9",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+        },
+        "referrer": "http://q.10jqka.com.cn/",
+        "referrerPolicy": "strict-origin-when-cross-origin",
+        "body": null,
+        "method": "GET",
+        "mode": "cors",
+        "credentials": "include"
+    });
+    const responseData = await result.text();
+    const dataStr = responseData.substring(responseData.indexOf('(') + 1, responseData.length - 1);
+    const dataJSON = JSON.parse(dataStr);
+    return +dataJSON[key][11];
+}
+exports.fetchMarketPoint = fetchMarketPoint;
+async function fetchNorhFunds() {
+    const dateTime = new Date().getTime();
+    const url = `https://datacenter-web.eastmoney.com/api/data/v1/get?callback=jQuery112304542900785353563_${dateTime}&reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE%2CMUTUAL_TYPE%2CBOARD_TYPE%2CMUTUAL_TYPE_NAME%2CFUNDS_DIRECTION%2CINDEX_CODE%2CINDEX_NAME%2CBOARD_CODE&quoteColumns=status~07~BOARD_CODE%2CdayNetAmtIn~07~BOARD_CODE%2CdayAmtRemain~07~BOARD_CODE%2CdayAmtThreshold~07~BOARD_CODE%2Cf104~07~BOARD_CODE%2Cf105~07~BOARD_CODE%2Cf106~07~BOARD_CODE%2Cf3~03~INDEX_CODE~INDEX_f3%2CnetBuyAmt~07~BOARD_CODE&quoteType=0&pageNumber=1&pageSize=200&sortTypes=1&sortColumns=MUTUAL_TYPE&source=WEB&client=WEB&_=${dateTime}`;
+    const result = await (0, node_fetch_1.default)(url, {
+        "headers": {
+            "accept": "*/*",
+            "accept-language": "zh-CN,zh;q=0.9",
+            "cache-control": "no-cache",
+            "pragma": "no-cache",
+            "sec-ch-ua": "\"Not/A)Brand\";v=\"99\", \"Google Chrome\";v=\"115\", \"Chromium\";v=\"115\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"macOS\"",
+            "sec-fetch-dest": "script",
+            "sec-fetch-mode": "no-cors",
+            "sec-fetch-site": "same-site"
+        },
+        "referrer": "https://data.eastmoney.com/hsgt/index.html",
+        "referrerPolicy": "unsafe-url",
+        "body": null,
+        "method": "GET",
+        "mode": "cors",
+        "credentials": "include"
+    });
+    return result.text();
+}
+exports.fetchNorhFunds = fetchNorhFunds;
 async function modifyThsSelfStocks(code, userid, ticket, user) {
     const pos = '1';
     const payload = {

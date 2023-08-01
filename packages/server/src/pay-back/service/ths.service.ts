@@ -4,7 +4,7 @@ import { UsersService } from '../../users/users.service';
 
 let isSuccess = true;
 
-// 投资日历 http://stock.10jqka.com.cn/fincalendar.shtml#2023-07-20
+// 投资日历 http://stock.10jqka.com.cn/fincalendar.shtml
 // 交易提醒 http://stock.10jqka.com.cn/jyts_list/
 // 四大证券 文章精华 http://stock.10jqka.com.cn/bktt_list/
 function atob(a) {
@@ -30,7 +30,8 @@ function prepareSelfStock(i, stocks, app, userid, ticket, user) {
         const result = await modifyThsSelfStocks(stocks[j].code, userid, ticket, user);
         console.log(stocks[j].name, result);
         if (result.errorMsg === '当前用户未登录') {
-          this.logger.log('当前用户未登录');
+          // https://www.10jqka.com.cn/ 重新登录地址
+          ctx.logger.log('当前用户未登录：https://www.10jqka.com.cn/');
           //  当前用户未登录，则停止之后的异步调用请求
           isSuccess = false;
           return;

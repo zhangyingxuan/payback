@@ -3,6 +3,13 @@ import fetch from 'node-fetch';
 import { getIwencaiData } from '../utils/commonUtil';
 import { stringify } from 'qs';
 
+/**
+ * 获取爱问财数据
+ * @param question 
+ * @param pageSize 
+ * @param isPlate 
+ * @returns 
+ */
 export async function fetchIwencaiApi(question, pageSize = 5, isPlate = true) {
   const body = {
     "source": "Ths_iwencai_Xuangu",
@@ -30,8 +37,32 @@ export async function fetchIwencaiApi(question, pageSize = 5, isPlate = true) {
 
   return getIwencaiData(result);
 }
+/**
+ * 获取市场核心数据
+ * @returns 
+ */
+export async function fetchMarketData() {
+  let result = await fetch("http://q.10jqka.com.cn/api.php?t=indexflash&", {
+    "headers": {
+      "accept": "*/*",
+      "accept-language": "zh-CN,zh;q=0.9",
+      "cache-control": "no-cache",
+      "hexin-v": createV(),
+      "pragma": "no-cache",
+      "x-requested-with": "XMLHttpRequest"
+    },
+    "referrer": "http://q.10jqka.com.cn/",
+    "referrerPolicy": "strict-origin-when-cross-origin",
+    "body": null,
+    "method": "GET",
+    "mode": "cors",
+    "credentials": "include"
+  });
 
-export async function clearThsSelfStocks(userid, ticket, user) {
+  return await result.json();
+}
+
+export async function clearThsSelfStocks(user) {
   // # 更改同花顺自选股列表
   // # method: add 添加, del 删除, exc 排序
   // # pos: 排序用的序号, 从1开始
@@ -51,6 +82,67 @@ export async function clearThsSelfStocks(userid, ticket, user) {
   });
   return result;
 }
+
+/**
+ * 获取市场指数 点数
+ * @param user 
+ * @returns 
+ */
+export async function fetchMarketPoint(apiUrl, key) {
+  let result = await fetch(apiUrl, {
+    "headers": {
+      "accept": "*/*",
+      "accept-language": "zh-CN,zh;q=0.9",
+      "cache-control": "no-cache",
+      "pragma": "no-cache"
+    },
+    "referrer": "http://q.10jqka.com.cn/",
+    "referrerPolicy": "strict-origin-when-cross-origin",
+    "body": null,
+    "method": "GET",
+    "mode": "cors",
+    "credentials": "include"
+  });
+  const responseData = await result.text();
+  const dataStr = responseData.substring(responseData.indexOf('(') + 1, responseData.length - 1);
+  const dataJSON = JSON.parse(dataStr);
+  // console.log(dataJSON[key]);
+  return +dataJSON[key][11];
+}
+
+/**
+ * 东方财富 获取北向、南向资金数据
+ * @returns 
+ */
+export async function fetchNorhFunds() {
+  // # 更改同花顺自选股列表
+  // # method: add 添加, del 删除, exc 排序
+  // # pos: 排序用的序号, 从1开始
+  const dateTime = new Date().getTime();
+  const url = `https://datacenter-web.eastmoney.com/api/data/v1/get?callback=jQuery112304542900785353563_${dateTime}&reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE%2CMUTUAL_TYPE%2CBOARD_TYPE%2CMUTUAL_TYPE_NAME%2CFUNDS_DIRECTION%2CINDEX_CODE%2CINDEX_NAME%2CBOARD_CODE&quoteColumns=status~07~BOARD_CODE%2CdayNetAmtIn~07~BOARD_CODE%2CdayAmtRemain~07~BOARD_CODE%2CdayAmtThreshold~07~BOARD_CODE%2Cf104~07~BOARD_CODE%2Cf105~07~BOARD_CODE%2Cf106~07~BOARD_CODE%2Cf3~03~INDEX_CODE~INDEX_f3%2CnetBuyAmt~07~BOARD_CODE&quoteType=0&pageNumber=1&pageSize=200&sortTypes=1&sortColumns=MUTUAL_TYPE&source=WEB&client=WEB&_=${dateTime}`;
+  const result = await fetch(url, {
+    "headers": {
+      "accept": "*/*",
+      "accept-language": "zh-CN,zh;q=0.9",
+      "cache-control": "no-cache",
+      "pragma": "no-cache",
+      "sec-ch-ua": "\"Not/A)Brand\";v=\"99\", \"Google Chrome\";v=\"115\", \"Chromium\";v=\"115\"",
+      "sec-ch-ua-mobile": "?0",
+      "sec-ch-ua-platform": "\"macOS\"",
+      "sec-fetch-dest": "script",
+      "sec-fetch-mode": "no-cors",
+      "sec-fetch-site": "same-site"
+    },
+    "referrer": "https://data.eastmoney.com/hsgt/index.html",
+    "referrerPolicy": "unsafe-url",
+    "body": null,
+    "method": "GET",
+    "mode": "cors",
+    "credentials": "include"
+  })
+  return result.text();
+}
+
 export async function modifyThsSelfStocks(code, userid, ticket, user) {
   // # 更改同花顺自选股列表
   // # method: add 添加, del 删除, exc 排序

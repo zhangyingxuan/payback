@@ -23,7 +23,7 @@
       </el-table-column>
 
       <el-table-column
-        prop="updateTime"
+        prop="updatedTime"
         width="220"
         label="更新时间"
       ></el-table-column>
@@ -56,18 +56,25 @@
 
 <script setup lang="ts" name="basetable">
 import { ref } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { dayjs, ElMessage, ElMessageBox } from 'element-plus';
 import { Plus } from '@element-plus/icons-vue';
 import { ArticleModel } from '@/api/model/ArticleModel';
 import { findAll, remove } from '@/api/article';
 import { useRouter } from 'vue-router';
+import { dateTimeFormat } from './config';
 
 const router = useRouter();
 const tableData = ref<ArticleModel[]>([]);
 // 获取表格数据
 const getData = () => {
   findAll().then((data: any) => {
-    tableData.value = data;
+    tableData.value = data.map((item: any) => {
+      return {
+        ...item,
+        createTime: dayjs(item.createTime).format(dateTimeFormat),
+        updatedTime: dayjs(item.updatedTime).format(dateTimeFormat),
+      };
+    });
   });
 };
 getData();

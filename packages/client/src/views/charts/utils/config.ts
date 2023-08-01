@@ -3,7 +3,9 @@ export const columnsConfig: any = {
   7: 4,
   10: 3,
   15: 2,
-  20: 2
+  20: 2,
+  30: 1,
+  45: 1,
 };
 
 export const iwencaiUrl = 'http://www.iwencai.com/unifiedwap/result?w=';

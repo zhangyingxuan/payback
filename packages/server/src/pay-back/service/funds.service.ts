@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { fundsData } from '../entities/fundsData.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import playWrightUtil from '../utils/playWrightUtil'
+import fundsUtil from '../utils/fundsUtil'
 import { CreateFundsDataDto } from '../dto/create-funds-data.dto';
 import * as dayjs from 'dayjs';
 import { Cron } from '@nestjs/schedule';
@@ -48,7 +48,7 @@ export class FundsService {
     }
     let fundsData: CreateFundsDataDto;
     try {
-      fundsData = await playWrightUtil.getFundsData(dayjs(todayDateStr).format('YYYYMMDD'));
+      fundsData = await fundsUtil.getFundsData(dayjs(todayDateStr).format('YYYYMMDD'));
       console.log(fundsData);
 
       if (isExist) {

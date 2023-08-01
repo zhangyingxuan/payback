@@ -18,7 +18,7 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("typeorm");
 const fundsData_entity_1 = require("../entities/fundsData.entity");
 const typeorm_2 = require("@nestjs/typeorm");
-const playWrightUtil_1 = require("../utils/playWrightUtil");
+const fundsUtil_1 = require("../utils/fundsUtil");
 const dayjs = require("dayjs");
 const schedule_1 = require("@nestjs/schedule");
 let FundsService = FundsService_1 = class FundsService {
@@ -45,7 +45,7 @@ let FundsService = FundsService_1 = class FundsService {
         }
         let fundsData;
         try {
-            fundsData = await playWrightUtil_1.default.getFundsData(dayjs(todayDateStr).format('YYYYMMDD'));
+            fundsData = await fundsUtil_1.default.getFundsData(dayjs(todayDateStr).format('YYYYMMDD'));
             console.log(fundsData);
             if (isExist) {
                 this.logger.log('crawlfundsData 更新数据');

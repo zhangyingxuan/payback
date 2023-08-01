@@ -36,7 +36,7 @@ let PayBackController = class PayBackController {
         this.marketService = marketService;
     }
     async testApi() {
-        return this.apiTestService.modifyThsSelfStocks();
+        return await this.apiTestService.datacenterWeb();
     }
     async crawlTodayData() {
         const shortData = await this.ShorTermService.crawlShortTermData();
