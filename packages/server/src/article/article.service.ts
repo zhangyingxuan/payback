@@ -12,8 +12,9 @@ export class ArticleService {
 
   async create(createArticleDto: CreateArticleDto) {
     // 前端传入数据createTestDto
-    const newUser = await this.articleRp.create(createArticleDto);
-    return await this.articleRp.save(newUser);
+    createArticleDto.createTime = new Date();
+    const newArticle = await this.articleRp.create(createArticleDto);
+    return await this.articleRp.save(newArticle);
   }
 
   async remove(id: number) {
@@ -27,12 +28,13 @@ export class ArticleService {
   }
 
   async update(id: number, updateTestDto: CreateArticleDto) {
-    const updateUser = await this.articleRp.findOne({ where: { id } });
-    if (!updateUser) {
+    updateTestDto.updatedTime = new Date();
+    const updateArticle = await this.articleRp.findOne({ where: { id } });
+    if (!updateArticle) {
       throw new Error(`User with id ${id} not found.`);
     }
-    await this.articleRp.merge(updateUser, updateTestDto);
-    return await this.articleRp.update(id, updateUser);
+    await this.articleRp.merge(updateArticle, updateTestDto);
+    return await this.articleRp.update(id, updateArticle);
   }
 
   async findAll() {

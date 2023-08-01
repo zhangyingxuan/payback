@@ -22,8 +22,9 @@ let ArticleService = class ArticleService {
         this.articleRp = articleRp;
     }
     async create(createArticleDto) {
-        const newUser = await this.articleRp.create(createArticleDto);
-        return await this.articleRp.save(newUser);
+        createArticleDto.createTime = new Date();
+        const newArticle = await this.articleRp.create(createArticleDto);
+        return await this.articleRp.save(newArticle);
     }
     async remove(id) {
         const userToRemove = await this.articleRp.findOneOrFail({
@@ -35,12 +36,13 @@ let ArticleService = class ArticleService {
         return await this.articleRp.remove(userToRemove);
     }
     async update(id, updateTestDto) {
-        const updateUser = await this.articleRp.findOne({ where: { id } });
-        if (!updateUser) {
+        updateTestDto.updatedTime = new Date();
+        const updateArticle = await this.articleRp.findOne({ where: { id } });
+        if (!updateArticle) {
             throw new Error(`User with id ${id} not found.`);
         }
-        await this.articleRp.merge(updateUser, updateTestDto);
-        return await this.articleRp.update(id, updateUser);
+        await this.articleRp.merge(updateArticle, updateTestDto);
+        return await this.articleRp.update(id, updateArticle);
     }
     async findAll() {
         return await this.articleRp.find();

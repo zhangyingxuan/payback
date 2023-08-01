@@ -10,6 +10,8 @@ export class DailyLimitStockDto {
   reason: string;
   // 成交额，
   turnover: number;
+  // 成交量类型，一字涨停
+  turnoverType: number;
   // 封板资金
   closingFunds: number;
   // 几天几板

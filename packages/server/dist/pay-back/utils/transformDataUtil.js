@@ -5,6 +5,8 @@ const daily_limit_stock_dto_1 = require("../dto/daily-limit-stock.dto");
 const down_limit_stock_dto_1 = require("../dto/down-limit-stock.dto");
 const commonUtil_1 = require("./commonUtil");
 const dayjs = require("dayjs");
+const turnoverTypeObj = { '放量涨停': 0, '缩量涨停': 1, '一字涨停': 2 };
+const turnoverTypeArr = ['放量涨停', '缩量涨停', '一字涨停'];
 function transformStockData(stockList) {
     return stockList.map(item => {
         var _a, _b;
@@ -85,6 +87,9 @@ function transformDailyLimitData(dailyLimitData, currentDate) {
         dailyLimitStockDto.reason = item[`涨停原因类别[${currentDate}]`];
         dailyLimitStockDto.plateLevel2 = item['所属同花顺二级行业'];
         dailyLimitStockDto.closingFunds = (0, commonUtil_1.fundsToFixed)(item[`涨停封单额[${currentDate}]`]);
+        if (item[`涨停类型[${currentDate}]`] !== turnoverTypeArr[0]) {
+            dailyLimitStockDto.turnoverType = item[`涨停类型[${currentDate}]`];
+        }
         dailyLimitStockDto.type = judgeType(item['最新涨跌幅']);
         dailyLimitStockDto.price = item['最新价'];
         if (item[`涨停开板次数[${currentDate}]`] !== 0) {

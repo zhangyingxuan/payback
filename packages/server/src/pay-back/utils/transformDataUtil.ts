@@ -4,6 +4,9 @@ import { DownLimitStockDto } from '../dto/down-limit-stock.dto';
 import { toFixed, fundsToFixed } from './commonUtil';
 import * as dayjs from 'dayjs';
 
+const turnoverTypeObj = { '放量涨停': 0, '缩量涨停': 1, '一字涨停': 2 };
+const turnoverTypeArr = ['放量涨停', '缩量涨停', '一字涨停'];
+
 export function transformStockData(stockList) {
   return stockList.map(item => {
     return {
@@ -105,6 +108,12 @@ function transformDailyLimitData(dailyLimitData, currentDate) {
     dailyLimitStockDto.plateLevel2 = item['所属同花顺二级行业'];
     // 封板资金 单位 亿
     dailyLimitStockDto.closingFunds = fundsToFixed(item[`涨停封单额[${currentDate}]`]);
+
+    // 默认都是放量涨停，不记录
+    if (item[`涨停类型[${currentDate}]`] !== turnoverTypeArr[0]) {
+      // 成交量类型
+      dailyLimitStockDto.turnoverType = item[`涨停类型[${currentDate}]`];
+    }
     dailyLimitStockDto.type = judgeType(item['最新涨跌幅']);
     dailyLimitStockDto.price = item['最新价'];
     // 开板次数，如果未开板 则不保存
