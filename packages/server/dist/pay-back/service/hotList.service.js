@@ -46,14 +46,15 @@ let HotListService = HotListService_1 = class HotListService {
                 plateConcept: JSON.stringify(hotListData.plateConcept),
                 plateIndustry: JSON.stringify(hotListData.plateIndustry),
                 updatedTime: hotListData.updatedTime,
+                createTime: hotListData.updatedTime,
             };
             if (isExist) {
                 this.logger.log('更新数据');
+                delete hotListData4Db.createTime;
                 await this.hotListRp.update(todayDataFromDB.id, hotListData4Db);
             }
             else {
                 this.logger.log('新增数据');
-                hotListData4Db.createTime = hotListData4Db.updatedTime;
                 await this.hotListRp.save(hotListData4Db);
             }
             this.logger.debug('crawlHotListData is success!');
@@ -79,7 +80,7 @@ let HotListService = HotListService_1 = class HotListService {
     }
 };
 __decorate([
-    (0, schedule_1.Cron)('0 30 */1 * * *'),
+    (0, schedule_1.Cron)('0 */15 7-23 * * *'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)

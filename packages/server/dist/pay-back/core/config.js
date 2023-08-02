@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.params = exports.beizhengIndexApi = exports.chuangyeIndexApi = exports.shenzhengIndexApi = exports.shangzhengIndexApi = exports.marketUrl = exports.iwencaiUrl = void 0;
+exports.params = exports.beizhengIndexApi = exports.chuangyeIndexApi = exports.shenzhengIndexApi = exports.shangzhengIndexApi = exports.allIndexApiFrom = exports.marketUrl = exports.iwencaiUrl = void 0;
 exports.iwencaiUrl = 'http://www.iwencai.com/unifiedwap/result?w=';
 exports.marketUrl = 'http://q.10jqka.com.cn';
+exports.allIndexApiFrom = 'http://d.10jqka.com.cn/v4/line/zs_1A0001/01/today.js';
 exports.shangzhengIndexApi = 'http://d.10jqka.com.cn/v4/line/zs_1A0001/01/today.js';
 exports.shenzhengIndexApi = 'http://d.10jqka.com.cn/v4/line/zs_399001/01/today.js';
 exports.chuangyeIndexApi = 'http://d.10jqka.com.cn/v4/line/zs_399006/01/today.js';

@@ -57,7 +57,7 @@ export class MarketService {
       await this.marketDataRp.update(todayDataFromDB.id, marketData);
     } else {
       this.logger.log('crawlMarketData 新增数据')
-      await this.marketDataRp.save(marketData);
+      // await this.marketDataRp.save(marketData);
     }
     return marketData;
   }

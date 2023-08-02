@@ -20,8 +20,8 @@ export class HotListService {
   // * 10 * * * *：每小时一次，十分钟开始
   // 0 */30 9-17 * * *：上午九时至下午五时，每三十分钟一次
   // 0 30 11 * * 1-5：星期一至星期五上午11:30
-  @Cron('0 30 */1 * * *') // 每小时执行一次，30分钟开始
-  // @Cron('0 30 0 * * *') // 每天0:30 执行
+  // @Cron('0 30 */1 * * *') // 每小时执行一次，30分钟开始
+  @Cron('0 */15 7-23 * * *') // 每小时执行一次，30分钟开始
   async crawlHotListData() {
     let isExist = false;
     this.logger.debug('crawlHotListData is Begining!');
@@ -39,19 +39,20 @@ export class HotListService {
     let hotListData: CreateHotListDto;
     try {
       hotListData = await getHotListData();
-      const hotListData4Db: any = {
+      const hotListData4Db: CreateHotListDto = {
         stockNormal: JSON.stringify(hotListData.stockNormal),
         stockValue: JSON.stringify(hotListData.stockValue),
         plateConcept: JSON.stringify(hotListData.plateConcept),
         plateIndustry: JSON.stringify(hotListData.plateIndustry),
         updatedTime: hotListData.updatedTime,
+        createTime: hotListData.updatedTime,
       }
       if (isExist) {
         this.logger.log('更新数据')
+        delete hotListData4Db.createTime;
         await this.hotListRp.update(todayDataFromDB.id, hotListData4Db);
       } else {
         this.logger.log('新增数据')
-        hotListData4Db.createTime = hotListData4Db.updatedTime;
         await this.hotListRp.save(hotListData4Db);
       }
       this.logger.debug('crawlHotListData is success!');

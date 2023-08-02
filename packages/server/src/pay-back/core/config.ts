@@ -5,6 +5,8 @@ export const iwencaiUrl = 'http://www.iwencai.com/unifiedwap/result?w=';
 export const marketUrl = 'http://q.10jqka.com.cn';
 
 // 指数接口
+export const allIndexApiFrom = 'http://d.10jqka.com.cn/v4/line/zs_1A0001/01/today.js';
+// 指数接口
 export const shangzhengIndexApi = 'http://d.10jqka.com.cn/v4/line/zs_1A0001/01/today.js';
 export const shenzhengIndexApi = 'http://d.10jqka.com.cn/v4/line/zs_399001/01/today.js';
 export const chuangyeIndexApi = 'http://d.10jqka.com.cn/v4/line/zs_399006/01/today.js';

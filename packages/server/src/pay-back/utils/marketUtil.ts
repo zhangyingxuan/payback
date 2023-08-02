@@ -2,7 +2,7 @@
 // 轻量服务器 1核1G 仅支持1个 browser 1个page 同时打开，否则会阻塞执行
 import { CreateMarketDataDto } from '../dto/create-market-data.dto';
 import fundsUtil from './fundsUtil';
-import { fetchMarketPoint, fetchMarketData, fetchIwencaiApi } from '../core/fetchUtil';
+import { fetchMarketPointFromEastmoney, fetchMarketData, fetchIwencaiApi } from '../core/fetchUtil';
 import { shangzhengIndexApi, shenzhengIndexApi, chuangyeIndexApi, beizhengIndexApi, params } from '../core/config';
 
 export default {
@@ -11,14 +11,19 @@ export default {
    */
   async getMarketData(dateStr): Promise<CreateMarketDataDto> {
     const createMarketDataDto: CreateMarketDataDto = new CreateMarketDataDto();
-    // 上证指数
-    createMarketDataDto.shangzhengPoint = await fetchMarketPoint(shangzhengIndexApi, 'zs_1A0001');
-    // 深证指数
-    createMarketDataDto.shenzhengPoint = await fetchMarketPoint(shenzhengIndexApi, 'zs_399001');
-    // 创业板指数
-    createMarketDataDto.chuangyePoint = await fetchMarketPoint(chuangyeIndexApi, 'zs_399006');
-    // 北证50指数
-    createMarketDataDto.beizheng50Point = await fetchMarketPoint(beizhengIndexApi, '151_899050');
+    const indexResult = await fetchMarketPointFromEastmoney(shangzhengIndexApi);
+    createMarketDataDto.shangzhengPoint = indexResult[0]['f2'];
+    createMarketDataDto.shenzhengPoint = indexResult[1]['f2'];
+    createMarketDataDto.beizheng50Point = indexResult[2]['f2'];
+    createMarketDataDto.chuangyePoint = indexResult[3]['f2'];
+    // // 上证指数
+    // createMarketDataDto.shangzhengPoint = await fetchMarketPoint(shangzhengIndexApi, 'zs_1A0001');
+    // // 深证指数
+    // createMarketDataDto.shenzhengPoint = await fetchMarketPoint(shenzhengIndexApi, 'zs_399001');
+    // // 创业板指数
+    // createMarketDataDto.chuangyePoint = await fetchMarketPoint(chuangyeIndexApi, 'zs_399006');
+    // // 北证50指数
+    // createMarketDataDto.beizheng50Point = await fetchMarketPoint(beizhengIndexApi, '151_899050');
 
     const marketData = await fetchMarketData();
     createMarketDataDto.dailyLimitIncome = marketData.jrbx_data.last_zdf;

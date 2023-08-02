@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.promiseLimit = exports.modifyThsSelfStocks = exports.fetchNorhFunds = exports.fetchMarketPoint = exports.clearThsSelfStocks = exports.fetchMarketData = exports.fetchIwencaiApi = void 0;
+exports.promiseLimit = exports.modifyThsSelfStocks = exports.fetchNorhFunds = exports.fetchMarketPoint = exports.fetchMarketPointFromEastmoney = exports.clearThsSelfStocks = exports.fetchMarketData = exports.fetchIwencaiApi = void 0;
 const hexin_v_js_1 = require("./hexin-v.js");
 const node_fetch_1 = require("node-fetch");
 const commonUtil_1 = require("../utils/commonUtil");
@@ -68,13 +68,35 @@ async function clearThsSelfStocks(user) {
     return result;
 }
 exports.clearThsSelfStocks = clearThsSelfStocks;
+async function fetchMarketPointFromEastmoney(key) {
+    var _a;
+    let result = await (0, node_fetch_1.default)("http://57.push2.eastmoney.com/api/qt/clist/get?cb=jQuery112402821055891936557_1690967409698&pn=1&pz=4&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&wbp2u=|0|0|0|web&fid=&fs=b:MK0010&fields=f2,f3,f12,f14&_=1690967409717", {
+        "headers": {
+            "accept": "*/*",
+            "accept-language": "zh-CN,zh;q=0.9",
+            "cache-control": "no-cache",
+            "pragma": "no-cache"
+        },
+        "referrer": "http://quote.eastmoney.com/center/hszs.html",
+        "referrerPolicy": "unsafe-url",
+        "body": null,
+        "method": "GET",
+        "mode": "cors",
+        "credentials": "include"
+    });
+    const responseData = await result.text();
+    const dataStr = responseData.substring(responseData.indexOf('(') + 1, responseData.length - 2);
+    const dataJSON = (_a = JSON.parse(dataStr).data) === null || _a === void 0 ? void 0 : _a.diff;
+    return dataJSON;
+}
+exports.fetchMarketPointFromEastmoney = fetchMarketPointFromEastmoney;
 async function fetchMarketPoint(apiUrl, key) {
     let result = await (0, node_fetch_1.default)(apiUrl, {
         "headers": {
             "accept": "*/*",
             "accept-language": "zh-CN,zh;q=0.9",
             "cache-control": "no-cache",
-            "pragma": "no-cache"
+            "pragma": "no-cache",
         },
         "referrer": "http://q.10jqka.com.cn/",
         "referrerPolicy": "strict-origin-when-cross-origin",

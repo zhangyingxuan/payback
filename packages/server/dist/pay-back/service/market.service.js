@@ -62,7 +62,6 @@ let MarketService = MarketService_1 = class MarketService {
         }
         else {
             this.logger.log('crawlMarketData 新增数据');
-            await this.marketDataRp.save(marketData);
         }
         return marketData;
     }
