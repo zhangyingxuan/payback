@@ -8,7 +8,7 @@
   >
     <pre>
       早盘工作：
-      1. 9点前，外围美股昨日涨跌情况 <a href="http://stock.10jqka.com.cn/fincalendar.shtml">投资日历</a>  <a href="http://stock.10jqka.com.cn/jyts_list/">交易提醒</a> <a href="http://stock.10jqka.com.cn/bktt_list/">四大证券 文章精华</a> 
+      1. 9点前，外围美股昨日涨跌情况 <a href="http://stock.10jqka.com.cn/fincalendar.shtml" target="_blank">投资日历</a>  <a href="http://stock.10jqka.com.cn/jyts_list/" target="_blank">交易提醒</a> <a href="http://stock.10jqka.com.cn/bktt_list/" target="_blank">四大证券文章精华</a> 
       2. 看集合竞价
           2.1 9.20-9.25，<span style="color: red">一字板方向</span>，为资金追随方向，对应 <span style="color: red">板块分支</span>加关注
           2.2 9.24 - 9.25一分钟看匹配量，可暴露主力意图（看价格走势，判断出货还是抢筹）
@@ -120,11 +120,13 @@
     <br />
     <pre>
       复盘工作<br />
-      1. 涨停自选，保留所有连板，涨停最早5只股，封单最大5只保留，留意一字板板块及一字原因；选股逻辑，低位优先，20-120个股，股价低于20，筹码峰 10%以下
-      2. 跌停自选，作为次日做多做空参考之一
-      3. 1+n模式埋伏自选，低位1进2断板，收十字最好微涨
+      1. 敬畏市场，预测指数，及板块次日走势，觉得次日是否操作，需与市场共振。
+      2. 涨停自选，保留所有连板，涨停最早5只股，封单最大5只保留，留意一字板板块及一字原因；选股逻辑，低位优先，20-120个股，股价低于20，筹码峰 10%以下
+      3. 跌停自选，作为次日做多做空参考之一
+      4. 1+n模式埋伏自选，低位1进2断板，收十字最好微涨
       4. 龙虎榜游资参与情况，方向确定
-      4. 消息收集，睡前少爷 + 股道风
+      5. 消息收集，睡前少爷 + 股道风
+
     </pre>
     <pre>
       交易计划 <br />

@@ -12,9 +12,9 @@ export default {
   async getMarketData(dateStr): Promise<CreateMarketDataDto> {
     const createMarketDataDto: CreateMarketDataDto = new CreateMarketDataDto();
     // 上证指数
-    createMarketDataDto.shenzhengPoint = await fetchMarketPoint(shangzhengIndexApi, 'zs_1A0001');
+    createMarketDataDto.shangzhengPoint = await fetchMarketPoint(shangzhengIndexApi, 'zs_1A0001');
     // 深证指数
-    createMarketDataDto.shangzhengPoint = await fetchMarketPoint(shenzhengIndexApi, 'zs_399001');
+    createMarketDataDto.shenzhengPoint = await fetchMarketPoint(shenzhengIndexApi, 'zs_399001');
     // 创业板指数
     createMarketDataDto.chuangyePoint = await fetchMarketPoint(chuangyeIndexApi, 'zs_399006');
     // 北证50指数

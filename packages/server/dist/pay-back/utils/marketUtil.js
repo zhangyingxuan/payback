@@ -7,8 +7,8 @@ const config_1 = require("../core/config");
 exports.default = {
     async getMarketData(dateStr) {
         const createMarketDataDto = new create_market_data_dto_1.CreateMarketDataDto();
-        createMarketDataDto.shenzhengPoint = await (0, fetchUtil_1.fetchMarketPoint)(config_1.shangzhengIndexApi, 'zs_1A0001');
-        createMarketDataDto.shangzhengPoint = await (0, fetchUtil_1.fetchMarketPoint)(config_1.shenzhengIndexApi, 'zs_399001');
+        createMarketDataDto.shangzhengPoint = await (0, fetchUtil_1.fetchMarketPoint)(config_1.shangzhengIndexApi, 'zs_1A0001');
+        createMarketDataDto.shenzhengPoint = await (0, fetchUtil_1.fetchMarketPoint)(config_1.shenzhengIndexApi, 'zs_399001');
         createMarketDataDto.chuangyePoint = await (0, fetchUtil_1.fetchMarketPoint)(config_1.chuangyeIndexApi, 'zs_399006');
         createMarketDataDto.beizheng50Point = await (0, fetchUtil_1.fetchMarketPoint)(config_1.beizhengIndexApi, '151_899050');
         const marketData = await (0, fetchUtil_1.fetchMarketData)();

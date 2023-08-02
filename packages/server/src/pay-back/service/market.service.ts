@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { marketData } from '../entities/marketData.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import playWrightUtil from '../utils/playWrightUtil'
 import marketUtil from '../utils/marketUtil'
 import * as dayjs from 'dayjs';
 import { Cron } from '@nestjs/schedule';
@@ -41,20 +42,22 @@ export class MarketService {
     }
     let marketData: CreateMarketDataDto;
     try {
-
       marketData = await marketUtil.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
       console.log(marketData);
-      if (isExist) {
-        this.logger.log('crawlMarketData 更新数据')
-        await this.marketDataRp.update(todayDataFromDB.id, marketData);
-      } else {
-        this.logger.log('crawlMarketData 新增数据')
-        await this.marketDataRp.save(marketData);
-      }
-
       this.logger.debug('crawlMarketData is success!');
     } catch (e) {
-      this.logger.error('出错啦！！！', e)
+      this.logger.error('出错啦！！！', e);
+      this.logger.debug('crawlMarketData retry！playWrightUtil.getMarketData');
+      marketData = await playWrightUtil.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
+      console.log(marketData);
+    }
+
+    if (isExist) {
+      this.logger.log('crawlMarketData 更新数据')
+      await this.marketDataRp.update(todayDataFromDB.id, marketData);
+    } else {
+      this.logger.log('crawlMarketData 新增数据')
+      await this.marketDataRp.save(marketData);
     }
     return marketData;
   }

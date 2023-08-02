@@ -18,6 +18,7 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("typeorm");
 const marketData_entity_1 = require("../entities/marketData.entity");
 const typeorm_2 = require("@nestjs/typeorm");
+const playWrightUtil_1 = require("../utils/playWrightUtil");
 const marketUtil_1 = require("../utils/marketUtil");
 const dayjs = require("dayjs");
 const schedule_1 = require("@nestjs/schedule");
@@ -47,18 +48,21 @@ let MarketService = MarketService_1 = class MarketService {
         try {
             marketData = await marketUtil_1.default.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
             console.log(marketData);
-            if (isExist) {
-                this.logger.log('crawlMarketData 更新数据');
-                await this.marketDataRp.update(todayDataFromDB.id, marketData);
-            }
-            else {
-                this.logger.log('crawlMarketData 新增数据');
-                await this.marketDataRp.save(marketData);
-            }
             this.logger.debug('crawlMarketData is success!');
         }
         catch (e) {
             this.logger.error('出错啦！！！', e);
+            this.logger.debug('crawlMarketData retry！playWrightUtil.getMarketData');
+            marketData = await playWrightUtil_1.default.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
+            console.log(marketData);
+        }
+        if (isExist) {
+            this.logger.log('crawlMarketData 更新数据');
+            await this.marketDataRp.update(todayDataFromDB.id, marketData);
+        }
+        else {
+            this.logger.log('crawlMarketData 新增数据');
+            await this.marketDataRp.save(marketData);
         }
         return marketData;
     }
