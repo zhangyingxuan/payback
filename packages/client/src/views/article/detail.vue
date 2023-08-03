@@ -4,15 +4,21 @@
       <el-button @click="goBack"> 返回 </el-button>
       <div class="date">{{ data.updatedTime }}</div>
     </div>
-    <div>
+    <div id="articleDetail">
       <div class="title">{{ data.title }}</div>
       <v-md-preview :text="data.content" />
     </div>
   </div>
+  <el-backtop
+    :right="20"
+    :bottom="20"
+    target=".content"
+    :visibility-height="200"
+  />
 </template>
 
 <script setup lang="ts" name="newsDetail">
-import { reactive, ref } from 'vue';
+import { reactive } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { findOne } from '@/api/article';
 import dayjs from 'dayjs';

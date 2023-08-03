@@ -218,12 +218,25 @@ const data: {
 });
 
 const siderBar = useSidebarStore();
-const { countDays } = storeToRefs(siderBar);
+const { countDays, isAutoRefresh } = storeToRefs(siderBar);
+let interval: any = null;
 
 // 监听变化，重新请求数据
-watch(countDays, async val => {
-  await initPage(val);
-});
+watch(
+  countDays,
+  async val => {
+    await initPage(val);
+  },
+  { immediate: true },
+);
+// 监听变化，重新请求数据
+watch(
+  isAutoRefresh,
+  async val => {
+    initAutoRefresh(val);
+  },
+  { immediate: true },
+);
 
 function getType(cycle: string) {
   if (cycle.indexOf('高潮') > -1) {
@@ -242,7 +255,7 @@ async function initPage(pageSize: number) {
   // 获取图表数据
   const result: any = await fetchEvenBoardData({
     // limit: 10,
-    limit: isMobile ? 10 : pageSize,
+    limit: pageSize,
     isMobile,
   });
   // const rs: any = await fetchIndustryData();
@@ -251,9 +264,15 @@ async function initPage(pageSize: number) {
   handleDateClick(evenBoard.value[0]);
 }
 
-onMounted(() => {
-  initPage(countDays.value);
-});
+function initAutoRefresh(val: boolean) {
+  if (val) {
+    interval = setInterval(() => {
+      initPage(countDays.value);
+    }, 300000);
+  } else {
+    clearInterval(interval);
+  }
+}
 
 async function handleDateClick(item: any) {
   data.hasSummaryTableData = false;

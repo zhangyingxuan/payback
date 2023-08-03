@@ -15,32 +15,46 @@
         <el-button type="primary" @click="switchDrawerVisible" size="small">
           我的收藏
         </el-button>
-        <el-button type="primary" @click="refreshTodayData" size="small">
-          更新今日数据
-        </el-button>
-        <el-button
-          type="warning"
-          @click="synchronousOptionalStocks"
-          size="small"
-        >
-          同步
-        </el-button>
 
-        <template v-if="!isMobile">
-          <!-- 数据统计天数 5 10 15 20 -->
-          <el-select
-            v-model="sidebar.countDays"
-            @change="onSelectChange"
-            placeholder="统计周期"
+        <template v-if="isAdmin">
+          <el-button type="danger" @click="refreshTodayData" size="small">
+            更新今日数据
+          </el-button>
+          <el-button
+            type="warning"
+            @click="synchronousOptionalStocks"
             size="small"
           >
-            <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
+            同步
+          </el-button>
+        </template>
+
+        <!-- 数据统计天数 5 10 15 20 -->
+        <el-select
+          class="select"
+          v-model="sidebar.countDays"
+          @change="onSelectChange"
+          placeholder="统计周期"
+          size="small"
+        >
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+        <template v-if="!isMobile">
+          <el-switch
+            v-model="sidebar.isAutoRefresh"
+            inline-prompt
+            style="
+              --el-switch-on-color: #13ce66;
+              --el-switch-off-color: #ff4949;
+            "
+            active-text="自动刷新"
+            inactive-text="关闭刷新"
+          />
           <!-- 用户头像 -->
           <el-avatar class="user-avator" :size="30" :src="imgurl" />
           <!-- 用户名下拉菜单 -->
@@ -92,6 +106,8 @@ import dayjs from 'dayjs';
 import Calendar from './calendar/index.vue';
 
 const username: string | null = localStorage.getItem('ms_username');
+
+const isAdmin = username === 'admin';
 
 // const countDays = ref(20);
 const options = [
@@ -194,9 +210,6 @@ const handleCommand = (command: string) => {
 .mobile-right {
   padding: 0 5px;
   overflow: auto;
-  .el-button {
-    margin-right: 5px;
-  }
 }
 .collapse-btn {
   display: flex;
@@ -215,10 +228,7 @@ const handleCommand = (command: string) => {
 }
 .header-right {
   float: right;
-  padding-right: 50px;
-  .el-button {
-    margin-right: 15px;
-  }
+  padding-right: 20px;
 }
 .header-user-con {
   display: flex;
@@ -268,5 +278,9 @@ const handleCommand = (command: string) => {
 }
 .el-dropdown-menu__item {
   text-align: center;
+}
+.select {
+  width: 80px;
+  margin: 0 15px;
 }
 </style>

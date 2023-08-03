@@ -88,9 +88,9 @@ export async function clearThsSelfStocks(user) {
  * @param user 
  * @returns 
  */
-export async function fetchMarketPointFromEastmoney(key) {
+export async function fetchMarketPointFromEastmoney() {
   // 从这个界面的表格接口获取 http://quote.eastmoney.com/center/hszs.html
-  let result = await fetch("http://57.push2.eastmoney.com/api/qt/clist/get?cb=jQuery112402821055891936557_1690967409698&pn=1&pz=4&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&wbp2u=|0|0|0|web&fid=&fs=b:MK0010&fields=f2,f3,f12,f14&_=1690967409717", {
+  let result = await fetch("http://57.push2.eastmoney.com/api/qt/clist/get?cb=jQuery112402821055891936557_1690967409698&pn=1&pz=6&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&wbp2u=|0|0|0|web&fid=&fs=b:MK0010&fields=f2,f3,f12,f14&_=1690967409717", {
     "headers": {
       "accept": "*/*",
       "accept-language": "zh-CN,zh;q=0.9",
@@ -107,7 +107,6 @@ export async function fetchMarketPointFromEastmoney(key) {
   const responseData = await result.text();
   const dataStr = responseData.substring(responseData.indexOf('(') + 1, responseData.length - 2);
   const dataJSON = JSON.parse(dataStr).data?.diff;
-  // console.log(dataJSON[key]);
   return dataJSON;
 }
 /**

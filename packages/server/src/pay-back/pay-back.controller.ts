@@ -9,6 +9,7 @@ import { ThsService } from './service/ths.service';
 import { ApiTestService } from './service/apiTest.service';
 import { UpdatePayBackDto } from './dto/update-pay-back.dto';
 import { Public } from '../decorator/public.decorator';
+import { Cron } from '@nestjs/schedule';
 import dayjs from 'dayjs';
 
 @Controller('pay-back')
@@ -27,11 +28,22 @@ export class PayBackController {
   @Get('testApi')
   async testApi() {
     return await this.apiTestService.datacenterWeb();
-    // return this.apiTestService.modifyThsSelfStocks();
-    // return this.apiTestService.getThsSelfStocks();
-    // return this.apiTestService.fetchHotList();
-    // return await this.apiTestService.fetchExternalData();
-    // this.apiTestService.getTodos();
+  }
+
+
+  @Cron('0 */5 9-12 * * 1-5')
+  async autoCrawlTodayDataAM() {
+    // 早盘需要精确到 9.20 - 11.30，其他时间返回
+    const currentTime = dayjs();
+    const currentDate = currentTime.format('YYYY-MM-DD');
+    // 时间返回判断;9.20 - 11.30
+    if (currentTime.isAfter(currentDate + ' 09:19:00') && currentTime.isBefore(currentDate + ' 11:31:00')) {
+      this.crawlTodayData();
+    }
+  }
+  @Cron('0 */5 13-15 * * 1-5')
+  async autoCrawlTodayDataPM() {
+    this.crawlTodayData();
   }
 
   @Public()
@@ -142,15 +154,5 @@ export class PayBackController {
       code: 200,
       data: palateData,
     };
-  }
-
-  @Get('queryAll')
-  findAll() {
-    return this.ShorTermService.findAll();
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePayBackDto: UpdatePayBackDto) {
-    return this.ShorTermService.update(+id, updatePayBackDto);
   }
 }

@@ -22,8 +22,9 @@ const latestConceptPlate_service_1 = require("./service/latestConceptPlate.servi
 const review_service_1 = require("./service/review.service");
 const ths_service_1 = require("./service/ths.service");
 const apiTest_service_1 = require("./service/apiTest.service");
-const update_pay_back_dto_1 = require("./dto/update-pay-back.dto");
 const public_decorator_1 = require("../decorator/public.decorator");
+const schedule_1 = require("@nestjs/schedule");
+const dayjs_1 = require("dayjs");
 let PayBackController = class PayBackController {
     constructor(ShorTermService, fundsService, hotListService, reviewService, thsService, apiTestService, latestConceptPlateService, marketService) {
         this.ShorTermService = ShorTermService;
@@ -37,6 +38,16 @@ let PayBackController = class PayBackController {
     }
     async testApi() {
         return await this.apiTestService.datacenterWeb();
+    }
+    async autoCrawlTodayDataAM() {
+        const currentTime = (0, dayjs_1.default)();
+        const currentDate = currentTime.format('YYYY-MM-DD');
+        if (currentTime.isAfter(currentDate + ' 09:19:00') && currentTime.isBefore(currentDate + ' 11:31:00')) {
+            this.crawlTodayData();
+        }
+    }
+    async autoCrawlTodayDataPM() {
+        this.crawlTodayData();
     }
     async crawlTodayData() {
         const shortData = await this.ShorTermService.crawlShortTermData();
@@ -113,12 +124,6 @@ let PayBackController = class PayBackController {
             data: palateData,
         };
     }
-    findAll() {
-        return this.ShorTermService.findAll();
-    }
-    update(id, updatePayBackDto) {
-        return this.ShorTermService.update(+id, updatePayBackDto);
-    }
 };
 __decorate([
     (0, public_decorator_1.Public)(),
@@ -127,6 +132,18 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "testApi", null);
+__decorate([
+    (0, schedule_1.Cron)('0 */5 9-12 * * 1-5'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], PayBackController.prototype, "autoCrawlTodayDataAM", null);
+__decorate([
+    (0, schedule_1.Cron)('0 */5 13-15 * * 1-5'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], PayBackController.prototype, "autoCrawlTodayDataPM", null);
 __decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.Get)('/crawlTodayData'),
@@ -212,20 +229,6 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "findPlateByLimit", null);
-__decorate([
-    (0, common_1.Get)('queryAll'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], PayBackController.prototype, "findAll", null);
-__decorate([
-    (0, common_1.Patch)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_pay_back_dto_1.UpdatePayBackDto]),
-    __metadata("design:returntype", void 0)
-], PayBackController.prototype, "update", null);
 PayBackController = __decorate([
     (0, common_1.Controller)('pay-back'),
     __metadata("design:paramtypes", [shortTerm_service_1.ShorTermService,

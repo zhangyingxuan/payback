@@ -43,42 +43,33 @@ const form = reactive({
 
 const id = query && query.id ? query.id : null;
 
-function initPage() {
-  if (id) {
-    // 编辑
-    findOne({ id }).then(data => {
-      form.title = data.title;
-      form.content = data.content;
-    });
-  }
-}
-
-initPage();
-
 // 提交
 const onSubmit = (formEl: FormInstance | undefined) => {
   // 表单校验
   if (!formEl) return;
   formEl.validate(valid => {
     if (valid) {
-      console.log(form);
       if (!form.content) {
         ElMessage.error('请输入文章内容！！！');
         return false;
       }
 
+      let params, apiRequest;
       if (id) {
-        update({
+        apiRequest = update;
+        params = {
           id,
           ...form,
-        }).then(() => {
-          ElMessage.success('提交成功！');
-        });
+        };
       } else {
-        create(form).then(() => {
-          ElMessage.success('提交成功！');
-        });
+        apiRequest = create;
+        params = form;
       }
+      apiRequest(params).then(() => {
+        ElMessage.success('保存成功！');
+        goBack();
+      });
+      return true;
     } else {
       return false;
     }
@@ -93,4 +84,16 @@ const onReset = (formEl: FormInstance | undefined) => {
 const goBack = () => {
   router.go(-1);
 };
+
+function initPage() {
+  if (id) {
+    // 编辑
+    findOne({ id }).then(data => {
+      form.title = data.title;
+      form.content = data.content;
+    });
+  }
+}
+
+initPage();
 </script>

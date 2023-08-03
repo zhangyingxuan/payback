@@ -7,11 +7,11 @@ const config_1 = require("../core/config");
 exports.default = {
     async getMarketData(dateStr) {
         const createMarketDataDto = new create_market_data_dto_1.CreateMarketDataDto();
-        const indexResult = await (0, fetchUtil_1.fetchMarketPointFromEastmoney)(config_1.shangzhengIndexApi);
+        const indexResult = await (0, fetchUtil_1.fetchMarketPointFromEastmoney)();
         createMarketDataDto.shangzhengPoint = indexResult[0]['f2'];
         createMarketDataDto.shenzhengPoint = indexResult[1]['f2'];
         createMarketDataDto.beizheng50Point = indexResult[2]['f2'];
-        createMarketDataDto.chuangyePoint = indexResult[3]['f2'];
+        createMarketDataDto.chuangyePoint = indexResult[5]['f2'];
         const marketData = await (0, fetchUtil_1.fetchMarketData)();
         createMarketDataDto.dailyLimitIncome = marketData.jrbx_data.last_zdf;
         createMarketDataDto.fallAmount = marketData.zdfb_data.dnum;

@@ -1,5 +1,5 @@
 <template>
-  <span class="time">{{ time }}</span>
+  <!-- <span class="time">{{ time }}</span> -->
   <span v-html="text"></span>
 </template>
 <script lang="ts" setup>

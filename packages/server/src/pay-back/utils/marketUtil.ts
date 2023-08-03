@@ -11,11 +11,11 @@ export default {
    */
   async getMarketData(dateStr): Promise<CreateMarketDataDto> {
     const createMarketDataDto: CreateMarketDataDto = new CreateMarketDataDto();
-    const indexResult = await fetchMarketPointFromEastmoney(shangzhengIndexApi);
+    const indexResult = await fetchMarketPointFromEastmoney();
     createMarketDataDto.shangzhengPoint = indexResult[0]['f2'];
     createMarketDataDto.shenzhengPoint = indexResult[1]['f2'];
     createMarketDataDto.beizheng50Point = indexResult[2]['f2'];
-    createMarketDataDto.chuangyePoint = indexResult[3]['f2'];
+    createMarketDataDto.chuangyePoint = indexResult[5]['f2'];
     // // 上证指数
     // createMarketDataDto.shangzhengPoint = await fetchMarketPoint(shangzhengIndexApi, 'zs_1A0001');
     // // 深证指数

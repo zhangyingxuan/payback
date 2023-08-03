@@ -11,9 +11,7 @@
       >
         <el-form-item prop="account">
           <el-input v-model="param.account" placeholder="account">
-            <template #prepend>
-              <el-button :icon="User"></el-button>
-            </template>
+            <template #prepend> 账号 </template>
           </el-input>
         </el-form-item>
         <el-form-item prop="password">
@@ -23,9 +21,7 @@
             v-model="param.password"
             @keyup.enter="submitForm(login)"
           >
-            <template #prepend>
-              <el-button :icon="Lock"></el-button>
-            </template>
+            <template #prepend> 密码 </template>
           </el-input>
         </el-form-item>
         <div class="login-btn">
@@ -47,7 +43,7 @@ import type { FormInstance, FormRules } from 'element-plus';
 import { Lock, User } from '@element-plus/icons-vue';
 import { authLogin } from '@/api/user';
 import { UserModel } from '@/api/model/UserModel';
-import { setToken } from '@/router/auth';
+import { setToken, setUserInfo } from '@/router/auth';
 
 const router = useRouter();
 const param = reactive<UserModel>({
@@ -79,11 +75,11 @@ const submitForm = (formEl: FormInstance | undefined) => {
 
       if (result && result.token) {
         ElMessage.success('登录成功');
-        localStorage.setItem('ms_username', param.account);
         const keys =
           permiss.defaultList[param.account == 'admin' ? 'admin' : 'user'];
         permiss.handleSet(keys);
-        localStorage.setItem('ms_keys', JSON.stringify(keys));
+        // 设置用户信息
+        setUserInfo(param.account, JSON.stringify(keys));
         // 7天
         setToken(result.token, 604800);
         router.push('/');
