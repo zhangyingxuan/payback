@@ -134,7 +134,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ShorTermService.prototype, "autoCrawlShortTermDataLateSession", null);
 __decorate([
-    (0, schedule_1.Cron)('0 31 11 * * 1-5'),
+    (0, schedule_1.Cron)('0 36 11 * * 1-5'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)

@@ -33,9 +33,8 @@ export async function fetchIwencaiApi(question, pageSize = 5, isPlate = true) {
     "method": "POST",
   });
 
-  result = await result.json();
-
-  return getIwencaiData(result);
+  // 避免频繁调用，同一个接口，否则会被封禁
+  return getIwencaiData(await result.json());
 }
 /**
  * 获取市场核心数据

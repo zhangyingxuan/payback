@@ -27,21 +27,21 @@ export const params = {
   // 数据中心地址
   dataCenterUrl: 'http://data.10jqka.com.cn/',
   // 概念板块 主力资金 流入排序
-  gainianFundsInflow: '概念板块主力资金；主力资金流向金额正序&querytype=zhishu',
+  gainianFundsInflow: '概念板块主力资金；主力资金流向金额正序',
   // 概念板块 主力资金 流出排序
-  gainianFundsOutflow: '概念板块主力资金；主力资金流向金额倒序&querytype=zhishu',
+  gainianFundsOutflow: '概念板块主力资金；主力资金流向金额倒序',
   // 行业板块 主力资金 流入排序
-  hangyeFundsInflow: '行业板块主力资金流向金额正序；所属同花顺行业级别是二级行业；&querytype=zhishu',
+  hangyeFundsInflow: '行业板块主力资金流向金额正序；所属同花顺行业级别是二级行业；',
   // 行业板块 主力资金 流出排序
-  hangyeFundsOutflow: '行业板块主力资金流向金额倒序；所属同花顺行业级别是二级行业；&querytype=zhishu',
+  hangyeFundsOutflow: '行业板块主力资金流向金额倒序；所属同花顺行业级别是二级行业；',
   // 概念板块 涨幅排行
-  gainianRiseFloat: '概念板块主力资金；涨跌幅正序&querytype=zhishu',
+  gainianRiseFloat: '概念板块主力资金；涨跌幅正序',
   // 概念板块 跌幅排行
-  gainianFallFloat: '概念板块主力资金；涨跌幅倒序&querytype=zhishu',
+  gainianFallFloat: '概念板块主力资金；涨跌幅倒序',
   // 行业板块 涨幅排行
-  hangyeRiseFloat: '行业板块涨跌幅正序；所属同花顺行业级别是二级行业；&querytype=zhishu',
+  hangyeRiseFloat: '行业板块涨跌幅正序；所属同花顺行业级别是二级行业；',
   // 行业板块 跌幅排行
-  hangyeFallFloat: '行业板块涨跌幅倒序；所属同花顺行业级别是二级行业；&querytype=zhishu',
+  hangyeFallFloat: '行业板块涨跌幅倒序；所属同花顺行业级别是二级行业；',
   // 概念板块
-  gainianPlate: '概念板块&querytype=zhishu',
+  gainianPlate: '概念板块',
 }

@@ -23,7 +23,7 @@ export class FundsService {
   }
 
   // 午盘
-  @Cron('0 35 11 * * 1-5')
+  @Cron('0 41 11 * * 1-5')
   async autoCrawlfundsDataMidday() {
     this.crawlfundsData();
   }

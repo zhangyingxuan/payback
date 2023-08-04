@@ -26,8 +26,7 @@ async function fetchIwencaiApi(question, pageSize = 5, isPlate = true) {
         "body": JSON.stringify(body),
         "method": "POST",
     });
-    result = await result.json();
-    return (0, commonUtil_1.getIwencaiData)(result);
+    return (0, commonUtil_1.getIwencaiData)(await result.json());
 }
 exports.fetchIwencaiApi = fetchIwencaiApi;
 async function fetchMarketData() {

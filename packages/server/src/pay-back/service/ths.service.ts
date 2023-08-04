@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { modifyThsSelfStocks, clearThsSelfStocks } from '../core/fetchUtil';
+import { FetchRequestIterator } from '../core/fetchRequestIterator';
 import { UsersService } from '../../users/users.service';
 
 let isSuccess = true;
@@ -53,36 +54,6 @@ function prepareSelfStock(i, stocks, app, userid, ticket, user) {
   }
 }
 
-class Iterator {
-  middlewares: Array<Function>;
-
-  constructor() {
-    this.middlewares = [];
-  }
-
-
-  add(fn) {
-    this.middlewares.push(fn); //存入任务
-    return this;
-  }
-  async run(ctx) {
-    function createNext(middleware, oldNext) {
-      return async () => {
-        await middleware(ctx, oldNext);
-      }
-    }
-    let len = this.middlewares.length;
-    let next = async () => {
-      return Promise.resolve();
-    };
-    for (let i = len - 1; i >= 0; i--) {
-      let currentMiddleware = this.middlewares[i];
-      next = createNext(currentMiddleware, next);
-    }
-    await next();
-  }
-}
-
 @Injectable()
 export class ThsService {
   constructor(
@@ -90,22 +61,6 @@ export class ThsService {
   ) { }
 
   private readonly logger = new Logger(ThsService.name);
-
-  nextRegister(args: Array<Function>) {
-    var count = 0;
-    var comm = {};
-    function nextTime() {
-      count++;
-      if (count < args.length) {
-        if (args[count] && Object.prototype.toString.call(args[count]) == '[object AsyncFunction]') {
-          args[count](comm, nextTime);
-        }
-      }
-    }
-    if (args[count] && Object.prototype.toString.call(args[count]) == '[object AsyncFunction]') {
-      args[count](comm, nextTime);
-    }
-  }
 
   async modifyThsSelfStocks(evenBoardData) {
     this.logger.log('同步自选');
@@ -122,7 +77,7 @@ export class ThsService {
       // return;
       // 3、插入自选股
       // const funcs = [];
-      let app = new Iterator();
+      let app = new FetchRequestIterator();
       // 3.1 先加入高标
       prepareSelfStock(9, evenBoardData['gaobiao'], app, userid, ticket, user);
       // 3.2 再加入连板股

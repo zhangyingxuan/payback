@@ -3,7 +3,8 @@
 import { CreateMarketDataDto } from '../dto/create-market-data.dto';
 import fundsUtil from './fundsUtil';
 import { fetchMarketPointFromEastmoney, fetchMarketData, fetchIwencaiApi } from '../core/fetchUtil';
-import { shangzhengIndexApi, shenzhengIndexApi, chuangyeIndexApi, beizhengIndexApi, params } from '../core/config';
+import { params } from '../core/config';
+// import { FetchRequestIterator } from '../core/fetchRequestIterator';
 
 export default {
   /**
@@ -11,6 +12,8 @@ export default {
    */
   async getMarketData(dateStr): Promise<CreateMarketDataDto> {
     const createMarketDataDto: CreateMarketDataDto = new CreateMarketDataDto();
+    // const fetchRequestIterator = new FetchRequestIterator();
+    // 获取市场指数
     const indexResult = await fetchMarketPointFromEastmoney();
     createMarketDataDto.shangzhengPoint = indexResult[0]['f2'];
     createMarketDataDto.shenzhengPoint = indexResult[1]['f2'];
@@ -25,12 +28,14 @@ export default {
     // // 北证50指数
     // createMarketDataDto.beizheng50Point = await fetchMarketPoint(beizhengIndexApi, '151_899050');
 
+    // 获取同花顺分数、涨跌家数
     const marketData = await fetchMarketData();
     createMarketDataDto.dailyLimitIncome = marketData.jrbx_data.last_zdf;
     createMarketDataDto.fallAmount = marketData.zdfb_data.dnum;
     createMarketDataDto.riseAmount = marketData.zdfb_data.znum;
     createMarketDataDto.marketScore = marketData.dppj_data;
 
+    // fetchRequestIterator.push();
     const gainianRiseFloat = await fetchIwencaiApi(params.gainianRiseFloat);
     const gainianFallFloat = await fetchIwencaiApi(params.gainianFallFloat);
     const hangyeRiseFloat = await fetchIwencaiApi(params.hangyeRiseFloat);

@@ -53,14 +53,6 @@ let MarketService = MarketService_1 = class MarketService {
             this.logger.error('出错啦！！！', e);
             console.log(marketData);
         }
-        if (isExist) {
-            this.logger.log('crawlMarketData 更新数据');
-            await this.marketDataRp.update(todayDataFromDB.id, marketData);
-        }
-        else {
-            this.logger.log('crawlMarketData 新增数据');
-            await this.marketDataRp.save(marketData);
-        }
         return marketData;
     }
     async findAll() {
@@ -108,7 +100,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], MarketService.prototype, "autoCrawlMarketDataLateSession", null);
 __decorate([
-    (0, schedule_1.Cron)('0 33 11 * * 1-5'),
+    (0, schedule_1.Cron)('0 31 11 * * 1-5'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)

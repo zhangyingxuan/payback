@@ -81,7 +81,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FundsService.prototype, "autoCrawlfundsDataLateSession", null);
 __decorate([
-    (0, schedule_1.Cron)('0 35 11 * * 1-5'),
+    (0, schedule_1.Cron)('0 41 11 * * 1-5'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)

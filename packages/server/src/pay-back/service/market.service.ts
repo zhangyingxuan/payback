@@ -22,7 +22,7 @@ export class MarketService {
   }
 
   // 午盘
-  @Cron('0 33 11 * * 1-5')
+  @Cron('0 31 11 * * 1-5')
   async autoCrawlMarketDataMidday() {
     this.crawlMarketData();
   }
@@ -52,13 +52,13 @@ export class MarketService {
       console.log(marketData);
     }
 
-    if (isExist) {
-      this.logger.log('crawlMarketData 更新数据')
-      await this.marketDataRp.update(todayDataFromDB.id, marketData);
-    } else {
-      this.logger.log('crawlMarketData 新增数据')
-      await this.marketDataRp.save(marketData);
-    }
+    // if (isExist) {
+    //   this.logger.log('crawlMarketData 更新数据')
+    //   await this.marketDataRp.update(todayDataFromDB.id, marketData);
+    // } else {
+    //   this.logger.log('crawlMarketData 新增数据')
+    //   await this.marketDataRp.save(marketData);
+    // }
     return marketData;
   }
 

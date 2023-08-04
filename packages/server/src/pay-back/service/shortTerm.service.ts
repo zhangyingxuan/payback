@@ -30,7 +30,7 @@ export class ShorTermService {
   }
 
   // 午盘
-  @Cron('0 31 11 * * 1-5')
+  @Cron('0 36 11 * * 1-5')
   async autoCrawlShortTermDataMidday() {
     this.crawlShortTermData();
   }

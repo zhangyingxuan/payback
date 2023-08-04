@@ -13,6 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ThsService = void 0;
 const common_1 = require("@nestjs/common");
 const fetchUtil_1 = require("../core/fetchUtil");
+const fetchRequestIterator_1 = require("../core/fetchRequestIterator");
 const users_service_1 = require("../../users/users.service");
 let isSuccess = true;
 function atob(a) {
@@ -42,50 +43,10 @@ function prepareSelfStock(i, stocks, app, userid, ticket, user) {
         }
     }
 }
-class Iterator {
-    constructor() {
-        this.middlewares = [];
-    }
-    add(fn) {
-        this.middlewares.push(fn);
-        return this;
-    }
-    async run(ctx) {
-        function createNext(middleware, oldNext) {
-            return async () => {
-                await middleware(ctx, oldNext);
-            };
-        }
-        let len = this.middlewares.length;
-        let next = async () => {
-            return Promise.resolve();
-        };
-        for (let i = len - 1; i >= 0; i--) {
-            let currentMiddleware = this.middlewares[i];
-            next = createNext(currentMiddleware, next);
-        }
-        await next();
-    }
-}
 let ThsService = ThsService_1 = class ThsService {
     constructor(usersService) {
         this.usersService = usersService;
         this.logger = new common_1.Logger(ThsService_1.name);
-    }
-    nextRegister(args) {
-        var count = 0;
-        var comm = {};
-        function nextTime() {
-            count++;
-            if (count < args.length) {
-                if (args[count] && Object.prototype.toString.call(args[count]) == '[object AsyncFunction]') {
-                    args[count](comm, nextTime);
-                }
-            }
-        }
-        if (args[count] && Object.prototype.toString.call(args[count]) == '[object AsyncFunction]') {
-            args[count](comm, nextTime);
-        }
     }
     async modifyThsSelfStocks(evenBoardData) {
         this.logger.log('同步自选');
@@ -94,7 +55,7 @@ let ThsService = ThsService_1 = class ThsService {
         const ticket = userInfo.ticket;
         const user = userInfo.user;
         try {
-            let app = new Iterator();
+            let app = new fetchRequestIterator_1.FetchRequestIterator();
             prepareSelfStock(9, evenBoardData['gaobiao'], app, userid, ticket, user);
             const maxHeight = evenBoardData.maxHeight;
             for (let i = maxHeight; i >= 1; i--) {
