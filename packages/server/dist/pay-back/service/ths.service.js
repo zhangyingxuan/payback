@@ -20,9 +20,11 @@ function atob(a) {
 }
 ;
 function isAddSelf(stock, currentLevel) {
+    if (stock.type != 0)
+        return false;
     if (currentLevel != 1)
         return true;
-    return stock.type == 0 && stock.price <= 30 && (stock.circulationValue >= 20 && stock.circulationValue <= 120);
+    return stock.price <= 30 && (stock.circulationValue >= 20 && stock.circulationValue <= 120);
 }
 function prepareSelfStock(i, stocks, app, userid, ticket, user) {
     if (stocks) {

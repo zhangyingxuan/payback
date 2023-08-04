@@ -70,7 +70,8 @@ async function clearThsSelfStocks(user) {
 exports.clearThsSelfStocks = clearThsSelfStocks;
 async function fetchMarketPointFromEastmoney() {
     var _a;
-    let result = await (0, node_fetch_1.default)("http://57.push2.eastmoney.com/api/qt/clist/get?cb=jQuery112402821055891936557_1690967409698&pn=1&pz=6&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&wbp2u=|0|0|0|web&fid=&fs=b:MK0010&fields=f2,f3,f12,f14&_=1690967409717", {
+    const dateTime = new Date().getTime();
+    let result = await (0, node_fetch_1.default)(`http://57.push2.eastmoney.com/api/qt/clist/get?cb=jQuery112402821055891936557_${dateTime}&pn=1&pz=6&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&wbp2u=|0|0|0|web&fid=&fs=b:MK0010&fields=f2,f3,f12,f14&_=${dateTime}`, {
         "headers": {
             "accept": "*/*",
             "accept-language": "zh-CN,zh;q=0.9",

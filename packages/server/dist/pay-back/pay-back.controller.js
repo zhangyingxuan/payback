@@ -40,19 +40,21 @@ let PayBackController = class PayBackController {
         return await this.apiTestService.datacenterWeb();
     }
     async autoCrawlTodayDataAM() {
+        console.log('[必入]定时任务执行了！0 */5 9-12 * * 1-5');
         const currentTime = (0, dayjs_1.default)();
         const currentDate = currentTime.format('YYYY-MM-DD');
+        console.log('定时任务执行了！0 */5 9-12 * * 1-5', currentDate + ' 09:19:00', currentTime, currentTime.isAfter(currentDate + ' 09:19:00'), currentTime.isBefore(currentDate + ' 11:31:00'));
         if (currentTime.isAfter(currentDate + ' 09:19:00') && currentTime.isBefore(currentDate + ' 11:31:00')) {
-            this.crawlTodayData();
+            console.log('[选入]定时任务执行了！0 */5 13-15 * * 1-5');
         }
     }
     async autoCrawlTodayDataPM() {
-        this.crawlTodayData();
+        console.log('定时任务执行了！0 */5 13-15 * * 1-5');
     }
     async crawlTodayData() {
         const shortData = await this.ShorTermService.crawlShortTermData();
-        const marketData = await this.marketService.crawlMarketData();
         const fundsData = await this.fundsService.crawlfundsData();
+        const marketData = await this.marketService.crawlMarketData();
         return {
             shortData,
             fundsData,

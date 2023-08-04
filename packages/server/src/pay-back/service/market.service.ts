@@ -47,8 +47,8 @@ export class MarketService {
       this.logger.debug('crawlMarketData is success!');
     } catch (e) {
       this.logger.error('出错啦！！！', e);
-      this.logger.debug('crawlMarketData retry！playWrightUtil.getMarketData');
-      marketData = await playWrightUtil.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
+      // this.logger.debug('crawlMarketData retry！playWrightUtil.getMarketData');
+      // marketData = await playWrightUtil.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
       console.log(marketData);
     }
 

@@ -17,9 +17,11 @@ function atob(a) {
  * 首板：流通市值大于30亿 且小于120亿，涨停10cm的个股，股价低于30
  */
 function isAddSelf(stock, currentLevel) {
-  if (currentLevel != 1) return true;
+  // 创业板、科创板不自选
+  if (stock.type != 0) return false;
   // 连板全部加入
-  return stock.type == 0 && stock.price <= 30 && (stock.circulationValue >= 20 && stock.circulationValue <= 120);
+  if (currentLevel != 1) return true;
+  return stock.price <= 30 && (stock.circulationValue >= 20 && stock.circulationValue <= 120);
 }
 
 function prepareSelfStock(i, stocks, app, userid, ticket, user) {

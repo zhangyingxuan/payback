@@ -34,24 +34,29 @@ export class PayBackController {
   @Cron('0 */5 9-12 * * 1-5')
   async autoCrawlTodayDataAM() {
     // 早盘需要精确到 9.20 - 11.30，其他时间返回
+    console.log('[必入]定时任务执行了！0 */5 9-12 * * 1-5');
     const currentTime = dayjs();
     const currentDate = currentTime.format('YYYY-MM-DD');
     // 时间返回判断;9.20 - 11.30
+    console.log('定时任务执行了！0 */5 9-12 * * 1-5', currentDate + ' 09:19:00', currentTime, currentTime.isAfter(currentDate + ' 09:19:00'), currentTime.isBefore(currentDate + ' 11:31:00'));
     if (currentTime.isAfter(currentDate + ' 09:19:00') && currentTime.isBefore(currentDate + ' 11:31:00')) {
-      this.crawlTodayData();
+      // this.crawlTodayData();
+      console.log('[选入]定时任务执行了！0 */5 13-15 * * 1-5');
     }
   }
+
   @Cron('0 */5 13-15 * * 1-5')
   async autoCrawlTodayDataPM() {
-    this.crawlTodayData();
+    console.log('定时任务执行了！0 */5 13-15 * * 1-5');
+    // this.crawlTodayData();
   }
 
   @Public()
   @Get('/crawlTodayData')
   async crawlTodayData() {
     const shortData = await this.ShorTermService.crawlShortTermData();
-    const marketData = await this.marketService.crawlMarketData();
     const fundsData = await this.fundsService.crawlfundsData();
+    const marketData = await this.marketService.crawlMarketData();
     return {
       shortData,
       fundsData,
