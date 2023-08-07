@@ -19,7 +19,7 @@ const typeorm_1 = require("typeorm");
 const hotList_entity_1 = require("../entities/hotList.entity");
 const typeorm_2 = require("@nestjs/typeorm");
 const node_fetch_1 = require("node-fetch");
-const hexin_v_js_1 = require("../core/hexin-v.js");
+const hexin_v_1 = require("../core/hexin-v");
 const zlib = require('node:zlib');
 const qs_1 = require("qs");
 const apiUrls = {
@@ -40,24 +40,23 @@ let ApiTestService = ApiTestService_1 = class ApiTestService {
         this.logger = new common_1.Logger(ApiTestService_1.name);
     }
     async fetchExternalData() {
-        const body = {
-            "source": "Ths_iwencai_Xuangu",
-            "version": "2.0",
-            "question": "连续涨停天数>=1；不包含新股；不包含ST；几天几板；涨停原因；封板金额；成交额；同花顺二级行业；",
-            "perpage": 100,
-            "page": 1,
-        };
-        const result = await (0, node_fetch_1.default)("https://www.iwencai.com/customized/chart/get-robot-data", {
+        const v = (0, hexin_v_1.createV)();
+        console.log(v);
+        const result = await (0, node_fetch_1.default)("http://www.iwencai.com/customized/chart/get-robot-data", {
             "headers": {
                 "accept": "application/json, text/plain, */*",
                 "accept-language": "zh-CN,zh;q=0.9",
                 "cache-control": "no-cache",
                 "content-type": "application/json",
-                "hexin-v": (0, hexin_v_js_1.createV)(),
+                "hexin-v": v,
                 "pragma": "no-cache"
             },
-            "body": JSON.stringify(body),
+            "referrer": "http://www.iwencai.com/unifiedwap/result?w=%E6%A6%82%E5%BF%B5%E6%9D%BF%E5%9D%97%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%EF%BC%9B%E6%B6%A8%E8%B7%8C%E5%B9%85%E6%AD%A3%E5%BA%8F&querytype=zhishu&addSign=1691417873467",
+            "referrerPolicy": "strict-origin-when-cross-origin",
+            "body": "{\"source\":\"Ths_iwencai_Xuangu\",\"version\":\"2.0\",\"query_area\":\"\",\"block_list\":\"\",\"add_info\":\"{\\\"urp\\\":{\\\"scene\\\":1,\\\"company\\\":1,\\\"business\\\":1},\\\"contentType\\\":\\\"json\\\",\\\"searchInfo\\\":true}\",\"question\":\"概念板块主力资金；涨跌幅正序\",\"perpage\":\"100\",\"page\":1,\"secondary_intent\":\"zhishu\",\"log_info\":\"{\\\"input_type\\\":\\\"typewrite\\\"}\",\"rsh\":\"Ths_iwencai_Xuangu_cj7r4l37naa3g54vm4j6pk04xq86kyvq\"}",
             "method": "POST",
+            "mode": "cors",
+            "credentials": "include"
         });
         console.log(await result.json());
     }

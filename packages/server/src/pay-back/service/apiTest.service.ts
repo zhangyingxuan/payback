@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import { hotList } from '../entities/hotList.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import fetch from 'node-fetch';
-import { createV } from '../core/hexin-v.js';
+import { createV } from '../core/hexin-v';
 const zlib = require('node:zlib');
 import { stringify } from 'qs';
 
@@ -34,36 +34,56 @@ export class ApiTestService {
   private readonly logger = new Logger(ApiTestService.name);
 
   async fetchExternalData() {
-
-    const body = {
-      "source": "Ths_iwencai_Xuangu",
-      "version": "2.0",
-      // "query_area": "", "block_list": "",
-      // "add_info": {
-      //   "urp": { "scene": 1, "company": 1, "business": 1 },
-      //   "contentType": "json", "searchInfo": true
-      // },
-      "question": "连续涨停天数>=1；不包含新股；不包含ST；几天几板；涨停原因；封板金额；成交额；同花顺二级行业；",
-      "perpage": 100,
-      "page": 1,
-      // "secondary_intent": "stock",
-      // "log_info": { "input_type": "typewrite" },
-      // "rsh": "Ths_iwencai_Xuangu_cj7r4l37naa3g54vm4j6pk04xq86kyvq"
-    }
-
-    const result = await fetch("https://www.iwencai.com/customized/chart/get-robot-data", {
+    const v = createV();
+    console.log(v);
+    const result = await fetch("http://www.iwencai.com/customized/chart/get-robot-data", {
       "headers": {
         "accept": "application/json, text/plain, */*",
         "accept-language": "zh-CN,zh;q=0.9",
         "cache-control": "no-cache",
         "content-type": "application/json",
-        "hexin-v": createV(),
+        "hexin-v": v,
         "pragma": "no-cache"
       },
-      "body": JSON.stringify(body),
+      "referrer": "http://www.iwencai.com/unifiedwap/result?w=%E6%A6%82%E5%BF%B5%E6%9D%BF%E5%9D%97%E4%B8%BB%E5%8A%9B%E8%B5%84%E9%87%91%EF%BC%9B%E6%B6%A8%E8%B7%8C%E5%B9%85%E6%AD%A3%E5%BA%8F&querytype=zhishu&addSign=1691417873467",
+      "referrerPolicy": "strict-origin-when-cross-origin",
+      "body": "{\"source\":\"Ths_iwencai_Xuangu\",\"version\":\"2.0\",\"query_area\":\"\",\"block_list\":\"\",\"add_info\":\"{\\\"urp\\\":{\\\"scene\\\":1,\\\"company\\\":1,\\\"business\\\":1},\\\"contentType\\\":\\\"json\\\",\\\"searchInfo\\\":true}\",\"question\":\"概念板块主力资金；涨跌幅正序\",\"perpage\":\"100\",\"page\":1,\"secondary_intent\":\"zhishu\",\"log_info\":\"{\\\"input_type\\\":\\\"typewrite\\\"}\",\"rsh\":\"Ths_iwencai_Xuangu_cj7r4l37naa3g54vm4j6pk04xq86kyvq\"}",
       "method": "POST",
+      "mode": "cors",
+      "credentials": "include"
     });
+
     console.log(await result.json());
+
+    // const body = {
+    //   "source": "Ths_iwencai_Xuangu",
+    //   "version": "2.0",
+    //   // "query_area": "", "block_list": "",
+    //   // "add_info": {
+    //   //   "urp": { "scene": 1, "company": 1, "business": 1 },
+    //   //   "contentType": "json", "searchInfo": true
+    //   // },
+    //   "question": "连续涨停天数>=1；不包含新股；不包含ST；几天几板；涨停原因；封板金额；成交额；同花顺二级行业；",
+    //   "perpage": 100,
+    //   "page": 1,
+    //   // "secondary_intent": "stock",
+    //   // "log_info": { "input_type": "typewrite" },
+    //   // "rsh": "Ths_iwencai_Xuangu_cj7r4l37naa3g54vm4j6pk04xq86kyvq"
+    // }
+
+    // const result = await fetch("https://www.iwencai.com/customized/chart/get-robot-data", {
+    //   "headers": {
+    //     "accept": "application/json, text/plain, */*",
+    //     "accept-language": "zh-CN,zh;q=0.9",
+    //     "cache-control": "no-cache",
+    //     "content-type": "application/json",
+    //     "hexin-v": createV(),
+    //     "pragma": "no-cache"
+    //   },
+    //   "body": JSON.stringify(body),
+    //   "method": "POST",
+    // });
+    // console.log(await result.json());
     // console.log(result?.data?.answer);
   }
 

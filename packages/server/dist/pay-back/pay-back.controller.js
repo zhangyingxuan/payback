@@ -37,7 +37,7 @@ let PayBackController = class PayBackController {
         this.marketService = marketService;
     }
     async testApi() {
-        return await this.apiTestService.datacenterWeb();
+        return await this.apiTestService.fetchExternalData();
     }
     async autoCrawlTodayDataAM() {
         console.log('[必入]定时任务执行了！0 */5 9-12 * * 1-5');

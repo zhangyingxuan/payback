@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.promiseLimit = exports.modifyThsSelfStocks = exports.fetchNorhFunds = exports.fetchMarketPoint = exports.fetchMarketPointFromEastmoney = exports.clearThsSelfStocks = exports.fetchMarketData = exports.fetchIwencaiApi = void 0;
-const hexin_v_js_1 = require("./hexin-v.js");
+const hexin_v_1 = require("./hexin-v");
 const node_fetch_1 = require("node-fetch");
 const commonUtil_1 = require("../utils/commonUtil");
 const qs_1 = require("qs");
@@ -14,17 +14,20 @@ async function fetchIwencaiApi(question, pageSize = 5, isPlate = true) {
         "page": 1,
         "secondary_intent": isPlate ? 'zhishu' : "stock",
     };
-    let result = await (0, node_fetch_1.default)("https://www.iwencai.com/customized/chart/get-robot-data", {
+    let result = await (0, node_fetch_1.default)("http://www.iwencai.com/customized/chart/get-robot-data", {
         "headers": {
             "accept": "application/json, text/plain, */*",
             "accept-language": "zh-CN,zh;q=0.9",
             "cache-control": "no-cache",
             "content-type": "application/json",
-            "hexin-v": (0, hexin_v_js_1.createV)(),
+            "hexin-v": (0, hexin_v_1.createV)(),
             "pragma": "no-cache"
         },
         "body": JSON.stringify(body),
+        "referrerPolicy": "strict-origin-when-cross-origin",
         "method": "POST",
+        "mode": "cors",
+        "credentials": "include"
     });
     return (0, commonUtil_1.getIwencaiData)(await result.json());
 }
@@ -35,7 +38,7 @@ async function fetchMarketData() {
             "accept": "*/*",
             "accept-language": "zh-CN,zh;q=0.9",
             "cache-control": "no-cache",
-            "hexin-v": (0, hexin_v_js_1.createV)(),
+            "hexin-v": (0, hexin_v_1.createV)(),
             "pragma": "no-cache",
             "x-requested-with": "XMLHttpRequest"
         },

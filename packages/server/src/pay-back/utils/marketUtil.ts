@@ -19,14 +19,6 @@ export default {
     createMarketDataDto.shenzhengPoint = indexResult[1]['f2'];
     createMarketDataDto.beizheng50Point = indexResult[2]['f2'];
     createMarketDataDto.chuangyePoint = indexResult[5]['f2'];
-    // // 上证指数
-    // createMarketDataDto.shangzhengPoint = await fetchMarketPoint(shangzhengIndexApi, 'zs_1A0001');
-    // // 深证指数
-    // createMarketDataDto.shenzhengPoint = await fetchMarketPoint(shenzhengIndexApi, 'zs_399001');
-    // // 创业板指数
-    // createMarketDataDto.chuangyePoint = await fetchMarketPoint(chuangyeIndexApi, 'zs_399006');
-    // // 北证50指数
-    // createMarketDataDto.beizheng50Point = await fetchMarketPoint(beizhengIndexApi, '151_899050');
 
     // 获取同花顺分数、涨跌家数
     const marketData = await fetchMarketData();

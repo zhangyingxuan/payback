@@ -1,4 +1,4 @@
-import { createV } from './hexin-v.js';
+import { createV } from './hexin-v';
 import fetch from 'node-fetch';
 import { getIwencaiData } from '../utils/commonUtil';
 import { stringify } from 'qs';
@@ -20,7 +20,7 @@ export async function fetchIwencaiApi(question, pageSize = 5, isPlate = true) {
     "secondary_intent": isPlate ? 'zhishu' : "stock",
   }
 
-  let result = await fetch("https://www.iwencai.com/customized/chart/get-robot-data", {
+  let result = await fetch("http://www.iwencai.com/customized/chart/get-robot-data", {
     "headers": {
       "accept": "application/json, text/plain, */*",
       "accept-language": "zh-CN,zh;q=0.9",
@@ -30,10 +30,14 @@ export async function fetchIwencaiApi(question, pageSize = 5, isPlate = true) {
       "pragma": "no-cache"
     },
     "body": JSON.stringify(body),
+    "referrerPolicy": "strict-origin-when-cross-origin",
     "method": "POST",
+    "mode": "cors",
+    "credentials": "include"
   });
 
-  // 避免频繁调用，同一个接口，否则会被封禁
+  // const text = await result.text();
+  // return getIwencaiData(JSON.parse(text));
   return getIwencaiData(await result.json());
 }
 /**

@@ -44,21 +44,22 @@ export class MarketService {
     try {
       marketData = await marketUtil.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
       console.log(marketData);
+      if (isExist) {
+        this.logger.log('crawlMarketData 更新数据')
+        await this.marketDataRp.update(todayDataFromDB.id, marketData);
+      } else {
+        this.logger.log('crawlMarketData 新增数据')
+        await this.marketDataRp.save(marketData);
+      }
+
       this.logger.debug('crawlMarketData is success!');
     } catch (e) {
       this.logger.error('出错啦！！！', e);
       // this.logger.debug('crawlMarketData retry！playWrightUtil.getMarketData');
       // marketData = await playWrightUtil.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
-      console.log(marketData);
+      // console.log(marketData);
     }
 
-    // if (isExist) {
-    //   this.logger.log('crawlMarketData 更新数据')
-    //   await this.marketDataRp.update(todayDataFromDB.id, marketData);
-    // } else {
-    //   this.logger.log('crawlMarketData 新增数据')
-    //   await this.marketDataRp.save(marketData);
-    // }
     return marketData;
   }
 
