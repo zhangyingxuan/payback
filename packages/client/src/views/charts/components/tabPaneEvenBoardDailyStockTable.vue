@@ -19,7 +19,7 @@
           </span>
           <span>
             <el-checkbox v-model="data.myStrategyChecked"
-              >我的策略
+              >我的策略 ({{ data.myStrategyCheckedLen }})
               <el-tooltip
                 class="box-item"
                 effect="dark"
@@ -110,6 +110,7 @@ const data = reactive({
   firstBoardChecked: false,
   // 我的策略
   myStrategyChecked: false,
+  myStrategyCheckedLen: 0,
 });
 
 let keyword = '';
@@ -120,10 +121,11 @@ let keyword = '';
  * 首板：流通市值大于30亿 且小于120亿，涨停10cm的个股，股价低于30
  */
 function isAddSelf(stock: any, currentLevel: number) {
-  if (currentLevel != 1) return true;
+  // 创业板、科创板不自选
+  if (stock.type != 0) return false;
   // 连板全部加入
+  if (currentLevel != 1) return true;
   return (
-    stock.type == 0 &&
     stock.price <= 30 &&
     stock.circulationValue >= 20 &&
     stock.circulationValue <= 120
@@ -132,6 +134,7 @@ function isAddSelf(stock: any, currentLevel: number) {
 
 const stockGroupByPlate = computed(() => {
   const evenBoardData = _.cloneDeep(superData.evenBoardData);
+  data.myStrategyCheckedLen = 0;
 
   const stockGroupByPlate: any = {};
   let isAdd = true;
@@ -168,6 +171,7 @@ const stockGroupByPlate = computed(() => {
             }
             if (data.myStrategyChecked && isAdd) {
               isAdd = isAddSelf(item, item.evenBoardHeight);
+              isAdd && data.myStrategyCheckedLen++;
             }
             isAdd && stockGroupByPlate[item.plateLevel2].push(item);
           }

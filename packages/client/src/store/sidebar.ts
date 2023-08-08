@@ -16,7 +16,8 @@ export const useSidebarStore = defineStore('sidebar', {
     return {
       collapse: true,
       countDays: 15,
-      isAutoRefresh: isTradeTime(),
+      isAutoRefresh: false,
+      // isAutoRefresh: isTradeTime(),
     };
   },
   getters: {},
@@ -28,7 +29,7 @@ export const useSidebarStore = defineStore('sidebar', {
       this.countDays = countDays;
     },
     updateIsAutoRefresh(isAutoRefresh: boolean) {
-      this.isAutoRefresh = isAutoRefresh;
+      this.isAutoRefresh = isAutoRefresh && isTradeTime();
     }
   }
 });

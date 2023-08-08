@@ -7,10 +7,9 @@ import { LatestConceptPlateService } from './service/latestConceptPlate.service'
 import { ReviewService } from './service/review.service';
 import { ThsService } from './service/ths.service';
 import { ApiTestService } from './service/apiTest.service';
-import { UpdatePayBackDto } from './dto/update-pay-back.dto';
 import { Public } from '../decorator/public.decorator';
 import { Cron } from '@nestjs/schedule';
-import dayjs from 'dayjs';
+import * as dayjs from 'dayjs';
 
 @Controller('pay-back')
 export class PayBackController {
@@ -40,7 +39,7 @@ export class PayBackController {
     const currentTime = dayjs();
     const currentDate = currentTime.format('YYYY-MM-DD');
     // 时间返回判断;9.20 - 11.30
-    console.log('定时任务执行了！0 */5 9-12 * * 1-5', currentDate + ' 09:19:00', currentTime, currentTime.isAfter(currentDate + ' 09:19:00'), currentTime.isBefore(currentDate + ' 11:31:00'));
+    // console.log('定时任务执行了！0 */5 9-12 * * 1-5', currentDate + ' 09:19:00', currentTime, currentTime.isAfter(currentDate + ' 09:19:00'), currentTime.isBefore(currentDate + ' 11:31:00'));
     if (currentTime.isAfter(currentDate + ' 09:19:00') && currentTime.isBefore(currentDate + ' 11:31:00')) {
       // this.crawlTodayData();
       console.log('[选入]定时任务执行了！0 */5 13-15 * * 1-5');

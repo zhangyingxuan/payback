@@ -24,7 +24,7 @@ const ths_service_1 = require("./service/ths.service");
 const apiTest_service_1 = require("./service/apiTest.service");
 const public_decorator_1 = require("../decorator/public.decorator");
 const schedule_1 = require("@nestjs/schedule");
-const dayjs_1 = require("dayjs");
+const dayjs = require("dayjs");
 let PayBackController = class PayBackController {
     constructor(ShorTermService, fundsService, hotListService, reviewService, thsService, apiTestService, latestConceptPlateService, marketService) {
         this.ShorTermService = ShorTermService;
@@ -41,9 +41,8 @@ let PayBackController = class PayBackController {
     }
     async autoCrawlTodayDataAM() {
         console.log('[必入]定时任务执行了！0 */5 9-12 * * 1-5');
-        const currentTime = (0, dayjs_1.default)();
+        const currentTime = dayjs();
         const currentDate = currentTime.format('YYYY-MM-DD');
-        console.log('定时任务执行了！0 */5 9-12 * * 1-5', currentDate + ' 09:19:00', currentTime, currentTime.isAfter(currentDate + ' 09:19:00'), currentTime.isBefore(currentDate + ' 11:31:00'));
         if (currentTime.isAfter(currentDate + ' 09:19:00') && currentTime.isBefore(currentDate + ' 11:31:00')) {
             console.log('[选入]定时任务执行了！0 */5 13-15 * * 1-5');
         }
