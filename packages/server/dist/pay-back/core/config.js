@@ -13,6 +13,8 @@ exports.params = {
     downLimitByDate: '${date}跌停；非st；同花顺二级行业',
     dailyLimitOpen: '涨停打开；非ST；成交额；同花顺二级行业；',
     dailyLimitOpenByDate: '${date}涨停打开；非ST；成交额；同花顺二级行业；',
+    hugeFall: '跌幅大于等于15的个股；同花顺二级行业；',
+    hugeFallByDate: '${date}跌幅大于等于15的个股；同花顺二级行业；',
     dailyLimitMoreThan1: '涨停；非ST；几天几板；涨停原因；封板金额；成交额；同花顺二级行业；',
     dailyLimitMoreThan1ByDate: '${date}涨停；非ST；几天几板；涨停原因；封板金额；成交额；同花顺二级行业；',
     capitalFlows3: '近三日资金流向降序',

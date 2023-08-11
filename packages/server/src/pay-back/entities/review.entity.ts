@@ -14,20 +14,35 @@ export class reviewData {
   @Column({ comment: '市场评分', type: 'float', default: 0 })
   marketScore: number;
 
-  @Column({ comment: '大盘情绪', type: 'varchar', length: 30, default: '' })
+  // （指数强度、涨跌比）成交量、3日涨跌
+  @Column({ comment: '市场情绪', type: 'varchar', length: 30, default: '' })
   marketMood: string;
+
+  // （涨停数量、连板数量、连板高度、炸板率）
+  @Column({ comment: '投机情绪', type: 'varchar', length: 30, default: '' })
+  toujiMood: string;
+
+  // 资金偏好，有高度，主升，有强度，人气高，容易集体爆发，容易发酵等等需要具体分析，有位差，有走强点，指数强度
+  @Column({ comment: '板块情绪', type: 'varchar', length: 30, default: '' })
+  plateMood: string;
+
+  // 综合的赚钱效应、最近的市场情绪、投机情绪、主流板块情绪、论坛氛围、消息面影响等等。突破阳线大幅强化
+  @Column({ comment: '近期市场情绪', type: 'varchar', length: 30, default: '' })
+  overallMarketMood: string;
+
+  // 最近阶段的投机氛围。出现高位妖股、大批量强势股大幅强化、涨停板溢价越来越高强化、炸板的负溢价越来越高弱化
+  @Column({ comment: '近期投机情绪', type: 'varchar', length: 30, default: '' })
+  overallToujiMood: string;
+
+  // 龙头拉开空间，不是一日游题材，人气高，始终活跃
+  @Column({ comment: '近期板块情绪', type: 'varchar', length: 30, default: '' })
+  overallPlateMood: string;
 
   @Column({ comment: '赚钱效应', type: 'varchar', length: 30, default: '' })
   moneyMakingEffect: string;
 
   @Column({ comment: '亏钱效应', type: 'varchar', length: 30, default: '' })
   moneyLossEffect: string;
-
-  @Column({ comment: '涨停数量', type: 'tinyint', default: 0 })
-  dailyLimitQuantity: number;
-
-  @Column({ comment: '短线跌停', type: 'tinyint', default: 0 })
-  downLimitQuantity: number;
 
   @Column({ comment: '总龙头', type: 'varchar', length: 30, default: '' })
   totalLeader: string;

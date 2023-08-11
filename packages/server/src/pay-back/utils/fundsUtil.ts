@@ -1,7 +1,7 @@
 import commonUtil from './commonUtil';
 import { fetchIwencaiApi, fetchNorhFunds } from '../core/fetchUtil';
 import { CreateFundsDataDto } from '../dto/create-funds-data.dto';
-import { iwencaiUrl, params } from '../core/config';
+import { params } from '../core/config';
 import fetch from 'node-fetch';
 
 export default {
@@ -13,6 +13,7 @@ export default {
     // 北向资金、南向资金 获取
     const responseForeignFunds = await fetchNorhFunds();
     // const responseForeignFunds = await (await fetch("https://datacenter-web.eastmoney.com/api/data/v1/get?callback=jQuery112309386087809528996_1689650979956&reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE%2CMUTUAL_TYPE%2CBOARD_TYPE%2CMUTUAL_TYPE_NAME%2CFUNDS_DIRECTION%2CINDEX_CODE%2CINDEX_NAME%2CBOARD_CODE&quoteColumns=status~07~BOARD_CODE%2CdayNetAmtIn~07~BOARD_CODE%2CdayAmtRemain~07~BOARD_CODE%2CdayAmtThreshold~07~BOARD_CODE%2Cf104~07~BOARD_CODE%2Cf105~07~BOARD_CODE%2Cf106~07~BOARD_CODE%2Cf3~03~INDEX_CODE~INDEX_f3%2CnetBuyAmt~07~BOARD_CODE&quoteType=0&pageNumber=1&pageSize=200&sortTypes=1&sortColumns=MUTUAL_TYPE&source=WEB&client=WEB&_=1689650979958")).text();
+    // 成交量
     const responseMarketTurnover = await (await fetch("https://push2.eastmoney.com/api/qt/ulist.np/get?cb=jQuery112304396074520394937_1688383194361&fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5&_=1688383194362")).text();
 
     const hangyeFundsInflow = await fetchIwencaiApi(params.hangyeFundsInflow);

@@ -12,10 +12,12 @@ export async function getShortTermData(todayDateStr): Promise<CreatePayBackDto> 
   const dailyLimitData: any = await fetchIwencaiApi(params.dailyLimitMoreThan1, 100, false);
   // 跌停数据
   const downLimitData: any = await fetchIwencaiApi(params.downLimit, 50, false);
-
+  // 涨停打开个股
   const dailyLimitOpenData: any = await fetchIwencaiApi(params.dailyLimitOpen, 50, false);
+  // 跌幅大于等于15的个股
+  const hugeFallData: any = await fetchIwencaiApi(params.hugeFall, 50, false);
 
-  return prepareDto(dailyLimitData, dailyLimitOpenData, downLimitData, todayDateStr);
+  return prepareDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, todayDateStr);
 }
 
 export async function getShortTermDataByDate(todayDateStr): Promise<CreatePayBackDto> {
@@ -23,9 +25,12 @@ export async function getShortTermDataByDate(todayDateStr): Promise<CreatePayBac
   const dailyLimitData: any = await fetchIwencaiApi(params.dailyLimitMoreThan1ByDate.replace('${date}', todayDateStr), 100, false);
   // 跌停数据
   const downLimitData: any = await fetchIwencaiApi(params.downLimitByDate.replace('${date}', todayDateStr), 50, false);
-
+  // 涨停打开个股
   const dailyLimitOpenData: any = await fetchIwencaiApi(params.dailyLimitOpenByDate.replace('${date}', todayDateStr), 50, false);
-  return prepareDto(dailyLimitData, dailyLimitOpenData, downLimitData, todayDateStr);
+  // 跌幅大于等于15的个股
+  const hugeFallData: any = await fetchIwencaiApi(params.hugeFallByDate.replace('${date}', todayDateStr), 50, false);
+
+  return prepareDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, todayDateStr);
 }
 
 /**
@@ -36,9 +41,9 @@ export async function getShortTermDataByDate(todayDateStr): Promise<CreatePayBac
  * @param todayDateStr 
  * @returns 
  */
-function prepareDto(dailyLimitData, dailyLimitOpenData, downLimitData, todayDateStr) {
+function prepareDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, todayDateStr) {
   let createPayBackDto: CreatePayBackDto = new CreatePayBackDto();
-  let { board1 = 0, evenBoardData, downLimitDataArr, dailyLimitReturnSealQuantity, downLimitQuantity } = transformShortTermSourceData(dailyLimitData, downLimitData, todayDateStr);
+  let { board1 = 0, evenBoardData, downLimitDataArr, hugeFallDataArr, dailyLimitReturnSealQuantity, downLimitQuantity } = transformShortTermSourceData(dailyLimitData, downLimitData, hugeFallData, todayDateStr);
 
   // 仅存储短线跌停，即’ 资金出逃‘ 类型
   createPayBackDto.downLimitQuantity = downLimitQuantity;
@@ -55,11 +60,13 @@ function prepareDto(dailyLimitData, dailyLimitOpenData, downLimitData, todayDate
   createPayBackDto.evenBoardAmount = dailyLimitData.length - board1;
   createPayBackDto.evenBoardData = JSON.stringify(evenBoardData);
   createPayBackDto.downLimitData = JSON.stringify(downLimitDataArr);
+  createPayBackDto.hugeFallData = JSON.stringify(hugeFallDataArr);
   createPayBackDto.createTime = new Date();
   createPayBackDto.cycle = getCurrentCycle(createPayBackDto);
 
   return createPayBackDto;
 }
+
 
 function getCurrentCycle(item: any) {
   // 1、启动；犹豫中复苏，亏钱效应结束后，开始出现4板，连板小于10，不会出现15%以上大面；做首板
@@ -72,18 +79,21 @@ function getCurrentCycle(item: any) {
   const cycles = ['启动', '发酵', '高潮', '退潮', '冰点'];
   // 最大高度 item.evenBoardData
   const maxHeight: any = item.marketHeight;
+  // 跌幅大于15的个股
+  const hugeFallNum = item.hugeFall ? item.hugeFall.length : 0;
   // 跌停数量
   if (maxHeight <= 4) {
     if (item.downLimitQuantity > 10) {
       return cycles[4];
     }
     // 今天的最高板没有昨天高，昨天是高潮
-    if (maxHeight === 4) {
+    if (maxHeight === 4 && hugeFallNum == 0) {
       return cycles[0];
     }
     return cycles[3];
   }
   if (maxHeight >= 5) {
+    // 高潮前提，不能有连板负反馈
     if (item.evenBoardAmount >= 10 || item.dailyLimitQuantity >= 45) {
       return cycles[2];
     }

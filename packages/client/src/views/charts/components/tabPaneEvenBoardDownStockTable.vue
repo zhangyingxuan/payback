@@ -4,11 +4,11 @@
       <div class="table__header table-row">
         <div class="col1">行业板块</div>
         <div class="col2 green">
-          跌停个股（{{
-            evenBoardData.downLimitData
-              ? evenBoardData.downLimitData.length
-              : 0
-          }}） 短线跌停 （{{ evenBoardData.downLimitQuantity }}）
+          <template v-if="isDownLimitMode">
+            跌停个股（{{ downLimitData ? downLimitData.length : 0 }}） 短线跌停
+          </template>
+          <template v-else> 大面股 </template>
+          （{{ num }}）
         </div>
       </div>
 
@@ -27,9 +27,10 @@
         <div class="col2">
           <div v-for="(stock, index) in item.value" :key="'stock' + index">
             <Stock :name="stock.name" :code="stock.code" />
-            &nbsp;[&nbsp;<span class="orange">{{ stock.reason }}</span
-            ><span class="lvse"> 封单{{ stock.closingFunds }}亿</span>
-            ]
+            <template v-if="isDownLimitMode">
+              &nbsp;[&nbsp;<span class="orange">{{ stock.reason }}</span>
+              <span class="lvse"> 封单{{ stock.closingFunds }}亿</span> ]
+            </template>
           </div>
         </div>
       </div>
@@ -40,31 +41,31 @@
 import _ from 'lodash-es';
 import { computed } from 'vue';
 let superData = defineProps({
-  evenBoardData: {
+  downLimitData: {
     type: Object,
     default: () => {},
   },
-  title: {
-    type: String,
-    default: '',
+  num: {
+    type: Number,
+    default: 0,
   },
   isMobile: {
     type: Boolean,
     default: false,
   },
-  isHangye: {
+  isDownLimitMode: {
     type: Boolean,
-    default: false,
+    default: true,
   },
 });
 
 const stockGroupByPlate = computed(() => {
-  const data = _.cloneDeep(superData.evenBoardData);
+  const downLimitData = _.cloneDeep(superData.downLimitData);
 
   const stockGroupByPlate: any = {};
   // 按 行业板块 将涨停个股分类
-  data.downLimitData &&
-    data.downLimitData.forEach((item: any) => {
+  downLimitData &&
+    downLimitData.forEach((item: any) => {
       // 按板块划分 涨停数据
       if (!stockGroupByPlate[item.plateLevel2]) {
         stockGroupByPlate[item.plateLevel2] = [];

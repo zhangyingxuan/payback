@@ -54,6 +54,10 @@ __decorate([
     __metadata("design:type", String)
 ], shortTermData.prototype, "downLimitData", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ comment: '跌幅大于等于15的个股', type: 'varchar', length: 1024, default: '' }),
+    __metadata("design:type", String)
+], shortTermData.prototype, "hugeFallData", void 0);
+__decorate([
     (0, typeorm_1.Column)({ comment: '1板数量', type: 'tinyint', default: 0 }),
     __metadata("design:type", Number)
 ], shortTermData.prototype, "board1", void 0);

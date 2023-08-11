@@ -130,6 +130,7 @@ export class ShorTermService {
         'short_term_data.sealingRate',
         'short_term_data.dailyLimitReturnSealQuantity',
         'short_term_data.evenBoardData',
+        'short_term_data.hugeFallData',
         'short_term_data.cycle',
         'short_term_data.downLimitData'])
       .orderBy('createTime', 'DESC')

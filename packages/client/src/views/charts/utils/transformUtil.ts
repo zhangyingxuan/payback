@@ -140,9 +140,11 @@ export function transformEvenBoardData(shortTermData: ShortTermModel[]): any[] {
         sealingRate: item.sealingRate,
         dailyLimitReturnSealQuantity: item.dailyLimitReturnSealQuantity,
         evenBoardAmount: item.evenBoardAmount,
+        yizi: evenBoardData.yizi,
         ticaiData: sortObj(ticaiData).splice(0, 3)
       };
       item.downLimitData && (itemData.downLimitData = JSON.parse(item.downLimitData));
+      item.hugeFallData && (itemData.hugeFallData = JSON.parse(item.hugeFallData));
       !itemData.cycle && (itemData.cycle = getCurrentCycle(itemData));
 
       evenBoardList.push(itemData);

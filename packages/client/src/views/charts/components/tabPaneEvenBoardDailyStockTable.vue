@@ -41,6 +41,7 @@
       >
         <div class="col1">
           <div>
+            <!-- <Plate :code="plate.code" :name="plate.name" /> -->
             <span class="zise">{{ item.key }}</span>
             <br v-if="isMobile" />
             <span>&nbsp;{{ item.value.length }}</span>

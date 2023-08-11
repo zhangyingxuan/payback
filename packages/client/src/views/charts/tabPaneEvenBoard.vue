@@ -16,10 +16,12 @@
         <!-- <div class="table-col height1">市场</div> -->
         <div class="table-col height1">连板数</div>
         <div class="table-col height1">涨停</div>
+        <div class="table-col height1">一字</div>
         <div class="table-col height1">封板率</div>
         <!-- <div class="table-col height1">炸板率</div> -->
         <div class="table-col height1 green">跌停</div>
-        <div class="table-col">其它</div>
+        <div class="table-col height1 green">大面</div>
+        <div class="table-col">反包</div>
         <template v-for="height in heightArr" :key="'row1' + height">
           <div
             :class="['table-col', getClassByHeight(height)]"
@@ -68,6 +70,9 @@
         >
           {{ item.dailyLimitQuantity }}
         </div>
+        <div class="table-col height1">
+          {{ item.yizi }}
+        </div>
         <!-- 封板率 -->
         <div
           class="table-col height1"
@@ -76,6 +81,9 @@
           {{ item.sealingRate }}%
         </div>
         <div class="table-col height1 green">{{ item.downLimitQuantity }}</div>
+        <div class="table-col height1 green">
+          {{ item.hugeFallData ? item.hugeFallData.length : '' }}
+        </div>
         <!-- 高标数据 -->
         <div class="table-col">
           <el-tooltip
@@ -142,7 +150,21 @@
     v-model:evenBoardData="data.currentDateData"
     :isMobile="isMobile"
   />
-  <DownStockTable :evenBoardData="data.currentDateData" :isMobile="isMobile" />
+  <DownStockTable
+    :downLimitData="data.currentDateData.downLimitData"
+    :num="data.currentDateData.downLimitQuantity"
+    :isMobile="isMobile"
+  />
+  <DownStockTable
+    :downLimitData="data.currentDateData.hugeFallData"
+    :num="
+      data.currentDateData.hugeFallData
+        ? data.currentDateData.hugeFallData.length
+        : 0
+    "
+    :isDownLimitMode="false"
+    :isMobile="isMobile"
+  />
 </template>
 <script lang="ts" setup>
 import { fetchEvenBoardData, fetchReveiwDataByDate } from '@/api/payBack';

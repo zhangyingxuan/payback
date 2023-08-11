@@ -10,6 +10,8 @@ export declare const params: {
     downLimitByDate: string;
     dailyLimitOpen: string;
     dailyLimitOpenByDate: string;
+    hugeFall: string;
+    hugeFallByDate: string;
     dailyLimitMoreThan1: string;
     dailyLimitMoreThan1ByDate: string;
     capitalFlows3: string;

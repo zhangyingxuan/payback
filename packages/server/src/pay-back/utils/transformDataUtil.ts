@@ -4,8 +4,7 @@ import { DownLimitStockDto } from '../dto/down-limit-stock.dto';
 import { toFixed, fundsToFixed } from './commonUtil';
 import * as dayjs from 'dayjs';
 
-const turnoverTypeObj = { '放量涨停': 0, '缩量涨停': 1, '一字涨停': 2 };
-const turnoverTypeArr = ['放量涨停', '缩量涨停', '一字涨停'];
+const turnoverTypeArr = ['放量涨停', '缩量涨停', '一字涨停', 'T字涨停'];
 
 export function transformStockData(stockList) {
   return stockList.map(item => {
@@ -31,6 +30,27 @@ export function transformPlateData(plateList) {
   });
 }
 
+/**
+ * 转换跌停数据
+ * @param dailyLimitData 
+ * @param todayDateStr 
+ * @returns 
+ */
+function transformHugeFallData(hugeFallData) {
+  const hugeFallDataArr = [];
+
+  hugeFallData.forEach(item => {
+    const downLimitStockDto = new DownLimitStockDto();
+    downLimitStockDto.name = item['股票简称'];
+    downLimitStockDto.code = item.code;
+    downLimitStockDto.plateLevel2 = item['所属同花顺二级行业'];
+    hugeFallDataArr.push(downLimitStockDto);
+  });
+
+  return {
+    hugeFallDataArr,
+  };
+};
 /**
  * 转换跌停数据
  * @param dailyLimitData 
@@ -87,7 +107,7 @@ function judgeType(str) {
  */
 function transformDailyLimitData(dailyLimitData, currentDate) {
   let board1 = 0, maxHeight = 1, currentLevel = 0, dailyLimitReturnSealQuantity = 0;
-  let evenBoardData = { maxHeight: 1, gaobiao: [] };
+  let evenBoardData = { maxHeight: 1, gaobiao: [], yizi: 0 };
   const evenBoardLabel = `连续涨停天数[${currentDate}]`;
 
   dailyLimitData.forEach(item => {
@@ -113,11 +133,12 @@ function transformDailyLimitData(dailyLimitData, currentDate) {
     if (item[`涨停类型[${currentDate}]`] !== turnoverTypeArr[0]) {
       // 成交量类型
       dailyLimitStockDto.turnoverType = item[`涨停类型[${currentDate}]`];
+      dailyLimitStockDto.turnoverType.indexOf(turnoverTypeArr[2]) > -1 && (evenBoardData.yizi++)
     }
     dailyLimitStockDto.type = judgeType(item['最新涨跌幅']);
     dailyLimitStockDto.price = item['最新价'];
     // 开板次数，如果未开板 则不保存
-    if (item[`涨停开板次数[${currentDate}]`] !== 0) {
+    if (item[`涨停开板次数[${currentDate}]`] != 0) {
       dailyLimitStockDto.openTimes = item[`涨停开板次数[${currentDate}]`];
       dailyLimitReturnSealQuantity++;
     }
@@ -159,20 +180,23 @@ function transformDailyLimitData(dailyLimitData, currentDate) {
  * @param todayDateStr 
  * @returns 
  */
-export function transformShortTermSourceData(dailyLimitData, downLimitData, todayDateStr) {
+export function transformShortTermSourceData(dailyLimitData, downLimitData, hugeFallData, todayDateStr) {
   const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
 
   // 跌停数据
   const { downLimitDataArr, downLimitQuantity } = transformDownLimitData(downLimitData, currentDate);
+  // 跌幅大于等于15的个股
+  const { hugeFallDataArr } = transformHugeFallData(hugeFallData);
   // 涨停数据
   const { board1,
     evenBoardData,
-    dailyLimitReturnSealQuantity, } = transformDailyLimitData(dailyLimitData, currentDate);
+    dailyLimitReturnSealQuantity } = transformDailyLimitData(dailyLimitData, currentDate);
 
   return {
     board1,
     evenBoardData,
     downLimitDataArr,
+    hugeFallDataArr,
     downLimitQuantity,
     dailyLimitReturnSealQuantity,
   }

@@ -30,9 +30,29 @@ __decorate([
     __metadata("design:type", Number)
 ], reviewData.prototype, "marketScore", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '大盘情绪', type: 'varchar', length: 30, default: '' }),
+    (0, typeorm_1.Column)({ comment: '市场情绪', type: 'varchar', length: 30, default: '' }),
     __metadata("design:type", String)
 ], reviewData.prototype, "marketMood", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '投机情绪', type: 'varchar', length: 30, default: '' }),
+    __metadata("design:type", String)
+], reviewData.prototype, "toujiMood", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '板块情绪', type: 'varchar', length: 30, default: '' }),
+    __metadata("design:type", String)
+], reviewData.prototype, "plateMood", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '近期市场情绪', type: 'varchar', length: 30, default: '' }),
+    __metadata("design:type", String)
+], reviewData.prototype, "overallMarketMood", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '近期投机情绪', type: 'varchar', length: 30, default: '' }),
+    __metadata("design:type", String)
+], reviewData.prototype, "overallToujiMood", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '近期板块情绪', type: 'varchar', length: 30, default: '' }),
+    __metadata("design:type", String)
+], reviewData.prototype, "overallPlateMood", void 0);
 __decorate([
     (0, typeorm_1.Column)({ comment: '赚钱效应', type: 'varchar', length: 30, default: '' }),
     __metadata("design:type", String)
@@ -41,14 +61,6 @@ __decorate([
     (0, typeorm_1.Column)({ comment: '亏钱效应', type: 'varchar', length: 30, default: '' }),
     __metadata("design:type", String)
 ], reviewData.prototype, "moneyLossEffect", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '涨停数量', type: 'tinyint', default: 0 }),
-    __metadata("design:type", Number)
-], reviewData.prototype, "dailyLimitQuantity", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '短线跌停', type: 'tinyint', default: 0 }),
-    __metadata("design:type", Number)
-], reviewData.prototype, "downLimitQuantity", void 0);
 __decorate([
     (0, typeorm_1.Column)({ comment: '总龙头', type: 'varchar', length: 30, default: '' }),
     __metadata("design:type", String)

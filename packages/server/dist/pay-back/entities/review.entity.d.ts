@@ -5,10 +5,13 @@ export declare class reviewData {
     dateCycle: string;
     marketScore: number;
     marketMood: string;
+    toujiMood: string;
+    plateMood: string;
+    overallMarketMood: string;
+    overallToujiMood: string;
+    overallPlateMood: string;
     moneyMakingEffect: string;
     moneyLossEffect: string;
-    dailyLimitQuantity: number;
-    downLimitQuantity: number;
     totalLeader: string;
     plateLeader: string;
     strongestPlate: string;

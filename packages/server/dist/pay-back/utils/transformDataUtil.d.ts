@@ -1,12 +1,14 @@
 export declare function transformStockData(stockList: any): any;
 export declare function transformPlateData(plateList: any): any;
-export declare function transformShortTermSourceData(dailyLimitData: any, downLimitData: any, todayDateStr: any): {
+export declare function transformShortTermSourceData(dailyLimitData: any, downLimitData: any, hugeFallData: any, todayDateStr: any): {
     board1: number;
     evenBoardData: {
         maxHeight: number;
         gaobiao: any[];
+        yizi: number;
     };
     downLimitDataArr: any[];
+    hugeFallDataArr: any[];
     downLimitQuantity: number;
     dailyLimitReturnSealQuantity: number;
 };
