@@ -70,38 +70,44 @@ export function highlightKeyWord(result: string, keyword: string) {
   return result;
 }
 
+// 星火集合竞价成交量放大到和首板涨停爆量相同最佳，如果放大到2/3也可以，最差也要放量到一半，如果缩量就没有参与价值。
 const currentDate = dayjs().format('YYYY-MM-DD');
 // 9.31
 const date931 = dayjs(currentDate + ' 09:31:00');
 // 10:01
-const date1001 = dayjs(currentDate + ' 10:01:00');
+const date1000 = dayjs(currentDate + ' 10:00:00');
 // 13:00
 const date1300 = dayjs(currentDate + ' 13:00:00');
-const expectedArr = ['5%', '4%', '3%', '-2%-2%', '0%--2%'];
+const date1400 = dayjs(currentDate + ' 14:00:00');
+const expectedArr = ['5%', '4%', '3%', '0%-2%', '-2%-2%', '-2%以上'];
 export function getExpected(stock: DailyLimitStockDto) {
-  let currentTime: any = stock.openTimes == 0 ? stock.dailyTime : stock.dailyTime.split(',')[1];
+  let currentTime: any = stock.openTimes ? stock.dailyTime.split(',')[1] : stock.dailyTime;
   // console.log(stock.name, stock.openTimes, stock.dailyTime, currentTime);
+
   currentTime = dayjs(currentDate + ' ' + currentTime);
+  // 文心一言
   // 1、昨日一字板或开盘秒板的。第二天正常预期高开5%以上。
   // 2、昨日10点前涨停的，第二天正常预期高开4%左右。
   // 3、昨日11点半前涨停的，第二天正常预期高开3%左右。
-  // 4、昨日午后涨停的，第二天预期平开（-2%—2%）
-  // 5、昨日烂板（开板5次），第二天预计低开（0--2%）
-  // openTimes、dailyTime
-  // 开板5次以上，烂板
+  // 4、昨日午后13-14涨停的，第二天预期微高开（0—2%）
+  // 5、昨日午后14之后涨停的，第二天预期平开（-2%—2%）
+  // 6、昨日烂板（开板5次），第二天预计低开（0--2%）
 
   if (stock.openTimes >= 5) {
-    return expectedArr[4];
+    return expectedArr[5];
   }
 
   if (currentTime.isBefore(date931)) {
     return expectedArr[0];
   }
-  if (currentTime.isBefore(date1001)) {
+  if (currentTime.isBefore(date1000)) {
     return expectedArr[1];
   }
   if (currentTime.isBefore(date1300)) {
     return expectedArr[2];
   }
-  return expectedArr[3];
+  if (currentTime.isBefore(date1400) && currentTime.isAfter(date1300)) {
+    return expectedArr[3];
+  }
+  return expectedArr[4];
 }

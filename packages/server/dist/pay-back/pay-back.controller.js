@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var PayBackController_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PayBackController = void 0;
 const common_1 = require("@nestjs/common");
@@ -25,7 +26,7 @@ const apiTest_service_1 = require("./service/apiTest.service");
 const public_decorator_1 = require("../decorator/public.decorator");
 const schedule_1 = require("@nestjs/schedule");
 const dayjs = require("dayjs");
-let PayBackController = class PayBackController {
+let PayBackController = PayBackController_1 = class PayBackController {
     constructor(ShorTermService, fundsService, hotListService, reviewService, thsService, apiTestService, latestConceptPlateService, marketService) {
         this.ShorTermService = ShorTermService;
         this.fundsService = fundsService;
@@ -35,20 +36,21 @@ let PayBackController = class PayBackController {
         this.apiTestService = apiTestService;
         this.latestConceptPlateService = latestConceptPlateService;
         this.marketService = marketService;
+        this.logger = new common_1.Logger(PayBackController_1.name);
     }
     async testApi() {
         return await this.apiTestService.fetchExternalData();
     }
     async autoCrawlTodayDataAM() {
-        console.log('[必入]定时任务执行了！0 */5 9-12 * * 1-5');
+        this.logger.debug('[必入]定时任务执行了！0 */5 9-12 * * 1-5');
         const currentTime = dayjs();
         const currentDate = currentTime.format('YYYY-MM-DD');
         if (currentTime.isAfter(currentDate + ' 09:19:00') && currentTime.isBefore(currentDate + ' 11:31:00')) {
-            console.log('[选入]定时任务执行了！0 */5 13-15 * * 1-5');
+            this.logger.debug('[选入]定时任务执行了！0 */5 9-12 * * 1-5');
         }
     }
     async autoCrawlTodayDataPM() {
-        console.log('定时任务执行了！0 */5 13-15 * * 1-5');
+        this.logger.debug('定时任务执行了！0 */5 13-15 * * 1-5');
     }
     async crawlTodayData() {
         const shortData = await this.ShorTermService.crawlShortTermData();
@@ -230,7 +232,7 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "findPlateByLimit", null);
-PayBackController = __decorate([
+PayBackController = PayBackController_1 = __decorate([
     (0, common_1.Controller)('pay-back'),
     __metadata("design:paramtypes", [shortTerm_service_1.ShorTermService,
         funds_service_1.FundsService,

@@ -38,11 +38,11 @@ __decorate([
     __metadata("design:type", String)
 ], hotList.prototype, "hotEtfs", void 0);
 __decorate([
-    (0, typeorm_1.CreateDateColumn)({ type: 'timestamp', comment: '创建时间' }),
+    (0, typeorm_1.Column)({ type: 'timestamp', comment: '创建时间' }),
     __metadata("design:type", typeorm_1.Timestamp)
 ], hotList.prototype, "createTime", void 0);
 __decorate([
-    (0, typeorm_1.UpdateDateColumn)({ type: "timestamp", comment: '更新时间' }),
+    (0, typeorm_1.Column)({ type: "timestamp", comment: '更新时间', default: () => 'current_timestamp' }),
     __metadata("design:type", typeorm_1.Timestamp)
 ], hotList.prototype, "updatedTime", void 0);
 hotList = __decorate([

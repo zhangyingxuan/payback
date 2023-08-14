@@ -16,6 +16,7 @@ export declare class PayBackController {
     private readonly latestConceptPlateService;
     private readonly marketService;
     constructor(ShorTermService: ShorTermService, fundsService: FundsService, hotListService: HotListService, reviewService: ReviewService, thsService: ThsService, apiTestService: ApiTestService, latestConceptPlateService: LatestConceptPlateService, marketService: MarketService);
+    private readonly logger;
     testApi(): Promise<void>;
     autoCrawlTodayDataAM(): Promise<void>;
     autoCrawlTodayDataPM(): Promise<void>;

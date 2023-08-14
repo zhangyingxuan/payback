@@ -48,7 +48,7 @@ export class HotListService {
         createTime: hotListData.updatedTime,
       }
       if (isExist) {
-        this.logger.log('更新数据')
+        this.logger.log('更新数据, id=', todayDataFromDB.id)
         delete hotListData4Db.createTime;
         await this.hotListRp.update(todayDataFromDB.id, hotListData4Db);
       } else {

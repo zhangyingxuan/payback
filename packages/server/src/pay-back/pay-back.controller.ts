@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, } from '@nestjs/common';
+import { Controller, Get, Logger, Query, } from '@nestjs/common';
 import { ShorTermService } from './service/shortTerm.service';
 import { MarketService } from './service/market.service';
 import { FundsService } from './service/funds.service';
@@ -23,6 +23,8 @@ export class PayBackController {
     private readonly latestConceptPlateService: LatestConceptPlateService,
     private readonly marketService: MarketService) { }
 
+  private readonly logger = new Logger(PayBackController.name);
+
   @Public()
   @Get('testApi')
   async testApi() {
@@ -35,20 +37,20 @@ export class PayBackController {
   @Cron('0 */5 9-12 * * 1-5')
   async autoCrawlTodayDataAM() {
     // 早盘需要精确到 9.20 - 11.30，其他时间返回
-    console.log('[必入]定时任务执行了！0 */5 9-12 * * 1-5');
+    this.logger.debug('[必入]定时任务执行了！0 */5 9-12 * * 1-5');
     const currentTime = dayjs();
     const currentDate = currentTime.format('YYYY-MM-DD');
     // 时间返回判断;9.20 - 11.30
-    // console.log('定时任务执行了！0 */5 9-12 * * 1-5', currentDate + ' 09:19:00', currentTime, currentTime.isAfter(currentDate + ' 09:19:00'), currentTime.isBefore(currentDate + ' 11:31:00'));
+    // this.logger.debug('定时任务执行了！0 */5 9-12 * * 1-5', currentDate + ' 09:19:00', currentTime, currentTime.isAfter(currentDate + ' 09:19:00'), currentTime.isBefore(currentDate + ' 11:31:00'));
     if (currentTime.isAfter(currentDate + ' 09:19:00') && currentTime.isBefore(currentDate + ' 11:31:00')) {
       // this.crawlTodayData();
-      console.log('[选入]定时任务执行了！0 */5 13-15 * * 1-5');
+      this.logger.debug('[选入]定时任务执行了！0 */5 9-12 * * 1-5');
     }
   }
 
   @Cron('0 */5 13-15 * * 1-5')
   async autoCrawlTodayDataPM() {
-    console.log('定时任务执行了！0 */5 13-15 * * 1-5');
+    this.logger.debug('定时任务执行了！0 */5 13-15 * * 1-5');
     // this.crawlTodayData();
   }
 
