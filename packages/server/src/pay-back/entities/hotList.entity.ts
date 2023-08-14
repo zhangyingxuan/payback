@@ -21,7 +21,7 @@ export class hotList {
   @Column({ comment: '热门Etf Top5', type: 'varchar', length: 2048, default: '' })
   hotEtfs: string;
 
-  @Column({ type: 'timestamp', comment: '创建时间' })
+  @Column({ type: 'timestamp', comment: '创建时间', default: () => 'current_timestamp' })
   createTime: Timestamp;
 
   @Column({ type: "timestamp", comment: '更新时间', default: () => 'current_timestamp' })
