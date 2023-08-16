@@ -57,6 +57,9 @@ let PayBackController = PayBackController_1 = class PayBackController {
         let shortData, fundsData, marketData;
         switch (type) {
             case 0:
+                shortData = await this.ShorTermService.crawlShortTermData();
+                fundsData = await this.fundsService.crawlfundsData();
+                marketData = await this.marketService.crawlMarketData();
                 break;
             case 1:
                 shortData = await this.ShorTermService.crawlShortTermData();

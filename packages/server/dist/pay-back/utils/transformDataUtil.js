@@ -102,7 +102,7 @@ function transformDailyLimitData(dailyLimitData, currentDate) {
         dailyLimitStockDto.closingFunds = (0, commonUtil_1.fundsToFixed)(item[`涨停封单额[${currentDate}]`]);
         if (item[`涨停类型[${currentDate}]`] !== turnoverTypeArr[0]) {
             dailyLimitStockDto.turnoverType = item[`涨停类型[${currentDate}]`];
-            dailyLimitStockDto.turnoverType.indexOf(turnoverTypeArr[2]) > -1 && (evenBoardData.yizi++);
+            dailyLimitStockDto.turnoverType && dailyLimitStockDto.turnoverType.indexOf(turnoverTypeArr[2]) > -1 && (evenBoardData.yizi++);
         }
         dailyLimitStockDto.type = judgeType(item['最新涨跌幅']);
         dailyLimitStockDto.price = item['最新价'];

@@ -133,7 +133,7 @@ export async function fetchMarketPoint(apiUrl, key) {
     "mode": "cors",
     "credentials": "include"
   });
-  console.log(key);
+  
   const responseData = await result.text();
   const dataStr = responseData.substring(responseData.indexOf('(') + 1, responseData.length - 1);
   const dataJSON = JSON.parse(dataStr);
