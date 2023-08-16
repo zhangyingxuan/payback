@@ -145,7 +145,7 @@ function transformDailyLimitData(dailyLimitData, currentDate) {
     // 流通市值
     dailyLimitStockDto.circulationValue = fundsToFixed(item[`a股市值(不含限售股)[${currentDate}]`]);
     dailyLimitStockDto.dailyTime = item[`首次涨停时间[${currentDate}]`] ? item[`首次涨停时间[${currentDate}]`].trim() : '-';
-    if (dailyLimitStockDto.openTimes > 0) {
+    if (dailyLimitStockDto.openTimes > 0 && item[`最终涨停时间[${currentDate}]`]) {
       dailyLimitStockDto.dailyTime += (',' + item[`最终涨停时间[${currentDate}]`].trim());
     }
     // 如果是 断板连板 则统计几天几板

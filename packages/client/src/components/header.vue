@@ -171,7 +171,7 @@ async function fetchTodayData() {
     await crawlTodayData({ fetchTodayDataType: data.fetchTodayDataType });
     data.fetchTodayDataing = false;
     ElMessage.success('更新成功！');
-    // location.reload();
+    location.reload();
   } catch (e: any) {
     console.log(e);
     data.fetchTodayDataing = false;

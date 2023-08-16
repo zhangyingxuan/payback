@@ -34,7 +34,7 @@ export class PayBackController {
   }
 
 
-  @Cron('0 */5 9-12 * * 1-5')
+  // @Cron('0 */5 9-12 * * 1-5')
   async autoCrawlTodayDataAM() {
     // 早盘需要精确到 9.20 - 11.30，其他时间返回
     this.logger.debug('[必入]定时任务执行了！0 */5 9-12 * * 1-5');
@@ -48,7 +48,8 @@ export class PayBackController {
     }
   }
 
-  @Cron('0 */5 13-15 * * 1-5')
+  // 下午1点到2.55，每隔5分钟执行一次
+  // @Cron('0 */5 13-14 * * 1-5')
   async autoCrawlTodayDataPM() {
     this.logger.debug('定时任务执行了！0 */5 13-15 * * 1-5');
     // this.crawlTodayData();

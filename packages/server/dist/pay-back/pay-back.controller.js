@@ -24,7 +24,6 @@ const review_service_1 = require("./service/review.service");
 const ths_service_1 = require("./service/ths.service");
 const apiTest_service_1 = require("./service/apiTest.service");
 const public_decorator_1 = require("../decorator/public.decorator");
-const schedule_1 = require("@nestjs/schedule");
 const dayjs = require("dayjs");
 let PayBackController = PayBackController_1 = class PayBackController {
     constructor(ShorTermService, fundsService, hotListService, reviewService, thsService, apiTestService, latestConceptPlateService, marketService) {
@@ -150,18 +149,6 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "testApi", null);
-__decorate([
-    (0, schedule_1.Cron)('0 */5 9-12 * * 1-5'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], PayBackController.prototype, "autoCrawlTodayDataAM", null);
-__decorate([
-    (0, schedule_1.Cron)('0 */5 13-15 * * 1-5'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], PayBackController.prototype, "autoCrawlTodayDataPM", null);
 __decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.Get)('/crawlTodayData'),
