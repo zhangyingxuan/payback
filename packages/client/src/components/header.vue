@@ -17,7 +17,11 @@
         </el-button>
 
         <template v-if="isAdmin">
-          <el-button type="danger" @click="refreshTodayData" size="small">
+          <el-button
+            type="danger"
+            @click="data.fetchTodayDataDialogVisible = true"
+            size="small"
+          >
             更新今日数据
           </el-button>
           <el-button
@@ -89,10 +93,44 @@
     </div>
   </div>
 
-  <MyDrawer :drawerVisible="drawerVisible" @closeDrawer="switchDrawerVisible" />
+  <el-dialog
+    v-model="data.fetchTodayDataDialogVisible"
+    title="是否更新今日数据？"
+    :width="isMobile ? '70%' : '30%'"
+  >
+    <el-select
+      v-model="data.fetchTodayDataType"
+      placeholder="请选择更新数据范围"
+    >
+      <el-option label="全部数据" :value="0" />
+      <el-option label="短线数据" :value="1" />
+      <el-option label="市场数据" :value="2" />
+      <el-option label="资金数据" :value="3" />
+    </el-select>
+
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="data.fetchTodayDataDialogVisible = false"
+          >取消</el-button
+        >
+        <el-button
+          type="primary"
+          @click="fetchTodayData"
+          :loading="data.fetchTodayDataing"
+        >
+          确认
+        </el-button>
+      </span>
+    </template>
+  </el-dialog>
+
+  <MyDrawer
+    :drawerVisible="data.drawerVisible"
+    @closeDrawer="switchDrawerVisible"
+  />
 </template>
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { onMounted, reactive } from 'vue';
 import { useSidebarStore } from '../store/sidebar';
 import MyDrawer from './drawer.vue';
 import { useRouter } from 'vue-router';
@@ -101,62 +139,44 @@ import { crawlTodayData } from '../api/payBack';
 import { modifyThsSelfStocks } from '../api/thsTrade';
 import { clearLogin } from '../router/auth';
 import { isMobile } from '@/core/util';
-import { ElMessageBox } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import dayjs from 'dayjs';
 import Calendar from './calendar/index.vue';
+import { options } from './config';
 
 const username: string | null = localStorage.getItem('ms_username');
-
 const isAdmin = username === 'admin';
 
+const data = reactive({
+  drawerVisible: false,
+  fetchTodayDataDialogVisible: false,
+  fetchTodayDataType: 0,
+  fetchTodayDataing: false,
+});
+
 // const countDays = ref(20);
-const options = [
-  {
-    value: '5',
-    label: '5天',
-  },
-  {
-    value: '7',
-    label: '7天',
-  },
-  {
-    value: '10',
-    label: '10天',
-  },
-  {
-    value: '15',
-    label: '15天',
-  },
-  {
-    value: '20',
-    label: '20天',
-  },
-  {
-    value: '30',
-    label: '30天',
-  },
-  {
-    value: '45',
-    label: '45天',
-  },
-];
 
 // 当前日期大于20号，则提示
 const monthEnd = dayjs().date() >= 20;
 const sidebar = useSidebarStore();
-const drawerVisible = ref(false);
 
 function switchDrawerVisible() {
-  drawerVisible.value = !drawerVisible.value;
+  data.drawerVisible = !data.drawerVisible;
 }
-function refreshTodayData() {
-  ElMessageBox.confirm('确定要更新今日数据吗？')
-    .then(() => {
-      crawlTodayData();
-    })
-    .catch(() => {
-      // catch error
-    });
+
+async function fetchTodayData() {
+  data.fetchTodayDataing = true;
+  try {
+    // 根据更新范围，调用对应接口
+    await crawlTodayData({ fetchTodayDataType: data.fetchTodayDataType });
+    data.fetchTodayDataing = false;
+    ElMessage.success('更新成功！');
+    // location.reload();
+  } catch (e: any) {
+    console.log(e);
+    data.fetchTodayDataing = false;
+    ElMessage.success('更新失败！');
+  }
 }
 
 function synchronousOptionalStocks() {

@@ -52,14 +52,26 @@ let PayBackController = PayBackController_1 = class PayBackController {
     async autoCrawlTodayDataPM() {
         this.logger.debug('定时任务执行了！0 */5 13-15 * * 1-5');
     }
-    async crawlTodayData() {
-        const shortData = await this.ShorTermService.crawlShortTermData();
-        const fundsData = await this.fundsService.crawlfundsData();
-        const marketData = await this.marketService.crawlMarketData();
+    async crawlTodayData(query) {
+        const type = +(query.fetchTodayDataType || 0);
+        let shortData, fundsData, marketData;
+        switch (type) {
+            case 0:
+                break;
+            case 1:
+                shortData = await this.ShorTermService.crawlShortTermData();
+                break;
+            case 2:
+                marketData = await this.marketService.crawlMarketData();
+                break;
+            case 3:
+                fundsData = await this.fundsService.crawlfundsData();
+                break;
+            default:
+                break;
+        }
         return {
-            shortData,
-            fundsData,
-            marketData
+            code: 200,
         };
     }
     crawlHotListData() {
@@ -150,8 +162,9 @@ __decorate([
 __decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.Get)('/crawlTodayData'),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "crawlTodayData", null);
 __decorate([

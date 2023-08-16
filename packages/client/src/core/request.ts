@@ -15,7 +15,7 @@ import { getToken, clearLogin } from '../router/auth'
 // 相关配置请参考：www.axios-js.com/zh-cn/docs/#axios-request-config-1
 const defaultConfig: AxiosRequestConfig = {
   // 请求超时时间
-  timeout: 10000,
+  timeout: 3000,
   headers: {
     Accept: "application/json, text/plain, */*",
     "Content-Type": "application/json",
@@ -62,13 +62,17 @@ class PureHttp {
       },
       (error: PureHttpError) => {
         console.log(error);
-        // 解析错误码
-        const { statusCode }: any = error.response?.data;
-        // 如果返回401，则 清空storage 及 cookie，跳转至登录页
-        if (statusCode === 401) {
-          clearLogin();
-          location.href = '/login';
+        if (error.response) {
+          // 解析错误码
+          const { statusCode }: any = error.response?.data;
+          // 如果返回401，则 清空storage 及 cookie，跳转至登录页
+          if (statusCode === 401) {
+            clearLogin();
+            location.href = '/login';
+            return;
+          }
         }
+
         const $error = error;
         $error.isCancelRequest = Axios.isCancel($error);
         // 所有的响应异常 区分来源为取消请求/非取消请求

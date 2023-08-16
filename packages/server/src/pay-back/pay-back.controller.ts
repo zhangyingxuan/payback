@@ -56,14 +56,31 @@ export class PayBackController {
 
   @Public()
   @Get('/crawlTodayData')
-  async crawlTodayData() {
-    const shortData = await this.ShorTermService.crawlShortTermData();
-    const fundsData = await this.fundsService.crawlfundsData();
-    const marketData = await this.marketService.crawlMarketData();
+  async crawlTodayData(@Query() query) {
+    const type = +(query.fetchTodayDataType || 0);
+
+    let shortData, fundsData, marketData;
+    switch (type) {
+      case 0:
+        // shortData = await this.ShorTermService.crawlShortTermData();
+        // fundsData = await this.fundsService.crawlfundsData();
+        // marketData = await this.marketService.crawlMarketData();
+        break;
+      case 1:
+        shortData = await this.ShorTermService.crawlShortTermData();
+        break;
+      case 2:
+        marketData = await this.marketService.crawlMarketData();
+        break;
+      case 3:
+        fundsData = await this.fundsService.crawlfundsData();
+        break;
+      default:
+        break;
+    }
+
     return {
-      shortData,
-      fundsData,
-      marketData
+      code: 200,
     };
   }
 

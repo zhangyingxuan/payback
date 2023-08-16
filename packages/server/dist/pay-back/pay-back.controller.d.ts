@@ -20,10 +20,8 @@ export declare class PayBackController {
     testApi(): Promise<void>;
     autoCrawlTodayDataAM(): Promise<void>;
     autoCrawlTodayDataPM(): Promise<void>;
-    crawlTodayData(): Promise<{
-        shortData: import("./dto/create-pay-back.dto").CreatePayBackDto;
-        fundsData: import("./dto/create-funds-data.dto").CreateFundsDataDto;
-        marketData: import("./dto/create-market-data.dto").CreateMarketDataDto;
+    crawlTodayData(query: any): Promise<{
+        code: number;
     }>;
     crawlHotListData(): Promise<{
         code: number;
