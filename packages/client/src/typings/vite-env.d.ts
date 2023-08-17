@@ -6,6 +6,7 @@ declare module '*.vue' {
   export default component;
 }
 
+declare module 'pay-back-core'
 declare module 'vue-schart';
 declare module 'vue-cropperjs';
 declare module '@kangc/v-md-editor'

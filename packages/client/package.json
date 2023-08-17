@@ -1,5 +1,5 @@
 {
-  "name": "pay-back",
+  "name": "pay-back-client",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -25,6 +25,7 @@
     "hyperdown": "^2.4.29",
     "js-cookie": "^3.0.5",
     "lodash-es": "^4.17.21",
+    "pay-back-core": "^0.0.1",
     "pinia": "^2.0.20",
     "qs": "^6.11.1",
     "vue": "^3.2.37",
@@ -61,5 +62,24 @@
     "> 1%",
     "last 2 versions",
     "not dead"
-  ]
+  ],
+  "description": "> TODO: description",
+  "author": "yxuanzhang <yxuanzhang@tencent.com>",
+  "homepage": "",
+  "license": "ISC",
+  "main": "lib/client.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmmirror.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitee.com/chongqing-woteng/pay-back.git"
+  }
 }

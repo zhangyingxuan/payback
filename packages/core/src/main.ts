@@ -1,5 +1,3 @@
-import { getCurrentCycle } from "./utils";
+export default './utils';
 
-export {
-  getCurrentCycle
-};
+export { default as utils } from './utils';

@@ -2,10 +2,25 @@
   "name": "pay-back-core",
   "version": "0.0.1",
   "description": "前后端公用代码",
-  "main": "index.js",
+  "main": "./lib/index.js",
+  "umd": "./lib/index.umd.js", 
+  "module": "./es/index.esm.js", 
+  "types": "./es/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./es/index.esm.js",
+      "require": "./lib/index.js",
+      "types": "./es/types/index.d.ts"
+    }
+  },
+  "files": [
+    "lib",
+    "es"
+  ],
   "scripts": {
-    "clean": "rm -rf dist",
+    "clean": "rm -rf lib",
     "build": "pnpm clean && rollup --config",
+    "dev": "rollup -c --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -16,9 +31,9 @@
   "license": "ISC",
   "devDependencies": {
     "@rollup/plugin-babel": "^6.0.3",
+    "@rollup/plugin-eslint": "^9.0.4",
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.2.0",
-    "@rollup/plugin-eslint": "^9.0.4",
     "rollup": "^3.28.0",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-filesize": "^10.0.0",
@@ -28,5 +43,6 @@
     "typescript": "^5.1.6"
   },
   "dependencies": {
+    "rollup-plugin-dts": "^5.3.1"
   }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "server-nest-playwright-ts",
+  "name": "pay-back-server",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -39,6 +39,7 @@
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
+    "pay-back-core": "^0.0.1",
     "playwright": "^1.32.3",
     "qs": "^6.11.2",
     "raw-loader": "^4.0.2",
