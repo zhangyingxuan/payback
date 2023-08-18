@@ -4,7 +4,7 @@ import { ShortTermModel } from '../../../api/model/shortTermModel';
 import dayjs from 'dayjs';
 import _ from 'lodash-es';
 import { FundsKey } from '../utils/index.d';
-import utils from 'pay-back-core';
+import { getCurrentCycle } from 'pay-back-core';
 
 /**
  * 转换 行业、概念资金 图标数据
@@ -146,7 +146,7 @@ export function transformEvenBoardData(shortTermData: ShortTermModel[]): any[] {
       };
       item.downLimitData && (itemData.downLimitData = JSON.parse(item.downLimitData));
       item.hugeFallData && (itemData.hugeFallData = JSON.parse(item.hugeFallData));
-      !itemData.cycle && (itemData.cycle = utils.getCurrentCycle(itemData));
+      !itemData.cycle && (itemData.cycle = getCurrentCycle(itemData));
 
       evenBoardList.push(itemData);
     }

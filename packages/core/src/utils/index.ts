@@ -1,4 +1,4 @@
-export const getCurrentCycle = function (item: any): String {
+export const getCurrentCycle = function (item: any): string {
   // 1、启动；犹豫中复苏，亏钱效应结束后，开始出现4板，连板小于10，不会出现15%以上大面；做首板
   // 2、发酵；3、分歧转一致；4、加速；5、分歧转一致；6、加速；7、见顶；8、调整；9、反包；
   // 高度>=5；连板股数量&gt;=10；没有天地板、炸板大面票，昨日断板票今天会有修复，大长腿也经常出现
@@ -29,4 +29,19 @@ export const getCurrentCycle = function (item: any): String {
   return cycles[0];
 }
 
-export default { getCurrentCycle };
+
+
+/**
+ * 涨停自选策略
+ * 连板全部加入
+ * 首板：流通市值大于30亿 且小于120亿，涨停10cm的个股，股价低于30
+ */
+export function dailyLimitOptionalStrategy(stock: any, currentLevel: number | string) {
+  // 创业板、科创板不自选
+  if (stock.type != 0) return false;
+  // 连板全部加入
+  if (currentLevel != 1) return true;
+  return stock.price <= 30 && (stock.circulationValue >= 20 && stock.circulationValue <= 120);
+}
+
+export default { getCurrentCycle, dailyLimitOptionalStrategy };

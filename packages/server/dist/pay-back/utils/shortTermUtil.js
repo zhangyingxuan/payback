@@ -5,6 +5,7 @@ const create_pay_back_dto_1 = require("../dto/create-pay-back.dto");
 const transformDataUtil_1 = require("../utils/transformDataUtil");
 const config_1 = require("../core/config");
 const fetchUtil_1 = require("../core/fetchUtil");
+const pay_back_core_1 = require("pay-back-core");
 async function getShortTermData(todayDateStr) {
     const dailyLimitData = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.dailyLimitMoreThan1, 100, false);
     const downLimitData = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.downLimit, 50, false);
@@ -36,27 +37,7 @@ function prepareDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallD
     createPayBackDto.downLimitData = JSON.stringify(downLimitDataArr);
     createPayBackDto.hugeFallData = JSON.stringify(hugeFallDataArr);
     createPayBackDto.createTime = new Date();
-    createPayBackDto.cycle = getCurrentCycle(createPayBackDto);
+    createPayBackDto.cycle = (0, pay_back_core_1.getCurrentCycle)(createPayBackDto);
     return createPayBackDto;
-}
-function getCurrentCycle(item) {
-    const cycles = ['启动', '发酵', '高潮', '退潮', '冰点'];
-    const maxHeight = item.marketHeight;
-    const hugeFallNum = item.hugeFall ? item.hugeFall.length : 0;
-    if (maxHeight <= 4) {
-        if (item.downLimitQuantity > 10) {
-            return cycles[4];
-        }
-        if (maxHeight === 4 && hugeFallNum == 0) {
-            return cycles[0];
-        }
-        return cycles[3];
-    }
-    if (maxHeight >= 5) {
-        if (item.evenBoardAmount >= 10 || item.dailyLimitQuantity >= 45) {
-            return cycles[2];
-        }
-        return cycles[1];
-    }
 }
 //# sourceMappingURL=shortTermUtil.js.map

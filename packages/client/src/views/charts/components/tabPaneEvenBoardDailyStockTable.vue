@@ -85,6 +85,7 @@
 import _ from 'lodash-es';
 import { reactive, computed } from 'vue';
 import { highlightKeyWord, getExpected } from '../utils';
+import { dailyLimitOptionalStrategy } from 'pay-back-core';
 
 let emit = defineEmits(['update:evenBoardData']); //自定义的更新num事件
 let superData = defineProps({
@@ -115,23 +116,6 @@ const data = reactive({
 });
 
 let keyword = '';
-
-/**
- * 是否加入自选
- * 连板全部加入
- * 首板：流通市值大于30亿 且小于120亿，涨停10cm的个股，股价低于30
- */
-function isAddSelf(stock: any, currentLevel: number) {
-  // 创业板、科创板不自选
-  if (stock.type != 0) return false;
-  // 连板全部加入
-  if (currentLevel != 1) return true;
-  return (
-    stock.price <= 30 &&
-    stock.circulationValue >= 20 &&
-    stock.circulationValue <= 120
-  );
-}
 
 const stockGroupByPlate = computed(() => {
   const evenBoardData = _.cloneDeep(superData.evenBoardData);
@@ -171,7 +155,7 @@ const stockGroupByPlate = computed(() => {
               isAdd = item.evenBoardHeight == 1;
             }
             if (data.myStrategyChecked && isAdd) {
-              isAdd = isAddSelf(item, item.evenBoardHeight);
+              isAdd = dailyLimitOptionalStrategy(item, item.evenBoardHeight);
               isAdd && data.myStrategyCheckedLen++;
             }
             isAdd && stockGroupByPlate[item.plateLevel2].push(item);

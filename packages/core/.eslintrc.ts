@@ -1,23 +1,25 @@
 module.exports = {
-  root: true,
-  env: {
-    browser: true,
-    es2021: true,
-    node: true,
-  },
-  extends: ['eslint:recommended', 'plugin:vue/vue3-essential', 'plugin:@typescript-eslint/recommended'],
-  overrides: [],
-  parser: 'vue-eslint-parser',
+  parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
     parser: '@typescript-eslint/parser',
   },
-  plugins: ['vue', '@typescript-eslint'],
+  plugins: ['@typescript-eslint/eslint-plugin'],
+  extends: [
+    'plugin:@typescript-eslint/recommended',
+    'plugin:prettier/recommended',
+  ],
+  root: true,
+  env: {
+    node: true,
+    jest: true,
+  },
+  ignorePatterns: ['.eslintrc.js'],
   rules: {
-    // 关闭 class 命名必须分段的配置
-    'vue/multi-word-component-names': 0,
-    '@typescript-eslint/no-empty-function': 0,
-    '@typescript-eslint/no-explicit-any': 0,
+    '@typescript-eslint/interface-name-prefix': 'off',
+    '@typescript-eslint/explicit-function-return-type': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
   },
 };

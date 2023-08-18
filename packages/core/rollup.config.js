@@ -48,7 +48,7 @@ export default [
       // umd development version with sourcemap
       // cjs and esm version
       {
-        file: `lib/index.js`,
+        file: `lib/index.cjs`,
         format: 'cjs',
         banner
       },
@@ -74,7 +74,7 @@ export default [
       // umd with compress version
       {
         file: `lib/index.min.js`,
-        format: 'umd',
+        format: 'es',
         name,
         banner
       }
@@ -83,7 +83,7 @@ export default [
   },
   {
     input: "src/main.ts",
-    output: [{ file: "es/types/index.d.ts", format: "es" }],
+    output: [{ file: "es/index.d.ts", format: "dist" }],
     plugins: [dts()]
   }
 ];

@@ -13,24 +13,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ThsService = void 0;
 const common_1 = require("@nestjs/common");
 const fetchUtil_1 = require("../core/fetchUtil");
-const fetchRequestIterator_1 = require("../core/fetchRequestIterator");
+const pay_back_core_1 = require("pay-back-core");
 const users_service_1 = require("../../users/users.service");
+const pay_back_core_2 = require("pay-back-core");
 let isSuccess = true;
 function atob(a) {
     return Buffer.from(a, 'base64').toString('binary');
 }
 ;
-function isAddSelf(stock, currentLevel) {
-    if (stock.type != 0)
-        return false;
-    if (currentLevel != 1)
-        return true;
-    return stock.price <= 30 && (stock.circulationValue >= 20 && stock.circulationValue <= 120);
-}
 function prepareSelfStock(i, stocks, app, userid, ticket, user) {
     if (stocks) {
         for (let j = 0; j < stocks.length; j++) {
-            isAddSelf(stocks[j], i) && app.add(async (ctx, next) => {
+            (0, pay_back_core_2.dailyLimitOptionalStrategy)(stocks[j], i) && app.add(async (ctx, next) => {
                 const result = await (0, fetchUtil_1.modifyThsSelfStocks)(stocks[j].code, userid, ticket, user);
                 console.log(stocks[j].name, result);
                 if (result.errorMsg === '当前用户未登录') {
@@ -55,7 +49,7 @@ let ThsService = ThsService_1 = class ThsService {
         const ticket = userInfo.ticket;
         const user = userInfo.user;
         try {
-            let app = new fetchRequestIterator_1.FetchRequestIterator();
+            let app = new pay_back_core_1.AsynTaskIterator();
             prepareSelfStock(9, evenBoardData['gaobiao'], app, userid, ticket, user);
             const maxHeight = evenBoardData.maxHeight;
             for (let i = maxHeight; i >= 1; i--) {

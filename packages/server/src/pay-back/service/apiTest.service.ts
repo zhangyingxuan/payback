@@ -6,6 +6,7 @@ import fetch from 'node-fetch';
 import { createV } from '../core/hexin-v';
 const zlib = require('node:zlib');
 import { stringify } from 'qs';
+import { getCurrentCycle } from 'pay-back-core';
 
 const apiUrls = {
   // 概念板块
@@ -54,37 +55,6 @@ export class ApiTestService {
     });
 
     console.log(await result.json());
-
-    // const body = {
-    //   "source": "Ths_iwencai_Xuangu",
-    //   "version": "2.0",
-    //   // "query_area": "", "block_list": "",
-    //   // "add_info": {
-    //   //   "urp": { "scene": 1, "company": 1, "business": 1 },
-    //   //   "contentType": "json", "searchInfo": true
-    //   // },
-    //   "question": "连续涨停天数>=1；不包含新股；不包含ST；几天几板；涨停原因；封板金额；成交额；同花顺二级行业；",
-    //   "perpage": 100,
-    //   "page": 1,
-    //   // "secondary_intent": "stock",
-    //   // "log_info": { "input_type": "typewrite" },
-    //   // "rsh": "Ths_iwencai_Xuangu_cj7r4l37naa3g54vm4j6pk04xq86kyvq"
-    // }
-
-    // const result = await fetch("https://www.iwencai.com/customized/chart/get-robot-data", {
-    //   "headers": {
-    //     "accept": "application/json, text/plain, */*",
-    //     "accept-language": "zh-CN,zh;q=0.9",
-    //     "cache-control": "no-cache",
-    //     "content-type": "application/json",
-    //     "hexin-v": createV(),
-    //     "pragma": "no-cache"
-    //   },
-    //   "body": JSON.stringify(body),
-    //   "method": "POST",
-    // });
-    // console.log(await result.json());
-    // console.log(result?.data?.answer);
   }
 
   async fetchHotList() {
@@ -177,6 +147,10 @@ export class ApiTestService {
       "credentials": "include"
     })
       .then(async (response) => await response.text()).then(data => console.log(data)).catch(e => console.error(e));
+  }
+
+  otherTest() {
+    getCurrentCycle({});
   }
 
   async findAll() {

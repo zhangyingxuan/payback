@@ -4,7 +4,6 @@ import { CreateMarketDataDto } from '../dto/create-market-data.dto';
 import fundsUtil from './fundsUtil';
 import { fetchMarketPointFromEastmoney, fetchMarketData, fetchIwencaiApi } from '../core/fetchUtil';
 import { params } from '../core/config';
-// import { FetchRequestIterator } from '../core/fetchRequestIterator';
 
 export default {
   /**
@@ -12,7 +11,6 @@ export default {
    */
   async getMarketData(dateStr): Promise<CreateMarketDataDto> {
     const createMarketDataDto: CreateMarketDataDto = new CreateMarketDataDto();
-    // const fetchRequestIterator = new FetchRequestIterator();
     // 获取市场指数
     const indexResult = await fetchMarketPointFromEastmoney();
     createMarketDataDto.shangzhengPoint = indexResult[0]['f2'];
@@ -27,7 +25,6 @@ export default {
     createMarketDataDto.riseAmount = marketData.zdfb_data.znum;
     createMarketDataDto.marketScore = marketData.dppj_data;
 
-    // fetchRequestIterator.push();
     const gainianRiseFloat = await fetchIwencaiApi(params.gainianRiseFloat);
     const gainianFallFloat = await fetchIwencaiApi(params.gainianFallFloat);
     const hangyeRiseFloat = await fetchIwencaiApi(params.hangyeRiseFloat);

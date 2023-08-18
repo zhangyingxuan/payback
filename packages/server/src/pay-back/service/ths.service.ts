@@ -1,7 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { modifyThsSelfStocks, clearThsSelfStocks } from '../core/fetchUtil';
-import { FetchRequestIterator } from '../core/fetchRequestIterator';
+import { AsynTaskIterator } from 'pay-back-core';
 import { UsersService } from '../../users/users.service';
+import { dailyLimitOptionalStrategy } from 'pay-back-core';
 
 let isSuccess = true;
 
@@ -12,24 +13,11 @@ function atob(a) {
   return Buffer.from(a, 'base64').toString('binary');
 };
 
-/**
- * 是否加入自选
- * 连板全部加入
- * 首板：流通市值大于30亿 且小于120亿，涨停10cm的个股，股价低于30
- */
-function isAddSelf(stock, currentLevel) {
-  // 创业板、科创板不自选
-  if (stock.type != 0) return false;
-  // 连板全部加入
-  if (currentLevel != 1) return true;
-  return stock.price <= 30 && (stock.circulationValue >= 20 && stock.circulationValue <= 120);
-}
-
 function prepareSelfStock(i, stocks, app, userid, ticket, user) {
   if (stocks) {
     for (let j = 0; j < stocks.length; j++) {
       // 仅插入 10cm的个股
-      isAddSelf(stocks[j], i) && app.add(async (ctx, next) => {
+      dailyLimitOptionalStrategy(stocks[j], i) && app.add(async (ctx, next) => {
         const result = await modifyThsSelfStocks(stocks[j].code, userid, ticket, user);
         console.log(stocks[j].name, result);
         if (result.errorMsg === '当前用户未登录') {
@@ -77,7 +65,7 @@ export class ThsService {
       // return;
       // 3、插入自选股
       // const funcs = [];
-      let app = new FetchRequestIterator();
+      let app = new AsynTaskIterator();
       // 3.1 先加入高标
       prepareSelfStock(9, evenBoardData['gaobiao'], app, userid, ticket, user);
       // 3.2 再加入连板股

@@ -22,6 +22,7 @@ const node_fetch_1 = require("node-fetch");
 const hexin_v_1 = require("../core/hexin-v");
 const zlib = require('node:zlib');
 const qs_1 = require("qs");
+const pay_back_core_1 = require("pay-back-core");
 const apiUrls = {
     conceptPlate: 'https://dq.10jqka.com.cn/fuyao/hot_list_data/out/hot_list/v1/plate',
     industryPlate: 'https://dq.10jqka.com.cn/fuyao/hot_list_data/out/hot_list/v1/plate?type=industry',
@@ -138,6 +139,9 @@ let ApiTestService = ApiTestService_1 = class ApiTestService {
             "credentials": "include"
         })
             .then(async (response) => await response.text()).then(data => console.log(data)).catch(e => console.error(e));
+    }
+    otherTest() {
+        (0, pay_back_core_1.getCurrentCycle)({});
     }
     async findAll() {
         return await this.hotListRp.find();
