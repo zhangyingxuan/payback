@@ -13,7 +13,10 @@
 	"scripts": {
 		"start:server": "cd packages/server && pnpm start",
 		"start:client": "cd packages/client && pnpm start",
-		"start": "pnpm start:client & pnpm start:server"
+		"start": "pnpm start:client & pnpm start:server",
+		"build:server": "cd packages/server & pnpm build",
+		"build:client": "cd packages/client & pnpm build",
+		"build": "pnpm build:server && pnpm build:client"
 	},
 	"dependencies": {
 		"@element-plus/icons-vue": "^2.0.9",
