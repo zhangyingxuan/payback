@@ -44,5 +44,6 @@
   },
   "dependencies": {
     "rollup-plugin-dts": "^5.3.1"
-  }
+  },
+  "gitHead": "c8dcb5727009d4b9993542584a4f34408d1dbbcb"
 }
