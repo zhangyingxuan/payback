@@ -8,6 +8,7 @@ import { getShortTermData, getShortTermDataByDate } from '../utils/shortTermUtil
 import { ThsService } from './ths.service';
 import * as dayjs from 'dayjs';
 import { Cron } from '@nestjs/schedule';
+import { getCurrentCycle } from 'pay-back-core';
 
 @Injectable()
 export class ShorTermService {
@@ -55,6 +56,7 @@ export class ShorTermService {
     let createPayBackDto: CreatePayBackDto;
     try {
       createPayBackDto = await getShortTermData(todayDateStr);
+
       console.log(createPayBackDto);
       if (isExist) {
         this.logger.log('crawlShortTermData 更新数据')

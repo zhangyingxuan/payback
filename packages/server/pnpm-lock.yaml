@@ -59,8 +59,8 @@ dependencies:
     specifier: ^1.0.0
     version: 1.0.0
   pay-back-core:
-    specifier: ^0.0.1
-    version: 0.0.1(rollup@3.28.0)(typescript@4.9.5)
+    specifier: ^0.0.2
+    version: 0.0.2(rollup@3.28.0)(typescript@4.9.5)
   playwright:
     specifier: ^1.32.3
     version: 1.32.3
@@ -4548,8 +4548,8 @@ packages:
     resolution: {integrity: sha512-KG8UEiEVkR3wGEb4m5yZkVCzigAD+cVEJck2CzYZO37ZGJfctvVptVO192MwrtPhzONn6go8ylnOdMhKqi4nfg==}
     dev: false
 
-  /pay-back-core@0.0.1(rollup@3.28.0)(typescript@4.9.5):
-    resolution: {integrity: sha512-D7u0Ds2Zzr63SUWL2/l9DK7tlTamIRiFBXU5zNmlpx8lmKOhR9fWZpXk7QKFtx4HM98vug1/4WDa8cQyIuxLPQ==}
+  /pay-back-core@0.0.2(rollup@3.28.0)(typescript@4.9.5):
+    resolution: {integrity: sha512-Nbc/h34y4o1yj7OGG+vSP0q6Esh9Ft2+IyBCwGnHoSkVjXHZVYHNaCWSLUdr2HFoyxSYQrH4EVHm32KChJrYPA==}
     dependencies:
       rollup-plugin-dts: 5.3.1(rollup@3.28.0)(typescript@4.9.5)
     transitivePeerDependencies:

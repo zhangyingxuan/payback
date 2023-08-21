@@ -150,7 +150,19 @@ export class ApiTestService {
   }
 
   otherTest() {
-    getCurrentCycle({});
+    const cycle = getCurrentCycle({
+      downLimitQuantity: 3,
+      dailyLimitQuantity: 32,
+      dailyLimitOpenQuantity: 10,
+      sealingRate: 76,
+      dailyLimitReturnSealQuantity: 14,
+      marketHeight: 6,
+      board1: 21,
+      evenBoardAmount: 11,
+      hugeFallData: '[]',
+      createTime: '2023 - 08 - 21T10: 37: 54.433Z'
+    });
+    console.log(cycle);
   }
 
   async findAll() {

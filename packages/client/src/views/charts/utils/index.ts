@@ -94,6 +94,10 @@ export function getExpected(stock: DailyLimitStockDto) {
   // 6、昨日烂板（开板5次），第二天预计低开（0--2%）
 
   if (stock.openTimes >= 5) {
+    // 最终封板时间，在早盘则按正常预期，否则低开
+    if (currentTime.isBefore(date1300)) {
+      return expectedArr[2];
+    }
     return expectedArr[5];
   }
 

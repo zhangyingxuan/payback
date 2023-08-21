@@ -141,7 +141,19 @@ let ApiTestService = ApiTestService_1 = class ApiTestService {
             .then(async (response) => await response.text()).then(data => console.log(data)).catch(e => console.error(e));
     }
     otherTest() {
-        (0, pay_back_core_1.getCurrentCycle)({});
+        const cycle = (0, pay_back_core_1.getCurrentCycle)({
+            downLimitQuantity: 3,
+            dailyLimitQuantity: 32,
+            dailyLimitOpenQuantity: 10,
+            sealingRate: 76,
+            dailyLimitReturnSealQuantity: 14,
+            marketHeight: 6,
+            board1: 21,
+            evenBoardAmount: 11,
+            hugeFallData: '[]',
+            createTime: '2023 - 08 - 21T10: 37: 54.433Z'
+        });
+        console.log(cycle);
     }
     async findAll() {
         return await this.hotListRp.find();
