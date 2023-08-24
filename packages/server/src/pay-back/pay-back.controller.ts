@@ -56,7 +56,7 @@ export class PayBackController {
     // this.crawlTodayData();
   }
 
-  @Public()
+  // @Public()
   @Get('/crawlTodayData')
   async crawlTodayData(@Query() query) {
     const type = +(query.fetchTodayDataType || 0);
@@ -86,12 +86,12 @@ export class PayBackController {
     };
   }
 
-  @Public()
+  // @Public()
   @Get('/crawlHotListData')
   crawlHotListData() {
     return this.hotListService.crawlHotListData();
   }
-  @Public()
+  // @Public()
   @Get('/crawlShortTerm')
   crawlShortTerm() {
     return this.ShorTermService.crawlShortTermData();
@@ -104,17 +104,17 @@ export class PayBackController {
     const date = query.date || new Date()
     return this.ShorTermService.crawlShortTermDataByDate(date);
   }
-  @Public()
+  // @Public()
   @Get('/crawlMarket')
   crawlMarket() {
     return this.marketService.crawlMarketData();
   }
-  @Public()
+  // @Public()
   @Get('/crawlFunds')
   crawlFunds() {
     return this.fundsService.crawlfundsData();
   }
-  @Public()
+  // @Public()
   @Get('/crawlLatestConceptPlate')
   crawlLatestConceptPlate() {
     return this.latestConceptPlateService.crawlLatestConceptPlateData();

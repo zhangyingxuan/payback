@@ -150,7 +150,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "testApi", null);
 __decorate([
-    (0, public_decorator_1.Public)(),
     (0, common_1.Get)('/crawlTodayData'),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
@@ -158,14 +157,12 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "crawlTodayData", null);
 __decorate([
-    (0, public_decorator_1.Public)(),
     (0, common_1.Get)('/crawlHotListData'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], PayBackController.prototype, "crawlHotListData", null);
 __decorate([
-    (0, public_decorator_1.Public)(),
     (0, common_1.Get)('/crawlShortTerm'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -180,21 +177,18 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PayBackController.prototype, "crawlShortTermDataByDate", null);
 __decorate([
-    (0, public_decorator_1.Public)(),
     (0, common_1.Get)('/crawlMarket'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], PayBackController.prototype, "crawlMarket", null);
 __decorate([
-    (0, public_decorator_1.Public)(),
     (0, common_1.Get)('/crawlFunds'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], PayBackController.prototype, "crawlFunds", null);
 __decorate([
-    (0, public_decorator_1.Public)(),
     (0, common_1.Get)('/crawlLatestConceptPlate'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),

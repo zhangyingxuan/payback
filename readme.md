@@ -1,3 +1,7 @@
+# lerna项目开发流程
+## 项目创建
+## 打包部署
+
 ## 清理端口
 ``` js
 lsof -i:3000
@@ -9,11 +13,6 @@ kill -9 pid
 pnpm start:server
 pnpm start:client
 ```
-## 市场数据
-
-## 短线数据
-
-## 资金流向
 
 无限未来 (Infinite Future)
 数字前沿 (Digital Frontier)

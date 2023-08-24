@@ -125,11 +125,6 @@ const items: any = [
   //       permiss: '7',
   //       subs: [
   //         {
-  //           index: '/editor',
-  //           title: '富文本编辑器',
-  //           permiss: '8',
-  //         },
-  //         {
   //           index: '/markdown',
   //           title: 'markdown编辑器',
   //           permiss: '9',
