@@ -13,6 +13,7 @@
       <div :class="['date-col first-col', { isMobile }]">
         <div class="table__header">高度</div>
         <div class="table-col height1">周期</div>
+        <div class="table-col height1">晋级率</div>
         <!-- <div class="table-col height1">市场</div> -->
         <div class="table-col height1">连板数</div>
         <div class="table-col height1">涨停</div>
@@ -57,19 +58,33 @@
             <SuccessFilled />
           </el-icon>
         </div>
-
+        <!-- 周期 -->
         <div class="table-col height1">
           <el-tag class="ml-2" :type="getType(item.cycle)" effect="dark">{{
             item.cycle
           }}</el-tag>
         </div>
+        <!-- 连板晋级率 -->
+        <div
+          class="table-col height1"
+          :class="{
+            green:
+              calPromotionRate(item.evenBoardAmount, evenBoard.value, index) <
+              20,
+          }"
+        >
+          {{ calPromotionRate(item.evenBoardAmount, evenBoard.value, index) }}%
+        </div>
+        <!-- 连板数 -->
         <div class="table-col height1">{{ item.evenBoardAmount }}</div>
+        <!-- 涨停数量 -->
         <div
           class="table-col height1"
           :class="{ gray: item.dailyLimitQuantity < 50 }"
         >
           {{ item.dailyLimitQuantity }}
         </div>
+        <!-- 一字 -->
         <div class="table-col height1">
           {{ item.yizi }}
         </div>
@@ -294,6 +309,24 @@ function initAutoRefresh(val: boolean) {
   } else {
     clearInterval(interval);
   }
+}
+
+/**
+ * 计算晋级率
+ * @param evenBoardAmount
+ * @param evenBoardValue
+ * @param index
+ */
+function calPromotionRate(
+  evenBoardAmount: any,
+  evenBoardValue: any,
+  index: number,
+) {
+  return index !== evenBoardValue.length - 1
+    ? Math.round(
+        (evenBoardAmount / evenBoardValue[index + 1].dailyLimitQuantity) * 100,
+      )
+    : '-';
 }
 
 async function handleDateClick(item: any) {
