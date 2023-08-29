@@ -63,7 +63,8 @@ function prepareDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallD
   createPayBackDto.downLimitData = JSON.stringify(downLimitDataArr);
   createPayBackDto.hugeFallData = JSON.stringify(hugeFallDataArr);
   createPayBackDto.createTime = new Date();
-  createPayBackDto.cycle = getCurrentCycle(createPayBackDto);
+  // 保证hugeFallData 为对象
+  createPayBackDto.cycle = getCurrentCycle({ ...createPayBackDto, hugeFallData: hugeFallDataArr });
 
   return createPayBackDto;
 }

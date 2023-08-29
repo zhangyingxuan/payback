@@ -37,7 +37,7 @@ function prepareDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallD
     createPayBackDto.downLimitData = JSON.stringify(downLimitDataArr);
     createPayBackDto.hugeFallData = JSON.stringify(hugeFallDataArr);
     createPayBackDto.createTime = new Date();
-    createPayBackDto.cycle = (0, pay_back_core_1.getCurrentCycle)(createPayBackDto);
+    createPayBackDto.cycle = (0, pay_back_core_1.getCurrentCycle)(Object.assign(Object.assign({}, createPayBackDto), { hugeFallData: hugeFallDataArr }));
     return createPayBackDto;
 }
 //# sourceMappingURL=shortTermUtil.js.map

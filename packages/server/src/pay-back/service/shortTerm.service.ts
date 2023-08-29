@@ -8,7 +8,6 @@ import { getShortTermData, getShortTermDataByDate } from '../utils/shortTermUtil
 import { ThsService } from './ths.service';
 import * as dayjs from 'dayjs';
 import { Cron } from '@nestjs/schedule';
-import { getCurrentCycle } from 'pay-back-core';
 
 @Injectable()
 export class ShorTermService {

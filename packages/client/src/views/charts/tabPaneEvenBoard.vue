@@ -64,7 +64,7 @@
             item.cycle
           }}</el-tag>
         </div>
-        <!-- 连板晋级率 -->
+        <!-- 连板晋级率=今日连板家数/昨日涨停家数。 -->
         <div
           class="table-col height1"
           :class="{
