@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.promiseLimit = exports.modifyThsSelfStocks = exports.fetchNorhFunds = exports.fetchMarketPoint = exports.fetchMarketPointFromEastmoney = exports.clearThsSelfStocks = exports.fetchMarketData = exports.fetchIwencaiApi = void 0;
+exports.promiseLimit = exports.modifyThsSelfStocksRequest = exports.fetchNorhFunds = exports.fetchMarketPoint = exports.fetchMarketPointFromEastmoney = exports.clearThsSelfStocks = exports.fetchMarketData = exports.fetchIwencaiApi = void 0;
 const hexin_v_1 = require("./hexin-v");
 const node_fetch_1 = require("node-fetch");
 const commonUtil_1 = require("../utils/commonUtil");
@@ -140,7 +140,7 @@ async function fetchNorhFunds() {
     return result.text();
 }
 exports.fetchNorhFunds = fetchNorhFunds;
-async function modifyThsSelfStocks(code, userid, ticket, user) {
+async function modifyThsSelfStocksRequest(code, userid, ticket, user) {
     const pos = '1';
     const payload = {
         'add': { 'stockcode': code, 'op': 'add' },
@@ -172,7 +172,7 @@ async function modifyThsSelfStocks(code, userid, ticket, user) {
     return await result.json();
     ;
 }
-exports.modifyThsSelfStocks = modifyThsSelfStocks;
+exports.modifyThsSelfStocksRequest = modifyThsSelfStocksRequest;
 function promiseLimit(promises, limit) {
     return new Promise(resolve => {
         let resolvedCount = 0;

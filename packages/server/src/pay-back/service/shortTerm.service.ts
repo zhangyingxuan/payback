@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { CreatePayBackDto } from '../dto/create-pay-back.dto';
-import { UpdatePayBackDto } from '../dto/update-pay-back.dto';
 import { Repository } from 'typeorm';
 import { shortTermData } from '../entities/shortTermData.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -136,9 +135,5 @@ export class ShorTermService {
         'short_term_data.downLimitData'])
       .orderBy('createTime', 'DESC')
       .getMany();
-  }
-
-  async update(id: number, updatePayBackDto: UpdatePayBackDto) {
-    return await this.shortTermDataRp.update(id, updatePayBackDto);
   }
 }

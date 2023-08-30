@@ -171,7 +171,7 @@ export async function fetchNorhFunds() {
   return result.text();
 }
 
-export async function modifyThsSelfStocks(code, userid, ticket, user) {
+export async function modifyThsSelfStocksRequest(code, userid, ticket, user) {
   // # 更改同花顺自选股列表
   // # method: add 添加, del 删除, exc 排序
   // # pos: 排序用的序号, 从1开始

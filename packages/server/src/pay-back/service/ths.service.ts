@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { modifyThsSelfStocks, clearThsSelfStocks } from '../core/fetchUtil';
+import { modifyThsSelfStocksRequest, clearThsSelfStocks } from '../core/fetchUtil';
 import { AsynTaskIterator } from 'pay-back-core';
 import { UsersService } from '../../users/users.service';
 import { dailyLimitOptionalStrategy } from 'pay-back-core';
@@ -18,7 +18,7 @@ function prepareSelfStock(i, stocks, app, userid, ticket, user) {
     for (let j = 0; j < stocks.length; j++) {
       // 仅插入 10cm的个股
       dailyLimitOptionalStrategy(stocks[j], i) && app.add(async (ctx, next) => {
-        const result = await modifyThsSelfStocks(stocks[j].code, userid, ticket, user);
+        const result = await modifyThsSelfStocksRequest(stocks[j].code, userid, ticket, user);
         console.log(stocks[j].name, result);
         if (result.errorMsg === '当前用户未登录') {
           // https://www.10jqka.com.cn/ 重新登录地址
@@ -30,7 +30,7 @@ function prepareSelfStock(i, stocks, app, userid, ticket, user) {
         next();
       });
       // stock.type === '0' && funcs.push(async (comm, next) => {
-      //   comm = await modifyThsSelfStocks(stocks[j].code, userid, ticket, user);
+      //   comm = await modifyThsSelfStocksRequest(stocks[j].code, userid, ticket, user);
       //   if (comm.errorMsg === '当前用户未登录') {
       //     //  当前用户未登录，则停止之后的异步调用请求
       //     isSuccess = false;
@@ -51,13 +51,13 @@ export class ThsService {
   private readonly logger = new Logger(ThsService.name);
 
   async modifyThsSelfStocks(evenBoardData) {
-    this.logger.log('同步自选');
-
     const userInfo = await this.usersService.getUserByAccount('admin');
     // 1、获取用户信息
     const userid = atob(userInfo.userid);
     const ticket = userInfo.ticket;
     const user = userInfo.user;
+    // 重置成功状态
+    isSuccess = true;
 
     try {
       // 2、清空自选股 TODO 暂未实现
@@ -66,11 +66,13 @@ export class ThsService {
       // 3、插入自选股
       // const funcs = [];
       let app = new AsynTaskIterator();
+      this.logger.log(`同步自选: [高标] ${evenBoardData['gaobiao'].length}；`);
       // 3.1 先加入高标
       prepareSelfStock(9, evenBoardData['gaobiao'], app, userid, ticket, user);
       // 3.2 再加入连板股
       const maxHeight = evenBoardData.maxHeight;
       for (let i = maxHeight; i >= 1; i--) {
+        this.logger.log(`同步自选: [${i}板] ${evenBoardData[i + ''].length}；`);
         const stocks = evenBoardData[i + ''];
         prepareSelfStock(i, stocks, app, userid, ticket, user);
       }

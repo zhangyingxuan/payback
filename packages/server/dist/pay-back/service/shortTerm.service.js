@@ -124,9 +124,6 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
             .orderBy('createTime', 'DESC')
             .getMany();
     }
-    async update(id, updatePayBackDto) {
-        return await this.shortTermDataRp.update(id, updatePayBackDto);
-    }
 };
 __decorate([
     (0, schedule_1.Cron)('0 20 15 * * 1-5'),

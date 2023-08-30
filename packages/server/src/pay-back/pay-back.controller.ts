@@ -57,6 +57,7 @@ export class PayBackController {
   }
 
   // @Public()
+  // @Cron('0 25 9 * * 1-5')
   @Get('/crawlTodayData')
   async crawlTodayData(@Query() query) {
     const type = +(query.fetchTodayDataType || 0);
