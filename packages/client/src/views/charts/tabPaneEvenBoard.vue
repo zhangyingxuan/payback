@@ -160,39 +160,47 @@
     </div>
   </div>
 
+  <!-- 集合竞价情况 -->
+  <BiddingDataTable
+    :biddingData="data.currentDateData.biddingData"
+    :isMobile="isMobile"
+  />
   <!-- 当日涨停分布，按行业板块划分 -->
   <DailyStockTable
     v-model:evenBoardData="data.currentDateData"
     :isMobile="isMobile"
   />
-  <DownStockTable
-    :downLimitData="data.currentDateData.downLimitData"
-    :num="data.currentDateData.downLimitQuantity"
-    :isMobile="isMobile"
-  />
-  <DownStockTable
-    :downLimitData="data.currentDateData.hugeFallData"
-    :num="
-      data.currentDateData.hugeFallData
-        ? data.currentDateData.hugeFallData.length
-        : 0
-    "
-    :isDownLimitMode="false"
-    :isMobile="isMobile"
-  />
+  <div :class="{ flex__row: !isMobile }">
+    <DownStockTable
+      :downLimitData="data.currentDateData.downLimitData"
+      :num="data.currentDateData.downLimitQuantity"
+      :isMobile="isMobile"
+    />
+    <DownStockTable
+      :downLimitData="data.currentDateData.hugeFallData"
+      :num="
+        data.currentDateData.hugeFallData
+          ? data.currentDateData.hugeFallData.length
+          : 0
+      "
+      :isDownLimitMode="false"
+      :isMobile="isMobile"
+    />
+  </div>
 </template>
 <script lang="ts" setup>
 import { fetchEvenBoardData, fetchReveiwDataByDate } from '@/api/payBack';
 // import { fetchIndustryData } from '@/api/tonghuashun';
 import { judgeMonday } from './utils';
 import { transformEvenBoardData } from './utils/transformUtil';
-import { onMounted, reactive, watch, computed } from 'vue';
+import { reactive, watch, computed } from 'vue';
 import { useSidebarStore } from '@/store/sidebar';
 import { storeToRefs } from 'pinia';
 import { isMobile } from '@/core/util';
 import TabPaneChartsSummaryTable from './components/tabPaneChartsSummaryTable.vue';
 import DailyStockTable from './components/tabPaneEvenBoardDailyStockTable.vue';
 import DownStockTable from './components/tabPaneEvenBoardDownStockTable.vue';
+import BiddingDataTable from './components/tabPaneEvenBoardBiddingDataTable.vue';
 import dayjs from 'dayjs';
 
 type EvenBoard = {
@@ -418,6 +426,14 @@ function getDateCycle() {
 }
 .table * {
   box-sizing: border-box;
+}
+
+.flex__row {
+  display: flex;
+  flex-direction: row;
+  > div {
+    width: 50%;
+  }
 }
 
 .flexCenter {

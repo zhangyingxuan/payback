@@ -17,7 +17,6 @@ export class shortTermData {
   @Column({ comment: '涨停封板率', type: 'tinyint', default: 0 })
   sealingRate: number;
 
-
   @Column({ comment: '跌停数量', type: 'tinyint', default: 0 })
   downLimitQuantity: number;
 
@@ -27,8 +26,11 @@ export class shortTermData {
   @Column({ comment: '连板数量', type: 'tinyint', default: 0 })
   evenBoardAmount: number;
 
-  @Column({ comment: '连板原始数据', type: 'text' })
+  @Column({ comment: '连板原始数据', type: 'text', nullable: true })
   evenBoardData: string;
+
+  @Column({ comment: '昨日涨停今日集合竞价情况', type: 'text', nullable: true })
+  biddingData: string;
 
   @Column({ comment: '跌停数据', type: 'varchar', length: 3072, default: '' })
   downLimitData: string;

@@ -50,7 +50,7 @@ let ThsService = ThsService_1 = class ThsService {
         isSuccess = true;
         try {
             let app = new pay_back_core_1.AsynTaskIterator();
-            this.logger.log(`同步自选: [高标] ${evenBoardData['gaobiao'].length}；`);
+            this.logger.log(`同步自选: [高标] ${evenBoardData['gaobiao'] && evenBoardData['gaobiao'].length}；`);
             prepareSelfStock(9, evenBoardData['gaobiao'], app, userid, ticket, user);
             const maxHeight = evenBoardData.maxHeight;
             for (let i = maxHeight; i >= 1; i--) {

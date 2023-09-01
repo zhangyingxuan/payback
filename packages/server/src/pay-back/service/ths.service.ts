@@ -66,7 +66,7 @@ export class ThsService {
       // 3、插入自选股
       // const funcs = [];
       let app = new AsynTaskIterator();
-      this.logger.log(`同步自选: [高标] ${evenBoardData['gaobiao'].length}；`);
+      this.logger.log(`同步自选: [高标] ${evenBoardData['gaobiao'] && evenBoardData['gaobiao'].length}；`);
       // 3.1 先加入高标
       prepareSelfStock(9, evenBoardData['gaobiao'], app, userid, ticket, user);
       // 3.2 再加入连板股

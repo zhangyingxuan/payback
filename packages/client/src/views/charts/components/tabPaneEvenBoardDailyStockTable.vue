@@ -65,16 +65,24 @@
               class="orange"
               v-html="highlightKeyWord(stock.reason, keyword)"
             ></span>
-            ，<span class="lanse">{{ stock.price }}</span> ，<span
-              :class="{ red: stock.closingFunds > 1 }"
-              >封单{{ stock.closingFunds }}亿</span
-            >， <span class="zise">流通{{ stock.circulationValue }}亿</span>，
-            {{ stock.dailyTime }}
+            ，<span class="lanse">{{ stock.price }}</span> ，
+            <span :class="{ 'red bold': stock.closingFunds > 1 }">
+              封单{{ stock.closingFunds }}亿
+            </span>
+            <!-- 换手率 -->
+            ，<span
+              v-if="stock.turnoverRate"
+              :class="calcClass(stock.turnoverRate)"
+            >
+              换手率{{ stock.turnoverRate }}%，
+            </span>
+            <span class="zise">流通{{ stock.circulationValue }}亿</span>，
+            {{ transformTime(stock.dailyTime) }}
             <span class="red">{{ stock.turnoverType }}</span>
             <span class="lvse" v-if="stock.openTimes > 0">
               {{ stock.openTimes }}
             </span>
-            ] <span class="red bold">{{ getExpected(stock) }}</span>
+            ] <span class="red bold">{{ getExpectedStr(stock) }}</span>
           </div>
         </div>
       </div>
@@ -86,6 +94,7 @@ import _ from 'lodash-es';
 import { reactive, computed } from 'vue';
 import { highlightKeyWord, getExpected } from '../utils';
 import { dailyLimitOptionalStrategy } from 'pay-back-core';
+import { DailyLimitStockDto } from '@/typings';
 
 let emit = defineEmits(['update:evenBoardData']); //自定义的更新num事件
 let superData = defineProps({
@@ -221,6 +230,47 @@ function handleTicaiClick(key: string) {
 
   // 修改父组件传过来的值
   emit('update:evenBoardData', _.cloneDeep(superData.evenBoardData));
+}
+
+/**
+ * 处理时间格式，如果秒为0 则去除
+ * @param time
+ */
+function transformTime(time: string): string {
+  if (time.indexOf(',') === -1) {
+    // 去除秒，如果秒为0
+    return (
+      time.slice(0, -3) + (time.slice(-2) === '00' ? '' : ':' + time.slice(-2))
+    );
+  }
+  const times = time.split(',');
+  const start = transformTime(times[0]);
+  const end = transformTime(times[1]);
+  return start + ',' + end;
+}
+
+/**
+ * 根据还手率 标注颜色
+ * @param turnoverRate
+ */
+function calcClass(turnoverRate: number) {
+  if (turnoverRate < 5) {
+    return 'green';
+  }
+  if (turnoverRate > 5 && turnoverRate < 10) {
+    return 'bold red';
+  }
+  return '';
+}
+
+function getExpectedStr(stock: DailyLimitStockDto) {
+  // 期待值
+  const expected: string = getExpected(stock);
+  if (expected.indexOf(',') === -1) {
+    return `${expected}%`;
+  }
+  const expectedArr = expected.split(',');
+  return `${expectedArr[0]}%-${expectedArr[1]}%`;
 }
 </script>
 

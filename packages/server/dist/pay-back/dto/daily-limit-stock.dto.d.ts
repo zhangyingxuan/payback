@@ -2,6 +2,7 @@ export declare class DailyLimitStockDto {
     name: string;
     code: string;
     plateLevel2: string;
+    turnoverRate: number;
     reason: string;
     turnover: number;
     turnoverType: string;

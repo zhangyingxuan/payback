@@ -16,6 +16,8 @@ export interface ShortTermModel {
   board1: number;
   evenBoardAmount: number,
   evenBoardData: string;
+  // 竞价数据
+  biddingData: string;
   // 跌停数据
   downLimitData: string;
   // 大面

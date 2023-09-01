@@ -79,6 +79,9 @@ let PayBackController = PayBackController_1 = class PayBackController {
     crawlHotListData() {
         return this.hotListService.crawlHotListData();
     }
+    crawlBinddingData() {
+        return this.ShorTermService.autoCrawlBinddingData();
+    }
     crawlShortTerm() {
         return this.ShorTermService.crawlShortTermData();
     }
@@ -162,6 +165,13 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], PayBackController.prototype, "crawlHotListData", null);
+__decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.Get)('/crawlBinddingData'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], PayBackController.prototype, "crawlBinddingData", null);
 __decorate([
     (0, common_1.Get)('/crawlShortTerm'),
     __metadata("design:type", Function),

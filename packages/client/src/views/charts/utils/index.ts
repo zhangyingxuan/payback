@@ -79,7 +79,7 @@ const date1000 = dayjs(currentDate + ' 10:00:00');
 // 13:00
 const date1300 = dayjs(currentDate + ' 13:00:00');
 const date1400 = dayjs(currentDate + ' 14:00:00');
-const expectedArr = ['5%', '4%', '3%', '0%-2%', '-2%-2%', '-2%以上'];
+const expectedArr = ['5', '4', '3', '0,2', '-2,2', '-2'];
 export function getExpected(stock: DailyLimitStockDto) {
   let currentTime: any = stock.openTimes ? stock.dailyTime.split(',')[1] : stock.dailyTime;
   // console.log(stock.name, stock.openTimes, stock.dailyTime, currentTime);

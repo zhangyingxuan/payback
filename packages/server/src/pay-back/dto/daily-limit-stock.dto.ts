@@ -6,6 +6,8 @@ export class DailyLimitStockDto {
   code: string;
   // 所属同花顺二级行业
   plateLevel2: string;
+  // 换手率
+  turnoverRate: number;
   // 涨停原因
   reason: string;
   // 成交额，

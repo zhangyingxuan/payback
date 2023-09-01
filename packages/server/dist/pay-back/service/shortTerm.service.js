@@ -15,6 +15,7 @@ var ShorTermService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ShorTermService = void 0;
 const common_1 = require("@nestjs/common");
+const create_pay_back_dto_1 = require("../dto/create-pay-back.dto");
 const typeorm_1 = require("typeorm");
 const shortTermData_entity_1 = require("../entities/shortTermData.entity");
 const typeorm_2 = require("@nestjs/typeorm");
@@ -34,6 +35,40 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
     }
     async autoCrawlShortTermDataMidday() {
         this.crawlShortTermData();
+    }
+    async autoRemoveLessThanExpect() {
+        const result = (0, shortTermUtil_1.autoRemoveLessThanExpect)();
+    }
+    async autoCrawlBinddingData() {
+        this.logger.debug('autoSelectExceededExpect is Begining!');
+        let isExist = false;
+        const todayDateStr = new Date().toLocaleDateString();
+        const todayDataFromDB = await this.shortTermDataRp
+            .createQueryBuilder('short_term_data')
+            .where("short_term_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
+            .getOne();
+        if (todayDataFromDB) {
+            isExist = true;
+        }
+        let createPayBackDto = new create_pay_back_dto_1.CreatePayBackDto();
+        try {
+            const dailyLimitYesterdayBiddingDto = await (0, shortTermUtil_1.getBiddingData)(todayDateStr);
+            createPayBackDto.biddingData = JSON.stringify(dailyLimitYesterdayBiddingDto);
+            console.log(createPayBackDto);
+            if (isExist) {
+                this.logger.log('autoSelectExceededExpect 更新数据');
+                await this.shortTermDataRp.update(todayDataFromDB.id, createPayBackDto);
+            }
+            else {
+                this.logger.log('autoSelectExceededExpect 新增数据');
+                await this.shortTermDataRp.save(createPayBackDto);
+            }
+            this.logger.debug('autoSelectExceededExpect is success!');
+        }
+        catch (e) {
+            this.logger.error('出错啦！！！', e);
+        }
+        return createPayBackDto;
     }
     async crawlShortTermData() {
         this.logger.debug('crawlShortTermData is Begining!');
@@ -118,6 +153,7 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
             'short_term_data.sealingRate',
             'short_term_data.dailyLimitReturnSealQuantity',
             'short_term_data.evenBoardData',
+            'short_term_data.biddingData',
             'short_term_data.hugeFallData',
             'short_term_data.cycle',
             'short_term_data.downLimitData'])
@@ -137,6 +173,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], ShorTermService.prototype, "autoCrawlShortTermDataMidday", null);
+__decorate([
+    (0, schedule_1.Cron)('08 25 9 * * 1-5'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ShorTermService.prototype, "autoCrawlBinddingData", null);
 ShorTermService = ShorTermService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(1, (0, typeorm_2.InjectRepository)(shortTermData_entity_1.shortTermData)),

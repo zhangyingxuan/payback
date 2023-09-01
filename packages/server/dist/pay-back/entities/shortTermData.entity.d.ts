@@ -9,6 +9,7 @@ export declare class shortTermData {
     marketHeight: number;
     evenBoardAmount: number;
     evenBoardData: string;
+    biddingData: string;
     downLimitData: string;
     hugeFallData: string;
     board1: number;

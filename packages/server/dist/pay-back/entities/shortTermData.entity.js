@@ -46,9 +46,13 @@ __decorate([
     __metadata("design:type", Number)
 ], shortTermData.prototype, "evenBoardAmount", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '连板原始数据', type: 'text' }),
+    (0, typeorm_1.Column)({ comment: '连板原始数据', type: 'text', nullable: true }),
     __metadata("design:type", String)
 ], shortTermData.prototype, "evenBoardData", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '昨日涨停今日集合竞价情况', type: 'text', nullable: true }),
+    __metadata("design:type", String)
+], shortTermData.prototype, "biddingData", void 0);
 __decorate([
     (0, typeorm_1.Column)({ comment: '跌停数据', type: 'varchar', length: 3072, default: '' }),
     __metadata("design:type", String)

@@ -1,6 +1,7 @@
 
 import { DailyLimitStockDto } from '../dto/daily-limit-stock.dto';
 import { DownLimitStockDto } from '../dto/down-limit-stock.dto';
+import { DailyLimitYesterdayBiddingDto } from '../dto/daily-limit-yesterday-bidding.dto';
 import { toFixed, fundsToFixed } from './commonUtil';
 import * as dayjs from 'dayjs';
 
@@ -125,6 +126,7 @@ function transformDailyLimitData(dailyLimitData, currentDate) {
     dailyLimitStockDto.name = item['股票简称'];
     dailyLimitStockDto.code = item.code;
     dailyLimitStockDto.reason = item[`涨停原因类别[${currentDate}]`];
+    dailyLimitStockDto.turnoverRate = toFixed(item[`换手率[${currentDate}]`], 1);
     dailyLimitStockDto.plateLevel2 = item['所属同花顺二级行业'];
     // 封板资金 单位 亿
     dailyLimitStockDto.closingFunds = fundsToFixed(item[`涨停封单额[${currentDate}]`]);
@@ -173,6 +175,101 @@ function transformDailyLimitData(dailyLimitData, currentDate) {
 }
 
 /**
+ * 转换早盘 昨日首板 集合竞价数据
+ * @param downLimitData 
+ * @param todayDateStr 
+ * @returns 
+ */
+export function transformBidData(dailyLimitData, todayDateStr): Array<DailyLimitYesterdayBiddingDto> {
+  const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
+  // TODO 上一个交易日 日期
+  const yesterdayDate = dayjs(todayDateStr).subtract(1, 'day').format('YYYYMMDD');
+  const dailyLimitYesterdayBiddingDtos: DailyLimitYesterdayBiddingDto[] = [];
+
+  dailyLimitData.forEach(item => {
+    const dailyLimitYesterdayBiddingDto = new DailyLimitYesterdayBiddingDto();
+
+    dailyLimitYesterdayBiddingDto.name = item['股票简称'];
+    dailyLimitYesterdayBiddingDto.code = item.code;
+    dailyLimitYesterdayBiddingDto.plateLevel2 = item['所属同花顺二级行业'];
+    dailyLimitYesterdayBiddingDto.bidChangeTypeT = item[`竞价异动类型[${currentDate}]`];
+    // 竞价涨幅
+    dailyLimitYesterdayBiddingDto.bidIncreaseT = item[`竞价涨幅[${currentDate}]`];
+    // 竞价量
+    dailyLimitYesterdayBiddingDto.bidVolumeT = item[`竞价量[${currentDate}]`];
+    dailyLimitYesterdayBiddingDto.bidVolumeY = item[`竞价量[${yesterdayDate}]`];
+    // 今日 竞价评级
+    dailyLimitYesterdayBiddingDto.bidRating = item[`集合竞价评级[${currentDate}]`];
+    // 收盘涨幅
+    dailyLimitYesterdayBiddingDto.closeIncrease = toFixed(item['最新涨跌幅']);
+
+    // 昨日涨停开板次数/涨停时间，便于预期差统计
+    if (item[`涨停开板次数[${yesterdayDate}]`] != 0) {
+      dailyLimitYesterdayBiddingDto.openTimes = item[`涨停开板次数[${yesterdayDate}]`];
+    }
+    dailyLimitYesterdayBiddingDto.dailyTime = item[`首次涨停时间[${yesterdayDate}]`] ? item[`首次涨停时间[${yesterdayDate}]`].trim() : '-';
+    if (dailyLimitYesterdayBiddingDto.openTimes > 0 && item[`最终涨停时间[${yesterdayDate}]`]) {
+      dailyLimitYesterdayBiddingDto.dailyTime += (',' + item[`最终涨停时间[${yesterdayDate}]`].trim());
+    }
+
+    // TODO 是否符合预期，竞价量 + 竞价开盘涨幅
+    dailyLimitYesterdayBiddingDto.expected = judgeExpected(dailyLimitYesterdayBiddingDto, dailyLimitYesterdayBiddingDto.bidIncreaseT)
+
+    delete dailyLimitYesterdayBiddingDto.dailyTime;
+    delete dailyLimitYesterdayBiddingDto.openTimes;
+
+    dailyLimitYesterdayBiddingDtos.push(dailyLimitYesterdayBiddingDto);
+  });
+
+  return dailyLimitYesterdayBiddingDtos;
+}
+
+/**
+ * 预期范围 +- 0.2 个点，符合预期
+ * @param item 
+ * @param bidIncreaseT 
+ * @returns 
+ */
+function judgeExpected(item, bidIncreaseT: number) {
+  // 获取预期值
+  const expected = getExpected(item);
+  // 在范围内符合预期，超出1个点，则超预期
+  if (expected.indexOf(',') === -1) {
+    return getExpectedValue(bidIncreaseT, parseInt(expected));
+  }
+
+  const expecteds = expected.split(',');
+  const start = parseInt(expecteds[0]);
+  const end = parseInt(expecteds[1]);
+  if (bidIncreaseT >= start && bidIncreaseT <= end) {
+    // 符合预期
+    return 1;
+  }
+  if (bidIncreaseT > end) {
+    // 超预期
+    return 2;
+  }
+  // 不及预期
+  return 0
+}
+
+/**
+ * 预期值：不符合预期0;符合预期1;超预期2
+ * @param bidIncreaseT 
+ * @param expected 
+ * @returns 
+ */
+function getExpectedValue(bidIncreaseT: number, expected: number) {
+  if (bidIncreaseT > expected) {
+    if (bidIncreaseT - expected >= 1) {
+      return 2;
+    }
+    return 1;
+  }
+  return 0;
+}
+
+/**
  * 转换短线数据
  * 
  * @param dailyLimitData 
@@ -200,4 +297,55 @@ export function transformShortTermSourceData(dailyLimitData, downLimitData, huge
     downLimitQuantity,
     dailyLimitReturnSealQuantity,
   }
+}
+
+// 星火集合竞价成交量放大到和首板涨停爆量相同最佳，如果放大到2/3也可以，最差也要放量到一半，如果缩量就没有参与价值。
+const currentDate = '2018-08-08'; // dayjs().format('YYYY-MM-DD');
+// 9.31
+const date931 = dayjs(currentDate + ' 09:31:00');
+// 10:01
+const date1000 = dayjs(currentDate + ' 10:00:00');
+// 13:00
+const date1300 = dayjs(currentDate + ' 13:00:00');
+const date1400 = dayjs(currentDate + ' 14:00:00');
+const expectedArr = ['5', '4', '3', '0,2', '-2,2', '-2'];
+/**
+ * 根据开板次数，最终涨停时间 给出次日开盘预期
+ * @param stock {openTimes: string, dailyTime: string, }
+ * @returns 
+ */
+export function getExpected(stock: any) {
+  let currentTime: any = stock.openTimes ? stock.dailyTime.split(',')[1] : stock.dailyTime;
+  // console.log(stock.name, stock.openTimes, stock.dailyTime, currentTime);
+
+  currentTime = dayjs(currentDate + ' ' + currentTime);
+  // 文心一言
+  // 1、昨日一字板或开盘秒板的。第二天正常预期高开5%以上。
+  // 2、昨日10点前涨停的，第二天正常预期高开4%左右。
+  // 3、昨日11点半前涨停的，第二天正常预期高开3%左右。
+  // 4、昨日午后13-14涨停的，第二天预期微高开（0—2%）
+  // 5、昨日午后14之后涨停的，第二天预期平开（-2%—2%）
+  // 6、昨日烂板（开板5次），第二天预计低开（0--2%）
+
+  if (stock.openTimes >= 5) {
+    // 最终封板时间，在早盘则按正常预期，否则低开
+    if (currentTime.isBefore(date1300)) {
+      return expectedArr[2];
+    }
+    return expectedArr[5];
+  }
+
+  if (currentTime.isBefore(date931)) {
+    return expectedArr[0];
+  }
+  if (currentTime.isBefore(date1000)) {
+    return expectedArr[1];
+  }
+  if (currentTime.isBefore(date1300)) {
+    return expectedArr[2];
+  }
+  if (currentTime.isBefore(date1400) && currentTime.isAfter(date1300)) {
+    return expectedArr[3];
+  }
+  return expectedArr[4];
 }

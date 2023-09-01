@@ -1,9 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { CreatePayBackDto } from '../dto/create-pay-back.dto';
+import { DailyLimitYesterdayBiddingDto } from '../dto/daily-limit-yesterday-bidding.dto';
 import { Repository } from 'typeorm';
 import { shortTermData } from '../entities/shortTermData.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getShortTermData, getShortTermDataByDate } from '../utils/shortTermUtil';
+import { getShortTermData, getShortTermDataByDate, autoRemoveLessThanExpect, getBiddingData } from '../utils/shortTermUtil';
 import { ThsService } from './ths.service';
 import * as dayjs from 'dayjs';
 import { Cron } from '@nestjs/schedule';
@@ -33,6 +34,52 @@ export class ShorTermService {
   async autoCrawlShortTermDataMidday() {
     this.crawlShortTermData();
   }
+
+  // 早盘集合竞价剔除不及预期
+  async autoRemoveLessThanExpect() {
+    const result = autoRemoveLessThanExpect();
+  }
+
+  // 竞价选择超预期个股
+  // async autoSelectExceededExpect() {
+  @Cron('08 25 9 * * 1-5')
+  async autoCrawlBinddingData() {
+    this.logger.debug('autoSelectExceededExpect is Begining!');
+
+    let isExist = false;
+    // 如果存在数据，则返回已有该数据
+    const todayDateStr = new Date().toLocaleDateString();
+    const todayDataFromDB = await this.shortTermDataRp
+      .createQueryBuilder('short_term_data')
+      .where("short_term_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
+      .getOne();
+
+    if (todayDataFromDB) {
+      isExist = true;
+    }
+    let createPayBackDto: CreatePayBackDto = new CreatePayBackDto();
+    try {
+      // 获取竞价情况
+      const dailyLimitYesterdayBiddingDto: DailyLimitYesterdayBiddingDto[] = await getBiddingData(todayDateStr);
+      createPayBackDto.biddingData = JSON.stringify(dailyLimitYesterdayBiddingDto);
+
+      console.log(createPayBackDto);
+      if (isExist) {
+        this.logger.log('autoSelectExceededExpect 更新数据')
+        await this.shortTermDataRp.update(todayDataFromDB.id, createPayBackDto);
+      } else {
+        this.logger.log('autoSelectExceededExpect 新增数据')
+        await this.shortTermDataRp.save(createPayBackDto);
+      }
+
+      this.logger.debug('autoSelectExceededExpect is success!');
+    } catch (e) {
+      this.logger.error('出错啦！！！', e)
+    }
+
+    return createPayBackDto;
+  }
+
 
   /**
    * 爬取短线数据，如果已存在则更新
@@ -130,6 +177,7 @@ export class ShorTermService {
         'short_term_data.sealingRate',
         'short_term_data.dailyLimitReturnSealQuantity',
         'short_term_data.evenBoardData',
+        'short_term_data.biddingData',
         'short_term_data.hugeFallData',
         'short_term_data.cycle',
         'short_term_data.downLimitData'])

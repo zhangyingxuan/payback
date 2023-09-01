@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.transformShortTermSourceData = exports.transformPlateData = exports.transformStockData = void 0;
+exports.getExpected = exports.transformShortTermSourceData = exports.transformBidData = exports.transformPlateData = exports.transformStockData = void 0;
 const daily_limit_stock_dto_1 = require("../dto/daily-limit-stock.dto");
 const down_limit_stock_dto_1 = require("../dto/down-limit-stock.dto");
+const daily_limit_yesterday_bidding_dto_1 = require("../dto/daily-limit-yesterday-bidding.dto");
 const commonUtil_1 = require("./commonUtil");
 const dayjs = require("dayjs");
 const turnoverTypeArr = ['放量涨停', '缩量涨停', '一字涨停', 'T字涨停'];
@@ -98,6 +99,7 @@ function transformDailyLimitData(dailyLimitData, currentDate) {
         dailyLimitStockDto.name = item['股票简称'];
         dailyLimitStockDto.code = item.code;
         dailyLimitStockDto.reason = item[`涨停原因类别[${currentDate}]`];
+        dailyLimitStockDto.turnoverRate = (0, commonUtil_1.toFixed)(item[`换手率[${currentDate}]`], 1);
         dailyLimitStockDto.plateLevel2 = item['所属同花顺二级行业'];
         dailyLimitStockDto.closingFunds = (0, commonUtil_1.fundsToFixed)(item[`涨停封单额[${currentDate}]`]);
         if (item[`涨停类型[${currentDate}]`] !== turnoverTypeArr[0]) {
@@ -135,6 +137,61 @@ function transformDailyLimitData(dailyLimitData, currentDate) {
         dailyLimitReturnSealQuantity,
     };
 }
+function transformBidData(dailyLimitData, todayDateStr) {
+    const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
+    const yesterdayDate = dayjs(todayDateStr).subtract(1, 'day').format('YYYYMMDD');
+    const dailyLimitYesterdayBiddingDtos = [];
+    dailyLimitData.forEach(item => {
+        const dailyLimitYesterdayBiddingDto = new daily_limit_yesterday_bidding_dto_1.DailyLimitYesterdayBiddingDto();
+        dailyLimitYesterdayBiddingDto.name = item['股票简称'];
+        dailyLimitYesterdayBiddingDto.code = item.code;
+        dailyLimitYesterdayBiddingDto.plateLevel2 = item['所属同花顺二级行业'];
+        dailyLimitYesterdayBiddingDto.bidChangeTypeT = item[`竞价异动类型[${currentDate}]`];
+        dailyLimitYesterdayBiddingDto.bidIncreaseT = item[`竞价涨幅[${currentDate}]`];
+        dailyLimitYesterdayBiddingDto.bidVolumeT = item[`竞价量[${currentDate}]`];
+        dailyLimitYesterdayBiddingDto.bidVolumeY = item[`竞价量[${yesterdayDate}]`];
+        dailyLimitYesterdayBiddingDto.bidRating = item[`集合竞价评级[${currentDate}]`];
+        dailyLimitYesterdayBiddingDto.closeIncrease = (0, commonUtil_1.toFixed)(item['最新涨跌幅']);
+        if (item[`涨停开板次数[${yesterdayDate}]`] != 0) {
+            dailyLimitYesterdayBiddingDto.openTimes = item[`涨停开板次数[${yesterdayDate}]`];
+        }
+        dailyLimitYesterdayBiddingDto.dailyTime = item[`首次涨停时间[${yesterdayDate}]`] ? item[`首次涨停时间[${yesterdayDate}]`].trim() : '-';
+        if (dailyLimitYesterdayBiddingDto.openTimes > 0 && item[`最终涨停时间[${yesterdayDate}]`]) {
+            dailyLimitYesterdayBiddingDto.dailyTime += (',' + item[`最终涨停时间[${yesterdayDate}]`].trim());
+        }
+        dailyLimitYesterdayBiddingDto.expected = judgeExpected(dailyLimitYesterdayBiddingDto, dailyLimitYesterdayBiddingDto.bidIncreaseT);
+        delete dailyLimitYesterdayBiddingDto.dailyTime;
+        delete dailyLimitYesterdayBiddingDto.openTimes;
+        dailyLimitYesterdayBiddingDtos.push(dailyLimitYesterdayBiddingDto);
+    });
+    return dailyLimitYesterdayBiddingDtos;
+}
+exports.transformBidData = transformBidData;
+function judgeExpected(item, bidIncreaseT) {
+    const expected = getExpected(item);
+    if (expected.indexOf(',') === -1) {
+        return getExpectedValue(bidIncreaseT, parseInt(expected));
+    }
+    const expecteds = expected.split(',');
+    const start = parseInt(expecteds[0]);
+    const end = parseInt(expecteds[1]);
+    if (bidIncreaseT >= start && bidIncreaseT <= end) {
+        return 1;
+    }
+    if (bidIncreaseT > end) {
+        return 2;
+    }
+    return 0;
+}
+function getExpectedValue(bidIncreaseT, expected) {
+    if (bidIncreaseT > expected) {
+        if (bidIncreaseT - expected >= 1) {
+            return 2;
+        }
+        return 1;
+    }
+    return 0;
+}
 function transformShortTermSourceData(dailyLimitData, downLimitData, hugeFallData, todayDateStr) {
     const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
     const { downLimitDataArr, downLimitQuantity } = transformDownLimitData(downLimitData, currentDate);
@@ -150,4 +207,34 @@ function transformShortTermSourceData(dailyLimitData, downLimitData, hugeFallDat
     };
 }
 exports.transformShortTermSourceData = transformShortTermSourceData;
+const currentDate = '2018-08-08';
+const date931 = dayjs(currentDate + ' 09:31:00');
+const date1000 = dayjs(currentDate + ' 10:00:00');
+const date1300 = dayjs(currentDate + ' 13:00:00');
+const date1400 = dayjs(currentDate + ' 14:00:00');
+const expectedArr = ['5', '4', '3', '0,2', '-2,2', '-2'];
+function getExpected(stock) {
+    let currentTime = stock.openTimes ? stock.dailyTime.split(',')[1] : stock.dailyTime;
+    currentTime = dayjs(currentDate + ' ' + currentTime);
+    if (stock.openTimes >= 5) {
+        if (currentTime.isBefore(date1300)) {
+            return expectedArr[2];
+        }
+        return expectedArr[5];
+    }
+    if (currentTime.isBefore(date931)) {
+        return expectedArr[0];
+    }
+    if (currentTime.isBefore(date1000)) {
+        return expectedArr[1];
+    }
+    if (currentTime.isBefore(date1300)) {
+        return expectedArr[2];
+    }
+    if (currentTime.isBefore(date1400) && currentTime.isAfter(date1300)) {
+        return expectedArr[3];
+    }
+    return expectedArr[4];
+}
+exports.getExpected = getExpected;
 //# sourceMappingURL=transformDataUtil.js.map

@@ -92,6 +92,12 @@ export class PayBackController {
   crawlHotListData() {
     return this.hotListService.crawlHotListData();
   }
+  // 获取竞价数据
+  @Public()
+  @Get('/crawlBinddingData')
+  crawlBinddingData() {
+    return this.ShorTermService.autoCrawlBinddingData();
+  }
   // @Public()
   @Get('/crawlShortTerm')
   crawlShortTerm() {

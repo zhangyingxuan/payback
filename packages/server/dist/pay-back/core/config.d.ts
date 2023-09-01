@@ -14,6 +14,9 @@ export declare const params: {
     hugeFallByDate: string;
     dailyLimitMoreThan1: string;
     dailyLimitMoreThan1ByDate: string;
+    dailyLimitYesterday: string;
+    chooseStock1to2: string;
+    chooseStockNewStock: string;
     capitalFlows3: string;
     dataCenterUrl: string;
     gainianFundsInflow: string;

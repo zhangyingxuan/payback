@@ -1,9 +1,9 @@
 import { CreatePayBackDto } from '../dto/create-pay-back.dto';
-import { transformShortTermSourceData } from '../utils/transformDataUtil';
+import { transformShortTermSourceData, transformBidData } from '../utils/transformDataUtil';
 import { params } from '../core/config';
 import { fetchIwencaiApi } from '../core/fetchUtil';
 import { getCurrentCycle } from 'pay-back-core';
-
+import * as dayjs from 'dayjs';
 /**
  * 通过接口方式获取热门数据
  * @returns 
@@ -32,6 +32,30 @@ export async function getShortTermDataByDate(todayDateStr): Promise<CreatePayBac
   const hugeFallData: any = await fetchIwencaiApi(params.hugeFallByDate.replace('${date}', todayDateStr), 50, false);
 
   return prepareDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, todayDateStr);
+}
+
+/**
+ * 自动剔除低于预期的昨日涨停个股（首板），集合竞价开盘价低于预期， 且成交量不足，未匹配量；
+ */
+export async function autoRemoveLessThanExpect() {
+  // 选股
+  // 集中度更集中，20-120，股价低于30
+  // 获取昨日涨停 集合竞价情况，竞价量10倍，评级看多，竞价抢筹
+  // 连板概率 90%，75%
+  const dailyLimitYesterdayData: any = await fetchIwencaiApi(params.dailyLimitYesterday, 100, false);
+}
+
+/**
+ * 自动剔除低于预期的昨日涨停个股（首板），集合竞价开盘价低于预期， 且成交量不足，未匹配量；
+ */
+export async function getBiddingData(todayDateStr) {
+  // 选股
+  // 集中度更集中，20-120，股价低于30
+  // 获取昨日涨停 集合竞价情况，竞价量10倍，评级看多，竞价抢筹
+  // 连板概率 90%，75%
+  const dailyLimitYesterdayData: any = await fetchIwencaiApi(params.dailyLimitYesterday, 100, false);
+
+  return transformBidData(dailyLimitYesterdayData, todayDateStr);;
 }
 
 /**

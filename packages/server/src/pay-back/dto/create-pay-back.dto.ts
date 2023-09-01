@@ -15,6 +15,8 @@ export class CreatePayBackDto {
   evenBoardAmount: number;
   // 连板原始数据
   evenBoardData: string;
+  // 竞价数据（TODO 昨日、今日）
+  biddingData: string;
   // 跌停数据
   downLimitData: string;
   // 跌幅大于等于15的个股

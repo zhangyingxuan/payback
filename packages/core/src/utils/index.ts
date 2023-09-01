@@ -31,10 +31,12 @@ export function getCurrentCycle(item: any) {
   }
 }
 
+export const dailyLimitOptionalStrategyStr = '流通市值大于等于30亿，小于等于120亿，涨停10cm的个股，股价低于30';
+
 /**
  * 涨停自选策略
  * 连板全部加入
- * 首板：流通市值大于30亿 且小于120亿，涨停10cm的个股，股价低于30
+ * 策略备注：参考 dailyLimitOptionalStrategyStr
  */
 export function dailyLimitOptionalStrategy(stock: any, currentLevel: number | string) {
   // 创业板、科创板不自选

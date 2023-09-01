@@ -9,6 +9,8 @@ export declare class ShorTermService {
     private readonly logger;
     autoCrawlShortTermDataLateSession(): Promise<void>;
     autoCrawlShortTermDataMidday(): Promise<void>;
+    autoRemoveLessThanExpect(): Promise<void>;
+    autoCrawlBinddingData(): Promise<CreatePayBackDto>;
     crawlShortTermData(): Promise<CreatePayBackDto>;
     crawlShortTermDataByDate(todayDateStr: any): Promise<CreatePayBackDto | {
         code: string;

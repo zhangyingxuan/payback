@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getShortTermDataByDate = exports.getShortTermData = void 0;
+exports.getBiddingData = exports.autoRemoveLessThanExpect = exports.getShortTermDataByDate = exports.getShortTermData = void 0;
 const create_pay_back_dto_1 = require("../dto/create-pay-back.dto");
 const transformDataUtil_1 = require("../utils/transformDataUtil");
 const config_1 = require("../core/config");
@@ -22,6 +22,16 @@ async function getShortTermDataByDate(todayDateStr) {
     return prepareDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, todayDateStr);
 }
 exports.getShortTermDataByDate = getShortTermDataByDate;
+async function autoRemoveLessThanExpect() {
+    const dailyLimitYesterdayData = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.dailyLimitYesterday, 100, false);
+}
+exports.autoRemoveLessThanExpect = autoRemoveLessThanExpect;
+async function getBiddingData(todayDateStr) {
+    const dailyLimitYesterdayData = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.dailyLimitYesterday, 100, false);
+    return (0, transformDataUtil_1.transformBidData)(dailyLimitYesterdayData, todayDateStr);
+    ;
+}
+exports.getBiddingData = getBiddingData;
 function prepareDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, todayDateStr) {
     let createPayBackDto = new create_pay_back_dto_1.CreatePayBackDto();
     let { board1 = 0, evenBoardData, downLimitDataArr, hugeFallDataArr, dailyLimitReturnSealQuantity, downLimitQuantity } = (0, transformDataUtil_1.transformShortTermSourceData)(dailyLimitData, downLimitData, hugeFallData, todayDateStr);
