@@ -72,7 +72,7 @@ export class ThsService {
       // 3.2 再加入连板股
       const maxHeight = evenBoardData.maxHeight;
       for (let i = maxHeight; i >= 1; i--) {
-        this.logger.log(`同步自选: [${i}板] ${evenBoardData[i + ''].length}；`);
+        this.logger.log(`同步自选: [${i}板] ${evenBoardData[i + ''] && evenBoardData[i + ''].length}；`);
         const stocks = evenBoardData[i + ''];
         prepareSelfStock(i, stocks, app, userid, ticket, user);
       }

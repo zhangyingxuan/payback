@@ -229,11 +229,6 @@ function sortStocks(stocks: []) {
     const bStart =
       b.dailyTime.indexOf(',') > -1 ? b.dailyTime.split(',')[0] : b.dailyTime;
 
-    console.log(
-      a,
-      b,
-      dayjs('2023-09-05' + aStart).isBefore(dayjs('2023-09-05' + bStart)),
-    );
     return dayjs('2023-09-05' + aStart).isBefore(dayjs('2023-09-05' + bStart))
       ? -1
       : 1;
