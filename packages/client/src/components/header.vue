@@ -106,6 +106,7 @@
       <el-option label="短线数据" :value="1" />
       <el-option label="市场数据" :value="2" />
       <el-option label="资金数据" :value="3" />
+      <el-option label="竞价数据" :value="4" />
     </el-select>
 
     <template #footer>

@@ -53,12 +53,13 @@ let PayBackController = PayBackController_1 = class PayBackController {
     }
     async crawlTodayData(query) {
         const type = +(query.fetchTodayDataType || 0);
-        let shortData, fundsData, marketData;
+        let shortData, fundsData, marketData, binddingData;
         switch (type) {
             case 0:
                 shortData = await this.ShorTermService.crawlShortTermData();
                 fundsData = await this.fundsService.crawlfundsData();
                 marketData = await this.marketService.crawlMarketData();
+                binddingData = await this.ShorTermService.crawlBinddingData();
                 break;
             case 1:
                 shortData = await this.ShorTermService.crawlShortTermData();
@@ -68,6 +69,9 @@ let PayBackController = PayBackController_1 = class PayBackController {
                 break;
             case 3:
                 fundsData = await this.fundsService.crawlfundsData();
+                break;
+            case 4:
+                binddingData = await this.ShorTermService.crawlBinddingData();
                 break;
             default:
                 break;
