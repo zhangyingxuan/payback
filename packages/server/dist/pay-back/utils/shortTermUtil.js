@@ -26,10 +26,17 @@ async function autoRemoveLessThanExpect() {
     const dailyLimitYesterdayData = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.dailyLimitYesterday, 100, false);
 }
 exports.autoRemoveLessThanExpect = autoRemoveLessThanExpect;
-async function getBiddingData(todayDateStr) {
+async function getBiddingData(todayDateStr, yesterdayDateStr) {
     const dailyLimitYesterdayData = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.dailyLimitYesterday, 100, false);
-    return (0, transformDataUtil_1.transformBidData)(dailyLimitYesterdayData, todayDateStr);
-    ;
+    const chooseStock1to2 = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.chooseStock1to2, 100, false);
+    const newStocks = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.chooseStockNewStock, 100, false);
+    const dailyLimitYesterdayBiddingDtos = (0, transformDataUtil_1.transformBidData)(dailyLimitYesterdayData, todayDateStr, yesterdayDateStr, true);
+    const chooseStock1to2Pds = (0, transformDataUtil_1.transformBidData)(chooseStock1to2, todayDateStr, yesterdayDateStr, true);
+    const chooseStock1to2Dtos = chooseStock1to2Pds.filter(stock => {
+        return stock.bidVolumeRatio >= 10 && (stock.expected != 0);
+    });
+    const newStocksDtos = (0, transformDataUtil_1.transformBidData)(newStocks, todayDateStr, yesterdayDateStr);
+    return { dailyLimitYesterdayBiddingDtos, newStocksDtos, chooseStock1to2Dtos };
 }
 exports.getBiddingData = getBiddingData;
 function prepareDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, todayDateStr) {

@@ -23,6 +23,7 @@ const shortTermUtil_1 = require("../utils/shortTermUtil");
 const ths_service_1 = require("./ths.service");
 const dayjs = require("dayjs");
 const schedule_1 = require("@nestjs/schedule");
+const config_1 = require("../core/config");
 let ShorTermService = ShorTermService_1 = class ShorTermService {
     constructor(thsService, shortTermDataRp) {
         this.thsService = thsService;
@@ -40,30 +41,38 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
         const result = (0, shortTermUtil_1.autoRemoveLessThanExpect)();
     }
     async autoCrawlBinddingData() {
-        this.logger.debug('autoSelectExceededExpect is Begining!');
+        this.crawlBinddingData();
+    }
+    async autoCrawlBinddingDataLateSession() {
+        this.crawlBinddingData();
+    }
+    async crawlBinddingData() {
+        this.logger.debug('autoCrawlBinddingData is Begining!');
         let isExist = false;
         const todayDateStr = new Date().toLocaleDateString();
-        const todayDataFromDB = await this.shortTermDataRp
-            .createQueryBuilder('short_term_data')
-            .where("short_term_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
-            .getOne();
+        const todayDataFromDB = await this.getTodayData(todayDateStr);
         if (todayDataFromDB) {
             isExist = true;
         }
         let createPayBackDto = new create_pay_back_dto_1.CreatePayBackDto();
         try {
-            const dailyLimitYesterdayBiddingDto = await (0, shortTermUtil_1.getBiddingData)(todayDateStr);
-            createPayBackDto.biddingData = JSON.stringify(dailyLimitYesterdayBiddingDto);
+            const yesterdayDateStr = await this.getLastTradingDayByDB(todayDateStr);
+            const { dailyLimitYesterdayBiddingDtos, newStocksDtos, chooseStock1to2Dtos } = await (0, shortTermUtil_1.getBiddingData)(todayDateStr, yesterdayDateStr);
+            createPayBackDto.biddingData = JSON.stringify(dailyLimitYesterdayBiddingDtos);
+            createPayBackDto.chooseStockData = JSON.stringify({
+                newStocksDtos,
+                chooseStock1to2Dtos
+            });
             console.log(createPayBackDto);
             if (isExist) {
-                this.logger.log('autoSelectExceededExpect 更新数据');
+                this.logger.log('autoCrawlBinddingData 更新数据');
                 await this.shortTermDataRp.update(todayDataFromDB.id, createPayBackDto);
             }
             else {
-                this.logger.log('autoSelectExceededExpect 新增数据');
+                this.logger.log('autoCrawlBinddingData 新增数据');
                 await this.shortTermDataRp.save(createPayBackDto);
             }
-            this.logger.debug('autoSelectExceededExpect is success!');
+            this.logger.debug('autoCrawlBinddingData is success!');
         }
         catch (e) {
             this.logger.error('出错啦！！！', e);
@@ -74,10 +83,7 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
         this.logger.debug('crawlShortTermData is Begining!');
         let isExist = false;
         const todayDateStr = new Date().toLocaleDateString();
-        const todayDataFromDB = await this.shortTermDataRp
-            .createQueryBuilder('short_term_data')
-            .where("short_term_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
-            .getOne();
+        const todayDataFromDB = await this.getTodayData(todayDateStr);
         if (todayDataFromDB) {
             isExist = true;
         }
@@ -102,10 +108,7 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
     }
     async crawlShortTermDataByDate(todayDateStr) {
         this.logger.debug('crawlShortTermDataByDate is Begining!');
-        const todayDataFromDB = await this.shortTermDataRp
-            .createQueryBuilder('short_term_data')
-            .where("short_term_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
-            .getOne();
+        const todayDataFromDB = await this.getTodayData(todayDateStr);
         if (todayDataFromDB) {
             this.logger.debug('crawlShortTermData is end![isExist]');
             return {
@@ -124,6 +127,12 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
             this.logger.error('出错啦！！！', e);
         }
         return createPayBackDto;
+    }
+    getTodayData(todayDateStr) {
+        return this.shortTermDataRp
+            .createQueryBuilder('short_term_data')
+            .where("short_term_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
+            .getOne();
     }
     async findAll() {
         return await this.shortTermDataRp.find();
@@ -154,11 +163,27 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
             'short_term_data.dailyLimitReturnSealQuantity',
             'short_term_data.evenBoardData',
             'short_term_data.biddingData',
+            'short_term_data.chooseStockData',
             'short_term_data.hugeFallData',
             'short_term_data.cycle',
             'short_term_data.downLimitData'])
             .orderBy('createTime', 'DESC')
             .getMany();
+    }
+    async getLastTradingDayByDB(todayDateStr) {
+        const dateArr = await this.shortTermDataRp
+            .createQueryBuilder('short_term_data')
+            .offset(0)
+            .limit(2)
+            .select(['short_term_data.createTime'])
+            .orderBy('createTime', 'DESC')
+            .getMany();
+        const currentDate = dayjs(todayDateStr).format(config_1.iWencaiDateFormat);
+        let lastTradingDay = dayjs(dateArr[0].createTime).format(config_1.iWencaiDateFormat);
+        if (lastTradingDay === currentDate) {
+            lastTradingDay = dayjs(dateArr[1].createTime).format(config_1.iWencaiDateFormat);
+        }
+        return lastTradingDay;
     }
 };
 __decorate([
@@ -179,6 +204,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], ShorTermService.prototype, "autoCrawlBinddingData", null);
+__decorate([
+    (0, schedule_1.Cron)('00 05 15 * * 1-5'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ShorTermService.prototype, "autoCrawlBinddingDataLateSession", null);
 ShorTermService = ShorTermService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(1, (0, typeorm_2.InjectRepository)(shortTermData_entity_1.shortTermData)),

@@ -161,6 +161,17 @@
   </div>
 
   <!-- 集合竞价情况 -->
+  <!-- 新股 -->
+  <NewStockTable
+    :propsData="data.currentDateData.chooseStockData"
+    :isMobile="isMobile"
+  />
+  <!-- 一进2 -->
+  <ChoosedStockTable
+    :propsData="data.currentDateData.chooseStockData"
+    :isMobile="isMobile"
+  />
+  <!-- 昨日涨停竞价情况（高开，抢筹，量大） -->
   <BiddingDataTable
     :biddingData="data.currentDateData.biddingData"
     :isMobile="isMobile"
@@ -201,6 +212,8 @@ import TabPaneChartsSummaryTable from './components/tabPaneChartsSummaryTable.vu
 import DailyStockTable from './components/tabPaneEvenBoardDailyStockTable.vue';
 import DownStockTable from './components/tabPaneEvenBoardDownStockTable.vue';
 import BiddingDataTable from './components/tabPaneEvenBoardBiddingDataTable.vue';
+import NewStockTable from './components/tabPaneEvenBoardNewStockTable.vue';
+import ChoosedStockTable from './components/tabPaneEvenBoardChoosedStockTable.vue';
 import dayjs from 'dayjs';
 
 type EvenBoard = {

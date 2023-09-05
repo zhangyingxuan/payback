@@ -1,3 +1,4 @@
+import * as dayjs from 'dayjs';
 
 export function toFixed(num, floatLen = 2) {
   if (!num) return;
@@ -31,8 +32,42 @@ export function getIwencaiData(responseJson) {
   return data;
 };
 
+export function getLastTradingDay(nowStr: string) {
+  const dayOfWeek = +dayjs(nowStr).format('ddd');
+  let subtractNum = 1;
+
+  // 如果今天是周6 7，昨日为周五， 如果今天是周1，则昨日为上周5
+  switch (dayOfWeek) {
+    case 1:
+      subtractNum = 3;
+      break;
+    case 6:
+      subtractNum = 1;
+      break;
+    case 7:
+      subtractNum = 2;
+      break;
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    default:
+      break;
+  }
+
+  const yesterday = dayjs(nowStr).subtract(subtractNum, 'day').format('YYYYMMDD');
+  // 判断yesterday 是否为节假日，如果是继续-1
+
+  return yesterday;
+}
+
+export function isHoliday(date: string) {
+  // 手动输入节假日日期 数组
+}
+
 export default {
   getIwencaiData,
   toFixed,
   fundsToFixed,
+  getLastTradingDay,
 }

@@ -137,9 +137,8 @@ function transformDailyLimitData(dailyLimitData, currentDate) {
         dailyLimitReturnSealQuantity,
     };
 }
-function transformBidData(dailyLimitData, todayDateStr) {
+function transformBidData(dailyLimitData, todayDateStr, yesterdayDate, isSaveMore = false) {
     const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
-    const yesterdayDate = dayjs(todayDateStr).subtract(1, 'day').format('YYYYMMDD');
     const dailyLimitYesterdayBiddingDtos = [];
     dailyLimitData.forEach(item => {
         const dailyLimitYesterdayBiddingDto = new daily_limit_yesterday_bidding_dto_1.DailyLimitYesterdayBiddingDto();
@@ -148,49 +147,65 @@ function transformBidData(dailyLimitData, todayDateStr) {
         dailyLimitYesterdayBiddingDto.plateLevel2 = item['所属同花顺二级行业'];
         dailyLimitYesterdayBiddingDto.bidChangeTypeT = item[`竞价异动类型[${currentDate}]`];
         dailyLimitYesterdayBiddingDto.bidIncreaseT = item[`竞价涨幅[${currentDate}]`];
-        dailyLimitYesterdayBiddingDto.bidVolumeT = item[`竞价量[${currentDate}]`];
-        dailyLimitYesterdayBiddingDto.bidVolumeY = item[`竞价量[${yesterdayDate}]`];
         dailyLimitYesterdayBiddingDto.bidRating = item[`集合竞价评级[${currentDate}]`];
         dailyLimitYesterdayBiddingDto.closeIncrease = (0, commonUtil_1.toFixed)(item['最新涨跌幅']);
-        if (item[`涨停开板次数[${yesterdayDate}]`] != 0) {
-            dailyLimitYesterdayBiddingDto.openTimes = item[`涨停开板次数[${yesterdayDate}]`];
+        const jitianjiban = item[`几天几板[${yesterdayDate}]`];
+        if (jitianjiban && jitianjiban.indexOf('天') > -1) {
+            const day = jitianjiban.split('天')[0];
+            const even = jitianjiban.split('天')[1].replace('板', '');
+            if (day !== even) {
+                dailyLimitYesterdayBiddingDto.evenDays = jitianjiban;
+            }
+            else {
+                dailyLimitYesterdayBiddingDto.evenDays = day;
+            }
         }
-        dailyLimitYesterdayBiddingDto.dailyTime = item[`首次涨停时间[${yesterdayDate}]`] ? item[`首次涨停时间[${yesterdayDate}]`].trim() : '-';
-        if (dailyLimitYesterdayBiddingDto.openTimes > 0 && item[`最终涨停时间[${yesterdayDate}]`]) {
-            dailyLimitYesterdayBiddingDto.dailyTime += (',' + item[`最终涨停时间[${yesterdayDate}]`].trim());
+        if (isSaveMore) {
+            if (!item[`最终涨停时间[${yesterdayDate}]`]) {
+                yesterdayDate = (0, commonUtil_1.getLastTradingDay)(currentDate);
+            }
+            dailyLimitYesterdayBiddingDto.bidVolumeRatio = +(item[`竞价量[${currentDate}]`] / item[`竞价量[${yesterdayDate}]`]).toFixed(2);
+            if (item[`涨停开板次数[${yesterdayDate}]`] != 0) {
+                dailyLimitYesterdayBiddingDto.openTimes = item[`涨停开板次数[${yesterdayDate}]`];
+            }
+            dailyLimitYesterdayBiddingDto.dailyTime = item[`首次涨停时间[${yesterdayDate}]`] ? item[`首次涨停时间[${yesterdayDate}]`].trim() : '-';
+            if (dailyLimitYesterdayBiddingDto.openTimes > 0 && item[`最终涨停时间[${yesterdayDate}]`]) {
+                dailyLimitYesterdayBiddingDto.dailyTime += (',' + item[`最终涨停时间[${yesterdayDate}]`].trim());
+            }
+            dailyLimitYesterdayBiddingDto.expected = judgeExpected(dailyLimitYesterdayBiddingDto);
+            delete dailyLimitYesterdayBiddingDto.dailyTime;
+            delete dailyLimitYesterdayBiddingDto.openTimes;
         }
-        dailyLimitYesterdayBiddingDto.expected = judgeExpected(dailyLimitYesterdayBiddingDto, dailyLimitYesterdayBiddingDto.bidIncreaseT);
-        delete dailyLimitYesterdayBiddingDto.dailyTime;
-        delete dailyLimitYesterdayBiddingDto.openTimes;
         dailyLimitYesterdayBiddingDtos.push(dailyLimitYesterdayBiddingDto);
     });
     return dailyLimitYesterdayBiddingDtos;
 }
 exports.transformBidData = transformBidData;
-function judgeExpected(item, bidIncreaseT) {
+function judgeExpected(item) {
+    const { bidIncreaseT } = item;
     const expected = getExpected(item);
     if (expected.indexOf(',') === -1) {
-        return getExpectedValue(bidIncreaseT, parseInt(expected));
+        const expectedD = parseInt(expected);
+        if (bidIncreaseT > expectedD) {
+            if (bidIncreaseT - expectedD >= 1) {
+                return 2;
+            }
+            return 1;
+        }
+        return 0;
     }
-    const expecteds = expected.split(',');
-    const start = parseInt(expecteds[0]);
-    const end = parseInt(expecteds[1]);
-    if (bidIncreaseT >= start && bidIncreaseT <= end) {
-        return 1;
-    }
-    if (bidIncreaseT > end) {
-        return 2;
-    }
-    return 0;
-}
-function getExpectedValue(bidIncreaseT, expected) {
-    if (bidIncreaseT > expected) {
-        if (bidIncreaseT - expected >= 1) {
+    else {
+        const expecteds = expected.split(',');
+        const start = parseInt(expecteds[0]);
+        const end = parseInt(expecteds[1]);
+        if (bidIncreaseT >= start && bidIncreaseT <= end) {
+            return 1;
+        }
+        if (bidIncreaseT > end) {
             return 2;
         }
-        return 1;
+        return 0;
     }
-    return 0;
 }
 function transformShortTermSourceData(dailyLimitData, downLimitData, hugeFallData, todayDateStr) {
     const currentDate = dayjs(todayDateStr).format('YYYYMMDD');

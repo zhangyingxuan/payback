@@ -4,11 +4,11 @@ export declare class DailyLimitYesterdayBiddingDto {
     plateLevel2: string;
     bidChangeTypeT: string;
     bidIncreaseT: number;
-    bidVolumeT: number;
-    bidVolumeY: number;
+    bidVolumeRatio: number;
     bidRating: string;
     closeIncrease: number;
     openTimes: number;
     dailyTime: string;
+    evenDays: string;
     expected: number;
 }

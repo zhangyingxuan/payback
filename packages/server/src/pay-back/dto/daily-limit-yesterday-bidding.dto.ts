@@ -10,9 +10,8 @@ export class DailyLimitYesterdayBiddingDto {
   bidChangeTypeT: string;
   // 竞价涨幅
   bidIncreaseT: number;
-  // 竞价量
-  bidVolumeT: number;
-  bidVolumeY: number;
+  // 竞价量比
+  bidVolumeRatio: number;
   // 集合竞价评级
   bidRating: string;
   // 收盘涨幅
@@ -21,6 +20,8 @@ export class DailyLimitYesterdayBiddingDto {
   openTimes: number;
   // 涨停时间
   dailyTime: string;
+  // 几天几板
+  evenDays: string;
   // 预期涨幅
   // 预期值：不符合预期0;符合预期1;超预期2
   expected: number;

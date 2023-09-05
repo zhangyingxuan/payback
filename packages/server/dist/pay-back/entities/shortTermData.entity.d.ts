@@ -10,6 +10,7 @@ export declare class shortTermData {
     evenBoardAmount: number;
     evenBoardData: string;
     biddingData: string;
+    chooseStockData: string;
     downLimitData: string;
     hugeFallData: string;
     board1: number;

@@ -34,7 +34,7 @@ export declare class PayBackController {
             updatedTime: Date;
         };
     }>;
-    crawlBinddingData(): Promise<import("./dto/create-pay-back.dto").CreatePayBackDto>;
+    crawlBinddingData(): Promise<void>;
     crawlShortTerm(): Promise<import("./dto/create-pay-back.dto").CreatePayBackDto>;
     crawlShortTermDataByDate(query: any): Promise<import("./dto/create-pay-back.dto").CreatePayBackDto | {
         code: string;

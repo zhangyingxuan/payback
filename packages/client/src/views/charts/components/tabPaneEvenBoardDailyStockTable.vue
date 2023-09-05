@@ -56,10 +56,6 @@
               :code="stock.code"
             />
             <Stock v-else :name="stock.name" :code="stock.code" />
-            <el-tag v-if="stock.type === 1" size="small" round> 创 </el-tag>
-            <el-tag v-else-if="stock.type === 2" size="small" type="info" round>
-              其它
-            </el-tag>
             &nbsp;[&nbsp;
             <span
               class="orange"
@@ -95,6 +91,7 @@ import { reactive, computed } from 'vue';
 import { highlightKeyWord, getExpected } from '../utils';
 import { dailyLimitOptionalStrategy } from 'pay-back-core';
 import { DailyLimitStockDto } from '@/typings';
+import dayjs from 'dayjs';
 
 let emit = defineEmits(['update:evenBoardData']); //自定义的更新num事件
 let superData = defineProps({
@@ -185,8 +182,8 @@ function sortPlates(stockGroupByPlate: any) {
   Object.keys(stockGroupByPlate).forEach(key => {
     let o = { key: '', value: [] };
     o.key = key;
+    // 板块内 个股按 连板高度降序 => 首次涨停时间降序
     o.value = sortStocks(stockGroupByPlate[key]);
-    // 板块内 个股按 连板高度 => 首次涨停时间降序
     stockGroupByPlateArr.push(o);
   });
 
@@ -221,6 +218,25 @@ function sortStocks(stocks: []) {
     // }
 
     return b.evenBoardHeight - a.evenBoardHeight;
+  });
+  // 首板按涨停时间排序
+  stocks.sort((a: any, b: any) => {
+    if (a.evenBoardHeight != '1' || b.evenBoardHeight != '1') {
+      return 0;
+    }
+    const aStart =
+      a.dailyTime.indexOf(',') > -1 ? a.dailyTime.split(',')[0] : a.dailyTime;
+    const bStart =
+      b.dailyTime.indexOf(',') > -1 ? b.dailyTime.split(',')[0] : b.dailyTime;
+
+    console.log(
+      a,
+      b,
+      dayjs('2023-09-05' + aStart).isBefore(dayjs('2023-09-05' + bStart)),
+    );
+    return dayjs('2023-09-05' + aStart).isBefore(dayjs('2023-09-05' + bStart))
+      ? -1
+      : 1;
   });
   return stocks;
 }

@@ -1,5 +1,6 @@
 export declare const iwencaiUrl = "http://www.iwencai.com/unifiedwap/result?w=";
 export declare const marketUrl = "http://q.10jqka.com.cn";
+export declare const iWencaiDateFormat = "YYYYMMDD";
 export declare const allIndexApiFrom = "http://d.10jqka.com.cn/v4/line/zs_1A0001/01/today.js";
 export declare const shangzhengIndexApi = "http://d.10jqka.com.cn/v4/line/zs_1A0001/01/today.js";
 export declare const shenzhengIndexApi = "http://d.10jqka.com.cn/v4/line/zs_399001/01/today.js";

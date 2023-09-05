@@ -54,6 +54,10 @@ __decorate([
     __metadata("design:type", String)
 ], shortTermData.prototype, "biddingData", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ comment: '选股数据', type: 'text', nullable: true }),
+    __metadata("design:type", String)
+], shortTermData.prototype, "chooseStockData", void 0);
+__decorate([
     (0, typeorm_1.Column)({ comment: '跌停数据', type: 'varchar', length: 3072, default: '' }),
     __metadata("design:type", String)
 ], shortTermData.prototype, "downLimitData", void 0);

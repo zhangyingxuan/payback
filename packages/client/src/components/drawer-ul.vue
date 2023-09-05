@@ -29,7 +29,7 @@
 <script lang="ts" setup>
 import { iwencaiUrl } from '../views/charts/utils/config';
 const iwencaiStockBaseWord =
-  '，行业概念，筹码集中，流通市值大于40亿，非创业板，非科创板，非ST&querytype=stock';
+  '，流通市值<=120亿，流通市值>=20亿，行业概念，筹码集中，非创业板，非科创板，非ST&querytype=stock';
 let superData = defineProps({
   type: {
     type: String,

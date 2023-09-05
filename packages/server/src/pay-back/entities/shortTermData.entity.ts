@@ -32,6 +32,9 @@ export class shortTermData {
   @Column({ comment: '昨日涨停今日集合竞价情况', type: 'text', nullable: true })
   biddingData: string;
 
+  @Column({ comment: '选股数据', type: 'text', nullable: true })
+  chooseStockData: string;
+
   @Column({ comment: '跌停数据', type: 'varchar', length: 3072, default: '' })
   downLimitData: string;
 

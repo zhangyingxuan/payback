@@ -1,27 +1,21 @@
 <!-- 集合竞价数据 -->
 <template>
-  <div :class="['table', { isMobile }]">
+  <div :class="['table', { isMobile }]" v-if="stockGroupByPlate.length > 0">
     <div class="table__container">
       <div class="table__header table-row">
         <div class="col1">行业板块</div>
         <div class="red">
-          昨日首板涨停 - 竞价数据 （{{ biddingData.length }}）
-          <span>
-            <el-checkbox v-model="data.myStrategyChecked"
-              >我的策略 ({{ data.myStrategyCheckedLen }})
-              <el-tooltip
-                class="box-item"
-                effect="dark"
-                content="看多，超预期，竞价量比大于10（连板及反包除外）"
-                placement="top"
-              >
-                <el-icon><InfoFilled /></el-icon>
-              </el-tooltip>
-            </el-checkbox>
-            <el-checkbox v-model="data.firstBoardChecked">只看首板</el-checkbox>
-            <el-checkbox v-model="data.exceededExpect">超预期</el-checkbox>
-          </span>
+          1进2选股
+          <el-tooltip
+            class="box-item"
+            effect="dark"
+            content="昨日首板涨停；竞价看多；股价低于30元；流通市值<=120亿；>=20亿；首板换手率>=5%；非创业板；非科创板；非ST"
+            placement="top"
+          >
+            <el-icon><InfoFilled /></el-icon>
+          </el-tooltip>
         </div>
+        <!-- <div class="red">新股 （{{ biddingData.length }}）</div> -->
       </div>
 
       <div
@@ -45,24 +39,17 @@
               :code="stock.code"
             />
             <Stock v-else :name="stock.name" :code="stock.code" />
-            [<span :class="calcClass(stock.bidRating)"
-              >{{ stock.bidRating }}
+            [&nbsp;<span :class="calcClass(stock.bidRating)">
+              {{ stock.bidRating }}
             </span>
-            <span :class="{ 'red bold': stock.bidChangeTypeT === '竞价抢筹' }">
-              {{ stock.bidChangeTypeT }}
+            <span :class="{ 'red bold': stock.bidChangeTypeT === '竞价抢筹' }"
+              >{{ stock.bidChangeTypeT }}
             </span>
             <span :class="{ 'red bold': stock.bidIncreaseT >= 7 }">
               竞价涨幅
               {{ stock.bidIncreaseT && +stock.bidIncreaseT.toFixed(2) }}
             </span>
-            <span :class="{ 'red bold': stock.bidVolumeRatio >= 10 }">
-              竞价量比 {{ stock.bidVolumeRatio }}
-            </span>
-            ] -
-            <span :class="{ 'red bold': stock.expected === 2 }">{{
-              getExpectedStr(stock.expected)
-            }}</span>
-            收盘涨幅
+            ] - 收盘涨幅
             <span :class="{ 'red bold': stock.closeIncrease >= 5 }">{{
               stock.closeIncrease
             }}</span>
@@ -74,76 +61,37 @@
 </template>
 <script lang="ts" setup>
 import _ from 'lodash-es';
-import { computed, reactive } from 'vue';
+import { computed } from 'vue';
 let superData = defineProps({
-  biddingData: {
-    type: Array,
-    default: () => [],
+  propsData: {
+    type: Object,
+    default: () => {},
   },
   isMobile: {
     type: Boolean,
     default: false,
   },
 });
-const data = reactive({
-  // 首板
-  firstBoardChecked: false,
-  // 我的策略
-  myStrategyChecked: false,
-  // 超预期
-  exceededExpect: false,
-  myStrategyCheckedLen: 0,
-});
 
 const stockGroupByPlate = computed(() => {
-  const biddingData = _.cloneDeep(superData.biddingData);
-  data.myStrategyCheckedLen = 0;
+  const biddingData = superData.propsData
+    ? _.cloneDeep(superData.propsData.chooseStock1to2Dtos)
+    : null;
 
   const stockGroupByPlate: any = {};
-  let isAdd = true;
   // 按 行业板块 将涨停个股分类
   biddingData &&
     biddingData.forEach((item: any) => {
-      isAdd = true;
       // 按板块划分 涨停数据
       if (!stockGroupByPlate[item.plateLevel2]) {
         stockGroupByPlate[item.plateLevel2] = [];
       }
 
-      // 需按照首板/我的策略 进行过滤处理
-      if (data.firstBoardChecked) {
-        isAdd = !item.evenDays;
-      }
-      // 看多、符合预期、首板量比大于10，只看主板
-      if (data.myStrategyChecked && isAdd) {
-        isAdd = isConformToMyStrategyChecked(item);
-        isAdd && data.myStrategyCheckedLen++;
-      }
-      // 超预期
-      if (!data.myStrategyChecked && data.exceededExpect && isAdd) {
-        isAdd = item.expected === 2;
-        isAdd && data.myStrategyCheckedLen++;
-      }
-      isAdd && stockGroupByPlate[item.plateLevel2].push(item);
+      stockGroupByPlate[item.plateLevel2].push(item);
     });
 
   return sortPlates(stockGroupByPlate);
 });
-
-/**
- * 是否符合预期
- */
-function isConformToMyStrategyChecked(stock: any) {
-  // 看多，超预期或符合预期，首板必须竞价量比大于10，只看主板
-  if (stock.code.startsWith('3') || stock.code.startsWith('688')) {
-    return false;
-  }
-  return (
-    stock.bidRating === '看多' &&
-    (stock.expected === 2 || stock.expected === 1) &&
-    (stock.evenDays ? true : stock.bidVolumeRatio >= 10)
-  );
-}
 
 /**
  * 按板块排序 排序
@@ -180,15 +128,6 @@ function calcClass(bidRating: string) {
     return 'green';
   }
   return '';
-}
-function getExpectedStr(expected: number) {
-  if (expected === 1) {
-    return '符合预期';
-  }
-  if (expected === 2) {
-    return '超预期';
-  }
-  return '不及预期';
 }
 </script>
 

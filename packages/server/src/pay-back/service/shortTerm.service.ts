@@ -1,6 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { CreatePayBackDto } from '../dto/create-pay-back.dto';
-import { DailyLimitYesterdayBiddingDto } from '../dto/daily-limit-yesterday-bidding.dto';
 import { Repository } from 'typeorm';
 import { shortTermData } from '../entities/shortTermData.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -8,6 +7,7 @@ import { getShortTermData, getShortTermDataByDate, autoRemoveLessThanExpect, get
 import { ThsService } from './ths.service';
 import * as dayjs from 'dayjs';
 import { Cron } from '@nestjs/schedule';
+import { iWencaiDateFormat } from '../core/config';
 
 @Injectable()
 export class ShorTermService {
@@ -40,46 +40,55 @@ export class ShorTermService {
     const result = autoRemoveLessThanExpect();
   }
 
-  // 竞价选择超预期个股
-  // async autoSelectExceededExpect() {
+  // 竞价数据 - 早盘
   @Cron('08 25 9 * * 1-5')
   async autoCrawlBinddingData() {
-    this.logger.debug('autoSelectExceededExpect is Begining!');
+    this.crawlBinddingData();
+  }
+  // 竞价数据 - 尾盘收盘价
+  @Cron('00 05 15 * * 1-5')
+  async autoCrawlBinddingDataLateSession() {
+    this.crawlBinddingData();
+  }
+
+  async crawlBinddingData() {
+    this.logger.debug('autoCrawlBinddingData is Begining!');
 
     let isExist = false;
     // 如果存在数据，则返回已有该数据
     const todayDateStr = new Date().toLocaleDateString();
-    const todayDataFromDB = await this.shortTermDataRp
-      .createQueryBuilder('short_term_data')
-      .where("short_term_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
-      .getOne();
+    const todayDataFromDB = await this.getTodayData(todayDateStr);
 
     if (todayDataFromDB) {
       isExist = true;
     }
     let createPayBackDto: CreatePayBackDto = new CreatePayBackDto();
     try {
+      const yesterdayDateStr = await this.getLastTradingDayByDB(todayDateStr);
       // 获取竞价情况
-      const dailyLimitYesterdayBiddingDto: DailyLimitYesterdayBiddingDto[] = await getBiddingData(todayDateStr);
-      createPayBackDto.biddingData = JSON.stringify(dailyLimitYesterdayBiddingDto);
+      const { dailyLimitYesterdayBiddingDtos, newStocksDtos, chooseStock1to2Dtos } = await getBiddingData(todayDateStr, yesterdayDateStr);
+      createPayBackDto.biddingData = JSON.stringify(dailyLimitYesterdayBiddingDtos);
+      createPayBackDto.chooseStockData = JSON.stringify({
+        newStocksDtos,
+        chooseStock1to2Dtos
+      });
 
       console.log(createPayBackDto);
       if (isExist) {
-        this.logger.log('autoSelectExceededExpect 更新数据')
+        this.logger.log('autoCrawlBinddingData 更新数据')
         await this.shortTermDataRp.update(todayDataFromDB.id, createPayBackDto);
       } else {
-        this.logger.log('autoSelectExceededExpect 新增数据')
+        this.logger.log('autoCrawlBinddingData 新增数据')
         await this.shortTermDataRp.save(createPayBackDto);
       }
 
-      this.logger.debug('autoSelectExceededExpect is success!');
+      this.logger.debug('autoCrawlBinddingData is success!');
     } catch (e) {
       this.logger.error('出错啦！！！', e)
     }
 
     return createPayBackDto;
   }
-
 
   /**
    * 爬取短线数据，如果已存在则更新
@@ -90,10 +99,7 @@ export class ShorTermService {
     let isExist = false;
     // 如果存在数据，则返回已有该数据
     const todayDateStr = new Date().toLocaleDateString();
-    const todayDataFromDB = await this.shortTermDataRp
-      .createQueryBuilder('short_term_data')
-      .where("short_term_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
-      .getOne();
+    const todayDataFromDB = await this.getTodayData(todayDateStr);
 
     if (todayDataFromDB) {
       isExist = true;
@@ -119,12 +125,14 @@ export class ShorTermService {
     return createPayBackDto;
   }
 
+  /**
+   * 获取对应日期的数据
+   * @param todayDateStr 
+   * @returns 
+   */
   async crawlShortTermDataByDate(todayDateStr) {
     this.logger.debug('crawlShortTermDataByDate is Begining!');
-    const todayDataFromDB = await this.shortTermDataRp
-      .createQueryBuilder('short_term_data')
-      .where("short_term_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
-      .getOne();
+    const todayDataFromDB = await this.getTodayData(todayDateStr);
 
     if (todayDataFromDB) {
       this.logger.debug('crawlShortTermData is end![isExist]');
@@ -145,6 +153,13 @@ export class ShorTermService {
     }
 
     return createPayBackDto;
+  }
+
+  getTodayData(todayDateStr: string) {
+    return this.shortTermDataRp
+      .createQueryBuilder('short_term_data')
+      .where("short_term_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
+      .getOne();
   }
 
   async findAll() {
@@ -178,10 +193,33 @@ export class ShorTermService {
         'short_term_data.dailyLimitReturnSealQuantity',
         'short_term_data.evenBoardData',
         'short_term_data.biddingData',
+        'short_term_data.chooseStockData',
         'short_term_data.hugeFallData',
         'short_term_data.cycle',
         'short_term_data.downLimitData'])
       .orderBy('createTime', 'DESC')
       .getMany();
+  }
+
+  /**
+   * 获取数据库中 上一个交易日的日期
+   * @param len 
+   */
+  async getLastTradingDayByDB(todayDateStr) {
+    const dateArr: any = await this.shortTermDataRp
+      .createQueryBuilder('short_term_data')
+      .offset(0)
+      .limit(2)
+      .select(['short_term_data.createTime'])
+      .orderBy('createTime', 'DESC')
+      .getMany();
+
+    const currentDate = dayjs(todayDateStr).format(iWencaiDateFormat);
+    let lastTradingDay = dayjs(dateArr[0].createTime).format(iWencaiDateFormat);
+    if (lastTradingDay === currentDate) {
+      lastTradingDay = dayjs(dateArr[1].createTime).format(iWencaiDateFormat);
+    }
+
+    return lastTradingDay;
   }
 }

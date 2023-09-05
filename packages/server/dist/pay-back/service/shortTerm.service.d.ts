@@ -10,13 +10,17 @@ export declare class ShorTermService {
     autoCrawlShortTermDataLateSession(): Promise<void>;
     autoCrawlShortTermDataMidday(): Promise<void>;
     autoRemoveLessThanExpect(): Promise<void>;
-    autoCrawlBinddingData(): Promise<CreatePayBackDto>;
+    autoCrawlBinddingData(): Promise<void>;
+    autoCrawlBinddingDataLateSession(): Promise<void>;
+    crawlBinddingData(): Promise<CreatePayBackDto>;
     crawlShortTermData(): Promise<CreatePayBackDto>;
     crawlShortTermDataByDate(todayDateStr: any): Promise<CreatePayBackDto | {
         code: string;
         msg: string;
     }>;
+    getTodayData(todayDateStr: string): Promise<shortTermData>;
     findAll(): Promise<shortTermData[]>;
     findByLimit(len?: number): Promise<shortTermData[]>;
     findEvenBoardByLimit(len?: number): Promise<shortTermData[]>;
+    getLastTradingDayByDB(todayDateStr: any): Promise<string>;
 }

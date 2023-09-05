@@ -18,6 +18,8 @@ export interface ShortTermModel {
   evenBoardData: string;
   // 竞价数据
   biddingData: string;
+  // 选股数据
+  chooseStockData: string;
   // 跌停数据
   downLimitData: string;
   // 大面
