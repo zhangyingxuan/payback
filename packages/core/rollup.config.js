@@ -37,8 +37,7 @@ const plugins = [
   typescript(), // 解析TypeScript
   commonjs(), // 将 CommonJS 转换成 ES2015 模块供 Rollup 处理
   babel({ babelHelpers: "bundled" }), // babel配置,编译es6
-  filesize(),
-  terser()
+  filesize()
 ];
 
 export default [
@@ -46,7 +45,7 @@ export default [
     input: "src/main.ts", // 打包入口
     output: [
       // umd development version with sourcemap
-      // cjs and esm version
+      // cjs
       {
         file: `lib/index.cjs`,
         format: 'cjs',
@@ -59,14 +58,15 @@ export default [
         name,
         sourcemap: true
       },
-      // cjs and esm version
+      // esm version
       {
         file: `es/index.esm.js`,
         format: 'es',
         banner
       }
     ],
-    plugins
+    plugins,
+    external: ['dayjs'] 
   },
     {
     input: "src/main.ts", // 打包入口
@@ -79,7 +79,12 @@ export default [
         banner
       }
     ],
-    plugins
+    plugins: [
+      ...plugins,
+      terser()
+    ],
+    // 打包排除 外部依赖，避免重复依赖
+    external: ['dayjs'] 
   },
   {
     input: "src/main.ts",

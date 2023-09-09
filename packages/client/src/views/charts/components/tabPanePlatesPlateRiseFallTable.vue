@@ -51,8 +51,8 @@ import { judgeMonday } from '../utils';
 
 let superData = defineProps({
   data: {
-    type: Array<any>,
-    default: () => [],
+    type: Object,
+    default: () => {},
   },
   title: {
     type: String,

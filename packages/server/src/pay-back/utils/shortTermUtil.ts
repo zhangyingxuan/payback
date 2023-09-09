@@ -1,9 +1,11 @@
 import { CreatePayBackDto } from '../dto/create-pay-back.dto';
-import { transformShortTermSourceData, transformBidData } from '../utils/transformDataUtil';
+import { SpecialStockDto } from '../dto/special-stock.dto';
+import { transformShortTermSourceData } from '../utils/transformDataUtil';
 import { params } from '../core/config';
 import { fetchIwencaiApi } from '../core/fetchUtil';
-import { getCurrentCycle } from 'pay-back-core';
+import { getCurrentCycle, iWencaiDateFormat } from 'pay-back-core';
 import * as dayjs from 'dayjs';
+
 /**
  * 通过接口方式获取热门数据
  * @returns 
@@ -18,7 +20,7 @@ export async function getShortTermData(todayDateStr): Promise<CreatePayBackDto> 
   // 跌幅大于等于15的个股
   const hugeFallData: any = await fetchIwencaiApi(params.hugeFall, 50, false);
 
-  return prepareDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, todayDateStr);
+  return prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, todayDateStr);
 }
 
 export async function getShortTermDataByDate(todayDateStr): Promise<CreatePayBackDto> {
@@ -31,7 +33,7 @@ export async function getShortTermDataByDate(todayDateStr): Promise<CreatePayBac
   // 跌幅大于等于15的个股
   const hugeFallData: any = await fetchIwencaiApi(params.hugeFallByDate.replace('${date}', todayDateStr), 50, false);
 
-  return prepareDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, todayDateStr);
+  return prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, todayDateStr);
 }
 
 /**
@@ -46,33 +48,6 @@ export async function autoRemoveLessThanExpect() {
 }
 
 /**
- * 自动剔除低于预期的昨日涨停个股（首板），集合竞价开盘价低于预期， 且成交量不足，未匹配量；
- */
-export async function getBiddingData(todayDateStr, yesterdayDateStr) {
-  // 选股
-  // 集中度更集中，20-120，股价低于30
-  // 获取昨日涨停 集合竞价情况，竞价量10倍，评级看多，竞价抢筹
-  // 连板概率 90%，75%
-  const dailyLimitYesterdayData: any = await fetchIwencaiApi(params.dailyLimitYesterday, 100, false);
-  // 竞价看多数据
-  const chooseStock1to2: any = await fetchIwencaiApi(params.chooseStock1to2, 100, false);
-  // 新股数据
-  const newStocks: any = await fetchIwencaiApi(params.chooseStockNewStock, 100, false);
-  // 昨日首板竞价情况
-  const dailyLimitYesterdayBiddingDtos = transformBidData(dailyLimitYesterdayData, todayDateStr, yesterdayDateStr, true);
-  // 一进二竞价，看多标的
-  const chooseStock1to2Pds = transformBidData(chooseStock1to2, todayDateStr, yesterdayDateStr, true);
-  const chooseStock1to2Dtos = chooseStock1to2Pds.filter(stock => {
-    // 过滤 量比大于10，超预期及符合预期
-    return stock.bidVolumeRatio >= 10 && (stock.expected != 0);
-  })
-
-  const newStocksDtos = transformBidData(newStocks, todayDateStr, yesterdayDateStr);
-
-  return { dailyLimitYesterdayBiddingDtos, newStocksDtos, chooseStock1to2Dtos };
-}
-
-/**
  * 准备dto数据
  * @param dailyLimitData 
  * @param dailyLimitOpenData 
@@ -80,7 +55,7 @@ export async function getBiddingData(todayDateStr, yesterdayDateStr) {
  * @param todayDateStr 
  * @returns 
  */
-function prepareDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, todayDateStr) {
+function prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, todayDateStr) {
   let createPayBackDto: CreatePayBackDto = new CreatePayBackDto();
   let { board1 = 0, evenBoardData, downLimitDataArr, hugeFallDataArr, dailyLimitReturnSealQuantity, downLimitQuantity } = transformShortTermSourceData(dailyLimitData, downLimitData, hugeFallData, todayDateStr);
 
@@ -95,7 +70,6 @@ function prepareDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallD
   // 炸板率 = 炸板数/<炸板数+涨停数>
   createPayBackDto.dailyLimitReturnSealQuantity = dailyLimitReturnSealQuantity;
   createPayBackDto.marketHeight = evenBoardData.maxHeight;
-  createPayBackDto.board1 = board1;
   createPayBackDto.evenBoardAmount = dailyLimitData.length - board1;
   createPayBackDto.evenBoardData = JSON.stringify(evenBoardData);
   createPayBackDto.downLimitData = JSON.stringify(downLimitDataArr);
@@ -105,4 +79,64 @@ function prepareDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallD
   createPayBackDto.cycle = getCurrentCycle({ ...createPayBackDto, hugeFallData: hugeFallDataArr });
 
   return createPayBackDto;
+}
+
+/**
+ * TODO 这里的数据装载，缺少日期判断，特别是昨日日期判断
+ */
+export function mergeExtra2ShortTermData(shortTermData: Array<any>, specialStocks: Array<any>) {
+  if (shortTermData.length === 0 || specialStocks.length === 0) return shortTermData;
+  // 1. 合并竞价数据到短线数据中的 连板数据中
+  const shortTermDataLen = shortTermData.length;
+  for (let i = 0; i < shortTermDataLen - 1; i++) {
+    const currentDate = dayjs(shortTermData[i].createTime).format(iWencaiDateFormat);
+    // 今天的竞价数据，与昨天的涨停数据进行组装
+    const currentSpecialStock = findBiddingDataByCreateTime(specialStocks, currentDate);
+    if (currentSpecialStock && currentSpecialStock.biddingData) {
+      // 将今天的竞价数据，装载入昨日涨停数据中
+      const evenBoardData = prepareEvenBoardData(JSON.parse(shortTermData[i + 1].evenBoardData), JSON.parse(currentSpecialStock.biddingData));
+      shortTermData[i + 1].evenBoardData = JSON.stringify(evenBoardData);
+    }
+
+    if (specialStocks[i]) {
+      // 2. 合并新股数据
+      shortTermData[i].newStock = specialStocks[i].newStock;
+      // 3. 合并选股数据
+      shortTermData[i].chooseStock = specialStocks[i].chooseStock;
+    }
+  }
+
+  return shortTermData;
+}
+/**
+ * 按创建时间找到对应竞价数据
+ * @param biddingDatas 
+ * @param createDate 
+ * @returns 
+ */
+function findBiddingDataByCreateTime(biddingDatas, createDate) {
+  return biddingDatas.find((item) => {
+    return dayjs(item.createTime).format(iWencaiDateFormat) === createDate;
+  });
+}
+
+/**
+ * 组装连板数据
+ */
+function prepareEvenBoardData(evenBoardData, currentBiddingData) {
+  const maxHeight = evenBoardData.maxHeight;
+  // 遍历短线连板数据，将竞价数据装载进去，按照code 匹配
+  for (let currentHeight = 1; currentHeight <= maxHeight; currentHeight++) {
+    evenBoardData[currentHeight] && (evenBoardData[currentHeight] = evenBoardData[currentHeight].map((item) => {
+      // 找到对应个股竞价数据
+      const biddingData = currentBiddingData.find((biddingItem) => {
+        return biddingItem.code === item.code;
+      }) || {};
+      // 竞价数据
+      item.biddingData = biddingData;
+      return item;
+    }));
+  }
+
+  return evenBoardData;
 }

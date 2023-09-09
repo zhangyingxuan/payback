@@ -157,7 +157,6 @@ export class ApiTestService {
       sealingRate: 76,
       dailyLimitReturnSealQuantity: 14,
       marketHeight: 6,
-      board1: 21,
       evenBoardAmount: 11,
       hugeFallData: '[]',
       createTime: '2023 - 08 - 21T10: 37: 54.433Z'

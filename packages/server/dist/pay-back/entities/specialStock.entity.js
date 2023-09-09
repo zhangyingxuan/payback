@@ -18,23 +18,23 @@ __decorate([
     __metadata("design:type", Number)
 ], specialStock.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '天地板', type: 'varchar' }),
+    (0, typeorm_1.Column)({ comment: '昨日涨停今日集合竞价情况', type: 'varchar', length: 10240, nullable: true }),
     __metadata("design:type", String)
-], specialStock.prototype, "skyFloor", void 0);
+], specialStock.prototype, "biddingData", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '地天板', type: 'varchar' }),
+    (0, typeorm_1.Column)({ comment: '新股数据', type: 'varchar', length: 512, nullable: true }),
     __metadata("design:type", String)
-], specialStock.prototype, "florSky", void 0);
+], specialStock.prototype, "newStock", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '反包板', type: 'varchar' }),
+    (0, typeorm_1.Column)({ comment: '策略选股', type: 'varchar', length: 3072, nullable: true }),
     __metadata("design:type", String)
-], specialStock.prototype, "turnUpBoard", void 0);
+], specialStock.prototype, "chooseStock", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '主力净流入TOP3个股', type: 'varchar' }),
+    (0, typeorm_1.Column)({ comment: '主力净流入TOP3个股', type: 'varchar', nullable: true }),
     __metadata("design:type", String)
 ], specialStock.prototype, "fundsLikeStock", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '近1个月涨幅追高的个股Top3', type: 'varchar' }),
+    (0, typeorm_1.Column)({ comment: '近1个月涨幅最高的个股Top3', type: 'varchar', nullable: true }),
     __metadata("design:type", String)
 ], specialStock.prototype, "heightestStock", void 0);
 __decorate([

@@ -4,6 +4,7 @@ import { DownLimitStockDto } from '../dto/down-limit-stock.dto';
 import { DailyLimitYesterdayBiddingDto } from '../dto/daily-limit-yesterday-bidding.dto';
 import { toFixed, fundsToFixed, getLastTradingDay } from './commonUtil';
 import * as dayjs from 'dayjs';
+import { getExpected } from 'pay-back-core';
 
 const turnoverTypeArr = ['放量涨停', '缩量涨停', '一字涨停', 'T字涨停'];
 
@@ -85,22 +86,6 @@ function transformDownLimitData(dailyLimitData, currentDate) {
 };
 
 /**
- * 判断类型，10cm：0 20cm：1 其他：2
- */
-function judgeType(str) {
-  if (!str) return 2;
-
-  const num = +str;
-  if (num < 11) {
-    return 0;
-  } else if (num >= 11 && num < 21) {
-    return 1;
-  } else {
-    return 2;
-  }
-}
-
-/**
  * 转换涨停数据
  * @param downLimitData 
  * @param todayDateStr 
@@ -137,7 +122,6 @@ function transformDailyLimitData(dailyLimitData, currentDate) {
       dailyLimitStockDto.turnoverType = item[`涨停类型[${currentDate}]`];
       dailyLimitStockDto.turnoverType && dailyLimitStockDto.turnoverType.indexOf(turnoverTypeArr[2]) > -1 && (evenBoardData.yizi++)
     }
-    dailyLimitStockDto.type = judgeType(item['最新涨跌幅']);
     dailyLimitStockDto.price = item['最新价'];
     // 开板次数，如果未开板 则不保存
     if (item[`涨停开板次数[${currentDate}]`] != 0) {
@@ -305,55 +289,4 @@ export function transformShortTermSourceData(dailyLimitData, downLimitData, huge
     downLimitQuantity,
     dailyLimitReturnSealQuantity,
   }
-}
-
-// 星火集合竞价成交量放大到和首板涨停爆量相同最佳，如果放大到2/3也可以，最差也要放量到一半，如果缩量就没有参与价值。
-const currentDate = '2018-08-08'; // dayjs().format('YYYY-MM-DD');
-// 9.31
-const date931 = dayjs(currentDate + ' 09:31:00');
-// 10:01
-const date1000 = dayjs(currentDate + ' 10:00:00');
-// 13:00
-const date1300 = dayjs(currentDate + ' 13:00:00');
-const date1400 = dayjs(currentDate + ' 14:00:00');
-const expectedArr = ['5', '4', '3', '0,2', '-2,2', '-2'];
-/**
- * 根据开板次数，最终涨停时间 给出次日开盘预期
- * @param stock {openTimes: string, dailyTime: string, }
- * @returns 
- */
-export function getExpected(stock: any) {
-  let currentTime: any = stock.openTimes ? stock.dailyTime.split(',')[1] : stock.dailyTime;
-  // console.log(stock.name, stock.openTimes, stock.dailyTime, currentTime);
-
-  currentTime = dayjs(currentDate + ' ' + currentTime);
-  // 文心一言
-  // 1、昨日一字板或开盘秒板的。第二天正常预期高开5%以上。
-  // 2、昨日10点前涨停的，第二天正常预期高开4%左右。
-  // 3、昨日11点半前涨停的，第二天正常预期高开3%左右。
-  // 4、昨日午后13-14涨停的，第二天预期微高开（0—2%）
-  // 5、昨日午后14之后涨停的，第二天预期平开（-2%—2%）
-  // 6、昨日烂板（开板5次），第二天预计低开（0--2%）
-
-  if (stock.openTimes >= 5) {
-    // 最终封板时间，在早盘则按正常预期，否则低开
-    if (currentTime.isBefore(date1300)) {
-      return expectedArr[2];
-    }
-    return expectedArr[5];
-  }
-
-  if (currentTime.isBefore(date931)) {
-    return expectedArr[0];
-  }
-  if (currentTime.isBefore(date1000)) {
-    return expectedArr[1];
-  }
-  if (currentTime.isBefore(date1300)) {
-    return expectedArr[2];
-  }
-  if (currentTime.isBefore(date1400) && currentTime.isAfter(date1300)) {
-    return expectedArr[3];
-  }
-  return expectedArr[4];
 }

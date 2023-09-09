@@ -1,9 +1,9 @@
 import { Timestamp } from "typeorm";
 export declare class specialStock {
     id: number;
-    skyFloor: string;
-    florSky: string;
-    turnUpBoard: string;
+    biddingData: string;
+    newStock: string;
+    chooseStock: string;
     fundsLikeStock: string;
     heightestStock: string;
     createTime: Timestamp;

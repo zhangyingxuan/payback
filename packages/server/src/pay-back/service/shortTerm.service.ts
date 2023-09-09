@@ -3,16 +3,17 @@ import { CreatePayBackDto } from '../dto/create-pay-back.dto';
 import { Repository } from 'typeorm';
 import { shortTermData } from '../entities/shortTermData.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getShortTermData, getShortTermDataByDate, autoRemoveLessThanExpect, getBiddingData } from '../utils/shortTermUtil';
+import { getShortTermData, getShortTermDataByDate, autoRemoveLessThanExpect, mergeExtra2ShortTermData } from '../utils/shortTermUtil';
 import { ThsService } from './ths.service';
 import * as dayjs from 'dayjs';
 import { Cron } from '@nestjs/schedule';
-import { iWencaiDateFormat } from '../core/config';
+import { SpecialStockService } from './specialStock.service';
 
 @Injectable()
 export class ShorTermService {
   constructor(
     private readonly thsService: ThsService,
+    private readonly specialStockService: SpecialStockService,
     @InjectRepository(shortTermData) private readonly shortTermDataRp: Repository<shortTermData>,
   ) { }
 
@@ -38,56 +39,6 @@ export class ShorTermService {
   // 早盘集合竞价剔除不及预期
   async autoRemoveLessThanExpect() {
     const result = autoRemoveLessThanExpect();
-  }
-
-  // 竞价数据 - 早盘
-  @Cron('08 25 9 * * 1-5')
-  async autoCrawlBinddingData() {
-    this.crawlBinddingData();
-  }
-  // 竞价数据 - 尾盘收盘价
-  @Cron('00 05 15 * * 1-5')
-  async autoCrawlBinddingDataLateSession() {
-    this.crawlBinddingData();
-  }
-
-  async crawlBinddingData() {
-    this.logger.debug('autoCrawlBinddingData is Begining!');
-
-    let isExist = false;
-    // 如果存在数据，则返回已有该数据
-    const todayDateStr = new Date().toLocaleDateString();
-    const todayDataFromDB = await this.getTodayData(todayDateStr);
-
-    if (todayDataFromDB) {
-      isExist = true;
-    }
-    let createPayBackDto: CreatePayBackDto = new CreatePayBackDto();
-    try {
-      const yesterdayDateStr = await this.getLastTradingDayByDB(todayDateStr);
-      // 获取竞价情况
-      const { dailyLimitYesterdayBiddingDtos, newStocksDtos, chooseStock1to2Dtos } = await getBiddingData(todayDateStr, yesterdayDateStr);
-      createPayBackDto.biddingData = JSON.stringify(dailyLimitYesterdayBiddingDtos);
-      createPayBackDto.chooseStockData = JSON.stringify({
-        newStocksDtos,
-        chooseStock1to2Dtos
-      });
-
-      console.log(createPayBackDto);
-      if (isExist) {
-        this.logger.log('autoCrawlBinddingData 更新数据')
-        await this.shortTermDataRp.update(todayDataFromDB.id, createPayBackDto);
-      } else {
-        this.logger.log('autoCrawlBinddingData 新增数据')
-        await this.shortTermDataRp.save(createPayBackDto);
-      }
-
-      this.logger.debug('autoCrawlBinddingData is success!');
-    } catch (e) {
-      this.logger.error('出错啦！！！', e)
-    }
-
-    return createPayBackDto;
   }
 
   /**
@@ -155,6 +106,11 @@ export class ShorTermService {
     return createPayBackDto;
   }
 
+  /**
+   * 获取今天的数据
+   * @param todayDateStr 
+   * @returns 
+   */
   getTodayData(todayDateStr: string) {
     return this.shortTermDataRp
       .createQueryBuilder('short_term_data')
@@ -180,8 +136,14 @@ export class ShorTermService {
       .getMany();
   }
 
+  /**
+   * 返回连板数据，用于短线详情
+   * @param len 
+   * @returns 
+   */
   async findEvenBoardByLimit(len: number = 20) {
-    return await this.shortTermDataRp
+    // 1. 重新组装数据，将竞价数据，装入昨日涨停中
+    const shortTermData = await this.shortTermDataRp
       .createQueryBuilder('short_term_data')
       .offset(0)
       .limit(len)
@@ -192,34 +154,16 @@ export class ShorTermService {
         'short_term_data.sealingRate',
         'short_term_data.dailyLimitReturnSealQuantity',
         'short_term_data.evenBoardData',
-        'short_term_data.biddingData',
-        'short_term_data.chooseStockData',
         'short_term_data.hugeFallData',
         'short_term_data.cycle',
         'short_term_data.downLimitData'])
       .orderBy('createTime', 'DESC')
       .getMany();
-  }
+    // 获取额外数据（新股、选股、昨日涨停竞价数据）
+    const specialStocks = await this.specialStockService.findByLimit(len);
 
-  /**
-   * 获取数据库中 上一个交易日的日期
-   * @param len 
-   */
-  async getLastTradingDayByDB(todayDateStr) {
-    const dateArr: any = await this.shortTermDataRp
-      .createQueryBuilder('short_term_data')
-      .offset(0)
-      .limit(2)
-      .select(['short_term_data.createTime'])
-      .orderBy('createTime', 'DESC')
-      .getMany();
+    let shortTermDataResult = mergeExtra2ShortTermData(shortTermData, specialStocks);
 
-    const currentDate = dayjs(todayDateStr).format(iWencaiDateFormat);
-    let lastTradingDay = dayjs(dateArr[0].createTime).format(iWencaiDateFormat);
-    if (lastTradingDay === currentDate) {
-      lastTradingDay = dayjs(dateArr[1].createTime).format(iWencaiDateFormat);
-    }
-
-    return lastTradingDay;
+    return shortTermDataResult;
   }
 }

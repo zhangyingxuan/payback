@@ -15,7 +15,6 @@ var ShorTermService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ShorTermService = void 0;
 const common_1 = require("@nestjs/common");
-const create_pay_back_dto_1 = require("../dto/create-pay-back.dto");
 const typeorm_1 = require("typeorm");
 const shortTermData_entity_1 = require("../entities/shortTermData.entity");
 const typeorm_2 = require("@nestjs/typeorm");
@@ -23,10 +22,11 @@ const shortTermUtil_1 = require("../utils/shortTermUtil");
 const ths_service_1 = require("./ths.service");
 const dayjs = require("dayjs");
 const schedule_1 = require("@nestjs/schedule");
-const config_1 = require("../core/config");
+const specialStock_service_1 = require("./specialStock.service");
 let ShorTermService = ShorTermService_1 = class ShorTermService {
-    constructor(thsService, shortTermDataRp) {
+    constructor(thsService, specialStockService, shortTermDataRp) {
         this.thsService = thsService;
+        this.specialStockService = specialStockService;
         this.shortTermDataRp = shortTermDataRp;
         this.logger = new common_1.Logger(ShorTermService_1.name);
     }
@@ -39,45 +39,6 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
     }
     async autoRemoveLessThanExpect() {
         const result = (0, shortTermUtil_1.autoRemoveLessThanExpect)();
-    }
-    async autoCrawlBinddingData() {
-        this.crawlBinddingData();
-    }
-    async autoCrawlBinddingDataLateSession() {
-        this.crawlBinddingData();
-    }
-    async crawlBinddingData() {
-        this.logger.debug('autoCrawlBinddingData is Begining!');
-        let isExist = false;
-        const todayDateStr = new Date().toLocaleDateString();
-        const todayDataFromDB = await this.getTodayData(todayDateStr);
-        if (todayDataFromDB) {
-            isExist = true;
-        }
-        let createPayBackDto = new create_pay_back_dto_1.CreatePayBackDto();
-        try {
-            const yesterdayDateStr = await this.getLastTradingDayByDB(todayDateStr);
-            const { dailyLimitYesterdayBiddingDtos, newStocksDtos, chooseStock1to2Dtos } = await (0, shortTermUtil_1.getBiddingData)(todayDateStr, yesterdayDateStr);
-            createPayBackDto.biddingData = JSON.stringify(dailyLimitYesterdayBiddingDtos);
-            createPayBackDto.chooseStockData = JSON.stringify({
-                newStocksDtos,
-                chooseStock1to2Dtos
-            });
-            console.log(createPayBackDto);
-            if (isExist) {
-                this.logger.log('autoCrawlBinddingData 更新数据');
-                await this.shortTermDataRp.update(todayDataFromDB.id, createPayBackDto);
-            }
-            else {
-                this.logger.log('autoCrawlBinddingData 新增数据');
-                await this.shortTermDataRp.save(createPayBackDto);
-            }
-            this.logger.debug('autoCrawlBinddingData is success!');
-        }
-        catch (e) {
-            this.logger.error('出错啦！！！', e);
-        }
-        return createPayBackDto;
     }
     async crawlShortTermData() {
         this.logger.debug('crawlShortTermData is Begining!');
@@ -151,7 +112,7 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
             .getMany();
     }
     async findEvenBoardByLimit(len = 20) {
-        return await this.shortTermDataRp
+        const shortTermData = await this.shortTermDataRp
             .createQueryBuilder('short_term_data')
             .offset(0)
             .limit(len)
@@ -162,28 +123,14 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
             'short_term_data.sealingRate',
             'short_term_data.dailyLimitReturnSealQuantity',
             'short_term_data.evenBoardData',
-            'short_term_data.biddingData',
-            'short_term_data.chooseStockData',
             'short_term_data.hugeFallData',
             'short_term_data.cycle',
             'short_term_data.downLimitData'])
             .orderBy('createTime', 'DESC')
             .getMany();
-    }
-    async getLastTradingDayByDB(todayDateStr) {
-        const dateArr = await this.shortTermDataRp
-            .createQueryBuilder('short_term_data')
-            .offset(0)
-            .limit(2)
-            .select(['short_term_data.createTime'])
-            .orderBy('createTime', 'DESC')
-            .getMany();
-        const currentDate = dayjs(todayDateStr).format(config_1.iWencaiDateFormat);
-        let lastTradingDay = dayjs(dateArr[0].createTime).format(config_1.iWencaiDateFormat);
-        if (lastTradingDay === currentDate) {
-            lastTradingDay = dayjs(dateArr[1].createTime).format(config_1.iWencaiDateFormat);
-        }
-        return lastTradingDay;
+        const specialStocks = await this.specialStockService.findByLimit(len);
+        let shortTermDataResult = (0, shortTermUtil_1.mergeExtra2ShortTermData)(shortTermData, specialStocks);
+        return shortTermDataResult;
     }
 };
 __decorate([
@@ -198,22 +145,11 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], ShorTermService.prototype, "autoCrawlShortTermDataMidday", null);
-__decorate([
-    (0, schedule_1.Cron)('08 25 9 * * 1-5'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ShorTermService.prototype, "autoCrawlBinddingData", null);
-__decorate([
-    (0, schedule_1.Cron)('00 05 15 * * 1-5'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ShorTermService.prototype, "autoCrawlBinddingDataLateSession", null);
 ShorTermService = ShorTermService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __param(1, (0, typeorm_2.InjectRepository)(shortTermData_entity_1.shortTermData)),
+    __param(2, (0, typeorm_2.InjectRepository)(shortTermData_entity_1.shortTermData)),
     __metadata("design:paramtypes", [ths_service_1.ThsService,
+        specialStock_service_1.SpecialStockService,
         typeorm_1.Repository])
 ], ShorTermService);
 exports.ShorTermService = ShorTermService;

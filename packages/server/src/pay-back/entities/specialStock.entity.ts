@@ -4,20 +4,20 @@ import { PrimaryGeneratedColumn, Column, Entity, Timestamp } from "typeorm";
 export class specialStock {
   @PrimaryGeneratedColumn()
   id: number;
-  @Column({ comment: '天地板', type: 'varchar' })
-  skyFloor: string;
 
-  @Column({ comment: '地天板', type: 'varchar' })
-  florSky: string;
+  @Column({ comment: '昨日涨停今日集合竞价情况', type: 'varchar', length: 10240, nullable: true })
+  biddingData: string;
 
-  // 短线中的 高标 其实就是反包板
-  @Column({ comment: '反包板', type: 'varchar' })
-  turnUpBoard: string;
+  @Column({ comment: '新股数据', type: 'varchar', length: 512, nullable: true })
+  newStock: string;
 
-  @Column({ comment: '主力净流入TOP3个股', type: 'varchar' })
+  @Column({ comment: '策略选股', type: 'varchar', length: 3072, nullable: true })
+  chooseStock: string;
+
+  @Column({ comment: '主力净流入TOP3个股', type: 'varchar', nullable: true })
   fundsLikeStock: string;
 
-  @Column({ comment: '近1个月涨幅追高的个股Top3', type: 'varchar' })
+  @Column({ comment: '近1个月涨幅最高的个股Top3', type: 'varchar', nullable: true })
   heightestStock: string;
 
   @Column({ type: 'timestamp', comment: '创建时间', default: () => 'current_timestamp' })

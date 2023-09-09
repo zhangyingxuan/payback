@@ -6,37 +6,60 @@
   <div :class="['table', { isMobile }]">
     <div class="table__container">
       <div class="table__header table-row">
-        <div class="col1">行业板块</div>
+        <div class="col1">
+          行业板块 ({{ stockGroupByPlateByFilter.length }})
+        </div>
         <div class="col2 red flex__row">
-          涨停个股（{{ evenBoardData.dailyLimitQuantity }}）
-          <span
-            v-for="(item, index) in evenBoardData.ticaiData"
-            :key="'span' + index"
-            @click="handleTicaiClick(item.key)"
-            class="ticai__item"
-          >
-            {{ item.key }}{{ item.value }}&nbsp;
-          </span>
-          <span>
-            <el-checkbox v-model="data.myStrategyChecked"
-              >我的策略 ({{ data.myStrategyCheckedLen }})
+          <!-- 涨停个股 过滤条件 -->
+          <div class="dailyLimit__content">
+            涨停个股（{{ currentDateData.dailyLimitQuantity }}）
+            <span
+              v-for="(item, index) in currentDateData.ticaiData"
+              :key="'span' + index"
+              @click="handleTicaiClick(item.key)"
+              class="ticai__item"
+            >
+              {{ item.key }}{{ item.value }}&nbsp;
+            </span>
+            <span>
+              <el-checkbox v-model="data.myStrategyChecked"
+                >我的策略 ({{ data.myStrategyCheckedLen }})
+                <el-tooltip
+                  class="box-item"
+                  effect="dark"
+                  content="价格低于30元，流通市值20-120亿，非ST，非科创，非创业板"
+                  placement="top"
+                >
+                  <el-icon><InfoFilled /></el-icon>
+                </el-tooltip>
+              </el-checkbox>
+              <el-checkbox v-model="data.firstBoardChecked"
+                >只看首板</el-checkbox
+              >
+            </span>
+          </div>
+          <!-- 集合竞价 过滤条件 -->
+          <div>
+            <el-checkbox v-model="data.biddingStrategyChecked"
+              >竞价策略 ({{ data.biddingStrategyCheckedLen }})
               <el-tooltip
                 class="box-item"
                 effect="dark"
-                content="价格低于30元，流通市值20-120亿，非ST，非科创，非创业板"
+                content="看多，超预期，竞价量比大于10（连板及反包除外）"
                 placement="top"
               >
                 <el-icon><InfoFilled /></el-icon>
               </el-tooltip>
             </el-checkbox>
             <el-checkbox v-model="data.firstBoardChecked">只看首板</el-checkbox>
-          </span>
+            <el-checkbox v-model="data.exceededExpect">超预期</el-checkbox>
+          </div>
         </div>
       </div>
 
       <div
         class="table-row"
-        v-for="(item, key) in stockGroupByPlate"
+        v-for="(item, key) in stockGroupByPlateByFilter"
         :key="key"
       >
         <div class="col1">
@@ -48,37 +71,42 @@
           </div>
         </div>
         <div class="col2">
-          <div v-for="(stock, index) in item.value" :key="'stock' + index">
-            <Stock
-              v-if="stock.evenBoardHeight != 1"
-              class="red"
-              :name="stock.name + '(' + stock.evenBoardHeight + ')'"
-              :code="stock.code"
-            />
-            <Stock v-else :name="stock.name" :code="stock.code" />
-            &nbsp;[&nbsp;
-            <span
-              class="orange"
-              v-html="highlightKeyWord(stock.reason, keyword)"
-            ></span>
-            ，<span class="lanse">{{ stock.price }}</span> ，
-            <span :class="{ 'red bold': stock.closingFunds > 1 }">
-              封单{{ stock.closingFunds }}亿
-            </span>
-            <!-- 换手率 -->
-            ，<span
-              v-if="stock.turnoverRate"
-              :class="calcClass(stock.turnoverRate)"
-            >
-              换手率{{ stock.turnoverRate }}%，
-            </span>
-            <span class="zise">流通{{ stock.circulationValue }}亿</span>，
-            {{ transformTime(stock.dailyTime) }}
-            <span class="red">{{ stock.turnoverType }}</span>
-            <span class="lvse" v-if="stock.openTimes > 0">
-              {{ stock.openTimes }}
-            </span>
-            ] <span class="red bold">{{ getExpectedStr(stock) }}</span>
+          <div
+            class="dailyLimit__row"
+            v-for="(stock, index) in item.value"
+            :key="'stock' + index"
+          >
+            <div class="dailyLimit__content">
+              <Stock
+                v-if="stock.evenBoardHeight != 1"
+                class="red"
+                :name="stock.name + '(' + stock.evenBoardHeight + ')'"
+                :code="stock.code"
+              />
+              <Stock v-else :name="stock.name" :code="stock.code" />
+              &nbsp;[&nbsp;
+              <span
+                class="orange"
+                v-html="highlightKeyWord(stock.reason, keyword)"
+              ></span>
+              ，<span class="lanse">{{ stock.price }}</span> ，
+              <span :class="{ 'red bold': stock.closingFunds > 1 }">
+                封单{{ stock.closingFunds }}亿
+              </span>
+              <!-- 换手率 -->
+              ，<span v-if="stock.turnoverRate" :class="calcClass(stock)">
+                换手率{{ stock.turnoverRate }}%，
+              </span>
+              <span class="zise">流通{{ stock.circulationValue }}亿</span>，
+              {{ transformTime(stock.dailyTime) }}
+              <span class="red">{{ stock.turnoverType }}</span>
+              <span class="lvse" v-if="stock.openTimes > 0">
+                {{ stock.openTimes }}
+              </span>
+              <!-- {{ stock.biddingData }} -->
+              ] <span class="red bold">{{ getExpectedStr(stock) }}</span>
+            </div>
+            <TabPaneEvenBoardBiddingDataRow :stock="stock.biddingData" />
           </div>
         </div>
       </div>
@@ -87,15 +115,16 @@
 </template>
 <script lang="ts" setup>
 import _ from 'lodash-es';
+import TabPaneEvenBoardBiddingDataRow from './tabPaneEvenBoardBiddingDataRow.vue';
 import { reactive, computed } from 'vue';
-import { highlightKeyWord, getExpected } from '../utils';
-import { dailyLimitOptionalStrategy } from 'pay-back-core';
+import { highlightKeyWord } from '../utils';
+import { dailyLimitOptionalStrategy, getExpected } from 'pay-back-core';
 import { DailyLimitStockDto } from '@/typings';
 import dayjs from 'dayjs';
 
-let emit = defineEmits(['update:evenBoardData']); //自定义的更新num事件
+let emit = defineEmits(['update:currentDateData']); //自定义的更新num事件
 let superData = defineProps({
-  evenBoardData: {
+  currentDateData: {
     type: Object,
     default: () => {},
   },
@@ -119,58 +148,147 @@ const data = reactive({
   // 我的策略
   myStrategyChecked: false,
   myStrategyCheckedLen: 0,
+  // 竞价策略
+  biddingStrategyChecked: false,
+  exceededExpect: false,
+  biddingStrategyCheckedLen: 0,
 });
 
 let keyword = '';
 
-const stockGroupByPlate = computed(() => {
-  const evenBoardData = _.cloneDeep(superData.evenBoardData);
-  data.myStrategyCheckedLen = 0;
+/**
+ * 高标的首板 竞价策略 也需要过滤
+ */
+const stockGroupByPlate: any = computed(() => {
+  const currentDateData = _.cloneDeep(superData.currentDateData);
 
-  const stockGroupByPlate: any = {};
-  let isAdd = true;
+  if (!currentDateData.evenBoardData) return [];
+
+  const stockGroupByPlateTemp: any = {};
   // 按 行业板块 将涨停个股分类
-  evenBoardData.evenBoardData &&
-    Object.keys(evenBoardData.evenBoardData).forEach((key: string) => {
-      Array.isArray(evenBoardData.evenBoardData[key]) &&
-        evenBoardData.evenBoardData[key].forEach((item: any) => {
-          isAdd = true;
-          // 按板块划分 涨停数据
-          if (!stockGroupByPlate[item.plateLevel2]) {
-            stockGroupByPlate[item.plateLevel2] = [];
-          }
+  Object.keys(currentDateData.evenBoardData).forEach((key: string) => {
+    Array.isArray(currentDateData.evenBoardData[key]) &&
+      currentDateData.evenBoardData[key].forEach((item: any) => {
+        // 按板块划分 涨停数据
+        if (!stockGroupByPlateTemp[item.plateLevel2]) {
+          stockGroupByPlateTemp[item.plateLevel2] = [];
+        }
 
-          let repeatStock;
-          item.evenBoardHeight = key;
-          if (key === 'gaobiao') {
-            repeatStock = stockGroupByPlate[item.plateLevel2].find(
-              (stock: any) => stock.name === item.name,
-            );
-          }
+        let repeatStock;
+        item.evenBoardHeight = key;
+        if (key === 'gaobiao') {
+          repeatStock = stockGroupByPlateTemp[item.plateLevel2].find(
+            (stock: any) => stock.name === item.name,
+          );
+        }
 
-          // 去重处理，合并连板数据
-          if (repeatStock) {
-            if (repeatStock.evenBoardHeight === '1') {
-              repeatStock.evenBoardHeight = item.evenDays;
-            } else {
-              repeatStock.evenBoardHeight += '，' + item.evenDays;
-            }
+        // 去重处理，合并连板数据
+        if (repeatStock) {
+          if (repeatStock.evenBoardHeight === '1') {
+            repeatStock.evenBoardHeight = item.evenDays;
           } else {
-            // 需按照首板/我的策略 进行过滤处理
-            if (data.firstBoardChecked) {
-              isAdd = item.evenBoardHeight == 1;
-            }
-            if (data.myStrategyChecked && isAdd) {
-              isAdd = dailyLimitOptionalStrategy(item, item.evenBoardHeight);
-              isAdd && data.myStrategyCheckedLen++;
-            }
-            isAdd && stockGroupByPlate[item.plateLevel2].push(item);
+            repeatStock.evenBoardHeight += '，' + item.evenDays;
           }
-        });
-    });
+        } else {
+          stockGroupByPlateTemp[item.plateLevel2].push(item);
+        }
+      });
+  });
 
-  return sortPlates(stockGroupByPlate);
+  return stockGroupByPlateTemp;
 });
+
+/**
+ * 按条件过滤后的数据，基本策略 或 竞价策略 等
+ */
+const stockGroupByPlateByFilter = computed(() => {
+  const stockGroupByPlateCopy: any = {};
+
+  data.myStrategyCheckedLen = 0;
+  data.biddingStrategyCheckedLen = 0;
+
+  // 遍历 按板块 划分后的数据
+  let isAdd = true;
+  Object.keys(stockGroupByPlate.value).forEach((key: string) => {
+    stockGroupByPlateCopy[key] = stockGroupByPlate.value[key].filter(
+      (item: any) => {
+        isAdd = true;
+        // 需按照首板/我的策略 进行过滤处理
+        if (data.firstBoardChecked) {
+          const evenBoardHeight = getRealEvenBoardHeight(item, false);
+          isAdd = evenBoardHeight == 1;
+        }
+        if (data.myStrategyChecked && isAdd) {
+          isAdd = dailyLimitOptionalStrategy(item, item.evenBoardHeight);
+          isAdd && data.myStrategyCheckedLen++;
+        }
+
+        // 竞价条件过滤 2023-09-09 00:21:30
+        if (item.biddingData) {
+          // 超预期
+          if (data.exceededExpect && isAdd) {
+            isAdd = item.biddingData.expected === 2;
+          }
+
+          // 看多、符合预期、首板量比大于10，只看主板
+          if (data.biddingStrategyChecked && isAdd) {
+            // ============ 竞价策略：高标的首板不能按首板考虑 !!!!!!============
+            const evenBoardHeight = getRealEvenBoardHeight(item);
+            // if(item.evenBoardHeight)
+            isAdd = isConformToMyStrategyChecked({ ...item, evenBoardHeight });
+            isAdd && data.biddingStrategyCheckedLen++;
+          }
+        }
+
+        return isAdd;
+      },
+    );
+  });
+
+  return sortPlates(stockGroupByPlateCopy);
+});
+
+/**
+ * 获取个股真正的 高度
+ * 竞价时 反包首板，不能按正常首板考量
+ * 其他情况，可按首板考虑
+ */
+function getRealEvenBoardHeight(item: any, isBiddingMode = true) {
+  // 反包板
+  if (item.evenBoardHeight.indexOf('天') > -1) {
+    // 包含天，但不包含 ， 不为首板
+    if (item.evenBoardHeight.indexOf('，') > -1) {
+      return item.evenBoardHeight.split('，')[0];
+    }
+    // 反包首板
+    return isBiddingMode ? 2 : 1;
+  }
+  return item.evenBoardHeight;
+}
+
+/**
+ * 是否符合预期
+ */
+function isConformToMyStrategyChecked(stock: any) {
+  // 只看主板
+  if (stock.code.startsWith('3') || stock.code.startsWith('688')) {
+    return false;
+  }
+
+  const biddingData = stock.biddingData;
+  // 竞价看多，超预期或符合预期
+  let isConform =
+    biddingData.bidRating === '看多' &&
+    (biddingData.expected === 2 || biddingData.expected === 1);
+  // 首板 必须竞价量比大于10，换手率>=5%
+  if (stock.evenBoardHeight === '1' && isConform) {
+    isConform =
+      biddingData.bidVolumeRatio >= 10 &&
+      (stock.turnoverRate ? stock.turnoverRate >= 5 : true);
+  }
+
+  return isConform;
+}
 
 /**
  * 按板块排序 排序
@@ -194,6 +312,10 @@ function sortPlates(stockGroupByPlate: any) {
   return stockGroupByPlateArr;
 }
 
+/**
+ * 个股排序 板块内 个股按 连板高度降序 => 首次涨停时间降序
+ * @param stocks
+ */
 function sortStocks(stocks: []) {
   stocks.sort((a: any, b: any) => {
     if (
@@ -210,12 +332,6 @@ function sortStocks(stocks: []) {
       }
       return -1;
     }
-    // if (b.evenBoardHeight.indexOf('天') > -1) {
-    //   if (b.evenBoardHeight.indexOf('，') > -1) {
-    //     return +b.evenBoardHeight.split('，')[0] >= +a.evenBoardHeight ? 1 : -1;
-    //   }
-    //   return -1;
-    // }
 
     return b.evenBoardHeight - a.evenBoardHeight;
   });
@@ -240,7 +356,7 @@ function handleTicaiClick(key: string) {
   keyword = key;
 
   // 修改父组件传过来的值
-  emit('update:evenBoardData', _.cloneDeep(superData.evenBoardData));
+  emit('update:currentDateData', _.cloneDeep(superData.currentDateData));
 }
 
 /**
@@ -261,10 +377,16 @@ function transformTime(time: string): string {
 }
 
 /**
- * 根据还手率 标注颜色
+ * 根据换手率 标注颜色
  * @param turnoverRate
  */
-function calcClass(turnoverRate: number) {
+function calcClass(stock: any) {
+  // 仅首板 会加上 颜色区分
+  if (stock.evenBoardHeight != 1) {
+    return;
+  }
+
+  const turnoverRate: number = stock.turnoverRate;
   if (turnoverRate < 5) {
     return 'green';
   }
@@ -296,5 +418,12 @@ function getExpectedStr(stock: DailyLimitStockDto) {
 .ticai__item:hover {
   color: #000;
   background-color: yellow;
+}
+.dailyLimit__row {
+  display: flex;
+}
+.dailyLimit__content {
+  min-width: 900px;
+  overflow: auto;
 }
 </style>

@@ -163,22 +163,17 @@
   <!-- 集合竞价情况 -->
   <!-- 新股 -->
   <NewStockTable
-    :propsData="data.currentDateData.chooseStockData"
+    :propsData="data.currentDateData.newStock"
     :isMobile="isMobile"
   />
   <!-- 一进2 -->
   <ChoosedStockTable
-    :propsData="data.currentDateData.chooseStockData"
-    :isMobile="isMobile"
-  />
-  <!-- 昨日涨停竞价情况（高开，抢筹，量大） -->
-  <BiddingDataTable
-    :biddingData="data.currentDateData.biddingData"
+    :propsData="data.currentDateData.chooseStock"
     :isMobile="isMobile"
   />
   <!-- 当日涨停分布，按行业板块划分 -->
   <DailyStockTable
-    v-model:evenBoardData="data.currentDateData"
+    v-model:currentDateData="data.currentDateData"
     :isMobile="isMobile"
   />
   <div :class="{ flex__row: !isMobile }">
@@ -211,7 +206,6 @@ import { isMobile } from '@/core/util';
 import TabPaneChartsSummaryTable from './components/tabPaneChartsSummaryTable.vue';
 import DailyStockTable from './components/tabPaneEvenBoardDailyStockTable.vue';
 import DownStockTable from './components/tabPaneEvenBoardDownStockTable.vue';
-import BiddingDataTable from './components/tabPaneEvenBoardBiddingDataTable.vue';
 import NewStockTable from './components/tabPaneEvenBoardNewStockTable.vue';
 import ChoosedStockTable from './components/tabPaneEvenBoardChoosedStockTable.vue';
 import dayjs from 'dayjs';
@@ -356,6 +350,7 @@ async function handleDateClick(item: any) {
   data.currentDateData = evenBoard.value.find(
     (evenBoardItem: any) => evenBoardItem.createDate === item.createDate,
   );
+
   // 获取复盘数据
   const result: any = await fetchReveiwDataByDate({ date: item.createTime });
   if (result) {

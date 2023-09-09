@@ -1,4 +1,5 @@
 import { ShorTermService } from './service/shortTerm.service';
+import { SpecialStockService } from './service/specialStock.service';
 import { MarketService } from './service/market.service';
 import { FundsService } from './service/funds.service';
 import { HotListService } from './service/hotList.service';
@@ -7,7 +8,8 @@ import { ReviewService } from './service/review.service';
 import { ThsService } from './service/ths.service';
 import { ApiTestService } from './service/apiTest.service';
 export declare class PayBackController {
-    private readonly ShorTermService;
+    private readonly shorTermService;
+    private readonly specialStockService;
     private readonly fundsService;
     private readonly hotListService;
     private readonly reviewService;
@@ -15,7 +17,7 @@ export declare class PayBackController {
     private readonly apiTestService;
     private readonly latestConceptPlateService;
     private readonly marketService;
-    constructor(ShorTermService: ShorTermService, fundsService: FundsService, hotListService: HotListService, reviewService: ReviewService, thsService: ThsService, apiTestService: ApiTestService, latestConceptPlateService: LatestConceptPlateService, marketService: MarketService);
+    constructor(shorTermService: ShorTermService, specialStockService: SpecialStockService, fundsService: FundsService, hotListService: HotListService, reviewService: ReviewService, thsService: ThsService, apiTestService: ApiTestService, latestConceptPlateService: LatestConceptPlateService, marketService: MarketService);
     private readonly logger;
     testApi(): Promise<void>;
     autoCrawlTodayDataAM(): Promise<void>;
@@ -53,7 +55,7 @@ export declare class PayBackController {
     }>;
     fetchEvenBoardData(query: any): Promise<{
         code: number;
-        data: import("./entities/shortTermData.entity").shortTermData[];
+        data: any[];
     }>;
     fetchHostListData(query: any): Promise<{
         code: number;

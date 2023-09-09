@@ -50,14 +50,6 @@ __decorate([
     __metadata("design:type", String)
 ], shortTermData.prototype, "evenBoardData", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '昨日涨停今日集合竞价情况', type: 'text', nullable: true }),
-    __metadata("design:type", String)
-], shortTermData.prototype, "biddingData", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '选股数据', type: 'text', nullable: true }),
-    __metadata("design:type", String)
-], shortTermData.prototype, "chooseStockData", void 0);
-__decorate([
     (0, typeorm_1.Column)({ comment: '跌停数据', type: 'varchar', length: 3072, default: '' }),
     __metadata("design:type", String)
 ], shortTermData.prototype, "downLimitData", void 0);
@@ -65,10 +57,6 @@ __decorate([
     (0, typeorm_1.Column)({ comment: '跌幅大于等于15的个股', type: 'varchar', length: 1024, default: '' }),
     __metadata("design:type", String)
 ], shortTermData.prototype, "hugeFallData", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ comment: '1板数量', type: 'tinyint', default: 0 }),
-    __metadata("design:type", Number)
-], shortTermData.prototype, "board1", void 0);
 __decorate([
     (0, typeorm_1.Column)({ comment: '短线周期', type: 'varchar', length: 30, default: '' }),
     __metadata("design:type", String)

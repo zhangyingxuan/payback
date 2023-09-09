@@ -29,20 +29,11 @@ export class shortTermData {
   @Column({ comment: '连板原始数据', type: 'text', nullable: true })
   evenBoardData: string;
 
-  @Column({ comment: '昨日涨停今日集合竞价情况', type: 'text', nullable: true })
-  biddingData: string;
-
-  @Column({ comment: '选股数据', type: 'text', nullable: true })
-  chooseStockData: string;
-
   @Column({ comment: '跌停数据', type: 'varchar', length: 3072, default: '' })
   downLimitData: string;
 
   @Column({ comment: '跌幅大于等于15的个股', type: 'varchar', length: 1024, default: '' })
   hugeFallData: string;
-
-  @Column({ comment: '1板数量', type: 'tinyint', default: 0 })
-  board1: number;
 
   // TODO 目前不够完善
   @Column({ comment: '短线周期', type: 'varchar', length: 30, default: '' })

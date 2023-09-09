@@ -1,5 +1,6 @@
 import { Controller, Get, Logger, Query, } from '@nestjs/common';
 import { ShorTermService } from './service/shortTerm.service';
+import { SpecialStockService } from './service/specialStock.service';
 import { MarketService } from './service/market.service';
 import { FundsService } from './service/funds.service';
 import { HotListService } from './service/hotList.service';
@@ -14,7 +15,8 @@ import * as dayjs from 'dayjs';
 @Controller('pay-back')
 export class PayBackController {
   constructor(
-    private readonly ShorTermService: ShorTermService,
+    private readonly shorTermService: ShorTermService,
+    private readonly specialStockService: SpecialStockService,
     private readonly fundsService: FundsService,
     private readonly hotListService: HotListService,
     private readonly reviewService: ReviewService,
@@ -65,13 +67,13 @@ export class PayBackController {
     let shortData, fundsData, marketData, binddingData;
     switch (type) {
       case 0:
-        shortData = await this.ShorTermService.crawlShortTermData();
+        shortData = await this.shorTermService.crawlShortTermData();
         fundsData = await this.fundsService.crawlfundsData();
         marketData = await this.marketService.crawlMarketData();
-        binddingData = await this.ShorTermService.crawlBinddingData();
+        binddingData = await this.specialStockService.crawlBinddingData();
         break;
       case 1:
-        shortData = await this.ShorTermService.crawlShortTermData();
+        shortData = await this.shorTermService.crawlShortTermData();
         break;
       case 2:
         marketData = await this.marketService.crawlMarketData();
@@ -80,7 +82,7 @@ export class PayBackController {
         fundsData = await this.fundsService.crawlfundsData();
         break;
       case 4:
-        binddingData = await this.ShorTermService.crawlBinddingData();
+        binddingData = await this.specialStockService.crawlBinddingData();
         break;
       default:
         break;
@@ -96,16 +98,17 @@ export class PayBackController {
   crawlHotListData() {
     return this.hotListService.crawlHotListData();
   }
+
   // 获取竞价数据
-  @Public()
+  // @Public()
   @Get('/crawlBinddingData')
   crawlBinddingData() {
-    return this.ShorTermService.autoCrawlBinddingData();
+    return this.specialStockService.autoCrawlBinddingData();
   }
   // @Public()
   @Get('/crawlShortTerm')
   crawlShortTerm() {
-    return this.ShorTermService.crawlShortTermData();
+    return this.shorTermService.crawlShortTermData();
   }
 
   // 示例：http://localhost:3000/blowsysun/pay-back/crawlShortTermDataByDate?date=2023-06-26
@@ -113,7 +116,7 @@ export class PayBackController {
   @Get('/crawlShortTermByDate')
   crawlShortTermDataByDate(@Query() query) {
     const date = query.date || new Date()
-    return this.ShorTermService.crawlShortTermDataByDate(date);
+    return this.shorTermService.crawlShortTermDataByDate(date);
   }
   // @Public()
   @Get('/crawlMarket')
@@ -134,7 +137,7 @@ export class PayBackController {
   @Get('list')
   async findByLimit(@Query() query) {
     const limit = +(query.limit || 20)
-    const shortTermData = (await this.ShorTermService.findByLimit(limit)).reverse();
+    const shortTermData = (await this.shorTermService.findByLimit(limit)).reverse();
     const marketData = (await this.marketService.findByLimit(limit)).reverse();
     const fundsData = (await this.fundsService.findByLimit(limit)).reverse();
     return {
@@ -153,7 +156,7 @@ export class PayBackController {
     const limit = +(query.limit || 20);
     // isMobile
     // const isMobile = query.isMobile || 'true';
-    let shortTermData = await this.ShorTermService.findEvenBoardByLimit(limit);
+    let shortTermData = await this.shorTermService.findEvenBoardByLimit(limit);
     // 移动端 日期近的在前面，PC相反
     // if (isMobile == 'true') {
     //   shortTermData = shortTermData.reverse();

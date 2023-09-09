@@ -18,10 +18,6 @@ export class DailyLimitStockDto {
   closingFunds: number;
   // 几天几板
   evenDays: string;
-
-  // 新增字段 2023-06-21 20:02:23
-  // 10cm  20cm 其他 - 0,1,2
-  type: number;
   // 股价
   price: number;
   // 流通市值

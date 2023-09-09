@@ -7,11 +7,9 @@ export declare class CreatePayBackDto {
     marketHeight: number;
     evenBoardAmount: number;
     evenBoardData: string;
-    biddingData: string;
-    chooseStockData: string;
+    chooseStock: string;
     downLimitData: string;
     hugeFallData: string;
-    board1: number;
     cycle: string;
     createTime: Date;
 }

@@ -15,7 +15,6 @@ const common_1 = require("@nestjs/common");
 const fetchUtil_1 = require("../core/fetchUtil");
 const pay_back_core_1 = require("pay-back-core");
 const users_service_1 = require("../../users/users.service");
-const pay_back_core_2 = require("pay-back-core");
 let isSuccess = true;
 function atob(a) {
     return Buffer.from(a, 'base64').toString('binary');
@@ -24,7 +23,7 @@ function atob(a) {
 function prepareSelfStock(i, stocks, app, userid, ticket, user) {
     if (stocks) {
         for (let j = 0; j < stocks.length; j++) {
-            (0, pay_back_core_2.dailyLimitOptionalStrategy)(stocks[j], i) && app.add(async (ctx, next) => {
+            (0, pay_back_core_1.dailyLimitOptionalStrategy)(stocks[j], i) && app.add(async (ctx, next) => {
                 const result = await (0, fetchUtil_1.modifyThsSelfStocksRequest)(stocks[j].code, userid, ticket, user);
                 console.log(stocks[j].name, result);
                 if (result.errorMsg === '当前用户未登录') {

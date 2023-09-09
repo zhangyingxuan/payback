@@ -12,14 +12,12 @@ export interface ShortTermModel {
   marketHeight: number;
   // 一字板数量
   yizi: number;
-  // 一板数量
-  board1: number;
   evenBoardAmount: number,
   evenBoardData: string;
-  // 竞价数据
-  biddingData: string;
+  // 新股数据
+  newStock: string;
   // 选股数据
-  chooseStockData: string;
+  chooseStock: string;
   // 跌停数据
   downLimitData: string;
   // 大面

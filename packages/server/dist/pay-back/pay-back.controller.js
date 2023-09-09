@@ -16,6 +16,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PayBackController = void 0;
 const common_1 = require("@nestjs/common");
 const shortTerm_service_1 = require("./service/shortTerm.service");
+const specialStock_service_1 = require("./service/specialStock.service");
 const market_service_1 = require("./service/market.service");
 const funds_service_1 = require("./service/funds.service");
 const hotList_service_1 = require("./service/hotList.service");
@@ -26,8 +27,9 @@ const apiTest_service_1 = require("./service/apiTest.service");
 const public_decorator_1 = require("../decorator/public.decorator");
 const dayjs = require("dayjs");
 let PayBackController = PayBackController_1 = class PayBackController {
-    constructor(ShorTermService, fundsService, hotListService, reviewService, thsService, apiTestService, latestConceptPlateService, marketService) {
-        this.ShorTermService = ShorTermService;
+    constructor(shorTermService, specialStockService, fundsService, hotListService, reviewService, thsService, apiTestService, latestConceptPlateService, marketService) {
+        this.shorTermService = shorTermService;
+        this.specialStockService = specialStockService;
         this.fundsService = fundsService;
         this.hotListService = hotListService;
         this.reviewService = reviewService;
@@ -56,13 +58,13 @@ let PayBackController = PayBackController_1 = class PayBackController {
         let shortData, fundsData, marketData, binddingData;
         switch (type) {
             case 0:
-                shortData = await this.ShorTermService.crawlShortTermData();
+                shortData = await this.shorTermService.crawlShortTermData();
                 fundsData = await this.fundsService.crawlfundsData();
                 marketData = await this.marketService.crawlMarketData();
-                binddingData = await this.ShorTermService.crawlBinddingData();
+                binddingData = await this.specialStockService.crawlBinddingData();
                 break;
             case 1:
-                shortData = await this.ShorTermService.crawlShortTermData();
+                shortData = await this.shorTermService.crawlShortTermData();
                 break;
             case 2:
                 marketData = await this.marketService.crawlMarketData();
@@ -71,7 +73,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
                 fundsData = await this.fundsService.crawlfundsData();
                 break;
             case 4:
-                binddingData = await this.ShorTermService.crawlBinddingData();
+                binddingData = await this.specialStockService.crawlBinddingData();
                 break;
             default:
                 break;
@@ -84,14 +86,14 @@ let PayBackController = PayBackController_1 = class PayBackController {
         return this.hotListService.crawlHotListData();
     }
     crawlBinddingData() {
-        return this.ShorTermService.autoCrawlBinddingData();
+        return this.specialStockService.autoCrawlBinddingData();
     }
     crawlShortTerm() {
-        return this.ShorTermService.crawlShortTermData();
+        return this.shorTermService.crawlShortTermData();
     }
     crawlShortTermDataByDate(query) {
         const date = query.date || new Date();
-        return this.ShorTermService.crawlShortTermDataByDate(date);
+        return this.shorTermService.crawlShortTermDataByDate(date);
     }
     crawlMarket() {
         return this.marketService.crawlMarketData();
@@ -104,7 +106,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
     }
     async findByLimit(query) {
         const limit = +(query.limit || 20);
-        const shortTermData = (await this.ShorTermService.findByLimit(limit)).reverse();
+        const shortTermData = (await this.shorTermService.findByLimit(limit)).reverse();
         const marketData = (await this.marketService.findByLimit(limit)).reverse();
         const fundsData = (await this.fundsService.findByLimit(limit)).reverse();
         return {
@@ -118,7 +120,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
     }
     async fetchEvenBoardData(query) {
         const limit = +(query.limit || 20);
-        let shortTermData = await this.ShorTermService.findEvenBoardByLimit(limit);
+        let shortTermData = await this.shorTermService.findEvenBoardByLimit(limit);
         return {
             code: 200,
             data: shortTermData,
@@ -170,7 +172,6 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PayBackController.prototype, "crawlHotListData", null);
 __decorate([
-    (0, public_decorator_1.Public)(),
     (0, common_1.Get)('/crawlBinddingData'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -246,6 +247,7 @@ __decorate([
 PayBackController = PayBackController_1 = __decorate([
     (0, common_1.Controller)('pay-back'),
     __metadata("design:paramtypes", [shortTerm_service_1.ShorTermService,
+        specialStock_service_1.SpecialStockService,
         funds_service_1.FundsService,
         hotList_service_1.HotListService,
         review_service_1.ReviewService,

@@ -8,24 +8,24 @@
         :class="[
           'date-col',
           {
-            isMobile: superData.isMobile,
+            isMobile: isMobile,
             isMonday: judgeMonday(item.createTime),
           },
         ]"
-        v-for="(item, index) in superData.data"
+        v-for="(item, index) in data"
         :key="'evenBoard' + index"
       >
         <div class="table__header">
           {{ item.updatedTime }} {{ getCurrentDay(item.createTime) }}
         </div>
         <div
-          v-for="(hot, index) in item[superData.type]"
+          v-for="(hot, index) in item[type]"
           class="table-col"
           :key="'row' + index"
         >
           <div class="name__row flexBetween">
             <Stock
-              v-if="superData.type.includes('stock')"
+              v-if="type.includes('stock')"
               :name="hot.name"
               :code="hot.code"
             />
@@ -64,8 +64,8 @@
 import { judgeMonday, getCurrentDay } from '../utils';
 let superData = defineProps({
   data: {
-    type: Array<any>,
-    default: () => [],
+    type: Object,
+    default: () => {},
   },
   type: {
     type: String,

@@ -14,12 +14,14 @@ const funds_service_1 = require("./service/funds.service");
 const hotList_service_1 = require("./service/hotList.service");
 const latestConceptPlate_service_1 = require("./service/latestConceptPlate.service");
 const review_service_1 = require("./service/review.service");
+const specialStock_service_1 = require("./service/specialStock.service");
 const ths_service_1 = require("./service/ths.service");
 const apiTest_service_1 = require("./service/apiTest.service");
 const ths_trade_controller_1 = require("./ths-trade.controller");
 const pay_back_controller_1 = require("./pay-back.controller");
 const typeorm_1 = require("@nestjs/typeorm");
 const shortTermData_entity_1 = require("./entities/shortTermData.entity");
+const specialStock_entity_1 = require("./entities/specialStock.entity");
 const marketData_entity_1 = require("./entities/marketData.entity");
 const fundsData_entity_1 = require("./entities/fundsData.entity");
 const hotList_entity_1 = require("./entities/hotList.entity");
@@ -33,6 +35,7 @@ PayBackModule = __decorate([
         imports: [
             users_module_1.UsersModule,
             typeorm_1.TypeOrmModule.forFeature([shortTermData_entity_1.shortTermData]),
+            typeorm_1.TypeOrmModule.forFeature([specialStock_entity_1.specialStock]),
             typeorm_1.TypeOrmModule.forFeature([marketData_entity_1.marketData]),
             typeorm_1.TypeOrmModule.forFeature([hotList_entity_1.hotList]),
             typeorm_1.TypeOrmModule.forFeature([fundsData_entity_1.fundsData]),
@@ -40,7 +43,17 @@ PayBackModule = __decorate([
             typeorm_1.TypeOrmModule.forFeature([latestConceptPlate_entity_1.latestConceptPlate]),
         ],
         controllers: [pay_back_controller_1.PayBackController, ths_trade_controller_1.ThsTradeController],
-        providers: [shortTerm_service_1.ShorTermService, market_service_1.MarketService, funds_service_1.FundsService, hotList_service_1.HotListService, latestConceptPlate_service_1.LatestConceptPlateService, review_service_1.ReviewService, ths_service_1.ThsService, apiTest_service_1.ApiTestService]
+        providers: [
+            shortTerm_service_1.ShorTermService,
+            specialStock_service_1.SpecialStockService,
+            market_service_1.MarketService,
+            funds_service_1.FundsService,
+            hotList_service_1.HotListService,
+            latestConceptPlate_service_1.LatestConceptPlateService,
+            review_service_1.ReviewService,
+            ths_service_1.ThsService,
+            apiTest_service_1.ApiTestService
+        ]
     })
 ], PayBackModule);
 exports.PayBackModule = PayBackModule;

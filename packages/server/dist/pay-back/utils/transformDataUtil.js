@@ -1,11 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getExpected = exports.transformShortTermSourceData = exports.transformBidData = exports.transformPlateData = exports.transformStockData = void 0;
+exports.transformShortTermSourceData = exports.transformBidData = exports.transformPlateData = exports.transformStockData = void 0;
 const daily_limit_stock_dto_1 = require("../dto/daily-limit-stock.dto");
 const down_limit_stock_dto_1 = require("../dto/down-limit-stock.dto");
 const daily_limit_yesterday_bidding_dto_1 = require("../dto/daily-limit-yesterday-bidding.dto");
 const commonUtil_1 = require("./commonUtil");
 const dayjs = require("dayjs");
+const pay_back_core_1 = require("pay-back-core");
 const turnoverTypeArr = ['放量涨停', '缩量涨停', '一字涨停', 'T字涨停'];
 function transformStockData(stockList) {
     return stockList.map(item => {
@@ -69,20 +70,6 @@ function transformDownLimitData(dailyLimitData, currentDate) {
     };
 }
 ;
-function judgeType(str) {
-    if (!str)
-        return 2;
-    const num = +str;
-    if (num < 11) {
-        return 0;
-    }
-    else if (num >= 11 && num < 21) {
-        return 1;
-    }
-    else {
-        return 2;
-    }
-}
 function transformDailyLimitData(dailyLimitData, currentDate) {
     let board1 = 0, maxHeight = 1, currentLevel = 0, dailyLimitReturnSealQuantity = 0;
     let evenBoardData = { maxHeight: 1, gaobiao: [], yizi: 0 };
@@ -106,7 +93,6 @@ function transformDailyLimitData(dailyLimitData, currentDate) {
             dailyLimitStockDto.turnoverType = item[`涨停类型[${currentDate}]`];
             dailyLimitStockDto.turnoverType && dailyLimitStockDto.turnoverType.indexOf(turnoverTypeArr[2]) > -1 && (evenBoardData.yizi++);
         }
-        dailyLimitStockDto.type = judgeType(item['最新涨跌幅']);
         dailyLimitStockDto.price = item['最新价'];
         if (item[`涨停开板次数[${currentDate}]`] != 0) {
             dailyLimitStockDto.openTimes = item[`涨停开板次数[${currentDate}]`];
@@ -183,7 +169,7 @@ function transformBidData(dailyLimitData, todayDateStr, yesterdayDate, isSaveMor
 exports.transformBidData = transformBidData;
 function judgeExpected(item) {
     const { bidIncreaseT } = item;
-    const expected = getExpected(item);
+    const expected = (0, pay_back_core_1.getExpected)(item);
     if (expected.indexOf(',') === -1) {
         const expectedD = parseInt(expected);
         if (bidIncreaseT > expectedD) {
@@ -222,34 +208,4 @@ function transformShortTermSourceData(dailyLimitData, downLimitData, hugeFallDat
     };
 }
 exports.transformShortTermSourceData = transformShortTermSourceData;
-const currentDate = '2018-08-08';
-const date931 = dayjs(currentDate + ' 09:31:00');
-const date1000 = dayjs(currentDate + ' 10:00:00');
-const date1300 = dayjs(currentDate + ' 13:00:00');
-const date1400 = dayjs(currentDate + ' 14:00:00');
-const expectedArr = ['5', '4', '3', '0,2', '-2,2', '-2'];
-function getExpected(stock) {
-    let currentTime = stock.openTimes ? stock.dailyTime.split(',')[1] : stock.dailyTime;
-    currentTime = dayjs(currentDate + ' ' + currentTime);
-    if (stock.openTimes >= 5) {
-        if (currentTime.isBefore(date1300)) {
-            return expectedArr[2];
-        }
-        return expectedArr[5];
-    }
-    if (currentTime.isBefore(date931)) {
-        return expectedArr[0];
-    }
-    if (currentTime.isBefore(date1000)) {
-        return expectedArr[1];
-    }
-    if (currentTime.isBefore(date1300)) {
-        return expectedArr[2];
-    }
-    if (currentTime.isBefore(date1400) && currentTime.isAfter(date1300)) {
-        return expectedArr[3];
-    }
-    return expectedArr[4];
-}
-exports.getExpected = getExpected;
 //# sourceMappingURL=transformDataUtil.js.map

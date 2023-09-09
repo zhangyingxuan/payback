@@ -62,9 +62,7 @@ let superData = defineProps({
 });
 
 const stockGroupByPlate = computed(() => {
-  const biddingData = superData.propsData
-    ? _.cloneDeep(superData.propsData.newStocksDtos)
-    : null;
+  const biddingData = _.cloneDeep(superData.propsData);
 
   const stockGroupByPlate: any = {};
   // 按 行业板块 将涨停个股分类

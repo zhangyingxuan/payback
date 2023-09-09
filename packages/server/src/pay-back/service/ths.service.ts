@@ -1,8 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { modifyThsSelfStocksRequest, clearThsSelfStocks } from '../core/fetchUtil';
-import { AsynTaskIterator } from 'pay-back-core';
+import { AsynTaskIterator, dailyLimitOptionalStrategy } from 'pay-back-core';
 import { UsersService } from '../../users/users.service';
-import { dailyLimitOptionalStrategy } from 'pay-back-core';
 
 let isSuccess = true;
 

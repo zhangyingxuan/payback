@@ -108,5 +108,10 @@
   },
   "include": [
     "src/*"  // 导入目录
+  ],
+  "exclude": [
+    "./node_modules",
+    "./lib",
+    "./es",
   ]
 }

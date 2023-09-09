@@ -14,4 +14,3 @@ export declare function transformShortTermSourceData(dailyLimitData: any, downLi
     downLimitQuantity: number;
     dailyLimitReturnSealQuantity: number;
 };
-export declare function getExpected(stock: any): string;
