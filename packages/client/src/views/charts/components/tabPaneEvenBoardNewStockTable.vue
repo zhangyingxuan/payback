@@ -22,18 +22,17 @@
         </div>
         <div :class="`col2 ${isMobile ? 'isMobile' : ''}`">
           <div v-for="(stock, index) in item.value" :key="'stock' + index">
-            <Stock
-              v-if="stock.evenDays"
-              class="red"
-              :name="stock.name + '(' + stock.evenDays + ')'"
-              :code="stock.code"
-            />
-            <Stock v-else :name="stock.name" :code="stock.code" />
-            [&nbsp;<span :class="calcClass(stock.bidRating)">{{
+            <Stock :name="stock.name" :code="stock.code" />
+            [ &nbsp;<span :class="calcClassByBidRating(stock.bidRating)">{{
               stock.bidRating
-            }}</span
-            >&nbsp;
-            <span :class="{ 'red bold': stock.bidIncreaseT >= 7 }">
+            }}</span>
+            ，<span class="lanse">{{ stock.price }}</span>
+            <!-- 换手率 -->
+            ，<span v-if="stock.turnoverRate">
+              换手率{{ stock.turnoverRate }}%
+            </span>
+            ，<span class="zise">流通{{ stock.circulationValue }}亿</span>
+            ，<span :class="{ 'red bold': stock.bidIncreaseT >= 7 }">
               竞价涨幅
               {{ stock.bidIncreaseT && +stock.bidIncreaseT.toFixed(2) }}
             </span>
@@ -48,6 +47,7 @@
   </div>
 </template>
 <script lang="ts" setup>
+import { calcClassByBidRating } from '../utils';
 import _ from 'lodash-es';
 import { computed } from 'vue';
 let superData = defineProps({
@@ -99,21 +99,6 @@ function sortPlates(stockGroupByPlate: any) {
     return b.value.length - a.value.length;
   });
   return stockGroupByPlateArr;
-}
-
-function calcClass(bidRating: string) {
-  // 看空、看多、偏空、混战
-  if (bidRating === '看多') {
-    return 'red bold';
-  }
-
-  if (bidRating === '看空') {
-    return 'green bold';
-  }
-  if (bidRating === '偏空') {
-    return 'green';
-  }
-  return '';
 }
 </script>
 

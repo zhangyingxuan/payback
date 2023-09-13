@@ -69,3 +69,23 @@ export function highlightKeyWord(result: string, keyword: string) {
   }
   return result;
 }
+
+/**
+ * 按竞价情况，返回class
+ * @param bidRating 
+ * @returns 
+ */
+export function calcClassByBidRating(bidRating: string) {
+  // 看空、看多、偏空、混战
+  if (bidRating === '看多') {
+    return 'red bold';
+  }
+
+  if (bidRating === '看空') {
+    return 'green bold';
+  }
+  if (bidRating === '偏空') {
+    return 'green';
+  }
+  return '';
+}

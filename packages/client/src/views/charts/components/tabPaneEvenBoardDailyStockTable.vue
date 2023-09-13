@@ -11,17 +11,21 @@
         </div>
         <div class="col2 red flex__row">
           <!-- 涨停个股 过滤条件 -->
-          <div class="dailyLimit__content">
-            涨停个股（{{ currentDateData.dailyLimitQuantity }}）
-            <span
-              v-for="(item, index) in currentDateData.ticaiData"
-              :key="'span' + index"
-              @click="handleTicaiClick(item.key)"
-              class="ticai__item"
-            >
-              {{ item.key }}{{ item.value }}&nbsp;
-            </span>
-            <span>
+          <div class="dailyLimit__content flex__row_header">
+            <div>
+              {{ title || '今日 - 涨停个股' }} （{{
+                currentDateData.dailyLimitQuantity
+              }}）
+              <span
+                v-for="(item, index) in currentDateData.ticaiData"
+                :key="'span' + index"
+                @click="handleTicaiClick(item.key)"
+                class="ticai__item"
+              >
+                {{ item.key }}{{ item.value }}&nbsp;
+              </span>
+            </div>
+            <div>
               <el-checkbox v-model="data.myStrategyChecked"
                 >我的策略 ({{ data.myStrategyCheckedLen }})
                 <el-tooltip
@@ -36,10 +40,10 @@
               <el-checkbox v-model="data.firstBoardChecked"
                 >只看首板</el-checkbox
               >
-            </span>
+            </div>
           </div>
           <!-- 集合竞价 过滤条件 -->
-          <div>
+          <div v-if="showBidding">
             <el-checkbox v-model="data.biddingStrategyChecked"
               >竞价策略 ({{ data.biddingStrategyCheckedLen }})
               <el-tooltip
@@ -51,7 +55,7 @@
                 <el-icon><InfoFilled /></el-icon>
               </el-tooltip>
             </el-checkbox>
-            <el-checkbox v-model="data.firstBoardChecked">只看首板</el-checkbox>
+            <el-checkbox v-model="data.notFirstBoardChecked">连板</el-checkbox>
             <el-checkbox v-model="data.exceededExpect">超预期</el-checkbox>
           </div>
         </div>
@@ -106,7 +110,10 @@
               <!-- {{ stock.biddingData }} -->
               ] <span class="red bold">{{ getExpectedStr(stock) }}</span>
             </div>
-            <TabPaneEvenBoardBiddingDataRow :stock="stock.biddingData" />
+            <TabPaneEvenBoardBiddingDataRow
+              v-if="showBidding"
+              :stock="stock.biddingData"
+            />
           </div>
         </div>
       </div>
@@ -136,6 +143,10 @@ let superData = defineProps({
     type: Boolean,
     default: false,
   },
+  showBidding: {
+    type: Boolean,
+    default: false,
+  },
   isHangye: {
     type: Boolean,
     default: false,
@@ -143,6 +154,8 @@ let superData = defineProps({
 });
 
 const data = reactive({
+  // 连板
+  notFirstBoardChecked: false,
   // 首板
   firstBoardChecked: false,
   // 我的策略
@@ -216,7 +229,14 @@ const stockGroupByPlateByFilter = computed(() => {
         // 需按照首板/我的策略 进行过滤处理
         if (data.firstBoardChecked) {
           const evenBoardHeight = getRealEvenBoardHeight(item, false);
+          data.notFirstBoardChecked = false;
           isAdd = evenBoardHeight == 1;
+        }
+        // 只看连板 则与只看首板冲突
+        if (data.notFirstBoardChecked) {
+          const evenBoardHeight = getRealEvenBoardHeight(item, false);
+          data.firstBoardChecked = false;
+          isAdd = evenBoardHeight != 1;
         }
         if (data.myStrategyChecked && isAdd) {
           isAdd = dailyLimitOptionalStrategy(item, item.evenBoardHeight);
@@ -410,9 +430,16 @@ function getExpectedStr(stock: DailyLimitStockDto) {
 <style scoped lang="less">
 @import '../styles/tabPaneEvenBoardStockTable.less';
 
-.flex__row {
+.flex__row,
+.flex__row_header {
   display: flex;
   align-items: center;
+}
+
+.flex__row_header {
+  justify-content: space-between;
+  padding-right: 20px;
+  font-size: 14px;
 }
 
 .ticai__item:hover {

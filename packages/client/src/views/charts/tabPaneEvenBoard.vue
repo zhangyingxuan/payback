@@ -171,6 +171,13 @@
     :propsData="data.currentDateData.chooseStock"
     :isMobile="isMobile"
   />
+  <!-- 昨日涨停竞价情况 -->
+  <DailyStockTable
+    v-model:currentDateData="data.yesterdayDateData"
+    :isMobile="isMobile"
+    title="昨日- 涨停竞价情况"
+    :showBidding="true"
+  />
   <!-- 当日涨停分布，按行业板块划分 -->
   <DailyStockTable
     v-model:currentDateData="data.currentDateData"
@@ -218,12 +225,14 @@ let evenBoard = reactive<any>({ value: [] });
 
 const data: {
   currentDateData: any;
+  yesterdayDateData: any;
   currentDate: string;
   summaryTableData: any[];
   hasSummaryTableData: boolean;
 } = reactive({
   hasSummaryTableData: false,
   currentDateData: {},
+  yesterdayDateData: {},
   currentDate: dayjs().format('MM/DD'),
   summaryTableData: [
     {
@@ -347,9 +356,12 @@ function calPromotionRate(
 async function handleDateClick(item: any) {
   data.hasSummaryTableData = false;
   data.currentDate = item.createDate;
-  data.currentDateData = evenBoard.value.find(
+  const index = evenBoard.value.findIndex(
     (evenBoardItem: any) => evenBoardItem.createDate === item.createDate,
   );
+  data.currentDateData = evenBoard.value[index];
+  data.yesterdayDateData =
+    index + 1 >= evenBoard.value.length ? [] : evenBoard.value[index + 1];
 
   // 获取复盘数据
   const result: any = await fetchReveiwDataByDate({ date: item.createTime });

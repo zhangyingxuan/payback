@@ -41,12 +41,12 @@ export const transformFundsData = (fundsData: FundsModel[], key: FundsKey) => {
     for (let i = 0; i < topMaxAmount; i++) {
       inData['inTop' + (i + 1)].push({
         name: hangyeFundsTop.in[i].name,
-        value: hangyeFundsTop.in[i].funds,
+        value: hangyeFundsTop.in[i].funds || 0,
       });
 
       outData['outTop' + (i + 1)].push({
         name: hangyeFundsTop.out[i].name,
-        value: hangyeFundsTop.out[i].funds,
+        value: hangyeFundsTop.out[i].funds || 0,
       });
     }
   });

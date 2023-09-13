@@ -169,7 +169,7 @@ async function initPage(pageSize: number) {
     initIndexChart(result.marketData);
     initFundsChart(result.fundsData);
     initHangyeFundsChart(result.fundsData);
-    initHangyeGainianFundsChart(result.fundsData);
+    initGainianFundsChart(result.fundsData);
   } catch (e) {
     // console.log(e);
   }
@@ -235,7 +235,7 @@ function initHangyeFundsChart(fundsData: FundsModel[]) {
  * 初始化 概念资金图标
  * @param fundsData
  */
-function initHangyeGainianFundsChart(fundsData: FundsModel[]) {
+function initGainianFundsChart(fundsData: FundsModel[]) {
   const { xAxisData, series, legendData } = transformFundsData(
     fundsData,
     FundsKey.gainianFundsTop,
@@ -248,16 +248,15 @@ function initHangyeGainianFundsChart(fundsData: FundsModel[]) {
   chartList.fundsByGainianChart.setOption(gainianOption);
 }
 
-async function initFundsChart(marketData: FundsModel[]) {
+async function initFundsChart(fundsData: FundsModel[]) {
   let xAxisData: any[] = [];
-  let yAxisData: number[][] = [[], [], [], []];
-  marketData.forEach(item => {
+  let yAxisData: number[][] = [[], [], []];
+  fundsData.forEach(item => {
     xAxisData.push(dayjs(item.createTime).format('MM/DD'));
     yAxisData[0].push(item.northFundsBuyAmt);
     yAxisData[1].push(item.southFundsBuyAmt);
     yAxisData[2].push(item.marketTurnover);
   });
-
   // 基于准备好的dom，初始化echarts实例
   chartList.fundsChart = echarts.init(fundsChart.value);
   // 指定图表的配置项和数据
@@ -265,6 +264,10 @@ async function initFundsChart(marketData: FundsModel[]) {
   // 使用刚指定的配置项和数据显示图表。
   chartList.fundsChart.setOption(option);
 }
+/**
+ * 初始化市场报表
+ * @param marketData
+ */
 function initIndexChart(marketData: MarketModel[]) {
   let xAxisData: any[] = [];
   let yAxisData: number[][] = [[], [], [], []];

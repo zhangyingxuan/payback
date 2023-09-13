@@ -1,9 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.transformShortTermSourceData = exports.transformBidData = exports.transformPlateData = exports.transformStockData = void 0;
+exports.transformShortTermSourceData = exports.transformStrongStockData = exports.transformNewStockData = exports.transformBidData = exports.transformPlateData = exports.transformStockData = void 0;
 const daily_limit_stock_dto_1 = require("../dto/daily-limit-stock.dto");
 const down_limit_stock_dto_1 = require("../dto/down-limit-stock.dto");
+const strong_stock_dto_1 = require("../dto/strong-stock.dto");
 const daily_limit_yesterday_bidding_dto_1 = require("../dto/daily-limit-yesterday-bidding.dto");
+const new_stock_dto_1 = require("../dto/new-stock.dto");
 const commonUtil_1 = require("./commonUtil");
 const dayjs = require("dayjs");
 const pay_back_core_1 = require("pay-back-core");
@@ -37,9 +39,7 @@ function transformHugeFallData(hugeFallData) {
     const hugeFallDataArr = [];
     hugeFallData.forEach(item => {
         const downLimitStockDto = new down_limit_stock_dto_1.DownLimitStockDto();
-        downLimitStockDto.name = item['股票简称'];
-        downLimitStockDto.code = item.code;
-        downLimitStockDto.plateLevel2 = item['所属同花顺二级行业'];
+        loadStockBaseData(downLimitStockDto, item);
         hugeFallDataArr.push(downLimitStockDto);
     });
     return {
@@ -52,9 +52,7 @@ function transformDownLimitData(dailyLimitData, currentDate) {
     let downLimitQuantity = 0;
     dailyLimitData.forEach(item => {
         const downLimitStockDto = new down_limit_stock_dto_1.DownLimitStockDto();
-        downLimitStockDto.name = item['股票简称'];
-        downLimitStockDto.code = item.code;
-        downLimitStockDto.plateLevel2 = item['所属同花顺二级行业'];
+        loadStockBaseData(downLimitStockDto, item);
         if (item[`跌停原因类型[${currentDate}]`] && item[`跌停原因类型[${currentDate}]`] !== '资金出逃') {
             downLimitStockDto.reason = item[`跌停原因类型[${currentDate}]`];
         }
@@ -83,22 +81,18 @@ function transformDailyLimitData(dailyLimitData, currentDate) {
         if (currentLevel === 1) {
             board1++;
         }
-        dailyLimitStockDto.name = item['股票简称'];
-        dailyLimitStockDto.code = item.code;
+        loadStockBaseData(dailyLimitStockDto, item, currentDate);
+        dailyLimitStockDto.closingFunds = (0, commonUtil_1.fundsToFixed)(item[`涨停封单额[${currentDate}]`]);
         dailyLimitStockDto.reason = item[`涨停原因类别[${currentDate}]`];
         dailyLimitStockDto.turnoverRate = (0, commonUtil_1.toFixed)(item[`换手率[${currentDate}]`], 1);
-        dailyLimitStockDto.plateLevel2 = item['所属同花顺二级行业'];
-        dailyLimitStockDto.closingFunds = (0, commonUtil_1.fundsToFixed)(item[`涨停封单额[${currentDate}]`]);
         if (item[`涨停类型[${currentDate}]`] !== turnoverTypeArr[0]) {
             dailyLimitStockDto.turnoverType = item[`涨停类型[${currentDate}]`];
             dailyLimitStockDto.turnoverType && dailyLimitStockDto.turnoverType.indexOf(turnoverTypeArr[2]) > -1 && (evenBoardData.yizi++);
         }
-        dailyLimitStockDto.price = item['最新价'];
         if (item[`涨停开板次数[${currentDate}]`] != 0) {
             dailyLimitStockDto.openTimes = item[`涨停开板次数[${currentDate}]`];
             dailyLimitReturnSealQuantity++;
         }
-        dailyLimitStockDto.circulationValue = (0, commonUtil_1.fundsToFixed)(item[`a股市值(不含限售股)[${currentDate}]`]);
         dailyLimitStockDto.dailyTime = item[`首次涨停时间[${currentDate}]`] ? item[`首次涨停时间[${currentDate}]`].trim() : '-';
         if (dailyLimitStockDto.openTimes > 0 && item[`最终涨停时间[${currentDate}]`]) {
             dailyLimitStockDto.dailyTime += (',' + item[`最终涨停时间[${currentDate}]`].trim());
@@ -123,17 +117,13 @@ function transformDailyLimitData(dailyLimitData, currentDate) {
         dailyLimitReturnSealQuantity,
     };
 }
-function transformBidData(dailyLimitData, todayDateStr, yesterdayDate, isSaveMore = false) {
+function transformBidData(stocks, todayDateStr, yesterdayDate, isSaveMore = false) {
     const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
     const dailyLimitYesterdayBiddingDtos = [];
-    dailyLimitData.forEach(item => {
+    stocks.forEach(item => {
         const dailyLimitYesterdayBiddingDto = new daily_limit_yesterday_bidding_dto_1.DailyLimitYesterdayBiddingDto();
-        dailyLimitYesterdayBiddingDto.name = item['股票简称'];
-        dailyLimitYesterdayBiddingDto.code = item.code;
-        dailyLimitYesterdayBiddingDto.plateLevel2 = item['所属同花顺二级行业'];
-        dailyLimitYesterdayBiddingDto.bidChangeTypeT = item[`竞价异动类型[${currentDate}]`];
-        dailyLimitYesterdayBiddingDto.bidIncreaseT = item[`竞价涨幅[${currentDate}]`];
-        dailyLimitYesterdayBiddingDto.bidRating = item[`集合竞价评级[${currentDate}]`];
+        loadStockBaseData(dailyLimitYesterdayBiddingDto, item, currentDate);
+        loadBiddingBaseData(dailyLimitYesterdayBiddingDto, item, currentDate);
         dailyLimitYesterdayBiddingDto.closeIncrease = (0, commonUtil_1.toFixed)(item['最新涨跌幅']);
         const jitianjiban = item[`几天几板[${yesterdayDate}]`];
         if (jitianjiban && jitianjiban.indexOf('天') > -1) {
@@ -167,6 +157,65 @@ function transformBidData(dailyLimitData, todayDateStr, yesterdayDate, isSaveMor
     return dailyLimitYesterdayBiddingDtos;
 }
 exports.transformBidData = transformBidData;
+function transformNewStockData(stocks, todayDateStr) {
+    const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
+    const newStockDtos = [];
+    stocks.forEach(item => {
+        const newStock = new new_stock_dto_1.NewStockDto();
+        loadStockBaseData(newStock, item, currentDate);
+        loadBiddingBaseData(newStock, item, currentDate);
+        newStockDtos.push(newStock);
+    });
+    return newStockDtos;
+}
+exports.transformNewStockData = transformNewStockData;
+function transformStrongStockData(stocks, todayDateStr, yesterdayDate) {
+    const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
+    const strongStockDtos = [];
+    stocks.forEach(item => {
+        const strongStockDto = new strong_stock_dto_1.StrongStockDto();
+        loadStockBaseData(strongStockDto, item, currentDate);
+        loadBiddingBaseData(strongStockDto, item, currentDate);
+        strongStockDto.turnoverRate = (0, commonUtil_1.toFixed)(item[`换手率[${yesterdayDate}]`], 1);
+        strongStockDto.cmjzd = (0, commonUtil_1.toFixed)(item[`集中度70[${yesterdayDate}]`], 1);
+        strongStockDto.sphl = (0, commonUtil_1.toFixed)(item[`收盘获利[${yesterdayDate}]`], 1);
+        strongStockDto.closeIncrease = (0, commonUtil_1.toFixed)(item['最新涨跌幅']);
+        strongStockDtos.push(strongStockDto);
+    });
+    return strongStockDtos;
+}
+exports.transformStrongStockData = transformStrongStockData;
+function transformShortTermSourceData(dailyLimitData, downLimitData, hugeFallData, todayDateStr) {
+    const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
+    const { downLimitDataArr, downLimitQuantity } = transformDownLimitData(downLimitData, currentDate);
+    const { hugeFallDataArr } = transformHugeFallData(hugeFallData);
+    const { board1, evenBoardData, dailyLimitReturnSealQuantity } = transformDailyLimitData(dailyLimitData, currentDate);
+    return {
+        board1,
+        evenBoardData,
+        downLimitDataArr,
+        hugeFallDataArr,
+        downLimitQuantity,
+        dailyLimitReturnSealQuantity,
+    };
+}
+exports.transformShortTermSourceData = transformShortTermSourceData;
+function loadBiddingBaseData(stock, item, currentDate) {
+    stock.bidChangeTypeT = item[`竞价异动类型[${currentDate}]`];
+    stock.bidIncreaseT = item[`竞价涨幅[${currentDate}]`];
+    stock.bidRating = item[`集合竞价评级[${currentDate}]`];
+    return stock;
+}
+function loadStockBaseData(stock, item, currentDate = null) {
+    stock.name = item['股票简称'];
+    stock.code = item.code;
+    stock.plateLevel2 = item['所属同花顺二级行业'];
+    if (currentDate) {
+        stock.price = item['最新价'];
+        stock.circulationValue = (0, commonUtil_1.fundsToFixed)(item[`a股市值(不含限售股)[${currentDate}]`]);
+    }
+    return stock;
+}
 function judgeExpected(item) {
     const { bidIncreaseT } = item;
     const expected = (0, pay_back_core_1.getExpected)(item);
@@ -193,19 +242,4 @@ function judgeExpected(item) {
         return 0;
     }
 }
-function transformShortTermSourceData(dailyLimitData, downLimitData, hugeFallData, todayDateStr) {
-    const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
-    const { downLimitDataArr, downLimitQuantity } = transformDownLimitData(downLimitData, currentDate);
-    const { hugeFallDataArr } = transformHugeFallData(hugeFallData);
-    const { board1, evenBoardData, dailyLimitReturnSealQuantity } = transformDailyLimitData(dailyLimitData, currentDate);
-    return {
-        board1,
-        evenBoardData,
-        downLimitDataArr,
-        hugeFallDataArr,
-        downLimitQuantity,
-        dailyLimitReturnSealQuantity,
-    };
-}
-exports.transformShortTermSourceData = transformShortTermSourceData;
 //# sourceMappingURL=transformDataUtil.js.map

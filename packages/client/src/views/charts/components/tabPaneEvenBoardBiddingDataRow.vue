@@ -1,12 +1,16 @@
 <!-- 集合竞价数据 -->
 <template>
   <div v-if="stock" class="biddingData__row">
-    [<span class="small" :class="calcClass(stock.bidRating)"
+    [<span class="small" :class="calcClassByBidRating(stock.bidRating)"
       >{{ stock.bidRating }}
     </span>
     <span
       class="middle"
-      :class="{ 'red bold': stock.bidChangeTypeT === '竞价抢筹' }"
+      :class="{
+        'red bold':
+          stock.bidChangeTypeT === '竞价抢筹' ||
+          stock.bidChangeTypeT === '大幅高开',
+      }"
     >
       {{ stock.bidChangeTypeT }}&nbsp;
     </span>
@@ -28,6 +32,8 @@
   </div>
 </template>
 <script lang="ts" setup>
+import { calcClassByBidRating } from '../utils';
+
 let superData = defineProps({
   stock: {
     type: Object,
@@ -43,21 +49,6 @@ function getExpectedStr(expected: number) {
     return '超预期';
   }
   return '不及预期';
-}
-
-function calcClass(bidRating: string) {
-  // 看空、看多、偏空、混战
-  if (bidRating === '看多') {
-    return 'red bold';
-  }
-
-  if (bidRating === '看空') {
-    return 'green bold';
-  }
-  if (bidRating === '偏空') {
-    return 'green';
-  }
-  return '';
 }
 </script>
 

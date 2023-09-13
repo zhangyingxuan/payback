@@ -22,7 +22,7 @@ const node_fetch_1 = require("node-fetch");
 const hexin_v_1 = require("../core/hexin-v");
 const zlib = require('node:zlib');
 const qs_1 = require("qs");
-const pay_back_core_1 = require("pay-back-core");
+const fetchUtil_1 = require("../core/fetchUtil");
 const apiUrls = {
     conceptPlate: 'https://dq.10jqka.com.cn/fuyao/hot_list_data/out/hot_list/v1/plate',
     industryPlate: 'https://dq.10jqka.com.cn/fuyao/hot_list_data/out/hot_list/v1/plate?type=industry',
@@ -140,19 +140,9 @@ let ApiTestService = ApiTestService_1 = class ApiTestService {
         })
             .then(async (response) => await response.text()).then(data => console.log(data)).catch(e => console.error(e));
     }
-    otherTest() {
-        const cycle = (0, pay_back_core_1.getCurrentCycle)({
-            downLimitQuantity: 3,
-            dailyLimitQuantity: 32,
-            dailyLimitOpenQuantity: 10,
-            sealingRate: 76,
-            dailyLimitReturnSealQuantity: 14,
-            marketHeight: 6,
-            evenBoardAmount: 11,
-            hugeFallData: '[]',
-            createTime: '2023 - 08 - 21T10: 37: 54.433Z'
-        });
-        console.log(cycle);
+    async otherTest() {
+        const chooseStock1ExpectedRs = await (0, fetchUtil_1.fetchIwencaiApi)('昨日未涨停；集中度70<=11；10日内有涨停；昨日换手率；竞价情况；竞价看多；竞价高开；同花顺二级行业；股价低于30元；流通市值<=120亿；流通市值>=20亿；非创业板；非科创板；非ST', 100, false);
+        console.log(chooseStock1ExpectedRs);
     }
     async findAll() {
         return await this.hotListRp.find();

@@ -45,11 +45,11 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
         let specialStockDto = new special_stock_dto_1.SpecialStockDto();
         try {
             const yesterdayDateStr = await this.getLastTradingDayByDB(todayDateStr);
-            const { dailyLimitYesterdayBiddingDtos, newStocksDtos, chooseStock1to2Dtos } = await (0, specialStockUtil_1.getBiddingData)(todayDateStr, yesterdayDateStr);
-            specialStockDto.biddingData = JSON.stringify(dailyLimitYesterdayBiddingDtos);
-            specialStockDto.newStock = JSON.stringify(newStocksDtos);
+            const { dailyLimitYesterdayBidding, newStocks, chooseStock1Expected } = await (0, specialStockUtil_1.getBiddingData)(todayDateStr, yesterdayDateStr);
+            specialStockDto.biddingData = JSON.stringify(dailyLimitYesterdayBidding);
+            specialStockDto.newStock = JSON.stringify(newStocks);
             specialStockDto.chooseStock = JSON.stringify({
-                chooseStock1to2Dtos
+                chooseStock1Expected
             });
             console.log(specialStockDto);
             if (isExist) {
@@ -100,12 +100,6 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
         return lastTradingDay;
     }
 };
-__decorate([
-    (0, schedule_1.Cron)('08 25 9 * * 1-5'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], SpecialStockService.prototype, "autoCrawlBinddingData", null);
 __decorate([
     (0, schedule_1.Cron)('00 05 15 * * 1-5'),
     __metadata("design:type", Function),

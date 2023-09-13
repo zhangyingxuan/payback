@@ -6,7 +6,9 @@ import fetch from 'node-fetch';
 import { createV } from '../core/hexin-v';
 const zlib = require('node:zlib');
 import { stringify } from 'qs';
-import { getCurrentCycle } from 'pay-back-core';
+import { getCurrentCycle, params } from 'pay-back-core';
+import { fetchIwencaiApi } from '../core/fetchUtil';
+import { transformStrongStockData } from '../utils/transformDataUtil';
 
 const apiUrls = {
   // 概念板块
@@ -149,19 +151,25 @@ export class ApiTestService {
       .then(async (response) => await response.text()).then(data => console.log(data)).catch(e => console.error(e));
   }
 
-  otherTest() {
-    const cycle = getCurrentCycle({
-      downLimitQuantity: 3,
-      dailyLimitQuantity: 32,
-      dailyLimitOpenQuantity: 10,
-      sealingRate: 76,
-      dailyLimitReturnSealQuantity: 14,
-      marketHeight: 6,
-      evenBoardAmount: 11,
-      hugeFallData: '[]',
-      createTime: '2023 - 08 - 21T10: 37: 54.433Z'
-    });
-    console.log(cycle);
+  async otherTest() {
+    // const cycle = getCurrentCycle({
+    //   downLimitQuantity: 3,
+    //   dailyLimitQuantity: 32,
+    //   dailyLimitOpenQuantity: 10,
+    //   sealingRate: 76,
+    //   dailyLimitReturnSealQuantity: 14,
+    //   marketHeight: 6,
+    //   evenBoardAmount: 11,
+    //   hugeFallData: '[]',
+    //   createTime: '2023 - 08 - 21T10: 37: 54.433Z'
+    // });
+    // console.log(cycle);
+
+
+    // 竞价看多数据 首板预期
+    const chooseStock1ExpectedRs: any = await fetchIwencaiApi('昨日未涨停；集中度70<=11；10日内有涨停；昨日换手率；竞价情况；竞价看多；竞价高开；同花顺二级行业；股价低于30元；流通市值<=120亿；流通市值>=20亿；非创业板；非科创板；非ST', 100, false);
+    // const chooseStock1Expected = transformStrongStockData(chooseStock1ExpectedRs, todayDateStr, yesterdayDateStr);
+    console.log(chooseStock1ExpectedRs);
   }
 
   async findAll() {

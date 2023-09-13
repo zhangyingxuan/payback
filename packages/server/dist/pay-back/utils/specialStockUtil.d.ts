@@ -1,5 +1,5 @@
 export declare function getBiddingData(todayDateStr: any, yesterdayDateStr: any): Promise<{
-    dailyLimitYesterdayBiddingDtos: import("../dto/daily-limit-yesterday-bidding.dto").DailyLimitYesterdayBiddingDto[];
-    newStocksDtos: import("../dto/daily-limit-yesterday-bidding.dto").DailyLimitYesterdayBiddingDto[];
-    chooseStock1to2Dtos: import("../dto/daily-limit-yesterday-bidding.dto").DailyLimitYesterdayBiddingDto[];
+    dailyLimitYesterdayBidding: import("../dto/daily-limit-yesterday-bidding.dto").DailyLimitYesterdayBiddingDto[];
+    newStocks: import("../dto/new-stock.dto").NewStockDto[];
+    chooseStock1Expected: import("../dto/strong-stock.dto").StrongStockDto[];
 }>;

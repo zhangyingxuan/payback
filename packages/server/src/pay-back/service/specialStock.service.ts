@@ -17,7 +17,7 @@ export class SpecialStockService {
   private readonly logger = new Logger(SpecialStockService.name);
 
   // 竞价数据 - 早盘
-  @Cron('08 25 9 * * 1-5')
+  // @Cron('08 25 9 * * 1-5')
   async autoCrawlBinddingData() {
     this.crawlBinddingData();
   }
@@ -42,11 +42,11 @@ export class SpecialStockService {
     try {
       const yesterdayDateStr = await this.getLastTradingDayByDB(todayDateStr);
       // 获取竞价情况
-      const { dailyLimitYesterdayBiddingDtos, newStocksDtos, chooseStock1to2Dtos } = await getBiddingData(todayDateStr, yesterdayDateStr);
-      specialStockDto.biddingData = JSON.stringify(dailyLimitYesterdayBiddingDtos);
-      specialStockDto.newStock = JSON.stringify(newStocksDtos);
+      const { dailyLimitYesterdayBidding, newStocks, chooseStock1Expected } = await getBiddingData(todayDateStr, yesterdayDateStr);
+      specialStockDto.biddingData = JSON.stringify(dailyLimitYesterdayBidding);
+      specialStockDto.newStock = JSON.stringify(newStocks);
       specialStockDto.chooseStock = JSON.stringify({
-        chooseStock1to2Dtos
+        chooseStock1Expected
       });
 
       console.log(specialStockDto);
