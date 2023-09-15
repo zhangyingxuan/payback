@@ -97,5 +97,6 @@ export function calcClassByBidRating(bidRating: string) {
  * @returns 
  */
 export function openNewIwencaiWindow(keyWord: string) {
-  window.open(iwencaiUrl + keyWord);
+  // console.log(iwencaiUrl + keyWord + '&querytype=stock');
+  window.open(iwencaiUrl + encodeURIComponent(keyWord));
 }

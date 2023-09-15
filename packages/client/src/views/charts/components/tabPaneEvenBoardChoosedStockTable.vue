@@ -10,10 +10,10 @@
           <el-tooltip
             class="box-item"
             effect="dark"
-            :content="chooseStock1Expected"
+            :content="params.chooseStock1Expected"
             placement="top"
           >
-            <el-icon @click="openNewIwencaiWindow(chooseStock1Expected)"
+            <el-icon @click="openNewIwencaiWindow(params.chooseStock1Expected)"
               ><InfoFilled
             /></el-icon>
           </el-tooltip>
@@ -91,8 +91,6 @@ let superData = defineProps({
     default: false,
   },
 });
-
-const chooseStock1Expected = params.chooseStock1Expected;
 
 const stockGroupByPlate = computed(() => {
   const biddingData = superData.propsData
