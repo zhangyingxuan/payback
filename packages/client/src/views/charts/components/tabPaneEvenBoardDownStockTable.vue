@@ -3,7 +3,7 @@
     <div class="table__container">
       <div class="table__header table-row">
         <div class="col1">行业板块</div>
-        <div class="col2 green">
+        <div class="col2 green stocks_header">
           <template v-if="isDownLimitMode">
             跌停个股（{{ downLimitData ? downLimitData.length : 0 }}） 短线跌停
           </template>

@@ -4,7 +4,7 @@
     <div class="table__container">
       <div class="table__header table-row">
         <div class="col1">行业板块</div>
-        <div class="red">
+        <div class="red stocks_header">
           <!-- 1进2选股 -->
           强势股
           <el-tooltip
@@ -13,7 +13,9 @@
             :content="chooseStock1Expected"
             placement="top"
           >
-            <el-icon><InfoFilled /></el-icon>
+            <el-icon @click="openNewIwencaiWindow(chooseStock1Expected)"
+              ><InfoFilled
+            /></el-icon>
           </el-tooltip>
         </div>
         <!-- <div class="red">新股 （{{ biddingData.length }}）</div> -->
@@ -45,14 +47,14 @@
               }"
               >{{ stock.bidChangeTypeT }}
             </span>
-            <span class="lanse">{{ stock.price }}</span>
+            <span class="lanse">平均成本 {{ stock.price }}</span>
             <!-- 换手率 -->
             <span v-if="stock.turnoverRate">
               换手率{{ stock.turnoverRate }}%
             </span>
-            <span class="zise">流通{{ stock.circulationValue }}亿</span>
-            <span class="zise">集中度70 {{ stock.cmjzd }}%</span>
-            <span>获利比例 {{ stock.hlbl }}%</span>
+            <span class="zise">流通 {{ stock.circulationValue }}亿</span>
+            <span class="orange">集中度70 {{ stock.cmjzd }}%</span>
+            <span>获利比例 {{ stock.sphl }}%</span>
             <span :class="{ 'red bold': stock.bidIncreaseT >= 3 }">
               竞价涨幅
               {{ stock.bidIncreaseT && +stock.bidIncreaseT.toFixed(2) }}
@@ -73,8 +75,11 @@
 <script lang="ts" setup>
 import _ from 'lodash-es';
 import { computed } from 'vue';
+import { useRouter } from 'vue-router';
 import { params } from 'pay-back-core';
-import { calcClassByBidRating } from '../utils';
+import { calcClassByBidRating, openNewIwencaiWindow } from '../utils';
+
+const router = useRouter();
 
 let superData = defineProps({
   propsData: {

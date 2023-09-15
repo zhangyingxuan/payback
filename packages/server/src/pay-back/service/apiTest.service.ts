@@ -167,7 +167,10 @@ export class ApiTestService {
 
 
     // 竞价看多数据 首板预期
-    const chooseStock1ExpectedRs: any = await fetchIwencaiApi('昨日未涨停；集中度70<=11；10日内有涨停；昨日换手率；竞价情况；竞价看多；竞价高开；同花顺二级行业；股价低于30元；流通市值<=120亿；流通市值>=20亿；非创业板；非科创板；非ST', 100, false);
+    // 昨日未涨停；昨日换手率；10个交易日内有涨停；集中度70<=11；
+    // const chooseStock1ExpectedRs: any = await fetchIwencaiApi('竞价看多；竞价抢筹；竞价涨幅>0；10个交易日内有涨停；集中度70<=11；昨日收盘获利>=50%；同花顺二级行业；股价低于30元；流通市值<=120亿；流通市值>=20亿；非创业板；非科创板；非ST', 100, false);
+    const chooseStock1ExpectedRs: any = await fetchIwencaiApi(params.chooseStock1Expected, 100, false);
+    // const chooseStock1ExpectedRs: any = await fetchIwencaiApi('昨日未涨停；昨日换手率；10个交易日内有涨停；集中度70<=11；竞价看多；竞价抢筹；竞价涨幅>0；同花顺二级行业；股价低于30元；流通市值<=120亿；流通市值>=20亿；非创业板；非科创板；非ST', 100, false);
     // const chooseStock1Expected = transformStrongStockData(chooseStock1ExpectedRs, todayDateStr, yesterdayDateStr);
     console.log(chooseStock1ExpectedRs);
   }

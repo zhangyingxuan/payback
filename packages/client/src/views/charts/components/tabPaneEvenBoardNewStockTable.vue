@@ -4,7 +4,19 @@
     <div class="table__container">
       <div class="table__header table-row">
         <div class="col1">行业板块</div>
-        <div class="red">新股</div>
+        <div class="red stocks_header">
+          新股
+          <el-tooltip
+            class="box-item"
+            effect="dark"
+            :content="params.chooseStockNewStock"
+            placement="top"
+          >
+            <el-icon @click="openNewIwencaiWindow(params.chooseStockNewStock)"
+              ><InfoFilled
+            /></el-icon>
+          </el-tooltip>
+        </div>
         <!-- <div class="red">新股 （{{ biddingData.length }}）</div> -->
       </div>
 
@@ -26,13 +38,23 @@
             [ &nbsp;<span :class="calcClassByBidRating(stock.bidRating)">{{
               stock.bidRating
             }}</span>
-            ，<span class="lanse">{{ stock.price }}</span>
+            <span
+              class="middle"
+              :class="{
+                'red bold':
+                  stock.bidChangeTypeT === '竞价抢筹' ||
+                  stock.bidChangeTypeT === '大幅高开',
+              }"
+            >
+              {{ stock.bidChangeTypeT }}&nbsp;
+            </span>
+            <span class="lanse">{{ stock.price }}</span>
             <!-- 换手率 -->
-            ，<span v-if="stock.turnoverRate">
+            <span v-if="stock.turnoverRate">
               换手率{{ stock.turnoverRate }}%
             </span>
-            ，<span class="zise">流通{{ stock.circulationValue }}亿</span>
-            ，<span :class="{ 'red bold': stock.bidIncreaseT >= 7 }">
+            <span class="zise">流通{{ stock.circulationValue }}亿</span>
+            <span :class="{ 'red bold': stock.bidIncreaseT >= 7 }">
               竞价涨幅
               {{ stock.bidIncreaseT && +stock.bidIncreaseT.toFixed(2) }}
             </span>
@@ -47,7 +69,8 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { calcClassByBidRating } from '../utils';
+import { calcClassByBidRating, openNewIwencaiWindow } from '../utils';
+import { params } from 'pay-back-core';
 import _ from 'lodash-es';
 import { computed } from 'vue';
 let superData = defineProps({

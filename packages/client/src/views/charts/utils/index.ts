@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import { DailyLimitStockDto } from '@/typings';
+import { iwencaiUrl } from '@/views/charts/utils/config';
 /**
  * 对象转数组
  * @param obj 
@@ -70,6 +71,7 @@ export function highlightKeyWord(result: string, keyword: string) {
   return result;
 }
 
+
 /**
  * 按竞价情况，返回class
  * @param bidRating 
@@ -88,4 +90,12 @@ export function calcClassByBidRating(bidRating: string) {
     return 'green';
   }
   return '';
+}
+
+/**
+ * 打开新的爱问财 窗口
+ * @returns 
+ */
+export function openNewIwencaiWindow(keyWord: string) {
+  window.open(iwencaiUrl + keyWord);
 }

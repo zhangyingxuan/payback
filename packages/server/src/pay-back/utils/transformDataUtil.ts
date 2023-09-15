@@ -233,6 +233,8 @@ export function transformNewStockData(stocks, todayDateStr): Array<NewStockDto> 
     loadStockBaseData(newStock, item, currentDate);
     // 将竞价基础数据填入 参数中
     loadBiddingBaseData(newStock, item, currentDate);
+    // 收盘涨幅
+    newStock.closeIncrease = toFixed(item['最新涨跌幅']);
     newStockDtos.push(newStock);
   });
 
@@ -250,14 +252,18 @@ export function transformStrongStockData(stocks, todayDateStr, yesterdayDate): A
 
   stocks.forEach(item => {
     const strongStockDto = new StrongStockDto();
+    console.log(item);
     // 个股基础信息
     loadStockBaseData(strongStockDto, item, currentDate);
     // 将竞价基础数据填入 参数中
     loadBiddingBaseData(strongStockDto, item, currentDate);
+    if (!strongStockDto.price) {
+      strongStockDto.price = item[`平均成本[${currentDate}]`] || item[`平均成本[${yesterdayDate}]`];
+    }
     // 换手率
     strongStockDto.turnoverRate = toFixed(item[`换手率[${yesterdayDate}]`], 1);
     // 筹码集中度
-    strongStockDto.cmjzd = toFixed(item[`集中度70[${yesterdayDate}]`], 1);
+    strongStockDto.cmjzd = toFixed(item[`集中度70[${currentDate}]`] || item[`集中度70[${yesterdayDate}]`], 1);
     // 收盘获利
     strongStockDto.sphl = toFixed(item[`收盘获利[${yesterdayDate}]`], 1);
     // 收盘涨幅

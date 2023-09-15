@@ -57,6 +57,7 @@
             </el-checkbox>
             <el-checkbox v-model="data.notFirstBoardChecked">连板</el-checkbox>
             <el-checkbox v-model="data.exceededExpect">超预期</el-checkbox>
+            <el-checkbox v-model="data.conformToExpect">符合预期</el-checkbox>
           </div>
         </div>
       </div>
@@ -163,7 +164,10 @@ const data = reactive({
   myStrategyCheckedLen: 0,
   // 竞价策略
   biddingStrategyChecked: false,
+  // 超预期
   exceededExpect: false,
+  // 符合预期
+  conformToExpect: false,
   biddingStrategyCheckedLen: 0,
 });
 
@@ -246,8 +250,15 @@ const stockGroupByPlateByFilter = computed(() => {
         // 竞价条件过滤 2023-09-09 00:21:30
         if (item.biddingData) {
           // 超预期
-          if (data.exceededExpect && isAdd) {
-            isAdd = item.biddingData.expected === 2;
+          if ((data.exceededExpect || data.conformToExpect) && isAdd) {
+            if (data.exceededExpect && data.conformToExpect) {
+              isAdd =
+                item.biddingData.expected === 2 ||
+                item.biddingData.expected === 1;
+            } else {
+              isAdd =
+                item.biddingData.expected === (data.conformToExpect ? 1 : 2);
+            }
           }
 
           // 看多、符合预期、首板量比大于10，只看主板

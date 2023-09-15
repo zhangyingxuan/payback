@@ -164,6 +164,7 @@ function transformNewStockData(stocks, todayDateStr) {
         const newStock = new new_stock_dto_1.NewStockDto();
         loadStockBaseData(newStock, item, currentDate);
         loadBiddingBaseData(newStock, item, currentDate);
+        newStock.closeIncrease = (0, commonUtil_1.toFixed)(item['最新涨跌幅']);
         newStockDtos.push(newStock);
     });
     return newStockDtos;
@@ -174,10 +175,14 @@ function transformStrongStockData(stocks, todayDateStr, yesterdayDate) {
     const strongStockDtos = [];
     stocks.forEach(item => {
         const strongStockDto = new strong_stock_dto_1.StrongStockDto();
+        console.log(item);
         loadStockBaseData(strongStockDto, item, currentDate);
         loadBiddingBaseData(strongStockDto, item, currentDate);
+        if (!strongStockDto.price) {
+            strongStockDto.price = item[`平均成本[${currentDate}]`] || item[`平均成本[${yesterdayDate}]`];
+        }
         strongStockDto.turnoverRate = (0, commonUtil_1.toFixed)(item[`换手率[${yesterdayDate}]`], 1);
-        strongStockDto.cmjzd = (0, commonUtil_1.toFixed)(item[`集中度70[${yesterdayDate}]`], 1);
+        strongStockDto.cmjzd = (0, commonUtil_1.toFixed)(item[`集中度70[${currentDate}]`] || item[`集中度70[${yesterdayDate}]`], 1);
         strongStockDto.sphl = (0, commonUtil_1.toFixed)(item[`收盘获利[${yesterdayDate}]`], 1);
         strongStockDto.closeIncrease = (0, commonUtil_1.toFixed)(item['最新涨跌幅']);
         strongStockDtos.push(strongStockDto);
