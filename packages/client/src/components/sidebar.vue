@@ -85,11 +85,17 @@ const items: any = [
     title: '文章列表',
     permiss: '2',
   },
+  // {
+  //   icon: 'Odometer',
+  //   index: '/markdown',
+  //   title: '文章',
+  //   permiss: '9',
+  // },
   {
     icon: 'Odometer',
-    index: '/markdown',
-    title: '文章',
-    permiss: '9',
+    index: '/latestConceptPlate',
+    title: '最新概念',
+    permiss: '1',
   },
   // {
   //   icon: 'Odometer',

@@ -65,6 +65,14 @@ export declare class PayBackController {
         code: number;
         data: import("./entities/review.entity").reviewData;
     }>;
+    findConceptPlateWithinNDays(query: any): Promise<{
+        code: number;
+        data: import("./entities/latestConceptPlate.entity").latestConceptPlate[];
+    }>;
+    findConceptPlateByLimit(query: any): Promise<{
+        code: number;
+        data: import("./entities/latestConceptPlate.entity").latestConceptPlate[];
+    }>;
     findPlateByLimit(query: any): Promise<{
         code: number;
         data: import("./entities/marketData.entity").marketData[];

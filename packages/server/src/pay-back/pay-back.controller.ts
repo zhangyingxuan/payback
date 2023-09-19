@@ -187,6 +187,24 @@ export class PayBackController {
     };
   }
 
+  @Get('findConceptPlateWithinNDays')
+  async findConceptPlateWithinNDays(@Query() query) {
+    const nDays = +(query.nDays || 15);
+    let palateData = await this.latestConceptPlateService.findWithinNDays(nDays);
+    return {
+      code: 200,
+      data: palateData,
+    };
+  }
+  @Get('findConceptPlateByLimit')
+  async findConceptPlateByLimit(@Query() query) {
+    const nDays = +(query.nDays || 15);
+    let palateData = await this.latestConceptPlateService.findByLimit(nDays);
+    return {
+      code: 200,
+      data: palateData,
+    };
+  }
   @Get('findPlateByLimit')
   async findPlateByLimit(@Query() query) {
     const limit = +(query.limit || 20);

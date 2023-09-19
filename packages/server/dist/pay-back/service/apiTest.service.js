@@ -22,7 +22,6 @@ const node_fetch_1 = require("node-fetch");
 const hexin_v_1 = require("../core/hexin-v");
 const zlib = require('node:zlib');
 const qs_1 = require("qs");
-const pay_back_core_1 = require("pay-back-core");
 const fetchUtil_1 = require("../core/fetchUtil");
 const apiUrls = {
     conceptPlate: 'https://dq.10jqka.com.cn/fuyao/hot_list_data/out/hot_list/v1/plate',
@@ -142,7 +141,7 @@ let ApiTestService = ApiTestService_1 = class ApiTestService {
             .then(async (response) => await response.text()).then(data => console.log(data)).catch(e => console.error(e));
     }
     async otherTest() {
-        const chooseStock1ExpectedRs = await (0, fetchUtil_1.fetchIwencaiApi)(pay_back_core_1.params.chooseStock1Expected, 100, false);
+        const chooseStock1ExpectedRs = await (0, fetchUtil_1.fetchIwencaiApi)('竞价看多；竞价抢筹；竞价涨幅>0；10个交易日内有涨停；昨日未涨停；集中度70<=11；昨日收盘获利>=50%；同花顺二级行业；股价低于30元；流通市值<=120亿；流通市值>=20亿；非创业板；非科创板；非ST', 100, false);
         console.log(chooseStock1ExpectedRs);
     }
     async findAll() {

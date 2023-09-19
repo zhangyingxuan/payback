@@ -6,5 +6,7 @@ export declare class LatestConceptPlateService {
     private readonly logger;
     crawlLatestConceptPlateData(): Promise<any>;
     findAll(): Promise<latestConceptPlate[]>;
+    findByLimit(len?: number): Promise<latestConceptPlate[]>;
+    findWithinNDays(n?: number): Promise<latestConceptPlate[]>;
     findLatestOne(): Promise<latestConceptPlate>;
 }

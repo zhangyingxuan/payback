@@ -58,6 +58,15 @@ const routes: RouteRecordRaw[] = [
         component: () => import(/* webpackChunkName: "charts" */ '../views/charts/index.vue'),
       },
       {
+        path: '/latestConceptPlate',
+        name: 'latestConceptPlate',
+        meta: {
+          title: '最新概念',
+          permiss: '11',
+        },
+        component: () => import(/* webpackChunkName: "latestConceptPlate" */ '../views/latestConceptPlate/index.vue'),
+      },
+      {
         path: '/form',
         name: 'baseform',
         meta: {

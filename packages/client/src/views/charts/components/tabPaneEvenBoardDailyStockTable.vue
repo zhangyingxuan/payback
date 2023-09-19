@@ -49,7 +49,7 @@
               <el-tooltip
                 class="box-item"
                 effect="dark"
-                content="看多，超预期，竞价量比大于10（连板及反包除外）"
+                content="看多，超预期；换手率>=5%，竞价量比大于10（连板及反包除外）"
                 placement="top"
               >
                 <el-icon><InfoFilled /></el-icon>
@@ -244,8 +244,8 @@ const stockGroupByPlateByFilter = computed(() => {
         }
         if (data.myStrategyChecked && isAdd) {
           isAdd = dailyLimitOptionalStrategy(item, item.evenBoardHeight);
-          isAdd && data.myStrategyCheckedLen++;
         }
+        isAdd && data.myStrategyCheckedLen++;
 
         // 竞价条件过滤 2023-09-09 00:21:30
         if (item.biddingData) {
@@ -267,8 +267,8 @@ const stockGroupByPlateByFilter = computed(() => {
             const evenBoardHeight = getRealEvenBoardHeight(item);
             // if(item.evenBoardHeight)
             isAdd = isConformToMyStrategyChecked({ ...item, evenBoardHeight });
-            isAdd && data.biddingStrategyCheckedLen++;
           }
+          isAdd && data.biddingStrategyCheckedLen++;
         }
 
         return isAdd;

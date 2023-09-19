@@ -142,6 +142,22 @@ let PayBackController = PayBackController_1 = class PayBackController {
             data: reviewData,
         };
     }
+    async findConceptPlateWithinNDays(query) {
+        const nDays = +(query.nDays || 15);
+        let palateData = await this.latestConceptPlateService.findWithinNDays(nDays);
+        return {
+            code: 200,
+            data: palateData,
+        };
+    }
+    async findConceptPlateByLimit(query) {
+        const nDays = +(query.nDays || 15);
+        let palateData = await this.latestConceptPlateService.findByLimit(nDays);
+        return {
+            code: 200,
+            data: palateData,
+        };
+    }
     async findPlateByLimit(query) {
         const limit = +(query.limit || 20);
         let palateData = await this.marketService.findPlateByLimit(limit);
@@ -237,6 +253,20 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "fetchReveiwDataByDate", null);
+__decorate([
+    (0, common_1.Get)('findConceptPlateWithinNDays'),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], PayBackController.prototype, "findConceptPlateWithinNDays", null);
+__decorate([
+    (0, common_1.Get)('findConceptPlateByLimit'),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], PayBackController.prototype, "findConceptPlateByLimit", null);
 __decorate([
     (0, common_1.Get)('findPlateByLimit'),
     __param(0, (0, common_1.Query)()),

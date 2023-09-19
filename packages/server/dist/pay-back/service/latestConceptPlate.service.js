@@ -47,6 +47,21 @@ let LatestConceptPlateService = LatestConceptPlateService_1 = class LatestConcep
     async findAll() {
         return await this.latestConceptPlateRp.find();
     }
+    async findByLimit(len = 20) {
+        return await this.latestConceptPlateRp.createQueryBuilder('latest_concept_plate')
+            .offset(0)
+            .limit(len)
+            .orderBy('createTime', 'DESC')
+            .getMany();
+    }
+    async findWithinNDays(n = 15) {
+        const nDaysAgo = new Date();
+        nDaysAgo.setDate(nDaysAgo.getDate() - n);
+        return await this.latestConceptPlateRp.createQueryBuilder('latest_concept_plate')
+            .where('latest_concept_plate.createTime > :date', { date: nDaysAgo })
+            .orderBy('createTime', 'DESC')
+            .getMany();
+    }
     async findLatestOne() {
         return await this.latestConceptPlateRp.createQueryBuilder('latest_concept_plate')
             .offset(0)

@@ -44,6 +44,30 @@ export class LatestConceptPlateService {
     return await this.latestConceptPlateRp.find();
   }
   /**
+   * 获取 n 条 概念
+   * @returns 
+   */
+  async findByLimit(len: number = 20) {
+    return await this.latestConceptPlateRp.createQueryBuilder('latest_concept_plate')
+      .offset(0)
+      .limit(len)
+      .orderBy('createTime', 'DESC')
+      .getMany();
+  }
+  /**
+   * 查找N天内的 概念
+   * @returns 
+   */
+  async findWithinNDays(n: number = 15) {
+    const nDaysAgo = new Date();
+    nDaysAgo.setDate(nDaysAgo.getDate() - n);
+
+    return await this.latestConceptPlateRp.createQueryBuilder('latest_concept_plate')
+      .where('latest_concept_plate.createTime > :date', { date: nDaysAgo })
+      .orderBy('createTime', 'DESC')
+      .getMany();
+  }
+  /**
    * 查找最新的一条
    * @returns 
    */

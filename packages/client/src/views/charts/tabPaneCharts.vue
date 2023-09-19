@@ -1,4 +1,20 @@
 <template>
+  <div class="noice__container">
+    <div class="el-alert el-alert--error is-light">
+      <div class="el-alert__content">
+        <span class="el-alert__title">
+          <span
+            v-for="(item, index) in data.latestConceptPlates"
+            :key="index"
+            class="latestConceptPlates__item"
+          >
+            <Plate :name="item.name" :code="item.code" />
+            <span>{{ item.createTime }}</span>
+          </span>
+        </span>
+      </div>
+    </div>
+  </div>
   <div class="chartList__container">
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
       <template #header>
@@ -71,7 +87,11 @@
 import { debounce } from 'lodash-es';
 import { storeToRefs } from 'pinia';
 import CardHeader from './components/cardHeader.vue';
-import { fetchChartData, ChartResult } from '@/api/payBack';
+import {
+  fetchChartData,
+  ChartResult,
+  findConceptPlateWithinNDays,
+} from '@/api/payBack';
 import { fetchLonghuHistoryData } from '@/api/tonghuashun';
 import { ShortTermModel } from '@/api/model/shortTermModel';
 import { MarketModel } from '@/api/model/MarketModel';
@@ -100,11 +120,19 @@ import { isMobile } from '@/core/util';
 
 const siderBar = useSidebarStore();
 const { countDays } = storeToRefs(siderBar);
-const data = reactive({
+const data = reactive<{
+  latestConceptPlates: any;
+  latestMarketUpdateTime: string;
+  latestShortTermUpdateTime: string;
+  latestFundsUpdateTime: string;
+  style: string;
+  styleBig: string;
+}>({
   ...getChartStyle(),
   latestMarketUpdateTime: '',
   latestShortTermUpdateTime: '',
   latestFundsUpdateTime: '',
+  latestConceptPlates: [],
 });
 
 const chartList: any = {
@@ -139,6 +167,17 @@ onMounted(async () => {
       });
     }, 500),
   );
+
+  // 获取15天内最新概念
+  findConceptPlateWithinNDays({ limit: 15 }).then((result: any) => {
+    console.log(result);
+    data.latestConceptPlates = result.map((item: any) => {
+      return {
+        ...item,
+        createTime: dayjs(item.createTime).format('YYYY-MM-DD'),
+      };
+    });
+  });
 });
 
 async function initPage(pageSize: number) {
@@ -337,6 +376,16 @@ function initShortTermChart(shortTermData: ShortTermModel[]) {
 
   /deep/.el-card__header {
     padding: 5px 10px;
+  }
+}
+
+.noice__container {
+  margin-bottom: 15px;
+  .latestConceptPlates__item {
+    margin-right: 20px;
+    > span {
+      margin-right: 5px;
+    }
   }
 }
 </style>

@@ -66,3 +66,17 @@ export const findPlateByLimit = (params: any | null) => {
 export const fetchReveiwDataByDate = (params: any | null) => {
   return http.request<Array<any>>("get", `${baseUrl}/fetchReveiwDataByDate`, { params });
 }
+/**
+ * 获取n 天内的概念
+ * @returns 
+ */
+export const findConceptPlateWithinNDays = (params: any | null) => {
+  return http.request<Array<any>>("get", `${baseUrl}/findConceptPlateWithinNDays`, { params });
+}
+/**
+ * 获取n 天内的概念
+ * @returns 
+ */
+export const findConceptPlateByLimit = (params: any | null) => {
+  return http.request<Array<any>>("get", `${baseUrl}/findConceptPlateByLimit`, { params });
+}
