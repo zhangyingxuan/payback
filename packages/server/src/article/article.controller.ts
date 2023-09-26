@@ -17,7 +17,7 @@ export class ArticleController {
   }
 
   @Post('remove')
-  async remove(@Param('id') id: number) {
+  async remove(@Body('id') id: any) {
     const result = await this.articleService.remove(id);
     return {
       code: 200,

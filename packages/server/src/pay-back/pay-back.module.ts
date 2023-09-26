@@ -29,7 +29,7 @@ import { UsersModule } from '../users/users.module';
     TypeOrmModule.forFeature([hotList]),
     TypeOrmModule.forFeature([fundsData]),
     TypeOrmModule.forFeature([reviewData]),
-    TypeOrmModule.forFeature([latestConceptPlate]),
+    TypeOrmModule.forFeature([latestConceptPlate])
   ],
   controllers: [PayBackController, ThsTradeController],
   providers: [

@@ -17,6 +17,7 @@ UsersModule = __decorate([
     (0, common_1.Module)({
         imports: [
             typeorm_1.TypeOrmModule.forFeature([user_entity_1.User]),
+            common_1.CacheModule.register()
         ],
         providers: [users_service_1.UsersService],
         exports: [users_service_1.UsersService],

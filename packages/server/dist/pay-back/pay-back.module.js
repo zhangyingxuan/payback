@@ -40,7 +40,7 @@ PayBackModule = __decorate([
             typeorm_1.TypeOrmModule.forFeature([hotList_entity_1.hotList]),
             typeorm_1.TypeOrmModule.forFeature([fundsData_entity_1.fundsData]),
             typeorm_1.TypeOrmModule.forFeature([review_entity_1.reviewData]),
-            typeorm_1.TypeOrmModule.forFeature([latestConceptPlate_entity_1.latestConceptPlate]),
+            typeorm_1.TypeOrmModule.forFeature([latestConceptPlate_entity_1.latestConceptPlate])
         ],
         controllers: [pay_back_controller_1.PayBackController, ths_trade_controller_1.ThsTradeController],
         providers: [

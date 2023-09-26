@@ -29,6 +29,7 @@ function prepareSelfStock(i, stocks, app, userid, ticket, user) {
                 if (result.errorMsg === '当前用户未登录') {
                     ctx.logger.log('当前用户未登录：https://www.10jqka.com.cn/');
                     isSuccess = false;
+                    ctx.usersService.clearUserInfoCache();
                     return;
                 }
                 next();
@@ -66,6 +67,35 @@ let ThsService = ThsService_1 = class ThsService {
         return {
             code: isSuccess ? 200 : 400,
             data: evenBoardData,
+        };
+    }
+    async updateThsSelfStock(code, type) {
+        const userInfo = await this.usersService.getUserByAccount('admin');
+        const userid = atob(userInfo.userid);
+        const ticket = userInfo.ticket;
+        const user = userInfo.user;
+        isSuccess = true;
+        try {
+            const result = await (0, fetchUtil_1.modifyThsSelfStocksRequest)(code, userid, ticket, user, type);
+            console.log(result);
+            if (result.errorCode !== 0) {
+                if (result.errorMsg === '当前用户未登录') {
+                    this.logger.log('[updateThsSelfStock] 当前用户未登录：https://www.10jqka.com.cn/');
+                    this.usersService.clearUserInfoCache();
+                }
+                isSuccess = false;
+                return {
+                    code: 400,
+                    data: result.errorMsg,
+                };
+            }
+        }
+        catch (e) {
+            isSuccess = false;
+            this.logger.log('updateThsSelfStock[' + type + '] 失败了！' + e);
+        }
+        return {
+            code: isSuccess ? 200 : 400,
         };
     }
 };

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.promiseLimit = exports.modifyThsSelfStocksRequest = exports.fetchNorhFunds = exports.fetchMarketPoint = exports.fetchMarketPointFromEastmoney = exports.clearThsSelfStocks = exports.fetchMarketData = exports.fetchIwencaiApi = void 0;
+exports.promiseLimit = exports.modifyThsSelfStocksRequest = exports.ThsOprate = exports.fetchNorhFunds = exports.fetchMarketPoint = exports.fetchMarketPointFromEastmoney = exports.clearThsSelfStocks = exports.fetchMarketData = exports.fetchIwencaiApi = void 0;
 const hexin_v_1 = require("./hexin-v");
 const node_fetch_1 = require("node-fetch");
 const commonUtil_1 = require("../utils/commonUtil");
@@ -140,14 +140,20 @@ async function fetchNorhFunds() {
     return result.text();
 }
 exports.fetchNorhFunds = fetchNorhFunds;
-async function modifyThsSelfStocksRequest(code, userid, ticket, user) {
+var ThsOprate;
+(function (ThsOprate) {
+    ThsOprate["add"] = "add";
+    ThsOprate["del"] = "del";
+    ThsOprate["exc"] = "exc";
+})(ThsOprate = exports.ThsOprate || (exports.ThsOprate = {}));
+async function modifyThsSelfStocksRequest(code, userid, ticket, user, type = ThsOprate.add) {
     const pos = '1';
     const payload = {
         'add': { 'stockcode': code, 'op': 'add' },
         'del': { 'stockcode': code, 'op': 'del' },
         'exc': { 'stockcode': code, 'op': 'exc', 'pos': pos, 'callback': 'callbacknew' }
     };
-    let result = await (0, node_fetch_1.default)("https://t.10jqka.com.cn/newcircle/group/modifySelfStock/?" + (0, qs_1.stringify)(payload.add), {
+    let result = await (0, node_fetch_1.default)("https://t.10jqka.com.cn/newcircle/group/modifySelfStock/?" + (0, qs_1.stringify)(payload[type]), {
         "headers": {
             "accept": "application/json, text/javascript, */*; q=0.01",
             "accept-language": "zh-CN,zh;q=0.9",
@@ -170,7 +176,6 @@ async function modifyThsSelfStocksRequest(code, userid, ticket, user) {
         "credentials": "include"
     });
     return await result.json();
-    ;
 }
 exports.modifyThsSelfStocksRequest = modifyThsSelfStocksRequest;
 function promiseLimit(promises, limit) {

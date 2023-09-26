@@ -70,9 +70,9 @@ __decorate([
 ], ArticleController.prototype, "create", null);
 __decorate([
     (0, common_1.Post)('remove'),
-    __param(0, (0, common_1.Param)('id')),
+    __param(0, (0, common_1.Body)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ArticleController.prototype, "remove", null);
 __decorate([

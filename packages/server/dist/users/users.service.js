@@ -17,22 +17,34 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("typeorm");
 const user_entity_1 = require("./entities/user.entity");
 const typeorm_2 = require("@nestjs/typeorm");
+const USER_IFNO = 'userInfo';
 let UsersService = class UsersService {
-    constructor(userRp) {
+    constructor(userRp, cacheManager) {
         this.userRp = userRp;
+        this.cacheManager = cacheManager;
     }
     async findOne(user) {
         const result = await this.userRp.find({ where: { account: user.account, password: user.password } });
         return result[0];
     }
     async getUserByAccount(user) {
-        return await this.userRp.findOne({ where: { account: user.account } });
+        let userInfo = await this.cacheManager.get(USER_IFNO);
+        if (!userInfo) {
+            userInfo = await this.userRp.findOne({ where: { account: user.account } });
+            await this.cacheManager.set(USER_IFNO, userInfo, 1000 * 60 * 60 * 24);
+        }
+        return userInfo;
+    }
+    async clearUserInfoCache() {
+        console.log('清理用户缓存成功');
+        return await this.cacheManager.del(USER_IFNO);
     }
 };
 UsersService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_2.InjectRepository)(user_entity_1.User)),
-    __metadata("design:paramtypes", [typeorm_1.Repository])
+    __param(1, (0, common_1.Inject)(common_1.CACHE_MANAGER)),
+    __metadata("design:paramtypes", [typeorm_1.Repository, Object])
 ], UsersService);
 exports.UsersService = UsersService;
 //# sourceMappingURL=users.service.js.map

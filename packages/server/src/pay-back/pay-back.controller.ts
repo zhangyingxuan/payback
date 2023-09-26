@@ -10,6 +10,7 @@ import { ThsService } from './service/ths.service';
 import { ApiTestService } from './service/apiTest.service';
 import { Public } from '../decorator/public.decorator';
 import { Cron } from '@nestjs/schedule';
+import { UsersService } from '../users/users.service';
 import * as dayjs from 'dayjs';
 
 @Controller('pay-back')
@@ -23,6 +24,7 @@ export class PayBackController {
     private readonly thsService: ThsService,
     private readonly apiTestService: ApiTestService,
     private readonly latestConceptPlateService: LatestConceptPlateService,
+    private readonly usersService: UsersService,
     private readonly marketService: MarketService) { }
 
   private readonly logger = new Logger(PayBackController.name);
@@ -30,7 +32,8 @@ export class PayBackController {
   @Public()
   @Get('testApi')
   async testApi() {
-    return await this.apiTestService.otherTest();
+    // return await this.apiTestService.otherTest();
+    return await this.usersService.getUserByAccount('admin');
     // return await this.apiTestService.fetchExternalData();
 
     // return await this.apiTestService.datacenterWeb();

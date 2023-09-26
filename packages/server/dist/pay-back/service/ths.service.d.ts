@@ -7,4 +7,11 @@ export declare class ThsService {
         code: number;
         data: any;
     }>;
+    updateThsSelfStock(code: any, type: any): Promise<{
+        code: number;
+        data: any;
+    } | {
+        code: number;
+        data?: undefined;
+    }>;
 }

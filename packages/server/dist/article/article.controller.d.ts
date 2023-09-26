@@ -7,7 +7,7 @@ export declare class ArticleController {
         code: number;
         data: import("./entities/article.entity").Article;
     }>;
-    remove(id: number): Promise<{
+    remove(id: any): Promise<{
         code: number;
         data: import("./entities/article.entity").Article;
     }>;

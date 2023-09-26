@@ -1,8 +1,11 @@
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
+import { Cache } from 'cache-manager';
 export declare class UsersService {
     private readonly userRp;
-    constructor(userRp: Repository<User>);
+    private cacheManager;
+    constructor(userRp: Repository<User>, cacheManager: Cache);
     findOne(user: any): Promise<any | undefined>;
     getUserByAccount(user: any): Promise<any | undefined>;
+    clearUserInfoCache(): Promise<any | undefined>;
 }

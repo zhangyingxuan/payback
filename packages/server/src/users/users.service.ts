@@ -1,12 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, CACHE_MANAGER, Inject } from '@nestjs/common'
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Cache } from 'cache-manager'
+
+const USER_IFNO = 'userInfo';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User) private readonly userRp: Repository<User>
+    @InjectRepository(User) private readonly userRp: Repository<User>,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache
   ) { }
 
   async findOne(user: any): Promise<any | undefined> {
@@ -15,7 +19,23 @@ export class UsersService {
   }
 
   async getUserByAccount(user: any): Promise<any | undefined> {
-    return await this.userRp.findOne({ where: { account: user.account } })
+    // 添加缓存机制，先从缓存中获取用户信息，如果没有再从数据库取 2023-09-26 22:55:19
+    let userInfo = await this.cacheManager.get(USER_IFNO);
+    // console.log('userInfo1 = ', userInfo)
+    if (!userInfo) {
+      userInfo = await this.userRp.findOne({ where: { account: user.account } });
+      await this.cacheManager.set(USER_IFNO, userInfo, 1000 * 60 * 60 * 24);
+      // console.log('userInfo2 = ', userInfo)
+    }
+    return userInfo
+  }
+  /**
+   * 清理用户信息缓存
+   * @returns 
+   */
+  async clearUserInfoCache(): Promise<any | undefined> {
+    console.log('清理用户缓存成功')
+    return await this.cacheManager.del(USER_IFNO);
   }
 
 }

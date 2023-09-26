@@ -25,9 +25,10 @@ const review_service_1 = require("./service/review.service");
 const ths_service_1 = require("./service/ths.service");
 const apiTest_service_1 = require("./service/apiTest.service");
 const public_decorator_1 = require("../decorator/public.decorator");
+const users_service_1 = require("../users/users.service");
 const dayjs = require("dayjs");
 let PayBackController = PayBackController_1 = class PayBackController {
-    constructor(shorTermService, specialStockService, fundsService, hotListService, reviewService, thsService, apiTestService, latestConceptPlateService, marketService) {
+    constructor(shorTermService, specialStockService, fundsService, hotListService, reviewService, thsService, apiTestService, latestConceptPlateService, usersService, marketService) {
         this.shorTermService = shorTermService;
         this.specialStockService = specialStockService;
         this.fundsService = fundsService;
@@ -36,11 +37,12 @@ let PayBackController = PayBackController_1 = class PayBackController {
         this.thsService = thsService;
         this.apiTestService = apiTestService;
         this.latestConceptPlateService = latestConceptPlateService;
+        this.usersService = usersService;
         this.marketService = marketService;
         this.logger = new common_1.Logger(PayBackController_1.name);
     }
     async testApi() {
-        return await this.apiTestService.otherTest();
+        return await this.usersService.getUserByAccount('admin');
     }
     async autoCrawlTodayDataAM() {
         this.logger.debug('[必入]定时任务执行了！0 */5 9-12 * * 1-5');
@@ -284,6 +286,7 @@ PayBackController = PayBackController_1 = __decorate([
         ths_service_1.ThsService,
         apiTest_service_1.ApiTestService,
         latestConceptPlate_service_1.LatestConceptPlateService,
+        users_service_1.UsersService,
         market_service_1.MarketService])
 ], PayBackController);
 exports.PayBackController = PayBackController;

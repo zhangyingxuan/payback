@@ -133,7 +133,7 @@ export async function fetchMarketPoint(apiUrl, key) {
     "mode": "cors",
     "credentials": "include"
   });
-  
+
   const responseData = await result.text();
   const dataStr = responseData.substring(responseData.indexOf('(') + 1, responseData.length - 1);
   const dataJSON = JSON.parse(dataStr);
@@ -171,7 +171,15 @@ export async function fetchNorhFunds() {
   return result.text();
 }
 
-export async function modifyThsSelfStocksRequest(code, userid, ticket, user) {
+
+
+export enum ThsOprate {
+  add = 'add',
+  del = 'del',
+  exc = 'exc',
+}
+
+export async function modifyThsSelfStocksRequest(code, userid, ticket, user, type = ThsOprate.add) {
   // # 更改同花顺自选股列表
   // # method: add 添加, del 删除, exc 排序
   // # pos: 排序用的序号, 从1开始
@@ -185,7 +193,7 @@ export async function modifyThsSelfStocksRequest(code, userid, ticket, user) {
   // https://t.10jqka.com.cn/newcircle/group/modifySelfStock/?op=add&stockcode=000980
   // console.log("http://stock.10jqka.com.cn/self.php?" + stringify(payload.add));
 
-  let result = await fetch("https://t.10jqka.com.cn/newcircle/group/modifySelfStock/?" + stringify(payload.add), {
+  let result = await fetch("https://t.10jqka.com.cn/newcircle/group/modifySelfStock/?" + stringify(payload[type]), {
     "headers": {
       "accept": "application/json, text/javascript, */*; q=0.01",
       "accept-language": "zh-CN,zh;q=0.9",
@@ -207,7 +215,7 @@ export async function modifyThsSelfStocksRequest(code, userid, ticket, user) {
     "mode": "cors",
     "credentials": "include"
   });
-  return await result.json();;
+  return await result.json();
 }
 
 

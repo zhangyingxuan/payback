@@ -24,6 +24,8 @@ function prepareSelfStock(i, stocks, app, userid, ticket, user) {
           ctx.logger.log('当前用户未登录：https://www.10jqka.com.cn/');
           //  当前用户未登录，则停止之后的异步调用请求
           isSuccess = false;
+          ctx.usersService.clearUserInfoCache();
+          // 清理用户信息缓存
           return;
         }
         next();
@@ -84,6 +86,44 @@ export class ThsService {
     return {
       code: isSuccess ? 200 : 400,
       data: evenBoardData,
+    };
+  }
+  /**
+   * 
+   * @param code 
+   * @returns 
+   */
+  async updateThsSelfStock(code, type) {
+    const userInfo = await this.usersService.getUserByAccount('admin');
+    // 1、获取用户信息
+    const userid = atob(userInfo.userid);
+    const ticket = userInfo.ticket;
+    const user = userInfo.user;
+    // 重置成功状态
+    isSuccess = true;
+
+    try {
+      const result = await modifyThsSelfStocksRequest(code, userid, ticket, user, type);
+      console.log(result);
+      if (result.errorCode !== 0) {
+        if (result.errorMsg === '当前用户未登录') {
+          this.logger.log('[updateThsSelfStock] 当前用户未登录：https://www.10jqka.com.cn/');
+          // 清理用户信息缓存
+          this.usersService.clearUserInfoCache();
+        }
+        isSuccess = false;
+        return {
+          code: 400,
+          data: result.errorMsg,
+        };
+      }
+
+    } catch (e) {
+      isSuccess = false;
+      this.logger.log('updateThsSelfStock[' + type + '] 失败了！' + e);
+    }
+    return {
+      code: isSuccess ? 200 : 400,
     };
   }
 }

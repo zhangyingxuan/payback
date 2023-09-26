@@ -7,6 +7,7 @@ import { LatestConceptPlateService } from './service/latestConceptPlate.service'
 import { ReviewService } from './service/review.service';
 import { ThsService } from './service/ths.service';
 import { ApiTestService } from './service/apiTest.service';
+import { UsersService } from '../users/users.service';
 export declare class PayBackController {
     private readonly shorTermService;
     private readonly specialStockService;
@@ -16,10 +17,11 @@ export declare class PayBackController {
     private readonly thsService;
     private readonly apiTestService;
     private readonly latestConceptPlateService;
+    private readonly usersService;
     private readonly marketService;
-    constructor(shorTermService: ShorTermService, specialStockService: SpecialStockService, fundsService: FundsService, hotListService: HotListService, reviewService: ReviewService, thsService: ThsService, apiTestService: ApiTestService, latestConceptPlateService: LatestConceptPlateService, marketService: MarketService);
+    constructor(shorTermService: ShorTermService, specialStockService: SpecialStockService, fundsService: FundsService, hotListService: HotListService, reviewService: ReviewService, thsService: ThsService, apiTestService: ApiTestService, latestConceptPlateService: LatestConceptPlateService, usersService: UsersService, marketService: MarketService);
     private readonly logger;
-    testApi(): Promise<void>;
+    testApi(): Promise<any>;
     autoCrawlTodayDataAM(): Promise<void>;
     autoCrawlTodayDataPM(): Promise<void>;
     crawlTodayData(query: any): Promise<{
