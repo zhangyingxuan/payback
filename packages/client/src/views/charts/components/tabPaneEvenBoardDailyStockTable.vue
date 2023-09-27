@@ -459,6 +459,10 @@ function getExpectedStr(stock: DailyLimitStockDto) {
 }
 .dailyLimit__row {
   display: flex;
+
+  &:hover {
+    background-color: #ccc;
+  }
 }
 .dailyLimit__content {
   min-width: 900px;

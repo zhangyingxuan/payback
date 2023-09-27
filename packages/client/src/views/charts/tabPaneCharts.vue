@@ -170,7 +170,7 @@ onMounted(async () => {
 
   // 获取15天内最新概念
   findConceptPlateWithinNDays({ limit: 15 }).then((result: any) => {
-    console.log(result);
+    // console.log(result);
     data.latestConceptPlates = result.map((item: any) => {
       return {
         ...item,

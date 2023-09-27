@@ -11,6 +11,7 @@ import {
 } from "./types.d";
 import { stringify } from "qs";
 import { getToken, clearLogin } from '../router/auth'
+import { ElMessage } from 'element-plus'
 
 // 相关配置请参考：www.axios-js.com/zh-cn/docs/#axios-request-config-1
 const defaultConfig: AxiosRequestConfig = {
@@ -26,6 +27,16 @@ const defaultConfig: AxiosRequestConfig = {
     serialize: stringify as unknown as CustomParamsSerializer
   }
 };
+
+
+const whiteUrls = ['tonghuashun'];
+
+function isNotWhiteUrl(currentApiUrl: string) {
+  return !whiteUrls.some(url => {
+    return currentApiUrl.indexOf(url) > -1;
+  });
+}
+
 
 class PureHttp {
   constructor() {
@@ -58,10 +69,21 @@ class PureHttp {
     const instance = PureHttp.axiosInstance;
     instance.interceptors.response.use(
       (response: PureHttpResponse) => {
+        const data = response.data;
+        // console.log(response)
+        // url: "tonghuashun/dataapi/transaction/market/v1/history_count"
+        const url = response.config.url || '';
+        if (data.code != 200 && isNotWhiteUrl(url)) {
+          ElMessage({
+            showClose: true,
+            message: data.data,
+            type: 'error',
+          })
+        }
         return response.data;
       },
       (error: PureHttpError) => {
-        console.log(error);
+        // console.log(error);
         if (error.response) {
           // 解析错误码
           const { statusCode }: any = error.response?.data;

@@ -26,9 +26,13 @@
       getExpectedStr(stock.expected)
     }}</span>
     收盘涨幅
-    <span :class="{ 'red bold': stock.closeIncrease >= 5 }">{{
-      stock.closeIncrease
-    }}</span>
+    <span
+      :class="{
+        'red bold': stock.closeIncrease >= 5,
+        green: stock.closeIncrease < 0,
+      }"
+      >{{ stock.closeIncrease }}</span
+    >
   </div>
 </template>
 <script lang="ts" setup>

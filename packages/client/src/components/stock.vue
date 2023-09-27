@@ -1,15 +1,56 @@
 <template>
-  <span class="stock" @click="handleClick" @dblclick="handleDblClick">
+  <span
+    class="stock"
+    :class="class"
+    @click="handleClick"
+    @dblclick="handleDblClick"
+    ref="stockRef"
+    v-click-outside="onClickOutside"
+  >
     {{ superData.name }}
     <template v-if="superData.showCode">&nbsp;{{ superData.code }}</template>
     <el-tag v-if="code.startsWith('3')" size="small" round> 创 </el-tag>
-    <el-tag v-if="code.startsWith('688')" size="small" round> 科 </el-tag>
+    <el-tag v-else-if="code.startsWith('688')" size="small" round> 科 </el-tag>
     <el-tag v-else-if="code.startsWith('83')" size="small" type="info" round>
       京
     </el-tag>
   </span>
+  <el-popover
+    trigger="hover"
+    placement="right"
+    popper-class="stockOp__popperClass"
+    ref="popoverRef"
+    virtual-triggering
+    :virtual-ref="stockRef"
+    v-if="isAdmin"
+  >
+    <!-- <template #reference> -->
+    <!-- </template> -->
+    <template #default>
+      <el-button-group class="op__btnGroup">
+        <el-button @click="handleAdd" type="primary" :icon="Plus" />
+        <el-button @click="handleDel" type="primary" :icon="Minus" />
+      </el-button-group>
+    </template>
+  </el-popover>
+
+  <!-- <el-icon @click="handleAdd"><Plus /></el-icon>
+    <el-icon @click="handleDel"><Minus /></el-icon> -->
+  <!-- <el-icon @click="handleAdd"><CirclePlus /></el-icon>
+  <el-icon @click="handleDel"><Remove /></el-icon> -->
 </template>
 <script lang="ts" setup>
+import { addThsSelfStock, delThsSelfStock } from '../api/thsTrade';
+import { Plus, Minus } from '@element-plus/icons-vue';
+import { ref, unref } from 'vue';
+import { ClickOutside as vClickOutside, ElMessage } from 'element-plus';
+
+const stockRef = ref();
+const popoverRef = ref();
+const onClickOutside = () => {
+  unref(popoverRef).popperRef?.delayHide?.();
+};
+
 let timer: any = null;
 let superData = defineProps({
   code: {
@@ -24,7 +65,18 @@ let superData = defineProps({
     type: Boolean,
     default: false,
   },
+  class: {
+    type: String,
+    default: '',
+  },
+  // showOp: {
+  //   type: Boolean,
+  //   default: true,
+  // },
 });
+
+const username: string | null = localStorage.getItem('ms_username');
+const isAdmin = username === 'admin';
 
 const thsUrl = 'http://stockpage.10jqka.com.cn/${code}/';
 const iwencaiUrl =
@@ -47,10 +99,42 @@ function handleDblClick() {
   }
   window.open(iwencaiUrl.replace('${code}', superData.code), '_blank');
 }
+
+async function handleAdd() {
+  const result = await addThsSelfStock({ code: superData.code });
+  if (!result) {
+    ElMessage({
+      showClose: true,
+      message: '添加自选成功',
+      type: 'success',
+    });
+  }
+}
+async function handleDel() {
+  const result = await delThsSelfStock({ code: superData.code });
+  if (!result) {
+    ElMessage({
+      showClose: true,
+      message: '删除自选成功',
+      type: 'success',
+    });
+  }
+}
 </script>
 
+<style lang="less">
+.stockOp__popperClass {
+  padding: 0 !important;
+  width: 93px !important;
+  min-width: 93px !important;
+  background-color: #409eff;
+}
+</style>
 <style scoped lang="less">
 .stock {
   cursor: pointer;
+}
+.op__btnGroup {
+  margin: 0;
 }
 </style>

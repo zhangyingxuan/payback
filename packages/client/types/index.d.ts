@@ -80,6 +80,11 @@ interface ComponentElRef<T extends HTMLElement = HTMLDivElement> {
   $el: T;
 }
 
+interface ApiResponse {
+  code: number,
+  data: any,
+}
+
 function parseInt(s: string | number, radix?: number): number;
 
 function parseFloat(string: string | number): number;

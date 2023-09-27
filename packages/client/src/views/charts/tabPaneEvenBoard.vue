@@ -95,11 +95,13 @@
         >
           {{ item.sealingRate }}%
         </div>
+        <!-- 跌停数 -->
         <div class="table-col height1 green">{{ item.downLimitQuantity }}</div>
+        <!-- 大面数量 -->
         <div class="table-col height1 green">
           {{ item.hugeFallData ? item.hugeFallData.length : '' }}
         </div>
-        <!-- 高标数据 -->
+        <!-- 反包 -->
         <div class="table-col">
           <el-tooltip
             effect="dark"
@@ -127,7 +129,9 @@
               :content="stock.reason"
               :key="'stock' + index"
             >
-              <Stock :name="stock.name" :code="stock.code" />
+              <span>
+                <Stock :name="stock.name" :code="stock.code" />
+              </span>
             </el-tooltip>
           </div>
           <div v-else class="table-col height1">

@@ -104,7 +104,7 @@ export class ThsService {
 
     try {
       const result = await modifyThsSelfStocksRequest(code, userid, ticket, user, type);
-      console.log(result);
+      this.logger.log(result);
       if (result.errorCode !== 0) {
         if (result.errorMsg === '当前用户未登录') {
           this.logger.log('[updateThsSelfStock] 当前用户未登录：https://www.10jqka.com.cn/');
