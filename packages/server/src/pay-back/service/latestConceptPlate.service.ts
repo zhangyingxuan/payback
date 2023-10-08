@@ -18,7 +18,19 @@ export class LatestConceptPlateService {
   // * 10 * * * *：每小时一次，十分钟开始
   // 0 */30 9-17 * * *：上午九时至下午五时，每三十分钟一次
   // 0 30 11 * * 1-5：星期一至星期五上午11:30
+  @Cron('0 00 9 * * 1-5')
+  async autoCrawlLatestConceptPlateDataAm() {
+    return await this.crawlLatestConceptPlateData();
+  }
   @Cron('0 00 16 * * 1-5')
+  async autoCrawlLatestConceptPlateDataPm() {
+    return await this.crawlLatestConceptPlateData();
+  }
+  @Cron('0 00 23 * * 1-5')
+  async autoCrawlLatestConceptPlateDataEvening() {
+    return await this.crawlLatestConceptPlateData();
+  }
+
   async crawlLatestConceptPlateData() {
     this.logger.debug('crawlLatestConceptPlateData is Begining!');
     const conceptPlate = await this.findLatestOne();

@@ -1,5 +1,6 @@
 <template>
-  <el-tabs type="border-card" class="reviewBoard__tabs" @tab-change="tabChange">
+  <el-tabs type="border-card" class="reviewBoard__tabs">
+    <!-- <el-tabs type="border-card" class="reviewBoard__tabs" @tab-change="tabChange"> -->
     <el-tab-pane label="图表复盘">
       <TabPaneCharts />
     </el-tab-pane>

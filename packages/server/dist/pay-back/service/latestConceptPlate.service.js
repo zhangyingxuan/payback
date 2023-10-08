@@ -25,6 +25,15 @@ let LatestConceptPlateService = LatestConceptPlateService_1 = class LatestConcep
         this.latestConceptPlateRp = latestConceptPlateRp;
         this.logger = new common_1.Logger(LatestConceptPlateService_1.name);
     }
+    async autoCrawlLatestConceptPlateDataAm() {
+        return await this.crawlLatestConceptPlateData();
+    }
+    async autoCrawlLatestConceptPlateDataPm() {
+        return await this.crawlLatestConceptPlateData();
+    }
+    async autoCrawlLatestConceptPlateDataEvening() {
+        return await this.crawlLatestConceptPlateData();
+    }
     async crawlLatestConceptPlateData() {
         this.logger.debug('crawlLatestConceptPlateData is Begining!');
         const conceptPlate = await this.findLatestOne();
@@ -71,11 +80,23 @@ let LatestConceptPlateService = LatestConceptPlateService_1 = class LatestConcep
     }
 };
 __decorate([
+    (0, schedule_1.Cron)('0 00 9 * * 1-5'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], LatestConceptPlateService.prototype, "autoCrawlLatestConceptPlateDataAm", null);
+__decorate([
     (0, schedule_1.Cron)('0 00 16 * * 1-5'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
-], LatestConceptPlateService.prototype, "crawlLatestConceptPlateData", null);
+], LatestConceptPlateService.prototype, "autoCrawlLatestConceptPlateDataPm", null);
+__decorate([
+    (0, schedule_1.Cron)('0 00 23 * * 1-5'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], LatestConceptPlateService.prototype, "autoCrawlLatestConceptPlateDataEvening", null);
 LatestConceptPlateService = LatestConceptPlateService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_2.InjectRepository)(latestConceptPlate_entity_1.latestConceptPlate)),

@@ -8,12 +8,13 @@
           <!-- 1进2选股 -->
           强势股
           <el-tooltip
-            class="box-item"
             effect="dark"
             :content="params.chooseStock1Expected"
             placement="top"
           >
-            <el-icon @click="openNewIwencaiWindow(params.chooseStock1Expected)"
+            <el-icon
+              @click="openNewIwencaiWindow(params.chooseStock1Expected)"
+              class="thsTooltip__icon"
               ><InfoFilled
             /></el-icon>
           </el-tooltip>

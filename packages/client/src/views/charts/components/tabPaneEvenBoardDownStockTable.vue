@@ -5,9 +5,34 @@
         <div class="col1">行业板块</div>
         <div class="col2 green stocks_header">
           <template v-if="isDownLimitMode">
-            跌停个股（{{ downLimitData ? downLimitData.length : 0 }}） 短线跌停
+            跌停个股（{{
+              downLimitData ? downLimitData.length : 0
+            }}）<el-tooltip
+              effect="dark"
+              :content="params.downLimit"
+              placement="top"
+            >
+              <el-icon
+                @click="openNewIwencaiWindow(params.downLimit)"
+                class="thsTooltip__icon"
+                ><InfoFilled
+              /></el-icon>
+            </el-tooltip>
+            短线跌停
           </template>
-          <template v-else> 大面股 </template>
+          <template v-else>
+            大面股
+            <el-tooltip
+              effect="dark"
+              :content="params.hugeFall"
+              placement="top"
+            >
+              <el-icon
+                @click="openNewIwencaiWindow(params.hugeFall)"
+                class="thsTooltip__icon"
+                ><InfoFilled
+              /></el-icon> </el-tooltip
+          ></template>
           （{{ num }}）
         </div>
       </div>
@@ -39,6 +64,8 @@
 </template>
 <script lang="ts" setup>
 import _ from 'lodash-es';
+import { openNewIwencaiWindow } from '../utils';
+import { params } from 'pay-back-core';
 import { computed } from 'vue';
 let superData = defineProps({
   downLimitData: {

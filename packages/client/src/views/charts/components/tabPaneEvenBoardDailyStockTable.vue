@@ -13,9 +13,21 @@
           <!-- 涨停个股 过滤条件 -->
           <div class="dailyLimit__content flex__row_header">
             <div>
-              {{ title || '今日 - 涨停个股' }} （{{
+              {{ title || '今日 - 涨停个股' }}（{{
                 currentDateData.dailyLimitQuantity
-              }}）
+              }}）<el-tooltip
+                effect="dark"
+                popper-class="thsTooltip__content"
+                :content="params.dailyLimitYesterday"
+                placement="top"
+              >
+                <el-icon
+                  @click="openNewIwencaiWindow(params.dailyLimitYesterday)"
+                  class="thsTooltip__icon"
+                  ><InfoFilled
+                /></el-icon>
+              </el-tooltip>
+
               <span
                 v-for="(item, index) in currentDateData.ticaiData"
                 :key="'span' + index"
@@ -58,6 +70,7 @@
             <el-checkbox v-model="data.notFirstBoardChecked">连板</el-checkbox>
             <el-checkbox v-model="data.exceededExpect">超预期</el-checkbox>
             <el-checkbox v-model="data.conformToExpect">符合预期</el-checkbox>
+            <el-checkbox v-model="data.closeDailyLimit">收盘涨停</el-checkbox>
           </div>
         </div>
       </div>
@@ -125,8 +138,8 @@
 import _ from 'lodash-es';
 import TabPaneEvenBoardBiddingDataRow from './tabPaneEvenBoardBiddingDataRow.vue';
 import { reactive, computed } from 'vue';
-import { highlightKeyWord } from '../utils';
-import { dailyLimitOptionalStrategy, getExpected } from 'pay-back-core';
+import { highlightKeyWord, openNewIwencaiWindow } from '../utils';
+import { dailyLimitOptionalStrategy, getExpected, params } from 'pay-back-core';
 import { DailyLimitStockDto } from '@/typings';
 import dayjs from 'dayjs';
 
@@ -168,6 +181,8 @@ const data = reactive({
   exceededExpect: false,
   // 符合预期
   conformToExpect: false,
+  // 收盘涨停
+  closeDailyLimit: false,
   biddingStrategyCheckedLen: 0,
 });
 
@@ -248,7 +263,12 @@ const stockGroupByPlateByFilter = computed(() => {
         isAdd && data.myStrategyCheckedLen++;
 
         // 竞价条件过滤 2023-09-09 00:21:30
-        if (item.biddingData) {
+        if (item.biddingData && isAdd) {
+          // 收盘涨停
+          if (data.closeDailyLimit && isAdd) {
+            isAdd = +item.biddingData.closeIncrease > 9.5;
+          }
+
           // 超预期
           if ((data.exceededExpect || data.conformToExpect) && isAdd) {
             if (data.exceededExpect && data.conformToExpect) {

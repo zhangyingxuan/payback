@@ -7,12 +7,13 @@
         <div class="red stocks_header">
           新股
           <el-tooltip
-            class="box-item"
             effect="dark"
             :content="params.chooseStockNewStock"
             placement="top"
           >
-            <el-icon @click="openNewIwencaiWindow(params.chooseStockNewStock)"
+            <el-icon
+              @click="openNewIwencaiWindow(params.chooseStockNewStock)"
+              class="thsTooltip__icon"
               ><InfoFilled
             /></el-icon>
           </el-tooltip>
