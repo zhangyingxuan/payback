@@ -3,15 +3,19 @@ import { SpecialStockDto } from '../dto/special-stock.dto';
 import { Repository } from 'typeorm';
 import { specialStock } from '../entities/specialStock.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ExpectEnum } from '../utils/transformDataUtil';
 import { getBiddingData } from '../utils/specialStockUtil';
 import * as dayjs from 'dayjs';
 import { Cron } from '@nestjs/schedule';
 import { iWencaiDateFormat } from 'pay-back-core';
+import { ThsService } from './ths.service';
+import { ThsOprate } from '../core/fetchUtil';
 
 @Injectable()
 export class SpecialStockService {
   constructor(
     @InjectRepository(specialStock) private readonly specialStockRp: Repository<specialStock>,
+    private readonly thsService: ThsService,
   ) { }
 
   private readonly logger = new Logger(SpecialStockService.name);
@@ -27,7 +31,7 @@ export class SpecialStockService {
     this.crawlBinddingData();
   }
 
-  async crawlBinddingData() {
+  async crawlBinddingData(isRemoveIncompatible = false) {
     this.logger.debug('autoCrawlBinddingData is Begining!');
 
     let isExist = false;
@@ -41,6 +45,7 @@ export class SpecialStockService {
     let specialStockDto: SpecialStockDto = new SpecialStockDto();
     try {
       const yesterdayDateStr = await this.getLastTradingDayByDB(todayDateStr);
+
       // 获取竞价情况
       const { dailyLimitYesterdayBidding, newStocks, chooseStock1Expected } = await getBiddingData(todayDateStr, yesterdayDateStr);
       specialStockDto.biddingData = JSON.stringify(dailyLimitYesterdayBidding);
@@ -48,6 +53,9 @@ export class SpecialStockService {
       specialStockDto.chooseStock = JSON.stringify({
         chooseStock1Expected
       });
+
+      // 处理不及预期个股
+      this.dealIncompatibleExpectStocks(isRemoveIncompatible, dailyLimitYesterdayBidding);
 
       console.log(specialStockDto);
       if (isExist) {
@@ -65,6 +73,28 @@ export class SpecialStockService {
 
     return specialStockDto;
   }
+
+
+  /**
+   * 处理不及预期个股
+   * @returns 
+   */
+  async dealIncompatibleExpectStocks(isRemoveIncompatible, dailyLimitYesterdayBidding) {
+    // 删除不及预期个股
+    if (isRemoveIncompatible) {
+      const incompatibleExpectStocks = [];
+
+      dailyLimitYesterdayBidding.forEach(stock => {
+        // 将不及预期个股 加入数组
+        if (stock.expected === ExpectEnum.incompatible) {
+          incompatibleExpectStocks.push(stock);
+        }
+      });
+      // 批量 剔除低于预期的昨日涨停个股（首板），集合竞价开盘价低于预期， 且成交量不足，未匹配量；
+      this.thsService.batchUpdateThsSelfStock(incompatibleExpectStocks, ThsOprate.del);
+    }
+  }
+
 
   /**
    * 获取今天的数据

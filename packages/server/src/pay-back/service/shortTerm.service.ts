@@ -3,7 +3,7 @@ import { CreatePayBackDto } from '../dto/create-pay-back.dto';
 import { Repository } from 'typeorm';
 import { shortTermData } from '../entities/shortTermData.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getShortTermData, getShortTermDataByDate, autoRemoveLessThanExpect, mergeExtra2ShortTermData } from '../utils/shortTermUtil';
+import { getShortTermData, getShortTermDataByDate, mergeExtra2ShortTermData } from '../utils/shortTermUtil';
 import { ThsService } from './ths.service';
 import * as dayjs from 'dayjs';
 import { Cron } from '@nestjs/schedule';
@@ -34,11 +34,6 @@ export class ShorTermService {
   @Cron('0 36 11 * * 1-5')
   async autoCrawlShortTermDataMidday() {
     this.crawlShortTermData();
-  }
-
-  // 早盘集合竞价剔除不及预期
-  async autoRemoveLessThanExpect() {
-    const result = autoRemoveLessThanExpect();
   }
 
   /**

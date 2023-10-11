@@ -85,7 +85,9 @@ export class PayBackController {
         fundsData = await this.fundsService.crawlfundsData();
         break;
       case 4:
-        binddingData = await this.specialStockService.crawlBinddingData();
+        // 是否剔除 不及预期数据
+        const isRemoveIncompatible = query.isRemoveIncompatible;
+        binddingData = await this.specialStockService.crawlBinddingData(isRemoveIncompatible);
         break;
       default:
         break;

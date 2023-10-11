@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query, } from '@nest
 import { ShorTermService } from './service/shortTerm.service';
 import { ThsService } from './service/ths.service';
 import { Public } from '../decorator/public.decorator';
-import { ThsOprate } from './core/fetchUtil'
+import { ThsOprate } from './core/fetchUtil';
 
 @Controller('ths-trade')
 export class ThsTradeController {

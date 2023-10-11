@@ -37,17 +37,6 @@ export async function getShortTermDataByDate(todayDateStr): Promise<CreatePayBac
 }
 
 /**
- * 自动剔除低于预期的昨日涨停个股（首板），集合竞价开盘价低于预期， 且成交量不足，未匹配量；
- */
-export async function autoRemoveLessThanExpect() {
-  // 选股
-  // 集中度更集中，20-120，股价低于30
-  // 获取昨日涨停 集合竞价情况，竞价量10倍，评级看多，竞价抢筹
-  // 连板概率 90%，75%
-  const dailyLimitYesterdayData: any = await fetchIwencaiApi(params.dailyLimitYesterday, 100, false);
-}
-
-/**
  * 准备dto数据
  * @param dailyLimitData 
  * @param dailyLimitOpenData 
@@ -94,6 +83,7 @@ export function mergeExtra2ShortTermData(shortTermData: Array<any>, specialStock
     const currentSpecialStock = findBiddingDataByCreateTime(specialStocks, currentDate);
     if (currentSpecialStock && currentSpecialStock.biddingData) {
       // 将今天的竞价数据，装载入昨日涨停数据中
+      // TODO 这里的数据装载，缺少日期判断，特别是昨日日期判断
       const evenBoardData = prepareEvenBoardData(JSON.parse(shortTermData[i + 1].evenBoardData), JSON.parse(currentSpecialStock.biddingData));
       shortTermData[i + 1].evenBoardData = JSON.stringify(evenBoardData);
     }

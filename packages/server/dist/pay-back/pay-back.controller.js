@@ -75,7 +75,8 @@ let PayBackController = PayBackController_1 = class PayBackController {
                 fundsData = await this.fundsService.crawlfundsData();
                 break;
             case 4:
-                binddingData = await this.specialStockService.crawlBinddingData();
+                const isRemoveIncompatible = query.isRemoveIncompatible;
+                binddingData = await this.specialStockService.crawlBinddingData(isRemoveIncompatible);
                 break;
             default:
                 break;

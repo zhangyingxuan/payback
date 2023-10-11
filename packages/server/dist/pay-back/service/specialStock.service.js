@@ -19,13 +19,17 @@ const special_stock_dto_1 = require("../dto/special-stock.dto");
 const typeorm_1 = require("typeorm");
 const specialStock_entity_1 = require("../entities/specialStock.entity");
 const typeorm_2 = require("@nestjs/typeorm");
+const transformDataUtil_1 = require("../utils/transformDataUtil");
 const specialStockUtil_1 = require("../utils/specialStockUtil");
 const dayjs = require("dayjs");
 const schedule_1 = require("@nestjs/schedule");
 const pay_back_core_1 = require("pay-back-core");
+const ths_service_1 = require("./ths.service");
+const fetchUtil_1 = require("../core/fetchUtil");
 let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
-    constructor(specialStockRp) {
+    constructor(specialStockRp, thsService) {
         this.specialStockRp = specialStockRp;
+        this.thsService = thsService;
         this.logger = new common_1.Logger(SpecialStockService_1.name);
     }
     async autoCrawlBinddingData() {
@@ -34,7 +38,7 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
     async autoCrawlBinddingDataLateSession() {
         this.crawlBinddingData();
     }
-    async crawlBinddingData() {
+    async crawlBinddingData(isRemoveIncompatible = false) {
         this.logger.debug('autoCrawlBinddingData is Begining!');
         let isExist = false;
         const todayDateStr = new Date().toLocaleDateString();
@@ -51,6 +55,7 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
             specialStockDto.chooseStock = JSON.stringify({
                 chooseStock1Expected
             });
+            this.dealIncompatibleExpectStocks(isRemoveIncompatible, dailyLimitYesterdayBidding);
             console.log(specialStockDto);
             if (isExist) {
                 this.logger.log('autoCrawlBinddingData 更新数据');
@@ -66,6 +71,17 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
             this.logger.error('出错啦！！！', e);
         }
         return specialStockDto;
+    }
+    async dealIncompatibleExpectStocks(isRemoveIncompatible, dailyLimitYesterdayBidding) {
+        if (isRemoveIncompatible) {
+            const incompatibleExpectStocks = [];
+            dailyLimitYesterdayBidding.forEach(stock => {
+                if (stock.expected === transformDataUtil_1.ExpectEnum.incompatible) {
+                    incompatibleExpectStocks.push(stock);
+                }
+            });
+            this.thsService.batchUpdateThsSelfStock(incompatibleExpectStocks, fetchUtil_1.ThsOprate.del);
+        }
     }
     getTodayData(todayDateStr) {
         return this.specialStockRp
@@ -109,7 +125,8 @@ __decorate([
 SpecialStockService = SpecialStockService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_2.InjectRepository)(specialStock_entity_1.specialStock)),
-    __metadata("design:paramtypes", [typeorm_1.Repository])
+    __metadata("design:paramtypes", [typeorm_1.Repository,
+        ths_service_1.ThsService])
 ], SpecialStockService);
 exports.SpecialStockService = SpecialStockService;
 //# sourceMappingURL=specialStock.service.js.map

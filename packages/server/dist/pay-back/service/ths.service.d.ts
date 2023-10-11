@@ -14,4 +14,7 @@ export declare class ThsService {
         code: number;
         data?: undefined;
     }>;
+    batchUpdateThsSelfStock(stocks: any[], type: any): Promise<{
+        code: number;
+    }>;
 }

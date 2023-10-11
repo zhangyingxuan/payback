@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.transformShortTermSourceData = exports.transformStrongStockData = exports.transformNewStockData = exports.transformBidData = exports.transformPlateData = exports.transformStockData = void 0;
+exports.transformShortTermSourceData = exports.transformStrongStockData = exports.transformNewStockData = exports.transformBidData = exports.transformPlateData = exports.transformStockData = exports.ExpectEnum = void 0;
 const daily_limit_stock_dto_1 = require("../dto/daily-limit-stock.dto");
 const down_limit_stock_dto_1 = require("../dto/down-limit-stock.dto");
 const strong_stock_dto_1 = require("../dto/strong-stock.dto");
@@ -10,6 +10,12 @@ const commonUtil_1 = require("./commonUtil");
 const dayjs = require("dayjs");
 const pay_back_core_1 = require("pay-back-core");
 const turnoverTypeArr = ['放量涨停', '缩量涨停', '一字涨停', 'T字涨停'];
+var ExpectEnum;
+(function (ExpectEnum) {
+    ExpectEnum[ExpectEnum["conformTo"] = 1] = "conformTo";
+    ExpectEnum[ExpectEnum["exceed"] = 2] = "exceed";
+    ExpectEnum[ExpectEnum["incompatible"] = 0] = "incompatible";
+})(ExpectEnum = exports.ExpectEnum || (exports.ExpectEnum = {}));
 function transformStockData(stockList) {
     return stockList.map(item => {
         var _a, _b;
@@ -117,7 +123,7 @@ function transformDailyLimitData(dailyLimitData, currentDate) {
         dailyLimitReturnSealQuantity,
     };
 }
-function transformBidData(stocks, todayDateStr, yesterdayDate, isSaveMore = false) {
+function transformBidData(stocks, todayDateStr, yesterdayDate) {
     const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
     const dailyLimitYesterdayBiddingDtos = [];
     stocks.forEach(item => {
@@ -136,22 +142,20 @@ function transformBidData(stocks, todayDateStr, yesterdayDate, isSaveMore = fals
                 dailyLimitYesterdayBiddingDto.evenDays = day;
             }
         }
-        if (isSaveMore) {
-            if (!item[`最终涨停时间[${yesterdayDate}]`]) {
-                yesterdayDate = (0, commonUtil_1.getLastTradingDay)(currentDate);
-            }
-            dailyLimitYesterdayBiddingDto.bidVolumeRatio = +(item[`竞价量[${currentDate}]`] / item[`竞价量[${yesterdayDate}]`]).toFixed(2);
-            if (item[`涨停开板次数[${yesterdayDate}]`] != 0) {
-                dailyLimitYesterdayBiddingDto.openTimes = item[`涨停开板次数[${yesterdayDate}]`];
-            }
-            dailyLimitYesterdayBiddingDto.dailyTime = item[`首次涨停时间[${yesterdayDate}]`] ? item[`首次涨停时间[${yesterdayDate}]`].trim() : '-';
-            if (dailyLimitYesterdayBiddingDto.openTimes > 0 && item[`最终涨停时间[${yesterdayDate}]`]) {
-                dailyLimitYesterdayBiddingDto.dailyTime += (',' + item[`最终涨停时间[${yesterdayDate}]`].trim());
-            }
-            dailyLimitYesterdayBiddingDto.expected = judgeExpected(dailyLimitYesterdayBiddingDto);
-            delete dailyLimitYesterdayBiddingDto.dailyTime;
-            delete dailyLimitYesterdayBiddingDto.openTimes;
+        if (!item[`最终涨停时间[${yesterdayDate}]`]) {
+            yesterdayDate = (0, commonUtil_1.getLastTradingDay)(currentDate);
         }
+        dailyLimitYesterdayBiddingDto.bidVolumeRatio = +(item[`竞价量[${currentDate}]`] / item[`竞价量[${yesterdayDate}]`]).toFixed(2);
+        if (item[`涨停开板次数[${yesterdayDate}]`] != 0) {
+            dailyLimitYesterdayBiddingDto.openTimes = item[`涨停开板次数[${yesterdayDate}]`];
+        }
+        dailyLimitYesterdayBiddingDto.dailyTime = item[`首次涨停时间[${yesterdayDate}]`] ? item[`首次涨停时间[${yesterdayDate}]`].trim() : '-';
+        if (dailyLimitYesterdayBiddingDto.openTimes > 0 && item[`最终涨停时间[${yesterdayDate}]`]) {
+            dailyLimitYesterdayBiddingDto.dailyTime += (',' + item[`最终涨停时间[${yesterdayDate}]`].trim());
+        }
+        dailyLimitYesterdayBiddingDto.expected = judgeExpected(dailyLimitYesterdayBiddingDto);
+        delete dailyLimitYesterdayBiddingDto.dailyTime;
+        delete dailyLimitYesterdayBiddingDto.openTimes;
         dailyLimitYesterdayBiddingDtos.push(dailyLimitYesterdayBiddingDto);
     });
     return dailyLimitYesterdayBiddingDtos;
@@ -228,23 +232,23 @@ function judgeExpected(item) {
         const expectedD = parseInt(expected);
         if (bidIncreaseT > expectedD) {
             if (bidIncreaseT - expectedD >= 1) {
-                return 2;
+                return ExpectEnum.exceed;
             }
-            return 1;
+            return ExpectEnum.conformTo;
         }
-        return 0;
+        return ExpectEnum.incompatible;
     }
     else {
         const expecteds = expected.split(',');
         const start = parseInt(expecteds[0]);
         const end = parseInt(expecteds[1]);
         if (bidIncreaseT >= start && bidIncreaseT <= end) {
-            return 1;
+            return ExpectEnum.conformTo;
         }
         if (bidIncreaseT > end) {
-            return 2;
+            return ExpectEnum.exceed;
         }
-        return 0;
+        return ExpectEnum.incompatible;
     }
 }
 //# sourceMappingURL=transformDataUtil.js.map

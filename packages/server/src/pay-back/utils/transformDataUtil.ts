@@ -8,6 +8,14 @@ import * as dayjs from 'dayjs';
 import { getExpected } from 'pay-back-core';
 
 const turnoverTypeArr = ['放量涨停', '缩量涨停', '一字涨停', 'T字涨停'];
+export enum ExpectEnum {
+  // 符合预期
+  conformTo = 1,
+  // 超预期
+  exceed = 2,
+  // 不及预期
+  incompatible = 0,
+}
 
 export function transformStockData(stockList) {
   return stockList.map(item => {
@@ -160,7 +168,7 @@ function transformDailyLimitData(dailyLimitData, currentDate) {
  * @param todayDateStr 
  * @returns 
  */
-export function transformBidData(stocks, todayDateStr, yesterdayDate, isSaveMore = false): Array<DailyLimitYesterdayBiddingDto> {
+export function transformBidData(stocks, todayDateStr, yesterdayDate): Array<DailyLimitYesterdayBiddingDto> {
   const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
   const dailyLimitYesterdayBiddingDtos: DailyLimitYesterdayBiddingDto[] = [];
 
@@ -187,29 +195,27 @@ export function transformBidData(stocks, todayDateStr, yesterdayDate, isSaveMore
     }
 
     // 计算 竞价量比、预期差
-    if (isSaveMore) {
-      // 纠错环节，判断昨日日期是否正确
-      if (!item[`最终涨停时间[${yesterdayDate}]`]) {
-        yesterdayDate = getLastTradingDay(currentDate);
-      }
-
-      // 竞价量比
-      dailyLimitYesterdayBiddingDto.bidVolumeRatio = +(item[`竞价量[${currentDate}]`] / item[`竞价量[${yesterdayDate}]`]).toFixed(2);
-      // 昨日涨停开板次数/涨停时间，便于预期差统计
-      if (item[`涨停开板次数[${yesterdayDate}]`] != 0) {
-        dailyLimitYesterdayBiddingDto.openTimes = item[`涨停开板次数[${yesterdayDate}]`];
-      }
-      dailyLimitYesterdayBiddingDto.dailyTime = item[`首次涨停时间[${yesterdayDate}]`] ? item[`首次涨停时间[${yesterdayDate}]`].trim() : '-';
-      if (dailyLimitYesterdayBiddingDto.openTimes > 0 && item[`最终涨停时间[${yesterdayDate}]`]) {
-        dailyLimitYesterdayBiddingDto.dailyTime += (',' + item[`最终涨停时间[${yesterdayDate}]`].trim());
-      }
-
-      // 竞价开盘涨幅是否符合预期
-      dailyLimitYesterdayBiddingDto.expected = judgeExpected(dailyLimitYesterdayBiddingDto)
-
-      delete dailyLimitYesterdayBiddingDto.dailyTime;
-      delete dailyLimitYesterdayBiddingDto.openTimes;
+    // 纠错环节，判断昨日日期是否正确
+    if (!item[`最终涨停时间[${yesterdayDate}]`]) {
+      yesterdayDate = getLastTradingDay(currentDate);
     }
+
+    // 竞价量比
+    dailyLimitYesterdayBiddingDto.bidVolumeRatio = +(item[`竞价量[${currentDate}]`] / item[`竞价量[${yesterdayDate}]`]).toFixed(2);
+    // 昨日涨停开板次数/涨停时间，便于预期差统计
+    if (item[`涨停开板次数[${yesterdayDate}]`] != 0) {
+      dailyLimitYesterdayBiddingDto.openTimes = item[`涨停开板次数[${yesterdayDate}]`];
+    }
+    dailyLimitYesterdayBiddingDto.dailyTime = item[`首次涨停时间[${yesterdayDate}]`] ? item[`首次涨停时间[${yesterdayDate}]`].trim() : '-';
+    if (dailyLimitYesterdayBiddingDto.openTimes > 0 && item[`最终涨停时间[${yesterdayDate}]`]) {
+      dailyLimitYesterdayBiddingDto.dailyTime += (',' + item[`最终涨停时间[${yesterdayDate}]`].trim());
+    }
+
+    // 竞价涨幅预期值
+    dailyLimitYesterdayBiddingDto.expected = judgeExpected(dailyLimitYesterdayBiddingDto);
+
+    delete dailyLimitYesterdayBiddingDto.dailyTime;
+    delete dailyLimitYesterdayBiddingDto.openTimes;
 
     dailyLimitYesterdayBiddingDtos.push(dailyLimitYesterdayBiddingDto);
   });
@@ -351,24 +357,26 @@ function judgeExpected(item) {
     const expectedD = parseInt(expected);
     if (bidIncreaseT > expectedD) {
       if (bidIncreaseT - expectedD >= 1) {
-        return 2;
+        return ExpectEnum.exceed;
       }
-      return 1;
+      // 符合预期
+      return ExpectEnum.conformTo;
     }
-    return 0;
+    // 不及预期
+    return ExpectEnum.incompatible;
   } else {
     const expecteds = expected.split(',');
     const start = parseInt(expecteds[0]);
     const end = parseInt(expecteds[1]);
     if (bidIncreaseT >= start && bidIncreaseT <= end) {
       // 符合预期
-      return 1;
+      return ExpectEnum.conformTo;
     }
     if (bidIncreaseT > end) {
       // 超预期
-      return 2;
+      return ExpectEnum.exceed;
     }
     // 不及预期
-    return 0
+    return ExpectEnum.incompatible;
   }
 }

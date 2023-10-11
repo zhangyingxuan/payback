@@ -98,6 +98,37 @@ let ThsService = ThsService_1 = class ThsService {
             code: isSuccess ? 200 : 400,
         };
     }
+    async batchUpdateThsSelfStock(stocks = [], type) {
+        let app = new pay_back_core_1.AsynTaskIterator();
+        const userInfo = await this.usersService.getUserByAccount('admin');
+        const userid = atob(userInfo.userid);
+        const ticket = userInfo.ticket;
+        const user = userInfo.user;
+        isSuccess = true;
+        try {
+            stocks.forEach(stock => {
+                app.add(async (ctx, next) => {
+                    const result = await (0, fetchUtil_1.modifyThsSelfStocksRequest)(stock.code, userid, ticket, user, type);
+                    console.log(stock.name, result);
+                    if (result.errorMsg === '当前用户未登录') {
+                        ctx.logger.log('当前用户未登录：https://www.10jqka.com.cn/');
+                        isSuccess = false;
+                        ctx.usersService.clearUserInfoCache();
+                        return;
+                    }
+                    next();
+                });
+            });
+            app.run(this);
+        }
+        catch (e) {
+            isSuccess = false;
+            this.logger.log('updateThsSelfStock[' + type + '] 失败了！' + e);
+        }
+        return {
+            code: isSuccess ? 200 : 400,
+        };
+    }
 };
 ThsService = ThsService_1 = __decorate([
     (0, common_1.Injectable)(),

@@ -37,9 +37,6 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
     async autoCrawlShortTermDataMidday() {
         this.crawlShortTermData();
     }
-    async autoRemoveLessThanExpect() {
-        const result = (0, shortTermUtil_1.autoRemoveLessThanExpect)();
-    }
     async crawlShortTermData() {
         this.logger.debug('crawlShortTermData is Begining!');
         let isExist = false;

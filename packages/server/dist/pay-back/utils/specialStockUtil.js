@@ -9,7 +9,7 @@ async function getBiddingData(todayDateStr, yesterdayDateStr) {
     console.log(config_1.params.chooseStock1Expected);
     const chooseStock1ExpectedRs = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.chooseStock1Expected, 100, false);
     const newStocksRs = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.chooseStockNewStock, 100, false);
-    const dailyLimitYesterdayBidding = (0, transformDataUtil_1.transformBidData)(dailyLimitYesterdayDataRs, todayDateStr, yesterdayDateStr, true);
+    const dailyLimitYesterdayBidding = (0, transformDataUtil_1.transformBidData)(dailyLimitYesterdayDataRs, todayDateStr, yesterdayDateStr);
     const chooseStock1Expected = (0, transformDataUtil_1.transformStrongStockData)(chooseStock1ExpectedRs, todayDateStr, yesterdayDateStr);
     const newStocks = (0, transformDataUtil_1.transformNewStockData)(newStocksRs, todayDateStr);
     return { dailyLimitYesterdayBidding, newStocks, chooseStock1Expected };
