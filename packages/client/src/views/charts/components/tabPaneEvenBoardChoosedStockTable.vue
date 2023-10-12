@@ -18,8 +18,9 @@
               ><InfoFilled
             /></el-icon>
           </el-tooltip>
+
+          <span class="dateTime__span">{{ updateTime }}</span>
         </div>
-        <!-- <div class="red">新股 （{{ biddingData.length }}）</div> -->
       </div>
 
       <div
@@ -76,11 +77,8 @@
 <script lang="ts" setup>
 import _ from 'lodash-es';
 import { computed } from 'vue';
-import { useRouter } from 'vue-router';
 import { params } from 'pay-back-core';
 import { calcClassByBidRating, openNewIwencaiWindow } from '../utils';
-
-const router = useRouter();
 
 let superData = defineProps({
   propsData: {
@@ -90,6 +88,10 @@ let superData = defineProps({
   isMobile: {
     type: Boolean,
     default: false,
+  },
+  updateTime: {
+    type: String,
+    default: '',
   },
 });
 

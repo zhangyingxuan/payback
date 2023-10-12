@@ -17,8 +17,8 @@
               ><InfoFilled
             /></el-icon>
           </el-tooltip>
+          <span class="dateTime__span">{{ updateTime }}</span>
         </div>
-        <!-- <div class="red">新股 （{{ biddingData.length }}）</div> -->
       </div>
 
       <div
@@ -82,6 +82,10 @@ let superData = defineProps({
   isMobile: {
     type: Boolean,
     default: false,
+  },
+  updateTime: {
+    type: String,
+    default: '',
   },
 });
 

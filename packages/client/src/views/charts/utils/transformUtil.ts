@@ -143,8 +143,10 @@ export function transformEvenBoardData(shortTermData: ShortTermModel[]): any[] {
         dailyLimitReturnSealQuantity: item.dailyLimitReturnSealQuantity,
         evenBoardAmount: item.evenBoardAmount,
         yizi: evenBoardData.yizi,
+        biddingDataUpdateTime: dayjs(item.biddingDataUpdateTime).format('MM/DD HH:mm'),
         ticaiData: sortObj(ticaiData).splice(0, 3)
       };
+
       item.downLimitData && (itemData.downLimitData = JSON.parse(item.downLimitData));
       item.hugeFallData && (itemData.hugeFallData = JSON.parse(item.hugeFallData));
       item.newStock && (itemData.newStock = JSON.parse(item.newStock));

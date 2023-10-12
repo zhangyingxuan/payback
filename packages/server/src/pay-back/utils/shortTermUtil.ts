@@ -93,6 +93,7 @@ export function mergeExtra2ShortTermData(shortTermData: Array<any>, specialStock
       shortTermData[i].newStock = specialStocks[i].newStock;
       // 3. 合并选股数据
       shortTermData[i].chooseStock = specialStocks[i].chooseStock;
+      shortTermData[i].biddingDataUpdateTime = specialStocks[i].updatedTime;
     }
   }
 

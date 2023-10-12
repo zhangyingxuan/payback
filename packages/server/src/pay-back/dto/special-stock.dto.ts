@@ -12,4 +12,6 @@ export class SpecialStockDto {
   heightestStock: string;
   // 创建时间
   createTime: Date;
+  // 更新时间
+  updatedTime: Date;
 }

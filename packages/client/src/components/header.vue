@@ -98,16 +98,29 @@
     title="是否更新今日数据？"
     :width="isMobile ? '70%' : '30%'"
   >
-    <el-select
-      v-model="data.fetchTodayDataType"
-      placeholder="请选择更新数据范围"
-    >
-      <el-option label="全部数据" :value="0" />
-      <el-option label="短线数据" :value="1" />
-      <el-option label="市场数据" :value="2" />
-      <el-option label="资金数据" :value="3" />
-      <el-option label="竞价数据" :value="4" />
-    </el-select>
+    <el-form label-width="120px">
+      <el-form-item label="更新范围">
+        <el-select
+          v-model="data.fetchTodayDataType"
+          placeholder="请选择更新数据范围"
+        >
+          <el-option label="全部数据" :value="0" />
+          <el-option label="短线数据" :value="1" />
+          <el-option label="市场数据" :value="2" />
+          <el-option label="资金数据" :value="3" />
+          <el-option label="竞价数据" :value="4" />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="删除不及预期" v-if="data.fetchTodayDataType === 4">
+        <!-- 是否删除不及预期个股 -->
+        <el-switch
+          v-model="data.isRemoveIncompatible"
+          inline-prompt
+          active-text="是"
+          inactive-text="否"
+        />
+      </el-form-item>
+    </el-form>
 
     <template #footer>
       <span class="dialog-footer">
@@ -144,6 +157,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import dayjs from 'dayjs';
 import Calendar from './calendar/index.vue';
 import { options } from './config';
+import { fa } from 'element-plus/es/locale';
 
 const username: string | null = localStorage.getItem('ms_username');
 const isAdmin = username === 'admin';
@@ -153,6 +167,7 @@ const data = reactive({
   fetchTodayDataDialogVisible: false,
   fetchTodayDataType: 0,
   fetchTodayDataing: false,
+  isRemoveIncompatible: false,
 });
 
 // const countDays = ref(20);
@@ -169,7 +184,10 @@ async function fetchTodayData() {
   data.fetchTodayDataing = true;
   try {
     // 根据更新范围，调用对应接口
-    await crawlTodayData({ fetchTodayDataType: data.fetchTodayDataType });
+    await crawlTodayData({
+      fetchTodayDataType: data.fetchTodayDataType,
+      isRemoveIncompatible: data.isRemoveIncompatible,
+    });
     data.fetchTodayDataing = false;
     ElMessage.success('更新成功！');
     location.reload();

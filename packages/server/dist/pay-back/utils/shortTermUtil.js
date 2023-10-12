@@ -54,6 +54,7 @@ function mergeExtra2ShortTermData(shortTermData, specialStocks) {
         if (specialStocks[i]) {
             shortTermData[i].newStock = specialStocks[i].newStock;
             shortTermData[i].chooseStock = specialStocks[i].chooseStock;
+            shortTermData[i].biddingDataUpdateTime = specialStocks[i].updatedTime;
         }
     }
     return shortTermData;

@@ -12,10 +12,10 @@
         <div class="col2 red flex__row">
           <!-- 涨停个股 过滤条件 -->
           <div class="dailyLimit__content flex__row_header">
-            <div>
-              {{ title || '今日 - 涨停个股' }}（{{
+            <div class="stocks_header">
+              {{ title || '今日 - 涨停个股' }} ({{
                 currentDateData.dailyLimitQuantity
-              }}）<el-tooltip
+              }})<el-tooltip
                 effect="dark"
                 popper-class="thsTooltip__content"
                 :content="params.dailyLimitYesterday"
@@ -28,6 +28,8 @@
                 /></el-icon>
               </el-tooltip>
 
+              <span class="dateTime__span">{{ updateTime }}</span>
+
               <span
                 v-for="(item, index) in currentDateData.ticaiData"
                 :key="'span' + index"
@@ -37,35 +39,40 @@
                 {{ item.key }}{{ item.value }}&nbsp;
               </span>
             </div>
+
             <div>
-              <el-checkbox v-model="data.myStrategyChecked"
-                >我的策略 ({{ data.myStrategyCheckedLen }})
-                <el-tooltip
-                  class="box-item"
-                  effect="dark"
-                  content="价格低于30元，流通市值20-120亿，非ST，非科创，非创业板"
-                  placement="top"
-                >
-                  <el-icon><InfoFilled /></el-icon>
-                </el-tooltip>
+              <el-checkbox v-model="data.myStrategyChecked">
+                <div class="stocks_header">
+                  我的策略 ({{ data.myStrategyCheckedLen }})&nbsp;
+                  <el-tooltip
+                    class="box-item"
+                    effect="dark"
+                    content="价格低于30元，流通市值20-120亿，非ST，非科创，非创业板"
+                    placement="top"
+                  >
+                    <el-icon><InfoFilled /></el-icon>
+                  </el-tooltip>
+                </div>
               </el-checkbox>
-              <el-checkbox v-model="data.firstBoardChecked"
-                >只看首板</el-checkbox
-              >
+              <el-checkbox v-model="data.firstBoardChecked">
+                只看首板
+              </el-checkbox>
             </div>
           </div>
           <!-- 集合竞价 过滤条件 -->
           <div v-if="showBidding">
-            <el-checkbox v-model="data.biddingStrategyChecked"
-              >竞价策略 ({{ data.biddingStrategyCheckedLen }})
-              <el-tooltip
-                class="box-item"
-                effect="dark"
-                content="看多，超预期；换手率>=5%，竞价量比大于10（连板及反包除外）"
-                placement="top"
-              >
-                <el-icon><InfoFilled /></el-icon>
-              </el-tooltip>
+            <el-checkbox v-model="data.biddingStrategyChecked">
+              <div class="stocks_header">
+                竞价策略 ({{ data.biddingStrategyCheckedLen }})&nbsp;
+                <el-tooltip
+                  class="box-item"
+                  effect="dark"
+                  content="看多，超预期；换手率>=5%，竞价量比大于10（连板及反包除外）"
+                  placement="top"
+                >
+                  <el-icon><InfoFilled /></el-icon>
+                </el-tooltip>
+              </div>
             </el-checkbox>
             <el-checkbox v-model="data.notFirstBoardChecked">连板</el-checkbox>
             <el-checkbox v-model="data.exceededExpect">超预期</el-checkbox>
@@ -164,6 +171,10 @@ let superData = defineProps({
   isHangye: {
     type: Boolean,
     default: false,
+  },
+  updateTime: {
+    type: String,
+    default: '',
   },
 });
 
@@ -266,7 +277,16 @@ const stockGroupByPlateByFilter = computed(() => {
         if (item.biddingData && isAdd) {
           // 收盘涨停
           if (data.closeDailyLimit && isAdd) {
-            isAdd = +item.biddingData.closeIncrease > 9.5;
+            // 涨停判断：主板大于 9.5；其他需大于19
+            let dailyLimitIncrease = 9.5;
+            if (
+              item.code.startsWith('688') ||
+              item.code.startsWith('3') ||
+              item.code.startsWith('83')
+            ) {
+              dailyLimitIncrease = 19.5;
+            }
+            isAdd = +item.biddingData.closeIncrease > dailyLimitIncrease;
           }
 
           // 超预期

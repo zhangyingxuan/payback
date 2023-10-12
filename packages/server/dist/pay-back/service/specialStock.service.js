@@ -55,6 +55,7 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
             specialStockDto.chooseStock = JSON.stringify({
                 chooseStock1Expected
             });
+            specialStockDto.updatedTime = new Date();
             this.dealIncompatibleExpectStocks(isRemoveIncompatible, dailyLimitYesterdayBidding);
             console.log(specialStockDto);
             if (isExist) {
@@ -62,6 +63,7 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
                 await this.specialStockRp.update(todayDataFromDB.id, specialStockDto);
             }
             else {
+                specialStockDto.createTime = new Date();
                 this.logger.log('autoCrawlBinddingData 新增数据');
                 await this.specialStockRp.save(specialStockDto);
             }

@@ -25,4 +25,6 @@ export interface ShortTermModel {
   // 短线周期
   cycle: string;
   createTime: Date;
+  // 竞价数据更新时间 2023-10-12 11:33:11
+  biddingDataUpdateTime: Date;
 }

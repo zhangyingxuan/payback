@@ -1,5 +1,8 @@
 <template>
-  <div class="noice__container">
+  <div
+    class="noice__container"
+    v-if="data.latestConceptPlates && data.latestConceptPlates.length > 0"
+  >
     <div class="el-alert el-alert--error is-light">
       <div class="el-alert__content">
         <span class="el-alert__title">

@@ -41,6 +41,10 @@ __decorate([
     (0, typeorm_1.Column)({ type: 'timestamp', comment: '创建时间', default: () => 'current_timestamp' }),
     __metadata("design:type", typeorm_1.Timestamp)
 ], specialStock.prototype, "createTime", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: "timestamp", comment: '更新时间', default: () => 'current_timestamp' }),
+    __metadata("design:type", typeorm_1.Timestamp)
+], specialStock.prototype, "updatedTime", void 0);
 specialStock = __decorate([
     (0, typeorm_1.Entity)()
 ], specialStock);

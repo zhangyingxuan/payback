@@ -168,18 +168,21 @@
   <!-- 新股 -->
   <NewStockTable
     :propsData="data.currentDateData.newStock"
+    :updateTime="data.currentDateData.biddingDataUpdateTime"
     :isMobile="isMobile"
   />
   <!-- 一进2 -->
   <ChoosedStockTable
     :propsData="data.currentDateData.chooseStock"
+    :updateTime="data.currentDateData.biddingDataUpdateTime"
     :isMobile="isMobile"
   />
   <!-- 昨日涨停竞价情况 -->
   <DailyStockTable
     v-model:currentDateData="data.yesterdayDateData"
+    :updateTime="data.currentDateData.biddingDataUpdateTime"
     :isMobile="isMobile"
-    title="昨日- 涨停竞价情况"
+    title="昨日- 涨停竞价"
     :showBidding="true"
   />
   <!-- 当日涨停分布，按行业板块划分 -->
@@ -367,21 +370,23 @@ async function handleDateClick(item: any) {
   data.yesterdayDateData =
     index + 1 >= evenBoard.value.length ? [] : evenBoard.value[index + 1];
 
-  // 获取复盘数据
-  const result: any = await fetchReveiwDataByDate({ date: item.createTime });
-  if (result) {
-    data.hasSummaryTableData = true;
-    data.summaryTableData[0].value = result.cycle
-      ? result.cycle
-      : getDateCycle();
-    data.summaryTableData[1].value = getDateCycle();
-    data.summaryTableData[2].value = result.marketScore;
-    data.summaryTableData[3].value = result.marketMood;
-    data.summaryTableData[4].value = result.totalLeader;
-    data.summaryTableData[5].value = result.plateLeader;
-    data.summaryTableData[6].value = result.strongestPlate;
-    data.summaryTableData[7].value = result.strongestTopic;
-  }
+  console.log(evenBoard.value[index]);
+
+  // 获取复盘数据 TODO 暂时废弃 2023-10-12 11:31:12
+  // const result: any = await fetchReveiwDataByDate({ date: item.createTime });
+  // if (result) {
+  //   data.hasSummaryTableData = true;
+  //   data.summaryTableData[0].value = result.cycle
+  //     ? result.cycle
+  //     : getDateCycle();
+  //   data.summaryTableData[1].value = getDateCycle();
+  //   data.summaryTableData[2].value = result.marketScore;
+  //   data.summaryTableData[3].value = result.marketMood;
+  //   data.summaryTableData[4].value = result.totalLeader;
+  //   data.summaryTableData[5].value = result.plateLeader;
+  //   data.summaryTableData[6].value = result.strongestPlate;
+  //   data.summaryTableData[7].value = result.strongestTopic;
+  // }
 }
 
 const heightArr = computed(() => {

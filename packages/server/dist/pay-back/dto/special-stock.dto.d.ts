@@ -5,4 +5,5 @@ export declare class SpecialStockDto {
     fundsLikeStock: string;
     heightestStock: string;
     createTime: Date;
+    updatedTime: Date;
 }

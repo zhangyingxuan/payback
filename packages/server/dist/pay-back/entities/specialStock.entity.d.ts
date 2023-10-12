@@ -7,4 +7,5 @@ export declare class specialStock {
     fundsLikeStock: string;
     heightestStock: string;
     createTime: Timestamp;
+    updatedTime: Timestamp;
 }

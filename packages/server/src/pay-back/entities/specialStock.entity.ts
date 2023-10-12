@@ -22,4 +22,7 @@ export class specialStock {
 
   @Column({ type: 'timestamp', comment: '创建时间', default: () => 'current_timestamp' })
   createTime: Timestamp;
+
+  @Column({ type: "timestamp", comment: '更新时间', default: () => 'current_timestamp' })
+  updatedTime: Timestamp;
 }

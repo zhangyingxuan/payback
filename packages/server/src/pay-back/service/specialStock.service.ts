@@ -53,6 +53,7 @@ export class SpecialStockService {
       specialStockDto.chooseStock = JSON.stringify({
         chooseStock1Expected
       });
+      specialStockDto.updatedTime = new Date();
 
       // 处理不及预期个股
       this.dealIncompatibleExpectStocks(isRemoveIncompatible, dailyLimitYesterdayBidding);
@@ -62,6 +63,7 @@ export class SpecialStockService {
         this.logger.log('autoCrawlBinddingData 更新数据')
         await this.specialStockRp.update(todayDataFromDB.id, specialStockDto);
       } else {
+        specialStockDto.createTime = new Date();
         this.logger.log('autoCrawlBinddingData 新增数据')
         await this.specialStockRp.save(specialStockDto);
       }
