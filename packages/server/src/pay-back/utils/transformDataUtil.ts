@@ -258,7 +258,6 @@ export function transformStrongStockData(stocks, todayDateStr, yesterdayDate): A
 
   stocks.forEach(item => {
     const strongStockDto = new StrongStockDto();
-    console.log(item);
     // 个股基础信息
     loadStockBaseData(strongStockDto, item, currentDate);
     // 将竞价基础数据填入 参数中

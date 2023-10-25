@@ -24,19 +24,6 @@ const dottedLineItemStyle = {
 };
 
 
-
-export function getChartStyle(isMobile: boolean) {
-  // 计算宽度；屏幕宽度 - 左侧siderBar - 边框 - cardLeft
-  const columnsAmount = 2;
-  const screenWidth = screen.width - 64 - 20 - columnsAmount * 15;
-  const cardWidth = isMobile ? screen.width - 30 : screenWidth / columnsAmount;
-  return {
-    style: `width: ${cardWidth}px;`,
-    styleBig: `width: ${cardWidth}px;`,
-  };
-}
-
-
 /**
  * 龙虎榜
  * @param xAxisData 

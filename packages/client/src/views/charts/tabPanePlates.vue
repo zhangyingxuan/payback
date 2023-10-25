@@ -35,7 +35,7 @@ import { findPlateByLimit } from '@/api/payBack';
 import { reactive } from 'vue';
 import { isMobile } from '@/core/util';
 import { objectToArr, arrToObject } from './utils';
-import { getChartStyle } from './utils/util';
+import { getChartStyle } from './utils';
 import dayjs from 'dayjs';
 
 const data: any = reactive({

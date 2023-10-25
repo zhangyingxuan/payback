@@ -106,7 +106,7 @@ import {
   getFundsChartOption,
   getSubFundsChartOption,
   getLonghuListOption,
-} from './utils/util';
+} from './utils/chartOptionUtil';
 import dayjs from 'dayjs';
 import {
   transformFundsData,

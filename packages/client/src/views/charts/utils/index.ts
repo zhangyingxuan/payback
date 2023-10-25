@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import { DailyLimitStockDto } from '@/typings';
 import { iwencaiUrl } from '@/views/charts/utils/config';
+import exp from 'constants';
 /**
  * 对象转数组
  * @param obj 
@@ -99,4 +100,34 @@ export function calcClassByBidRating(bidRating: string) {
 export function openNewIwencaiWindow(keyWord: string) {
   // console.log(iwencaiUrl + keyWord + '&querytype=stock');
   window.open(iwencaiUrl + encodeURIComponent(keyWord));
+}
+
+
+export function getChartStyle(isMobile: boolean) {
+  // 计算宽度；屏幕宽度 - 左侧siderBar - 边框 - cardLeft
+  const columnsAmount = 2;
+  const screenWidth = screen.width - 64 - 20 - columnsAmount * 15;
+  const cardWidth = isMobile ? screen.width - 30 : screenWidth / columnsAmount;
+  return {
+    style: `width: ${cardWidth}px;`,
+  };
+}
+
+/**
+ * 判断是否涨停
+ * @param stockCode  个股代码
+ * @param increaseDecline  涨跌幅
+ */
+export function isDailyLimit(stockCode: string, increaseDecline: number) {
+  // 涨停判断：主板大于 9.5；其他需大于19
+  let dailyLimitIncrease = 9.5;
+  if (
+    stockCode.startsWith('688') ||
+    stockCode.startsWith('3') ||
+    stockCode.startsWith('83')
+  ) {
+    dailyLimitIncrease = 19.5;
+  }
+
+  return increaseDecline > dailyLimitIncrease;
 }

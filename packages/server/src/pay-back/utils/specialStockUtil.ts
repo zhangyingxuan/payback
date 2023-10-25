@@ -13,7 +13,7 @@ export async function getBiddingData(todayDateStr, yesterdayDateStr) {
   const dailyLimitYesterdayDataRs: any = await fetchIwencaiApi(params.dailyLimitYesterday, 100, false);
   // 竞价看多数据 1进2
   // const chooseStock1to2: any = await fetchIwencaiApi(params.chooseStock1to2, 100, false);
-  console.log(params.chooseStock1Expected);
+  // console.log(params.chooseStock1Expected);
   // 竞价看多数据 首板预期
   const chooseStock1ExpectedRs: any = await fetchIwencaiApi(params.chooseStock1Expected, 100, false);
   // 新股数据

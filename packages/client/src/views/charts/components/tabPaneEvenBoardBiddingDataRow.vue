@@ -1,7 +1,8 @@
 <!-- 集合竞价数据 -->
 <template>
   <div v-if="stock" class="biddingData__row">
-    [<span class="small" :class="calcClassByBidRating(stock.bidRating)"
+    [
+    <span class="small" :class="calcClassByBidRating(stock.bidRating)"
       >{{ stock.bidRating }}
     </span>
     <span
@@ -14,12 +15,12 @@
     >
       {{ stock.bidChangeTypeT }}&nbsp;
     </span>
+    <span class="large" :class="{ 'red bold': stock.bidVolumeRatio >= 10 }">
+      竞价量比 {{ stock.bidVolumeRatio }}
+    </span>
     <span class="large" :class="{ 'red bold': stock.bidIncreaseT >= 7 }">
       竞价涨幅
       {{ stock.bidIncreaseT && +stock.bidIncreaseT.toFixed(2) }}
-    </span>
-    <span class="large" :class="{ 'red bold': stock.bidVolumeRatio >= 10 }">
-      竞价量比 {{ stock.bidVolumeRatio }}
     </span>
     ] -
     <span class="middle" :class="{ 'red bold': stock.expected === 2 }">{{
@@ -58,17 +59,9 @@ function getExpectedStr(expected: number) {
 
 <style scoped lang="less">
 .biddingData__row {
+  min-width: 520px;
   > span {
     display: inline-block;
   }
-}
-.small {
-  min-width: 36px;
-}
-.middle {
-  min-width: 65px;
-}
-.large {
-  min-width: 100px;
 }
 </style>

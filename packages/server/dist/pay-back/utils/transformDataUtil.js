@@ -179,7 +179,6 @@ function transformStrongStockData(stocks, todayDateStr, yesterdayDate) {
     const strongStockDtos = [];
     stocks.forEach(item => {
         const strongStockDto = new strong_stock_dto_1.StrongStockDto();
-        console.log(item);
         loadStockBaseData(strongStockDto, item, currentDate);
         loadBiddingBaseData(strongStockDto, item, currentDate);
         if (!strongStockDto.price) {

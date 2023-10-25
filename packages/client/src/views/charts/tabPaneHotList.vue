@@ -67,7 +67,7 @@ import CardHeader from './components/cardHeader.vue';
 import { fetchHostListData, crawlHotListData } from '@/api/payBack';
 import { reactive } from 'vue';
 import { isMobile } from '@/core/util';
-import { getChartStyle } from './utils/util';
+import { getChartStyle } from './utils';
 import HotListTable from './components/tabPaneHotListTable.vue';
 import dayjs from 'dayjs';
 import { ElMessage } from 'element-plus';

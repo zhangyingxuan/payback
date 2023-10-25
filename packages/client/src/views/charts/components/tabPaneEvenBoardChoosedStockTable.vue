@@ -37,27 +37,34 @@
         </div>
         <div :class="`col2 ${isMobile ? 'isMobile' : ''}`">
           <div v-for="(stock, index) in item.value" :key="'stock' + index">
-            <Stock :name="stock.name" :code="stock.code" />
-            [&nbsp;<span :class="calcClassByBidRating(stock.bidRating)">
+            <Stock
+              class="stock__span middle"
+              :name="stock.name"
+              :code="stock.code"
+            />
+            [&nbsp;<span
+              class="small"
+              :class="calcClassByBidRating(stock.bidRating)"
+            >
               {{ stock.bidRating }}
             </span>
             <span
               :class="{
-                'red bold':
+                'red bold middle':
                   stock.bidChangeTypeT === '竞价抢筹' ||
                   stock.bidChangeTypeT === '大幅高开',
               }"
               >{{ stock.bidChangeTypeT }}
             </span>
-            <span class="lanse">平均成本 {{ stock.price }}</span>
+            <span class="lanse large">平均成本 {{ stock.price }}</span>
             <!-- 换手率 -->
-            <span v-if="stock.turnoverRate">
+            <span v-if="stock.turnoverRate" class="large">
               换手率{{ stock.turnoverRate }}%
             </span>
-            <span class="zise">流通 {{ stock.circulationValue }}亿</span>
-            <span class="orange">集中度70 {{ stock.cmjzd }}%</span>
-            <span>获利比例 {{ stock.sphl }}%</span>
-            <span :class="{ 'red bold': stock.bidIncreaseT >= 3 }">
+            <span class="zise large">流通 {{ stock.circulationValue }}亿</span>
+            <span class="orange large">集中度70 {{ stock.cmjzd }}%</span>
+            <span class="big-large">获利比例(昨) {{ stock.sphl }}%</span>
+            <span :class="{ 'red bold': stock.bidIncreaseT >= 3, large: true }">
               竞价涨幅
               {{ stock.bidIncreaseT && +stock.bidIncreaseT.toFixed(2) }}
             </span>
@@ -65,6 +72,7 @@
             <span
               :class="{
                 'red bold': stock.closeIncrease - stock.bidIncreaseT >= 0,
+                large: true,
               }"
               >{{ stock.closeIncrease }}</span
             >
@@ -143,9 +151,9 @@ function sortPlates(stockGroupByPlate: any) {
 @import '../styles/tabPaneEvenBoardStockTable.less';
 
 .col2 {
+  /deep/.stock,
   span {
     display: inline-block;
-    width: 100px;
   }
   &.isMobile {
     span {

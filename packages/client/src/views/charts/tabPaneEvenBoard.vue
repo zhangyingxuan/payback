@@ -11,28 +11,39 @@
     <div class="table__container">
       <!-- 第一列，title -->
       <div :class="['date-col first-col', { isMobile }]">
-        <div class="table__header">高度</div>
-        <div class="table-col height1">周期</div>
-        <div class="table-col height1">晋级率</div>
-        <!-- <div class="table-col height1">市场</div> -->
-        <div class="table-col height1">连板数</div>
-        <div class="table-col height1">涨停</div>
-        <div class="table-col height1">一字</div>
-        <div class="table-col height1">封板率</div>
-        <!-- <div class="table-col height1">炸板率</div> -->
-        <div class="table-col height1 green">跌停</div>
-        <div class="table-col height1 green">大面</div>
-        <div class="table-col">反包</div>
-        <template v-for="height in heightArr" :key="'row1' + height">
-          <div
-            :class="['table-col', getClassByHeight(height)]"
-            v-if="height != 1"
-          >
-            {{ height }}
-          </div>
-          <div v-else class="table-col height1">首板</div>
+        <div
+          class="table__header"
+          @click="
+            () => {
+              data.isShowContent = !data.isShowContent;
+            }
+          "
+        >
+          {{ data.isShowContent ? '收起' : '展开' }}
+        </div>
+        <template v-if="data.isShowContent">
+          <div class="table-col height1">周期</div>
+          <div class="table-col height1">晋级率</div>
+          <!-- <div class="table-col height1">市场</div> -->
+          <div class="table-col height1">连板数</div>
+          <div class="table-col height1">涨停</div>
+          <div class="table-col height1">一字</div>
+          <div class="table-col height1">封板率</div>
+          <!-- <div class="table-col height1">炸板率</div> -->
+          <div class="table-col height1 green">跌停</div>
+          <div class="table-col height1 green">大面</div>
+          <div class="table-col">反包</div>
+          <template v-for="height in heightArr" :key="'row1' + height">
+            <div
+              :class="['table-col', getClassByHeight(height)]"
+              v-if="height != 1"
+            >
+              {{ height }}
+            </div>
+            <div v-else class="table-col height1">首板</div>
+          </template>
+          <div class="table-col downLimitStock__plate">跌停股</div>
         </template>
-        <div class="table-col downLimitStock__plate">跌停股</div>
       </div>
 
       <!-- 内容列，循环展示 -->
@@ -58,108 +69,115 @@
             <SuccessFilled />
           </el-icon>
         </div>
-        <!-- 周期 -->
-        <div class="table-col height1">
-          <el-tag class="ml-2" :type="getType(item.cycle)" effect="dark">{{
-            item.cycle
-          }}</el-tag>
-        </div>
-        <!-- 连板晋级率=今日连板家数/昨日涨停家数。 -->
-        <div
-          class="table-col height1"
-          :class="{
-            green:
-              calPromotionRate(item.evenBoardAmount, evenBoard.value, index) <
-              20,
-          }"
-        >
-          {{ calPromotionRate(item.evenBoardAmount, evenBoard.value, index) }}%
-        </div>
-        <!-- 连板数 -->
-        <div class="table-col height1">{{ item.evenBoardAmount }}</div>
-        <!-- 涨停数量 -->
-        <div
-          class="table-col height1"
-          :class="{ gray: item.dailyLimitQuantity < 50 }"
-        >
-          {{ item.dailyLimitQuantity }}
-        </div>
-        <!-- 一字 -->
-        <div class="table-col height1">
-          {{ item.yizi }}
-        </div>
-        <!-- 封板率 -->
-        <div
-          class="table-col height1"
-          :class="{ green: item.sealingRate < 70 }"
-        >
-          {{ item.sealingRate }}%
-        </div>
-        <!-- 跌停数 -->
-        <div class="table-col height1 green">{{ item.downLimitQuantity }}</div>
-        <!-- 大面数量 -->
-        <div class="table-col height1 green">
-          {{ item.hugeFallData ? item.hugeFallData.length : '' }}
-        </div>
-        <!-- 反包 -->
-        <div class="table-col">
-          <el-tooltip
-            effect="dark"
-            placement="top"
-            v-for="(stock, index) in item.evenBoardData.gaobiao"
-            :content="stock.reason"
-            :key="'stock' + index"
-          >
-            <span>
-              <Stock :name="stock.name" :code="stock.code" />
-              <span class="gray">{{ stock.evenDays }}</span>
-            </span>
-          </el-tooltip>
-        </div>
-        <template v-for="height in heightArr">
+
+        <template v-if="data.isShowContent">
+          <!-- 周期 -->
+          <div class="table-col height1">
+            <el-tag class="ml-2" :type="getType(item.cycle)" effect="dark">{{
+              item.cycle
+            }}</el-tag>
+          </div>
+          <!-- 连板晋级率=今日连板家数/昨日涨停家数。 -->
           <div
-            :class="['table-col', getClassByHeight(height)]"
-            v-if="height != 1"
-            :key="'row' + height"
+            class="table-col height1"
+            :class="{
+              green:
+                calPromotionRate(item.evenBoardAmount, evenBoard.value, index) <
+                20,
+            }"
           >
+            {{
+              calPromotionRate(item.evenBoardAmount, evenBoard.value, index)
+            }}%
+          </div>
+          <!-- 连板数 -->
+          <div class="table-col height1">{{ item.evenBoardAmount }}</div>
+          <!-- 涨停数量 -->
+          <div
+            class="table-col height1"
+            :class="{ gray: item.dailyLimitQuantity < 50 }"
+          >
+            {{ item.dailyLimitQuantity }}
+          </div>
+          <!-- 一字 -->
+          <div class="table-col height1">
+            {{ item.yizi }}
+          </div>
+          <!-- 封板率 -->
+          <div
+            class="table-col height1"
+            :class="{ green: item.sealingRate < 70 }"
+          >
+            {{ item.sealingRate }}%
+          </div>
+          <!-- 跌停数 -->
+          <div class="table-col height1 green">
+            {{ item.downLimitQuantity }}
+          </div>
+          <!-- 大面数量 -->
+          <div class="table-col height1 green">
+            {{ item.hugeFallData ? item.hugeFallData.length : '' }}
+          </div>
+          <!-- 反包 -->
+          <div class="table-col">
             <el-tooltip
               effect="dark"
               placement="top"
-              v-for="(stock, index) in item.evenBoardData[height]"
+              v-for="(stock, index) in item.evenBoardData.gaobiao"
               :content="stock.reason"
               :key="'stock' + index"
             >
               <span>
                 <Stock :name="stock.name" :code="stock.code" />
+                <span class="gray">{{ stock.evenDays }}</span>
               </span>
             </el-tooltip>
           </div>
-          <div v-else class="table-col height1">
-            <span v-if="item.evenBoardData && item.evenBoardData[1]">{{
-              item.evenBoardData[1].length
-            }}</span>
+          <template v-for="height in heightArr">
+            <div
+              :class="['table-col', getClassByHeight(height)]"
+              v-if="height != 1"
+              :key="'row' + height"
+            >
+              <el-tooltip
+                effect="dark"
+                placement="top"
+                v-for="(stock, index) in item.evenBoardData[height]"
+                :content="stock.reason"
+                :key="'stock' + index"
+              >
+                <span>
+                  <Stock :name="stock.name" :code="stock.code" />
+                </span>
+              </el-tooltip>
+            </div>
+            <div v-else class="table-col height1">
+              <span v-if="item.evenBoardData && item.evenBoardData[1]">{{
+                item.evenBoardData[1].length
+              }}</span>
+            </div>
+          </template>
+          <!-- 跌停数据 -->
+          <div class="table-col">
+            <el-tooltip
+              effect="dark"
+              placement="top"
+              v-for="(stock, index) in item.downLimitData"
+              :content="stock.plateLevel2"
+              :key="'downLimitStock' + index"
+            >
+              <span>
+                <Stock :name="stock.name" :code="stock.code" />
+                <span
+                  v-if="!isMobile"
+                  class="downLimitStock__plate"
+                  type="success"
+                  >{{ stock.plateLevel2 }}</span
+                >
+              </span>
+            </el-tooltip>
           </div>
         </template>
-        <!-- 跌停数据 -->
-        <div class="table-col">
-          <el-tooltip
-            effect="dark"
-            placement="top"
-            v-for="(stock, index) in item.downLimitData"
-            :content="stock.plateLevel2"
-            :key="'downLimitStock' + index"
-          >
-            <span>
-              <Stock :name="stock.name" :code="stock.code" />
-              <span
-                v-if="!isMobile"
-                class="downLimitStock__plate"
-                type="success"
-                >{{ stock.plateLevel2 }}</span
-              >
-            </span>
-          </el-tooltip>
-        </div>
       </div>
     </div>
   </div>
@@ -188,6 +206,7 @@
   <!-- 当日涨停分布，按行业板块划分 -->
   <DailyStockTable
     v-model:currentDateData="data.currentDateData"
+    :updateTime="data.currentDateData.createTime"
     :isMobile="isMobile"
   />
   <div :class="{ flex__row: !isMobile }">
@@ -209,7 +228,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { fetchEvenBoardData, fetchReveiwDataByDate } from '@/api/payBack';
+import { fetchEvenBoardData } from '@/api/payBack';
 // import { fetchIndustryData } from '@/api/tonghuashun';
 import { judgeMonday } from './utils';
 import { transformEvenBoardData } from './utils/transformUtil';
@@ -231,12 +250,14 @@ type EvenBoard = {
 let evenBoard = reactive<any>({ value: [] });
 
 const data: {
+  isShowContent: Boolean;
   currentDateData: any;
   yesterdayDateData: any;
   currentDate: string;
   summaryTableData: any[];
   hasSummaryTableData: boolean;
 } = reactive({
+  isShowContent: true,
   hasSummaryTableData: false,
   currentDateData: {},
   yesterdayDateData: {},
@@ -357,7 +378,7 @@ function calPromotionRate(
     ? Math.round(
         (evenBoardAmount / evenBoardValue[index + 1].dailyLimitQuantity) * 100,
       )
-    : '-';
+    : 0;
 }
 
 async function handleDateClick(item: any) {
@@ -370,8 +391,7 @@ async function handleDateClick(item: any) {
   data.yesterdayDateData =
     index + 1 >= evenBoard.value.length ? [] : evenBoard.value[index + 1];
 
-  console.log(evenBoard.value[index]);
-
+  // console.log(evenBoard.value[index]);
   // 获取复盘数据 TODO 暂时废弃 2023-10-12 11:31:12
   // const result: any = await fetchReveiwDataByDate({ date: item.createTime });
   // if (result) {
