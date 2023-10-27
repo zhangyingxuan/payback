@@ -6,7 +6,7 @@
       >{{ stock.bidRating }}
     </span>
     <span
-      class="large"
+      class="middle"
       :class="{
         'red bold':
           stock.bidChangeTypeT === '竞价抢筹' ||
@@ -15,16 +15,18 @@
     >
       {{ stock.bidChangeTypeT }}&nbsp;
     </span>
-    <span class="middle" :class="{ 'red bold': stock.bidVolumeRatio >= 10 }">
-      {{ stock.bidVolumeRatio }}
+    <span class="large" :class="{ 'red bold': stock.bidVolumeRatio >= 10 }">
+      竞价量比 {{ stock.bidVolumeRatio }}
     </span>
-    <span class="middle" :class="{ 'red bold': stock.bidIncreaseT >= 7 }">
+    <span class="large" :class="{ 'red bold': stock.bidIncreaseT >= 7 }">
+      竞价涨幅
       {{ stock.bidIncreaseT && +stock.bidIncreaseT.toFixed(2) }}
     </span>
-    ]&nbsp;&nbsp;
+    ] -
     <span class="middle" :class="{ 'red bold': stock.expected === 2 }">
       {{ getExpectedStr(stock.expected) }}
     </span>
+    收盘涨幅
     <span
       :class="{
         'red bold': stock.closeIncrease >= 5,

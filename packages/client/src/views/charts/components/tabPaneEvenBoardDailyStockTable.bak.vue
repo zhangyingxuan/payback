@@ -75,7 +75,7 @@
                 <el-tooltip
                   class="box-item"
                   effect="dark"
-                  content="看多，超预期；换手率>=5%，竞价量比大于10（连板及反包除外）"
+                  content="看多，超预期或符合预期；换手率>=5%，竞价量比大于10（连板及反包除外）"
                   placement="top"
                 >
                   <el-icon><InfoFilled /></el-icon>
@@ -555,7 +555,7 @@ function getExpectedStr(stock: DailyLimitStockDto) {
   }
 }
 .dailyLimit__content {
-  min-width: 980px;
+  min-width: 990px;
   overflow: auto;
   /deep/ span {
     display: inline-block;

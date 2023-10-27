@@ -22,6 +22,24 @@
           <span class="dateTime__span">{{ updateTime }}</span>
         </div>
       </div>
+      <div class="table__header table-row">
+        <div class="col1">板块名</div>
+        <div class="col2">
+          <!-- 竞价行 -->
+          <span class="stock large">个股名</span>
+          [
+          <span class="small">竞价</span>
+          <span class="middle">竞价评级</span>
+          <span class="middle lanse">平均成本</span>
+          <!-- <span class="middle"> 换手率 </span> -->
+          <span class="middle">流通市值</span>
+          <span class="middle">集中度70</span>
+          <span class="large">获利比例(昨)</span>
+          <span class="middle red">竞价涨幅</span>]&nbsp;&nbsp;
+          <span class="middle red">收盘涨幅</span>
+          <span class="middle">区间收益</span>
+        </div>
+      </div>
 
       <div
         class="table-row"
@@ -38,7 +56,7 @@
         <div :class="`col2 ${isMobile ? 'isMobile' : ''}`">
           <div v-for="(stock, index) in item.value" :key="'stock' + index">
             <Stock
-              class="stock__span middle"
+              class="stock__span large"
               :name="stock.name"
               :code="stock.code"
             />
@@ -56,26 +74,42 @@
               }"
               >{{ stock.bidChangeTypeT }}
             </span>
-            <span class="lanse large">平均成本 {{ stock.price }}</span>
+            <span class="lanse middle">{{ stock.price }}</span>
             <!-- 换手率 -->
-            <span v-if="stock.turnoverRate" class="large">
+            <span v-if="stock.turnoverRate" class="middle">
               换手率{{ stock.turnoverRate }}%
             </span>
-            <span class="zise large">流通 {{ stock.circulationValue }}亿</span>
-            <span class="orange large">集中度70 {{ stock.cmjzd }}%</span>
-            <span class="big-large">获利比例(昨) {{ stock.sphl }}%</span>
-            <span :class="{ 'red bold': stock.bidIncreaseT >= 3, large: true }">
-              竞价涨幅
-              {{ stock.bidIncreaseT && +stock.bidIncreaseT.toFixed(2) }}
-            </span>
-            ] - 收盘涨幅
+            <span class="zise middle">{{ stock.circulationValue }}亿</span>
+            <span class="orange middle">{{ stock.cmjzd }} %</span>
+            <span class="large"> {{ stock.sphl }} %</span>
             <span
               :class="{
-                'red bold': stock.closeIncrease - stock.bidIncreaseT >= 0,
-                large: true,
+                'red bold': stock.bidIncreaseT >= 5,
+                middle: true,
               }"
-              >{{ stock.closeIncrease }}</span
             >
+              {{ stock.bidIncreaseT && +stock.bidIncreaseT.toFixed(2) }}
+            </span>
+            ]&nbsp;&nbsp;
+            <span
+              :class="{
+                'red bold': stock.closeIncrease >= 5,
+                green: stock.closeIncrease < 0,
+                middle: true,
+              }"
+            >
+              {{ stock.closeIncrease }}
+            </span>
+            <span
+              class="middle"
+              :class="
+                stock.closeIncrease - stock.bidIncreaseT >= 0
+                  ? 'red bold'
+                  : 'green'
+              "
+            >
+              {{ (stock.closeIncrease - stock.bidIncreaseT).toFixed(2) }} %
+            </span>
           </div>
         </div>
       </div>

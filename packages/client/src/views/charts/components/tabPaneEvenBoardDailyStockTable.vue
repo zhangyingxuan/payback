@@ -75,7 +75,7 @@
                 <el-tooltip
                   class="box-item"
                   effect="dark"
-                  content="看多，超预期；换手率>=5%，竞价量比大于10（连板及反包除外）"
+                  content="看多，超预期或符合预期；换手率>=5%，竞价量比大于10（连板及反包除外）"
                   placement="top"
                 >
                   <el-icon><InfoFilled /></el-icon>
@@ -98,6 +98,8 @@
           </div>
         </div>
       </div>
+
+      <TabPaneEvenBoardDailyStockTableHeader :showBidding="showBidding" />
 
       <transition name="h1">
         <div v-show="data.isShowContent" class="table__content">
@@ -138,25 +140,25 @@
                     class="orange content-large"
                     v-html="highlightKeyWord(stock.reason, keyword)"
                   ></span>
-                  <span class="lanse small">{{ stock.price }}</span>
+                  <span class="lanse middle">{{ stock.price }}</span>
                   <span
                     :class="{
                       'red bold': stock.closingFunds > 1,
-                      large: true,
+                      middle: true,
                     }"
                   >
-                    封单 {{ stock.closingFunds }} 亿
+                    {{ stock.closingFunds }} 亿
                   </span>
                   <!-- 换手率 -->
                   <span
                     v-if="stock.turnoverRate"
                     :class="calcClass(stock)"
-                    class="content-middle"
+                    class="middle"
                   >
-                    换手 {{ stock.turnoverRate }}%
+                    {{ stock.turnoverRate }} %
                   </span>
                   <span class="zise content-middle">
-                    流通 {{ stock.circulationValue }} 亿
+                    {{ stock.circulationValue }} 亿
                   </span>
                   <span class="large">
                     {{ transformTime(stock.dailyTime) }}
@@ -164,13 +166,13 @@
                   <span class="lvse small text-center">
                     {{ stock.openTimes }}
                   </span>
-                  ]
-                  <span class="red bold small">{{
+                  ]&nbsp;&nbsp;
+                  <span class="red bold middle">{{
                     getExpectedStr(stock)
                   }}</span>
-                  <span class="red middle"
-                    >&nbsp;&nbsp;{{ stock.turnoverType }}</span
-                  >
+                  <span class="red large">
+                    {{ stock.turnoverType }}
+                  </span>
                 </div>
                 <TabPaneEvenBoardBiddingDataRow
                   v-if="showBidding"
@@ -187,6 +189,7 @@
 <script lang="ts" setup>
 import _ from 'lodash-es';
 import TabPaneEvenBoardBiddingDataRow from './tabPaneEvenBoardBiddingDataRow.vue';
+import TabPaneEvenBoardDailyStockTableHeader from './tabPaneEvenBoardDailyStockTableHeader.vue';
 import { reactive, computed } from 'vue';
 import { highlightKeyWord, openNewIwencaiWindow, isDailyLimit } from '../utils';
 import { dailyLimitOptionalStrategy, getExpected, params } from 'pay-back-core';
@@ -521,10 +524,10 @@ function getExpectedStr(stock: DailyLimitStockDto) {
   // 期待值
   const expected: string = getExpected(stock);
   if (expected.indexOf(',') === -1) {
-    return `${expected}%`;
+    return `${expected}`;
   }
   const expectedArr = expected.split(',');
-  return `${expectedArr[0]}-${expectedArr[1]}%`;
+  return `${expectedArr[0]}-${expectedArr[1]}`;
 }
 </script>
 
@@ -541,33 +544,6 @@ function getExpectedStr(stock: DailyLimitStockDto) {
   justify-content: space-between;
   padding-right: 20px;
   font-size: 14px;
-}
-
-.ticai__item:hover {
-  color: #000;
-  background-color: yellow;
-}
-.dailyLimit__row {
-  display: flex;
-
-  &:hover {
-    background-color: #ccc;
-  }
-}
-.dailyLimit__content {
-  min-width: 980px;
-  overflow: auto;
-  /deep/ span {
-    display: inline-block;
-  }
-}
-.biddingData__filter--row {
-  min-width: 520px;
-  overflow: auto;
-
-  .el-checkbox {
-    margin-right: 10px;
-  }
 }
 
 /* 进入之前和离开后的样式 */

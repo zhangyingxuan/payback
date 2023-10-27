@@ -62,7 +62,7 @@
 </template>
 <script lang="ts" setup>
 import { judgeMonday, getCurrentDay } from '../utils';
-let superData = defineProps({
+defineProps({
   data: {
     type: Object,
     default: () => {},
