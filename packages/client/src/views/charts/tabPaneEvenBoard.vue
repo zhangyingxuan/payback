@@ -21,7 +21,7 @@
         >
           {{ data.isShowContent ? '收起' : '展开' }}
         </div>
-        <template v-if="data.isShowContent">
+        <div v-show="data.isShowContent" class="dynamic__col">
           <div class="table-col height1">周期</div>
           <div class="table-col height1">晋级率</div>
           <!-- <div class="table-col height1">市场</div> -->
@@ -43,7 +43,7 @@
             <div v-else class="table-col height1">首板</div>
           </template>
           <div class="table-col downLimitStock__plate">跌停股</div>
-        </template>
+        </div>
       </div>
 
       <!-- 内容列，循环展示 -->
@@ -70,7 +70,7 @@
           </el-icon>
         </div>
 
-        <template v-if="data.isShowContent">
+        <div v-show="data.isShowContent" class="dynamic__col">
           <!-- 周期 -->
           <div class="table-col height1">
             <el-tag class="ml-2" :type="getType(item.cycle)" effect="dark">{{
@@ -177,7 +177,7 @@
               </span>
             </el-tooltip>
           </div>
-        </template>
+        </div>
       </div>
     </div>
   </div>
@@ -510,6 +510,13 @@ function getDateCycle() {
     min-width: 130px;
     // white-space: nowrap;
 
+    .dynamic__col {
+      width: 100%;
+      > div {
+        padding: 5px;
+      }
+    }
+
     &.first-col {
       width: 80px;
       min-width: 80px;
@@ -527,8 +534,12 @@ function getDateCycle() {
           display: none;
         }
       }
-      > div {
-        padding: 2px;
+
+      .dynamic__col {
+        width: 100%;
+        > div {
+          padding: 2px;
+        }
       }
 
       .gray {
@@ -543,15 +554,12 @@ function getDateCycle() {
         color: #fff !important;
       }
     }
-
-    > div {
-      padding: 5px;
-    }
   }
 
   .table__header {
     background-color: #dcdcdc;
     width: 100%;
+    padding: 5px;
     cursor: pointer;
     .tableColumsBorder();
     border-top: 1px solid @tableColumsBorderColor;
@@ -609,9 +617,6 @@ function getDateCycle() {
     font-size: 12px;
     display: inline-block;
     cursor: pointer;
-    /* scale: 0.6; */
-    /* transform: scale(0.7);
-  transform-origin: 100% 100%; */
   }
 
   .downLimitStock__plate {

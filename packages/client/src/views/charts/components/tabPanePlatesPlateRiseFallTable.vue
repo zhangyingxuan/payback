@@ -178,52 +178,6 @@ let superData = defineProps({
     color: #fff;
     background-image: linear-gradient(#abdcff, #0396ff);
   }
-  // .plate4 {
-  //   background-image: linear-gradient(#cdcfd0, #00eaff);
-  //   color: #fff;
-  // }
-  // .plate5 {
-  //   color: #fff;
-  //   background-image: linear-gradient(#65fdf0, #1d6fa3);
-  // }
-
-  // .plate6 {
-  //   background-image: linear-gradient(#90f7ec, #32ccbc);
-  // }
-
-  // .plate7 {
-  //   background-image: linear-gradient(#81fbb8, #28c76f);
-  // }
-  // .plate8 {
-  //   background-image: linear-gradient(#fff720, #3cd500);
-  // }
-  // .plate9 {
-  //   background-image: linear-gradient(#f0ff00, #58cffb);
-  // }
-  // .plate10 {
-  //   background-image: linear-gradient(#70f570, #49c628);
-  // }
-
-  // .plate1 {
-  //   color: #fff;
-  //   background-image: linear-gradient(#abdcff, #0396ff);
-  // }
-  // .plate2 {
-  //   color: #fff;
-  //   background-image: linear-gradient(#736efe, #5efce8);
-  // }
-  // .plate3 {
-  //   color: #fff;
-  //   background-image: linear-gradient(#465efb, #c2ffd8);
-  // }
-  // .plate4 {
-  //   color: #fff;
-  //   background-image: linear-gradient(#90f7ec, #32ccbc);
-  // }
-  // .plate5 {
-  //   color: #fff;
-  //   background-image: linear-gradient(#fff720, #3cd500);
-  // }
 
   .plate6 {
     background-image: linear-gradient(#ff96f9, #c32bac);

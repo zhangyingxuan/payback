@@ -8,6 +8,9 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
 import { warpperEnv } from "./build";
 import path from 'path';
 import markdownLoader from './build/markdownLoader'
+import compress from 'vite-plugin-compression';
+import { visualizer } from 'rollup-plugin-visualizer';
+import { manualChunksPlugin } from 'vite-plugin-webpackchunkname';
 
 /** 路径查找 */
 const pathResolve = (dir: string): string => {
@@ -48,7 +51,54 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 				},
 			}
 		},
+		// 打包优化，vender 拆分为多个
+		build: {
+			outDir: path.resolve(__dirname, 'dist'),
+			emptyOutDir: true,
+			rollupOptions: {
+				// input: viteMultiPages,
+				output: {
+					manualChunks: (id) => {
+						if (
+							id.indexOf('/node_modules/echarts/') !== -1
+						) {
+							return 'vendor-echarts';
+						}
+						if (
+							id.indexOf('node_modules/core-js/') !== -1 ||
+							id.indexOf('node_modules/@vue/') !== -1 ||
+							id.indexOf('node_modules/vue/') !== -1 ||
+							id.indexOf('node_modules/vue-router/') !== -1 ||
+							id.indexOf('node_modules/vuex/') !== -1 ||
+							id.indexOf('node_modules/axios/') !== -1
+						) {
+							return 'vendor-core';
+						}
+						if (id.indexOf('/node_modules/element-plus/') !== -1) {
+							return 'vendor-element-plus';
+						}
+					},
+				},
+			},
+			terserOptions: {
+				compress: {
+					// 生产环境时移除console
+					drop_console: true,
+					drop_debugger: true,
+				},
+			},
+			sourcemap: false,
+		},
 		plugins: [
+			compress({ threshold: 10240 }), // gzip 压缩
+			manualChunksPlugin(), // 合并webpackChunkName
+			visualizer({
+				gzipSize: true,
+				brotliSize: true,
+				emitFile: false,
+				filename: "stats.html", //分析图生成的文件名
+				open: true //如果存在本地服务端口，将在打包后自动展示
+			}), // 打包分析
 			markdownLoader(),
 			vue(),
 			VueSetupExtend(),
