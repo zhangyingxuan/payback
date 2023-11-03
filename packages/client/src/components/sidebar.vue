@@ -80,6 +80,12 @@ const items: any = [
     permiss: '11',
   },
   {
+    icon: 'Aim',
+    index: '/shortTerm',
+    title: '短线',
+    permiss: '11',
+  },
+  {
     icon: 'DocumentCopy',
     index: '/article',
     title: '文章列表',

@@ -108,7 +108,7 @@
                   : 'green'
               "
             >
-              {{ (stock.closeIncrease - stock.bidIncreaseT).toFixed(2) }} %
+              {{ (stock.closeIncrease - stock.bidIncreaseT).toFixed(2) }}
             </span>
           </div>
         </div>

@@ -13,16 +13,18 @@
       rel="stylesheet"
       href="https://at.alicdn.com/t/font_830376_qzecyukz0s.css"
     />
-    <script type="module" crossorigin src="./assets/index.72292fd2.js"></script>
-    <link rel="modulepreload" crossorigin href="./assets/vendor-core.4cafc2fc.js">
-    <link rel="modulepreload" crossorigin href="./assets/vendor.6a5b3468.js">
-    <link rel="modulepreload" crossorigin href="./assets/vendor-element-plus.acdae204.js">
-    <link rel="modulepreload" crossorigin href="./assets/common.8b2d8f51.js">
-    <link rel="modulepreload" crossorigin href="./assets/dashboard.693d0e3f.js">
+    <script type="module" crossorigin src="./assets/index.333983ae.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/vendor-core.220af565.js">
+    <link rel="modulepreload" crossorigin href="./assets/vendor.a637beea.js">
+    <link rel="modulepreload" crossorigin href="./assets/vendor-utils.105d3acf.js">
+    <link rel="modulepreload" crossorigin href="./assets/vendor-element-plus.48c617d7.js">
+    <link rel="modulepreload" crossorigin href="./assets/common.ee7c18bd.js">
+    <link rel="modulepreload" crossorigin href="./assets/dashboard.4f22abda.js">
+    <link rel="modulepreload" crossorigin href="./assets/vendor-echarts.ca5df624.js">
     <link rel="stylesheet" href="./assets/vendor-element-plus.b76a8b21.css">
     <link rel="stylesheet" href="./assets/common.9c4aaf98.css">
     <link rel="stylesheet" href="./assets/dashboard.50d7fef0.css">
-    <link rel="stylesheet" href="./assets/index.6a627f1c.css">
+    <link rel="stylesheet" href="./assets/index.ba14e86f.css">
   </head>
 
   <body>
@@ -99,6 +101,18 @@
       </style>
       <div class="loader"></div>
     </div>
+    <script>
+      var onTouchStart = function (event) {
+        // event.preventDefault(); // 阻止事件继续传播
+        // event.stopPropagation(); // 取消事件的默认行为
+      };
+      document.addEventListener('touchstart', onTouchStart, { passive: true });
+      document.addEventListener('touchmove', onTouchStart, { passive: true });
+      document.addEventListener('mousewheel', onTouchStart, { passive: true });
+      window.addEventListener('touchstart', onTouchStart, { passive: true });
+      window.addEventListener('touchmove', onTouchStart, { passive: true });
+      window.addEventListener('mousewheel', onTouchStart, { passive: true });
+    </script>
     
     <!-- built files will be auto injected -->
   </body>

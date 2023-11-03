@@ -115,11 +115,12 @@ import {
 import { columnsConfig, cardUrls } from './utils/config';
 import { FundsKey } from './utils/index.d';
 import { useSidebarStore } from '@/store/sidebar';
-
-import { ref, onMounted, reactive, watch } from 'vue';
-//  按需引入 echarts
-import * as echarts from 'echarts';
+import { ref, onMounted, reactive, watch, getCurrentInstance } from 'vue';
 import { isMobile } from '@/core/util';
+
+// 获取当前组件实例
+const { proxy }: any = getCurrentInstance();
+const echarts = proxy.$echarts;
 
 const siderBar = useSidebarStore();
 const { countDays } = storeToRefs(siderBar);

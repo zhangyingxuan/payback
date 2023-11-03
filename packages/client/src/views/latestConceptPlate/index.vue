@@ -30,7 +30,6 @@ import { findConceptPlateByLimit } from '@/api/payBack';
 import { useRouter } from 'vue-router';
 import { dateTimeFormat } from '@/views/article/config';
 
-const router = useRouter();
 const tableData = ref<any[]>([]);
 // 获取表格数据
 const getData = () => {

@@ -95,6 +95,7 @@
 
   <el-dialog
     v-model="data.fetchTodayDataDialogVisible"
+    :close-on-click-modal="false"
     title="是否更新今日数据？"
     :width="isMobile ? '70%' : '30%'"
   >
@@ -308,6 +309,10 @@ const handleCommand = (command: string) => {
 }
 .user-avator {
   margin-left: 20px;
+  /deep/ img {
+    width: 30px;
+    height: 30px;
+  }
 }
 .el-dropdown-link {
   color: #fff;

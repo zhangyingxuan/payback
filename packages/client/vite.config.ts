@@ -5,9 +5,9 @@ import VueSetupExtend from 'vite-plugin-vue-setup-extend';
 import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
+import markdownLoader from './build/markdownLoader';
 import { warpperEnv } from "./build";
 import path from 'path';
-import markdownLoader from './build/markdownLoader'
 import compress from 'vite-plugin-compression';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { manualChunksPlugin } from 'vite-plugin-webpackchunkname';
@@ -73,6 +73,13 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 							id.indexOf('node_modules/axios/') !== -1
 						) {
 							return 'vendor-core';
+						}
+						if (
+							id.indexOf('node_modules/zrender/') !== -1 ||
+							id.indexOf('node_modules/qs/') !== -1 ||
+							id.indexOf('node_modules/lodash-es/') !== -1
+						) {
+							return 'vendor-utils';
 						}
 						if (id.indexOf('/node_modules/element-plus/') !== -1) {
 							return 'vendor-element-plus';

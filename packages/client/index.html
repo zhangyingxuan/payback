@@ -89,6 +89,18 @@
       </style>
       <div class="loader"></div>
     </div>
+    <script>
+      var onTouchStart = function (event) {
+        // event.preventDefault(); // 阻止事件继续传播
+        // event.stopPropagation(); // 取消事件的默认行为
+      };
+      document.addEventListener('touchstart', onTouchStart, { passive: true });
+      document.addEventListener('touchmove', onTouchStart, { passive: true });
+      document.addEventListener('mousewheel', onTouchStart, { passive: true });
+      window.addEventListener('touchstart', onTouchStart, { passive: true });
+      window.addEventListener('touchmove', onTouchStart, { passive: true });
+      window.addEventListener('mousewheel', onTouchStart, { passive: true });
+    </script>
     <script type="module" src="/src/main.ts"></script>
     <!-- built files will be auto injected -->
   </body>

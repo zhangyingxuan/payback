@@ -472,6 +472,7 @@ function getDateCycle() {
 .table {
   padding: 0 15px;
   margin-bottom: 10px;
+  content-visibility: auto;
 }
 .table * {
   box-sizing: border-box;
@@ -498,8 +499,9 @@ function getDateCycle() {
   display: flex;
   flex-direction: row;
   text-align: center;
-  border-left: 1px solid @tableColumsBorderColor;
-  // .tableContentBorder();
+  // border-left: 1px solid @tableColumsBorderColor;
+  .tableContentBorder();
+  .tableColumsBorder();
 
   .date-col {
     .flexCenter();

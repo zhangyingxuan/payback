@@ -52,10 +52,19 @@ const routes: RouteRecordRaw[] = [
         path: '/charts',
         name: 'basecharts',
         meta: {
-          title: '图表',
+          title: '复盘',
           permiss: '11',
         },
         component: () => import(/* webpackChunkName: "charts" */ '../views/charts/index.vue'),
+      },
+      {
+        path: '/shortTerm',
+        name: 'shortTerm',
+        meta: {
+          title: '短线',
+          permiss: '11',
+        },
+        component: () => import(/* webpackChunkName: "charts" */ '../views/shortTerm/index.vue'),
       },
       {
         path: '/latestConceptPlate',
