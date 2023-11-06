@@ -1,4 +1,4 @@
-import { Controller, Get, Logger, Query, } from '@nestjs/common';
+import { Controller, Get, Logger, Query, Post, Body } from '@nestjs/common';
 import { ShorTermService } from './service/shortTerm.service';
 import { SpecialStockService } from './service/specialStock.service';
 import { MarketService } from './service/market.service';
@@ -12,6 +12,11 @@ import { Public } from '../decorator/public.decorator';
 import { Cron } from '@nestjs/schedule';
 import { UsersService } from '../users/users.service';
 import * as dayjs from 'dayjs';
+
+class CrawlTodayDataDto {
+  fetchTodayDataType: number;
+  isRemoveIncompatible: number;
+}
 
 @Controller('pay-back')
 export class PayBackController {
@@ -63,12 +68,10 @@ export class PayBackController {
 
   // @Public()
   // @Cron('0 25 9 * * 1-5')
-  @Get('/crawlTodayData')
-  async crawlTodayData(@Query() query) {
-    const type = +(query.fetchTodayDataType || 0);
-
+  @Post('/crawlTodayData')
+  async crawlTodayData(@Body() body: CrawlTodayDataDto) {
     let shortData, fundsData, marketData, binddingData;
-    switch (type) {
+    switch (body.fetchTodayDataType) {
       case 0:
         shortData = await this.shorTermService.crawlShortTermData();
         fundsData = await this.fundsService.crawlfundsData();
@@ -85,9 +88,8 @@ export class PayBackController {
         fundsData = await this.fundsService.crawlfundsData();
         break;
       case 4:
-        // 是否剔除 不及预期数据
-        const isRemoveIncompatible = query.isRemoveIncompatible;
-        binddingData = await this.specialStockService.crawlBinddingData(isRemoveIncompatible);
+        // 是否剔除 不及预期数据；注意接收到的参数 是否为字符串
+        binddingData = await this.specialStockService.crawlBinddingData(body.isRemoveIncompatible);
         break;
       default:
         break;

@@ -168,7 +168,7 @@ const data = reactive({
   fetchTodayDataDialogVisible: false,
   fetchTodayDataType: 0,
   fetchTodayDataing: false,
-  isRemoveIncompatible: false,
+  isRemoveIncompatible: 0,
 });
 
 // const countDays = ref(20);
@@ -187,7 +187,8 @@ async function fetchTodayData() {
     // 根据更新范围，调用对应接口
     await crawlTodayData({
       fetchTodayDataType: data.fetchTodayDataType,
-      isRemoveIncompatible: data.isRemoveIncompatible,
+      // isRemoveIncompatible 为true 传1 否则传0
+      isRemoveIncompatible: data.isRemoveIncompatible ? 1 : 0,
     });
     data.fetchTodayDataing = false;
     ElMessage.success('更新成功！');

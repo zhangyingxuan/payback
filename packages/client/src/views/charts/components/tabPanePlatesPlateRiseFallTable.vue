@@ -97,7 +97,7 @@ let superData = defineProps({
 }
 .table {
   overflow: auto;
-  content-visibility: auto;
+  // content-visibility: auto;
 }
 .table * {
   box-sizing: border-box;

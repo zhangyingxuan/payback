@@ -38,7 +38,7 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
     async autoCrawlBinddingDataLateSession() {
         this.crawlBinddingData();
     }
-    async crawlBinddingData(isRemoveIncompatible = false) {
+    async crawlBinddingData(isRemoveIncompatible = 0) {
         this.logger.debug('autoCrawlBinddingData is Begining!');
         let isExist = false;
         const todayDateStr = new Date().toLocaleDateString();
@@ -57,7 +57,6 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
             });
             specialStockDto.updatedTime = new Date();
             this.dealIncompatibleExpectStocks(isRemoveIncompatible, dailyLimitYesterdayBidding);
-            console.log(specialStockDto);
             if (isExist) {
                 this.logger.log('autoCrawlBinddingData 更新数据');
                 await this.specialStockRp.update(todayDataFromDB.id, specialStockDto);
@@ -76,6 +75,7 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
     }
     async dealIncompatibleExpectStocks(isRemoveIncompatible, dailyLimitYesterdayBidding) {
         if (isRemoveIncompatible) {
+            this.logger.log('dealIncompatibleExpectStocks 删除不及预期个股');
             const incompatibleExpectStocks = [];
             dailyLimitYesterdayBidding.forEach(stock => {
                 if (stock.expected === transformDataUtil_1.ExpectEnum.incompatible) {

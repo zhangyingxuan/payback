@@ -27,6 +27,8 @@ const apiTest_service_1 = require("./service/apiTest.service");
 const public_decorator_1 = require("../decorator/public.decorator");
 const users_service_1 = require("../users/users.service");
 const dayjs = require("dayjs");
+class CrawlTodayDataDto {
+}
 let PayBackController = PayBackController_1 = class PayBackController {
     constructor(shorTermService, specialStockService, fundsService, hotListService, reviewService, thsService, apiTestService, latestConceptPlateService, usersService, marketService) {
         this.shorTermService = shorTermService;
@@ -55,10 +57,9 @@ let PayBackController = PayBackController_1 = class PayBackController {
     async autoCrawlTodayDataPM() {
         this.logger.debug('定时任务执行了！0 */5 13-15 * * 1-5');
     }
-    async crawlTodayData(query) {
-        const type = +(query.fetchTodayDataType || 0);
+    async crawlTodayData(body) {
         let shortData, fundsData, marketData, binddingData;
-        switch (type) {
+        switch (body.fetchTodayDataType) {
             case 0:
                 shortData = await this.shorTermService.crawlShortTermData();
                 fundsData = await this.fundsService.crawlfundsData();
@@ -75,8 +76,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
                 fundsData = await this.fundsService.crawlfundsData();
                 break;
             case 4:
-                const isRemoveIncompatible = query.isRemoveIncompatible;
-                binddingData = await this.specialStockService.crawlBinddingData(isRemoveIncompatible);
+                binddingData = await this.specialStockService.crawlBinddingData(body.isRemoveIncompatible);
                 break;
             default:
                 break;
@@ -178,10 +178,10 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "testApi", null);
 __decorate([
-    (0, common_1.Get)('/crawlTodayData'),
-    __param(0, (0, common_1.Query)()),
+    (0, common_1.Post)('/crawlTodayData'),
+    __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [CrawlTodayDataDto]),
     __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "crawlTodayData", null);
 __decorate([

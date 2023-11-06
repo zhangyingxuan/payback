@@ -8,6 +8,10 @@ import { ReviewService } from './service/review.service';
 import { ThsService } from './service/ths.service';
 import { ApiTestService } from './service/apiTest.service';
 import { UsersService } from '../users/users.service';
+declare class CrawlTodayDataDto {
+    fetchTodayDataType: number;
+    isRemoveIncompatible: number;
+}
 export declare class PayBackController {
     private readonly shorTermService;
     private readonly specialStockService;
@@ -24,7 +28,7 @@ export declare class PayBackController {
     testApi(): Promise<any>;
     autoCrawlTodayDataAM(): Promise<void>;
     autoCrawlTodayDataPM(): Promise<void>;
-    crawlTodayData(query: any): Promise<{
+    crawlTodayData(body: CrawlTodayDataDto): Promise<{
         code: number;
     }>;
     crawlHotListData(): Promise<{
@@ -80,3 +84,4 @@ export declare class PayBackController {
         data: import("./entities/marketData.entity").marketData[];
     }>;
 }
+export {};

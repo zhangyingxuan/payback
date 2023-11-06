@@ -18,10 +18,10 @@
 .table {
   padding: 0 15px;
   font-size: 12px;
-  overflow: auto;
-  content-visibility: auto;
+  // content-visibility: auto;
 
   &.isMobile {
+    padding: 0;
     .table-row {
       .col1 {
         flex: 0 0 83px;
@@ -38,46 +38,33 @@
 }
 
 .table__container {
-  // overflow: auto;
-  .flexCenter();
+  overflow: auto;
+  border-top: 1px solid @tableColumsBorderColor;
   border-right: 1px solid @tableColumsBorderColor;
-  // min-width: 800px;
-  // width: 100%;
 
   .table__header {
     font-size: 14px;
     font-weight: 500;
-    background-color: #dcdcdc;
-    width: 100%;
     cursor: pointer;
-    .tableColumsBorder();
-    border-top: 1px solid @tableColumsBorderColor;
-    display: flex;
+    > .col1, > .col2 {
+      background-color: @tableColumsBorderColor;
+    }
   }
 
-  .table__content {
-    width: 100%;
-  }
 
   .table-row {
     display: flex;
-    width: 100%;
     .col1 {
       flex: 0 0 100px;
       width: 100px;
       display: flex;
       align-items: center;
-      // position: sticky;
-      // left: 0;
-      // top: 0;
-      // background-color: #fff;
     }
     > div {
       border-left: 1px solid @tableColumsBorderColor;
       border-bottom: 1px solid @tableColumsBorderColor;
       padding: 5px;
       flex: 1;
-      // font-size: 12px;
     }
   }
 }

@@ -169,6 +169,8 @@ function sortPlates(stockGroupByPlate: any) {
 @import '../styles/tabPaneEvenBoardStockTable.less';
 
 .col2 {
+  min-width: 620px;
+  overflow: auto;
   /deep/.stock,
   span {
     display: inline-block;

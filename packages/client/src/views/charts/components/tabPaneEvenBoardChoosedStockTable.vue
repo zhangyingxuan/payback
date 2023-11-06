@@ -1,10 +1,10 @@
 <!-- 集合竞价数据 -->
 <template>
-  <div :class="['table', { isMobile }]" v-if="stockGroupByPlate.length > 0">
+  <div :class="['table', { isMobile }]" v-show="stockGroupByPlate.length > 0">
     <div class="table__container">
       <div class="table__header table-row">
         <div class="col1">行业板块</div>
-        <div class="red stocks_header">
+        <div class="col2 red stocks_header">
           <!-- 1进2选股 -->
           强势股
           <el-tooltip
@@ -25,6 +25,7 @@
       <div class="table__header table-row">
         <div class="col1">板块名</div>
         <div class="col2">
+          <!-- <div> -->
           <!-- 竞价行 -->
           <span class="stock large">个股名</span>
           [
@@ -38,6 +39,7 @@
           <span class="middle red">竞价涨幅</span>]&nbsp;&nbsp;
           <span class="middle red">收盘涨幅</span>
           <span class="middle">区间收益</span>
+          <!-- </div> -->
         </div>
       </div>
 
@@ -185,6 +187,9 @@ function sortPlates(stockGroupByPlate: any) {
 @import '../styles/tabPaneEvenBoardStockTable.less';
 
 .col2 {
+  min-width: 780px;
+  // overflow: auto;
+
   /deep/.stock,
   span {
     display: inline-block;

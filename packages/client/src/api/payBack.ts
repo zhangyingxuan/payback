@@ -28,8 +28,8 @@ export const fetchData = (params: any | null) => {
  * 爬取当日数据，更新至数据库
  * @returns 
  */
-export const crawlTodayData = (params: any | null) => {
-  return http.request<ChartResult>("get", `${baseUrl}/crawlTodayData`, { params });
+export const crawlTodayData = (data: any | null) => {
+  return http.request<ChartResult>("post", `${baseUrl}/crawlTodayData`, { data });
 }
 /**
  * 获取连板数据

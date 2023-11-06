@@ -7,7 +7,7 @@
     :dataList="data.summaryTableData"
     :isMobile="isMobile"
   />
-  <div class="table">
+  <div :class="['table', { isMobile }]">
     <div class="table__container">
       <!-- 第一列，title -->
       <div :class="['date-col first-col', { isMobile }]">
@@ -129,7 +129,9 @@
             >
               <span>
                 <Stock :name="stock.name" :code="stock.code" />
-                <span class="gray">{{ stock.evenDays }}</span>
+                <span class="gray" style="display: inline-block">{{
+                  stock.evenDays
+                }}</span>
               </span>
             </el-tooltip>
           </div>
@@ -472,7 +474,10 @@ function getDateCycle() {
 .table {
   padding: 0 15px;
   margin-bottom: 10px;
-  content-visibility: auto;
+  // content-visibility: auto;
+  &.isMobile {
+    padding: 0;
+  }
 }
 .table * {
   box-sizing: border-box;
@@ -514,9 +519,6 @@ function getDateCycle() {
 
     .dynamic__col {
       width: 100%;
-      > div {
-        padding: 5px;
-      }
     }
 
     &.first-col {
@@ -536,17 +538,6 @@ function getDateCycle() {
           display: none;
         }
       }
-
-      .dynamic__col {
-        width: 100%;
-        > div {
-          padding: 2px;
-        }
-      }
-
-      .gray {
-        display: inline-block;
-      }
     }
 
     &.isMonday {
@@ -564,7 +555,6 @@ function getDateCycle() {
     padding: 5px;
     cursor: pointer;
     .tableColumsBorder();
-    border-top: 1px solid @tableColumsBorderColor;
 
     &.isActive {
       color: #5a9cf8;
@@ -580,7 +570,7 @@ function getDateCycle() {
   .table-col {
     width: 100%;
     height: 83px;
-    overflow: scroll;
+    overflow: auto;
     // flex: 1;
     .flexCenter();
     .tableColumsBorder();

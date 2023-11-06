@@ -9,7 +9,7 @@ export declare class SpecialStockService {
     private readonly logger;
     autoCrawlBinddingData(): Promise<void>;
     autoCrawlBinddingDataLateSession(): Promise<void>;
-    crawlBinddingData(isRemoveIncompatible?: boolean): Promise<SpecialStockDto>;
+    crawlBinddingData(isRemoveIncompatible?: number): Promise<SpecialStockDto>;
     dealIncompatibleExpectStocks(isRemoveIncompatible: any, dailyLimitYesterdayBidding: any): Promise<void>;
     getTodayData(todayDateStr: string): Promise<specialStock>;
     findAll(): Promise<specialStock[]>;
