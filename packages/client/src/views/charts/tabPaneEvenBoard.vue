@@ -128,7 +128,7 @@
               :key="'stock' + index"
             >
               <span>
-                <Stock :name="stock.name" :code="stock.code" />
+                <Stock :showOp="false" :name="stock.name" :code="stock.code" />
                 <span class="gray" style="display: inline-block">{{
                   stock.evenDays
                 }}</span>
@@ -149,7 +149,11 @@
                 :key="'stock' + index"
               >
                 <span>
-                  <Stock :name="stock.name" :code="stock.code" />
+                  <Stock
+                    :showOp="false"
+                    :name="stock.name"
+                    :code="stock.code"
+                  />
                 </span>
               </el-tooltip>
             </div>
@@ -169,7 +173,7 @@
               :key="'downLimitStock' + index"
             >
               <span>
-                <Stock :name="stock.name" :code="stock.code" />
+                <Stock :showOp="false" :name="stock.name" :code="stock.code" />
                 <span
                   v-if="!isMobile"
                   class="downLimitStock__plate"

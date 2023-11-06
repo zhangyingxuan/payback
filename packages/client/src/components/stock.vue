@@ -22,10 +22,8 @@
     ref="popoverRef"
     virtual-triggering
     :virtual-ref="stockRef"
-    v-if="isAdmin"
+    v-if="isAdmin && showOp"
   >
-    <!-- <template #reference> -->
-    <!-- </template> -->
     <template #default>
       <el-button-group class="op__btnGroup">
         <el-button @click="handleAdd" type="primary" :icon="Plus" />
@@ -33,11 +31,6 @@
       </el-button-group>
     </template>
   </el-popover>
-
-  <!-- <el-icon @click="handleAdd"><Plus /></el-icon>
-    <el-icon @click="handleDel"><Minus /></el-icon> -->
-  <!-- <el-icon @click="handleAdd"><CirclePlus /></el-icon>
-  <el-icon @click="handleDel"><Remove /></el-icon> -->
 </template>
 <script lang="ts" setup>
 import { addThsSelfStock, delThsSelfStock } from '../api/thsTrade';
@@ -48,7 +41,7 @@ import { ClickOutside as vClickOutside, ElMessage } from 'element-plus';
 const stockRef = ref();
 const popoverRef = ref();
 const onClickOutside = () => {
-  unref(popoverRef).popperRef?.delayHide?.();
+  unref(popoverRef) && unref(popoverRef).popperRef?.delayHide?.();
 };
 
 let timer: any = null;
@@ -69,10 +62,10 @@ let superData = defineProps({
     type: String,
     default: '',
   },
-  // showOp: {
-  //   type: Boolean,
-  //   default: true,
-  // },
+  showOp: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const username: string | null = localStorage.getItem('ms_username');
