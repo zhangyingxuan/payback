@@ -3,7 +3,17 @@
   <div :class="['table', { isMobile }]" v-show="stockGroupByPlate.length > 0">
     <div class="table__container">
       <div class="table__header table-row">
-        <div class="col1">行业板块</div>
+        <div
+          class="col1"
+          @click="
+            () => {
+              data.isShowContent = !data.isShowContent;
+            }
+          "
+        >
+          行业板块&nbsp;
+          <el-icon class="toggleFold"><ArrowDownBold /></el-icon>
+        </div>
         <div class="col2 red stocks_header">
           <!-- 1进2选股 -->
           强势股
@@ -22,6 +32,7 @@
           <span class="dateTime__span">{{ updateTime }}</span>
         </div>
       </div>
+      <!-- 标题区域 -->
       <div class="table__header table-row">
         <div class="col1">板块名</div>
         <div class="col2">
@@ -43,75 +54,78 @@
         </div>
       </div>
 
-      <div
-        class="table-row"
-        v-for="(item, key) in stockGroupByPlate"
-        :key="key"
-      >
-        <div class="col1">
-          <div>
-            <span class="zise">{{ item.key }}</span>
-            <br v-if="isMobile" />
-            <span>&nbsp;{{ item.value.length }}</span>
+      <!-- 内容区域 -->
+      <div v-show="data.isShowContent" class="table__content">
+        <div
+          class="table-row"
+          v-for="(item, key) in stockGroupByPlate"
+          :key="key"
+        >
+          <div class="col1">
+            <div>
+              <span class="zise">{{ item.key }}</span>
+              <br v-if="isMobile" />
+              <span>&nbsp;{{ item.value.length }}</span>
+            </div>
           </div>
-        </div>
-        <div :class="`col2 ${isMobile ? 'isMobile' : ''}`">
-          <div v-for="(stock, index) in item.value" :key="'stock' + index">
-            <Stock
-              class="stock__span large"
-              :name="stock.name"
-              :code="stock.code"
-            />
-            [&nbsp;<span
-              class="small"
-              :class="calcClassByBidRating(stock.bidRating)"
-            >
-              {{ stock.bidRating }}
-            </span>
-            <span
-              :class="{
-                'red bold middle':
-                  stock.bidChangeTypeT === '竞价抢筹' ||
-                  stock.bidChangeTypeT === '大幅高开',
-              }"
-              >{{ stock.bidChangeTypeT }}
-            </span>
-            <span class="lanse middle">{{ stock.price }}</span>
-            <!-- 换手率 -->
-            <span v-if="stock.turnoverRate" class="middle">
-              换手率{{ stock.turnoverRate }}%
-            </span>
-            <span class="zise middle">{{ stock.circulationValue }}亿</span>
-            <span class="orange middle">{{ stock.cmjzd }} %</span>
-            <span class="large"> {{ stock.sphl }} %</span>
-            <span
-              :class="{
-                'red bold': stock.bidIncreaseT >= 5,
-                middle: true,
-              }"
-            >
-              {{ stock.bidIncreaseT && +stock.bidIncreaseT.toFixed(2) }}
-            </span>
-            ]&nbsp;&nbsp;
-            <span
-              :class="{
-                'red bold': stock.closeIncrease >= 5,
-                green: stock.closeIncrease < 0,
-                middle: true,
-              }"
-            >
-              {{ stock.closeIncrease }}
-            </span>
-            <span
-              class="middle"
-              :class="
-                stock.closeIncrease - stock.bidIncreaseT >= 0
-                  ? 'red bold'
-                  : 'green'
-              "
-            >
-              {{ (stock.closeIncrease - stock.bidIncreaseT).toFixed(2) }}
-            </span>
+          <div :class="`col2 ${isMobile ? 'isMobile' : ''}`">
+            <div v-for="(stock, index) in item.value" :key="'stock' + index">
+              <Stock
+                class="stock__span large"
+                :name="stock.name"
+                :code="stock.code"
+              />
+              [&nbsp;<span
+                class="small"
+                :class="calcClassByBidRating(stock.bidRating)"
+              >
+                {{ stock.bidRating }}
+              </span>
+              <span
+                :class="{
+                  'red bold middle':
+                    stock.bidChangeTypeT === '竞价抢筹' ||
+                    stock.bidChangeTypeT === '大幅高开',
+                }"
+                >{{ stock.bidChangeTypeT }}
+              </span>
+              <span class="lanse middle">{{ stock.price }}</span>
+              <!-- 换手率 -->
+              <span v-if="stock.turnoverRate" class="middle">
+                换手率{{ stock.turnoverRate }}%
+              </span>
+              <span class="zise middle">{{ stock.circulationValue }}亿</span>
+              <span class="orange middle">{{ stock.cmjzd }} %</span>
+              <span class="large"> {{ stock.sphl }} %</span>
+              <span
+                :class="{
+                  'red bold': stock.bidIncreaseT >= 5,
+                  middle: true,
+                }"
+              >
+                {{ stock.bidIncreaseT && +stock.bidIncreaseT.toFixed(2) }}
+              </span>
+              ]&nbsp;&nbsp;
+              <span
+                :class="{
+                  'red bold': stock.closeIncrease >= 5,
+                  green: stock.closeIncrease < 0,
+                  middle: true,
+                }"
+              >
+                {{ stock.closeIncrease }}
+              </span>
+              <span
+                class="middle"
+                :class="
+                  stock.closeIncrease - stock.bidIncreaseT >= 0
+                    ? 'red bold'
+                    : 'green'
+                "
+              >
+                {{ (stock.closeIncrease - stock.bidIncreaseT).toFixed(2) }}
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -120,7 +134,7 @@
 </template>
 <script lang="ts" setup>
 import _ from 'lodash-es';
-import { computed } from 'vue';
+import { computed, reactive } from 'vue';
 import { params } from 'pay-back-core';
 import { calcClassByBidRating, openNewIwencaiWindow } from '../utils';
 
@@ -137,6 +151,11 @@ let superData = defineProps({
     type: String,
     default: '',
   },
+});
+
+const data = reactive({
+  // 展开折叠
+  isShowContent: true,
 });
 
 const stockGroupByPlate = computed(() => {

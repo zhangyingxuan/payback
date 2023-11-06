@@ -5,16 +5,17 @@
 <template>
   <div :class="['table', { isMobile }]">
     <div class="table__container">
-      <div
-        class="table__header table-row"
-        @click="
-          () => {
-            data.isShowContent = !data.isShowContent;
-          }
-        "
-      >
-        <div class="col1">
-          行业板块 ({{ stockGroupByPlateByFilter.length }})
+      <div class="table__header table-row">
+        <div
+          class="col1"
+          @click="
+            () => {
+              data.isShowContent = !data.isShowContent;
+            }
+          "
+        >
+          行业板块&nbsp;
+          <el-icon class="toggleFold"><ArrowDownBold /></el-icon>
         </div>
         <div class="col2 red flex__row">
           <!-- 涨停个股 过滤条件 -->
@@ -99,7 +100,10 @@
         </div>
       </div>
 
-      <TabPaneEvenBoardDailyStockTableHeader :showBidding="showBidding" />
+      <TabPaneEvenBoardDailyStockTableHeader
+        :showBidding="showBidding"
+        :platesLength="stockGroupByPlateByFilter.length"
+      />
 
       <transition name="h1">
         <div v-show="data.isShowContent" class="table__content">

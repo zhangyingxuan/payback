@@ -4,7 +4,7 @@
 <!-- 封单大于 1亿的 标红 -->
 <template>
   <div class="table__header table-row">
-    <div class="col1">板块名</div>
+    <div class="col1">板块名 ({{ platesLength }})</div>
     <div class="col2">
       <div class="dailyLimit__row">
         <div class="dailyLimit__content">
@@ -41,6 +41,10 @@ defineProps({
   showBidding: {
     type: Boolean,
     default: true,
+  },
+  platesLength: {
+    type: Number,
+    default: 0,
   },
 });
 </script>

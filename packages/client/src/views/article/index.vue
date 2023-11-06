@@ -1,7 +1,7 @@
 <template>
   <div class="article__container container">
     <div class="handle-box">
-      <el-button type="primary" :icon="Plus" @click="handleAdd">
+      <el-button type="primary" :icon="Plus" @click="handleAdd" v-permiss="16">
         新增
       </el-button>
 
@@ -37,7 +37,7 @@
           <span
             class="oprate__btn"
             @click="handleEdit(scope.row.id)"
-            v-permiss="15"
+            v-permiss="16"
           >
             编辑
           </span>
