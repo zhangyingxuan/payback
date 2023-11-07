@@ -38,7 +38,7 @@ export class LatestConceptPlateService {
     try {
       // 爬取最新概念板块，若果有的话 则保存 近5日新增概念
       latestConceptPlates = await getLatestConceptPlate(conceptPlate);
-      console.log(latestConceptPlates);
+      // console.log(latestConceptPlates);
       if (latestConceptPlates) {
         latestConceptPlates.forEach(async (latestConceptPlate) => {
           await this.latestConceptPlateRp.save(latestConceptPlate);

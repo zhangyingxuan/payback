@@ -1,10 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = require("@nestjs/core");
+const compression = require("compression");
 const app_module_1 = require("./app.module");
 const HttpExceptionFilter_1 = require("./filters/HttpExceptionFilter");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
+    app.use(compression());
     app.setGlobalPrefix('blowsysun');
     app.useGlobalFilters(new HttpExceptionFilter_1.HttpExceptionFilter());
     await app.listen(3000);

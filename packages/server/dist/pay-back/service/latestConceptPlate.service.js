@@ -40,7 +40,6 @@ let LatestConceptPlateService = LatestConceptPlateService_1 = class LatestConcep
         let latestConceptPlates;
         try {
             latestConceptPlates = await (0, latestConceptPlateUtil_1.getLatestConceptPlate)(conceptPlate);
-            console.log(latestConceptPlates);
             if (latestConceptPlates) {
                 latestConceptPlates.forEach(async (latestConceptPlate) => {
                     await this.latestConceptPlateRp.save(latestConceptPlate);

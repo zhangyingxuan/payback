@@ -12,6 +12,7 @@ import compress from 'vite-plugin-compression';
 import { visualizer } from 'rollup-plugin-visualizer';
 import { manualChunksPlugin } from 'vite-plugin-webpackchunkname';
 
+
 /** 路径查找 */
 const pathResolve = (dir: string): string => {
 	return resolve(__dirname, ".", dir);

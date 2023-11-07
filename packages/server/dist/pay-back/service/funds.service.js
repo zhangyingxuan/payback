@@ -46,7 +46,6 @@ let FundsService = FundsService_1 = class FundsService {
         let fundsData;
         try {
             fundsData = await fundsUtil_1.default.getFundsData(dayjs(todayDateStr).format('YYYYMMDD'));
-            console.log(fundsData);
             if (isExist) {
                 this.logger.log('crawlfundsData 更新数据');
                 await this.fundsDataRp.update(todayDataFromDB.id, fundsData);

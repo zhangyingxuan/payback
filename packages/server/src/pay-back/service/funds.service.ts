@@ -49,7 +49,7 @@ export class FundsService {
     let fundsData: CreateFundsDataDto;
     try {
       fundsData = await fundsUtil.getFundsData(dayjs(todayDateStr).format('YYYYMMDD'));
-      console.log(fundsData);
+      // console.log(fundsData);
 
       if (isExist) {
         this.logger.log('crawlfundsData 更新数据')

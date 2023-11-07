@@ -96,7 +96,7 @@ import {
   findConceptPlateWithinNDays,
 } from '@/api/payBack';
 import { fetchLonghuHistoryData } from '@/api/tonghuashun';
-import { ShortTermModel } from '@/api/model/shortTermModel';
+import { ShortTermModel } from '@/api/model/ShortTermModel';
 import { MarketModel } from '@/api/model/MarketModel';
 import { FundsModel } from '@/api/model/FundsModel';
 import {
@@ -166,8 +166,10 @@ onMounted(async () => {
   window.addEventListener(
     'resize',
     debounce(() => {
+      console.log('resize=====');
       Object.keys(chartList).forEach(key => {
-        chartList[key].resize();
+        console.log(chartList[key]);
+        chartList[key] && chartList[key].resize();
       });
     }, 500),
   );
@@ -213,15 +215,15 @@ async function initPage(pageSize: number) {
     initFundsChart(result.fundsData);
     initHangyeFundsChart(result.fundsData);
     initGainianFundsChart(result.fundsData);
+
+    // setTimeout(() => {
+    //   Object.keys(chartList).forEach(key => {
+    //     chartList[key] && chartList[key].resize();
+    //   });
+    // }, 0);
   } catch (e) {
     // console.log(e);
   }
-
-  setTimeout(() => {
-    Object.keys(chartList).forEach(key => {
-      chartList[key] && chartList[key].resize();
-    });
-  }, 0);
 }
 
 function getChartStyle() {

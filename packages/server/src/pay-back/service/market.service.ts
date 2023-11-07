@@ -43,7 +43,7 @@ export class MarketService {
     let marketData: CreateMarketDataDto;
     try {
       marketData = await marketUtil.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
-      console.log(marketData);
+      // console.log(marketData);
       if (isExist) {
         this.logger.log('crawlMarketData 更新数据')
         await this.marketDataRp.update(todayDataFromDB.id, marketData);

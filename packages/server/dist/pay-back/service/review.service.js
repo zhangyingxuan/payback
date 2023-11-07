@@ -42,7 +42,6 @@ let ReviewService = ReviewService_1 = class ReviewService {
         let marketData;
         try {
             marketData = await playWrightUtil_1.default.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
-            console.log(marketData);
             await this.reviewDataRp.save(marketData);
             this.logger.debug('updateTodayReviewData is success!');
         }

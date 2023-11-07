@@ -46,7 +46,6 @@ let MarketService = MarketService_1 = class MarketService {
         let marketData;
         try {
             marketData = await marketUtil_1.default.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
-            console.log(marketData);
             if (isExist) {
                 this.logger.log('crawlMarketData 更新数据');
                 await this.marketDataRp.update(todayDataFromDB.id, marketData);

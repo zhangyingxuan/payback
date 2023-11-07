@@ -110,10 +110,10 @@ devDependencies:
     specifier: ^4.6.4
     version: 4.9.4
   unplugin-auto-import:
-    specifier: ^0.11.2
+    specifier: ^0.11.5
     version: 0.11.5(rollup@2.79.1)
   unplugin-vue-components:
-    specifier: ^0.22.4
+    specifier: ^0.22.12
     version: 0.22.12(rollup@2.79.1)(vue@3.2.45)
   vite:
     specifier: ^3.0.0

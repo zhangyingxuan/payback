@@ -264,7 +264,7 @@ const handleCommand = (command: string) => {
 .header .logo {
   display: flex;
   float: left;
-  width: 400px;
+  width: 330px;
   line-height: 40px;
 }
 .header-right {

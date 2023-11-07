@@ -54,7 +54,7 @@ export class ShorTermService {
     try {
       createPayBackDto = await getShortTermData(todayDateStr);
 
-      console.log(createPayBackDto);
+      // console.log(createPayBackDto);
       if (isExist) {
         this.logger.log('crawlShortTermData 更新数据')
         await this.shortTermDataRp.update(todayDataFromDB.id, createPayBackDto);
@@ -91,7 +91,7 @@ export class ShorTermService {
     let createPayBackDto: CreatePayBackDto;
     try {
       createPayBackDto = await getShortTermDataByDate(todayDateStr);
-      console.log(createPayBackDto);
+      // console.log(createPayBackDto);
       await this.shortTermDataRp.save(createPayBackDto);
       this.logger.debug('crawlShortTermDataByDate is success!');
     } catch (e) {
