@@ -12,7 +12,7 @@
           "
         >
           行业板块&nbsp;
-          <el-icon class="toggleFold"><ArrowDownBold /></el-icon>
+          <el-icon v-if="!isMobile"><ArrowDownBold /></el-icon>
         </div>
         <div class="col2 red stocks_header">
           <!-- 1进2选股 -->
@@ -65,7 +65,9 @@
             <div>
               <span class="zise">{{ item.key }}</span>
               <br v-if="isMobile" />
-              <span>&nbsp;{{ item.value.length }}</span>
+              <span v-if="item.value.length > 1">
+                &nbsp;{{ item.value.length }}
+              </span>
             </div>
           </div>
           <div :class="`col2 ${isMobile ? 'isMobile' : ''}`">

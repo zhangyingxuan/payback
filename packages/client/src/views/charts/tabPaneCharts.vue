@@ -161,29 +161,27 @@ watch(countDays, async val => {
   await initPage(val);
 });
 
+// 获取15天内最新概念
+findConceptPlateWithinNDays({ limit: 15 }).then((result: any) => {
+  // console.log(result);
+  data.latestConceptPlates = result.map((item: any) => {
+    return {
+      ...item,
+      createTime: dayjs(item.createTime).format('YYYY-MM-DD'),
+    };
+  });
+});
+
 onMounted(async () => {
   await initPage(countDays.value);
   window.addEventListener(
     'resize',
     debounce(() => {
-      console.log('resize=====');
       Object.keys(chartList).forEach(key => {
-        console.log(chartList[key]);
         chartList[key] && chartList[key].resize();
       });
     }, 500),
   );
-
-  // 获取15天内最新概念
-  findConceptPlateWithinNDays({ limit: 15 }).then((result: any) => {
-    // console.log(result);
-    data.latestConceptPlates = result.map((item: any) => {
-      return {
-        ...item,
-        createTime: dayjs(item.createTime).format('YYYY-MM-DD'),
-      };
-    });
-  });
 });
 
 async function initPage(pageSize: number) {
@@ -216,11 +214,11 @@ async function initPage(pageSize: number) {
     initHangyeFundsChart(result.fundsData);
     initGainianFundsChart(result.fundsData);
 
-    // setTimeout(() => {
-    //   Object.keys(chartList).forEach(key => {
-    //     chartList[key] && chartList[key].resize();
-    //   });
-    // }, 0);
+    setTimeout(() => {
+      Object.keys(chartList).forEach(key => {
+        chartList[key] && chartList[key].resize();
+      });
+    }, 0);
   } catch (e) {
     // console.log(e);
   }

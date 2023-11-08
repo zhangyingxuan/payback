@@ -65,25 +65,34 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 						) {
 							return 'vendor-echarts';
 						}
-						if (
-							id.indexOf('node_modules/core-js/') !== -1 ||
-							id.indexOf('node_modules/@vue/') !== -1 ||
-							id.indexOf('node_modules/vue/') !== -1 ||
-							id.indexOf('node_modules/vue-router/') !== -1 ||
-							id.indexOf('node_modules/vuex/') !== -1 ||
-							id.indexOf('node_modules/axios/') !== -1
-						) {
-							return 'vendor-core';
+						// if (
+						// 	id.indexOf('node_modules/core-js/') !== -1 ||
+						// 	id.indexOf('node_modules/@vue/') !== -1 ||
+						// 	id.indexOf('node_modules/vue/') !== -1 ||
+						// 	id.indexOf('node_modules/vue-router/') !== -1 ||
+						// 	id.indexOf('node_modules/vuex/') !== -1 ||
+						// 	id.indexOf('node_modules/axios/') !== -1
+						// ) {
+						// 	return 'vendor-core';
+						// }
+						if (id.indexOf('/node_modules/element-plus/') !== -1 ||
+							id.indexOf('/node_modules/@element-plus/icons-vue/') !== -1) {
+							return 'vendor-element-plus';
+						}
+						if (id.indexOf('/node_modules/@kangc/') !== -1) {
+							return 'vendor-markdown';
 						}
 						if (
 							id.indexOf('node_modules/zrender/') !== -1 ||
 							id.indexOf('node_modules/qs/') !== -1 ||
+							id.indexOf('node_modules/dayjs/') !== -1 ||
 							id.indexOf('node_modules/lodash-es/') !== -1
 						) {
 							return 'vendor-utils';
 						}
-						if (id.indexOf('/node_modules/element-plus/') !== -1) {
-							return 'vendor-element-plus';
+						// 剩余的外部依赖全部装入 utils中
+						if (id.indexOf('/node_modules') !== -1) {
+							return 'vendor-external';
 						}
 					},
 				},
@@ -117,9 +126,9 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 				resolvers: [ElementPlusResolver()]
 			})
 		],
-		optimizeDeps: {
-			include: ['schart.js', 'lodash']
-		},
+		// optimizeDeps: {
+		// 	include: ['schart.js', 'lodash']
+		// },
 		css: {
 			preprocessorOptions: {
 				less: {

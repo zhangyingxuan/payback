@@ -15,7 +15,7 @@
           "
         >
           行业板块&nbsp;
-          <el-icon class="toggleFold"><ArrowDownBold /></el-icon>
+          <el-icon v-if="!isMobile"><ArrowDownBold /></el-icon>
         </div>
         <div class="col2 red flex__row">
           <!-- 涨停个股 过滤条件 -->
@@ -117,7 +117,9 @@
                 <!-- <Plate :code="plate.code" :name="plate.name" /> -->
                 <span class="zise">{{ item.key }}</span>
                 <br v-if="isMobile" />
-                <span>&nbsp;{{ item.value.length }}</span>
+                <span v-if="item.value.length > 1">
+                  &nbsp;{{ item.value.length }}
+                </span>
               </div>
             </div>
             <div class="col2">
@@ -174,7 +176,7 @@
                   <span class="red bold middle">{{
                     getExpectedStr(stock)
                   }}</span>
-                  <span class="red large">
+                  <span v-if="stock.turnoverType" class="red large">
                     {{ stock.turnoverType }}
                   </span>
                 </div>

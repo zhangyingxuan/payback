@@ -46,7 +46,9 @@
           <div>
             <span class="zise">{{ item.key }}</span>
             <br v-if="isMobile" />
-            <span>&nbsp;{{ item.value.length }}</span>
+            <span v-if="item.value.length > 1">
+              &nbsp;{{ item.value.length }}
+            </span>
           </div>
         </div>
         <div class="col2">
