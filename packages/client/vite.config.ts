@@ -91,9 +91,9 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 							return 'vendor-utils';
 						}
 						// 剩余的外部依赖全部装入 utils中
-						if (id.indexOf('/node_modules/') !== -1) {
-							return 'vendor-external';
-						}
+						// if (id.indexOf('/node_modules/') !== -1) {
+						// 	return 'vendor-external';
+						// }
 					},
 				},
 			},
