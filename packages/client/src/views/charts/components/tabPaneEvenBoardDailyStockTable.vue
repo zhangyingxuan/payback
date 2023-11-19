@@ -48,7 +48,7 @@
               </span>
             </div>
 
-            <div>
+            <div class="stocks_header">
               <el-checkbox v-model="data.myStrategyChecked">
                 <div class="stocks_header">
                   我的策略 ({{ data.myStrategyCheckedNum }})&nbsp;
@@ -66,6 +66,19 @@
               <el-checkbox v-model="data.notFirstBoardChecked">
                 连板
               </el-checkbox>
+              <el-select
+                class="select"
+                v-model="data.evenBoardHeight"
+                placeholder="连板高度"
+                size="small"
+              >
+                <el-option
+                  v-for="item in data.evenBoardHeightOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
             </div>
           </div>
           <!-- 集合竞价 过滤条件 -->
@@ -230,7 +243,26 @@ let superData = defineProps({
   },
 });
 
-const data = reactive({
+interface Option {
+  label: string;
+  value: number;
+}
+const data: {
+  notFirstBoardChecked: boolean;
+  firstBoardChecked: boolean;
+  myStrategyChecked: boolean;
+  myStrategyCheckedNum: number;
+  biddingStrategyChecked: boolean;
+  biddingStrategyCheckedNum: number;
+  dailyLimitNum: number;
+  exceededExpect: boolean;
+  conformToExpect: boolean;
+  closeDailyLimit: boolean;
+  openDailyLimimExclude: boolean;
+  isShowContent: boolean;
+  evenBoardHeight: number;
+  evenBoardHeightOptions: Array<Option>;
+} = reactive({
   // 连板
   notFirstBoardChecked: false,
   // 首板
@@ -251,16 +283,22 @@ const data = reactive({
   closeDailyLimit: false,
   // 排除 竞价涨停
   openDailyLimimExclude: false,
+  // 展开折叠表格
   isShowContent: true,
+  // 连板高度，-1代表全部
+  evenBoardHeight: -1,
+  // 连板高度可选项
+  evenBoardHeightOptions: [],
 });
 
 let keyword = '';
 
 /**
- * 高标的首板 竞价策略 也需要过滤
+ * 按板块分类的个股（高标的首板 竞价策略 也需要过滤）
  */
 const stockGroupByPlate: any = computed(() => {
   const currentDateData = _.cloneDeep(superData.currentDateData);
+  const evenBoardHeightOptions = new Set();
 
   if (!currentDateData.evenBoardData) return [];
 
@@ -291,8 +329,24 @@ const stockGroupByPlate: any = computed(() => {
           }
         } else {
           stockGroupByPlateTemp[item.plateLevel2].push(item);
+          evenBoardHeightOptions.add(item.evenBoardHeight);
         }
       });
+  });
+
+  data.evenBoardHeightOptions = Array.from(evenBoardHeightOptions)
+    .map((item: any) => {
+      return {
+        label: item,
+        value: +item,
+      };
+    })
+    .sort((a: any, b: any) => {
+      return b.value - a.value;
+    });
+  data.evenBoardHeightOptions.unshift({
+    label: '全部',
+    value: -1,
   });
 
   return stockGroupByPlateTemp;
@@ -328,6 +382,9 @@ const stockGroupByPlateByFilter = computed(() => {
         }
         if (data.myStrategyChecked && isAdd) {
           isAdd = dailyLimitOptionalStrategy(item, item.evenBoardHeight);
+        }
+        if (data.evenBoardHeight != -1 && isAdd) {
+          isAdd = data.evenBoardHeight == getRealEvenBoardHeight(item, false);
         }
         isAdd && data.myStrategyCheckedNum++;
 
@@ -548,7 +605,6 @@ function getExpectedStr(stock: DailyLimitStockDto) {
 
 .flex__row_header {
   justify-content: space-between;
-  padding-right: 20px;
   font-size: 14px;
 }
 
@@ -567,5 +623,9 @@ function getExpectedStr(stock: DailyLimitStockDto) {
 .h1-enter-to,
 .h1-leave-from {
   opacity: 1;
+}
+.select {
+  width: 60px;
+  margin-right: 10px !important;
 }
 </style>

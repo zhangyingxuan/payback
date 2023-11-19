@@ -20,6 +20,7 @@
           "
         >
           {{ data.isShowContent ? '收起' : '展开' }}
+          <el-checkbox v-model="data.showOp"></el-checkbox>
         </div>
         <div v-show="data.isShowContent" class="dynamic__col">
           <div class="table-col height1">周期</div>
@@ -128,7 +129,11 @@
               :key="'stock' + index"
             >
               <span>
-                <Stock :showOp="false" :name="stock.name" :code="stock.code" />
+                <Stock
+                  :showOp="data.showOp"
+                  :name="stock.name"
+                  :code="stock.code"
+                />
                 <span class="gray" style="display: inline-block">{{
                   stock.evenDays
                 }}</span>
@@ -150,7 +155,7 @@
               >
                 <span>
                   <Stock
-                    :showOp="false"
+                    :showOp="data.showOp"
                     :name="stock.name"
                     :code="stock.code"
                   />
@@ -173,7 +178,11 @@
               :key="'downLimitStock' + index"
             >
               <span>
-                <Stock :showOp="false" :name="stock.name" :code="stock.code" />
+                <Stock
+                  :showOp="data.showOp"
+                  :name="stock.name"
+                  :code="stock.code"
+                />
                 <span
                   v-if="!isMobile"
                   class="downLimitStock__plate"
@@ -262,8 +271,10 @@ const data: {
   currentDate: string;
   summaryTableData: any[];
   hasSummaryTableData: boolean;
+  showOp: boolean;
 } = reactive({
   isShowContent: true,
+  showOp: false,
   hasSummaryTableData: false,
   currentDateData: {},
   yesterdayDateData: {},
@@ -569,6 +580,9 @@ function getDateCycle() {
     > .el-icon {
       margin-bottom: -4px;
       display: none;
+    }
+    .el-checkbox {
+      height: 20px;
     }
   }
   .table-col {
