@@ -128,15 +128,15 @@ const routes: RouteRecordRaw[] = [
         },
         component: () => import(/* webpackChunkName: "user" */ '../views/user.vue'),
       },
-      {
-        path: '/markdown',
-        name: 'markdown',
-        meta: {
-          title: 'markdown编辑器',
-          permiss: '9',
-        },
-        component: import(/* webpackChunkName: "markdown" */  '../views/article/oldIndex.vue'),
-      }
+      // {
+      //   path: '/markdown',
+      //   name: 'markdown',
+      //   meta: {
+      //     title: 'markdown编辑器',
+      //     permiss: '9',
+      //   },
+      //   component: import(/* webpackChunkName: "markdown" */  '../views/article/oldIndex.vue'),
+      // }
     ]
   },
   {

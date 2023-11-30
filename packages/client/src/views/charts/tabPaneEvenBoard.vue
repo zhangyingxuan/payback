@@ -221,7 +221,7 @@
   <!-- 当日涨停分布，按行业板块划分 -->
   <DailyStockTable
     v-model:currentDateData="data.currentDateData"
-    :updateTime="data.currentDateData.createTime"
+    :updateTime="dayjs(data.currentDateData.createTime).format('MM/DD HH:mm')"
     :isMobile="isMobile"
   />
   <div :class="{ flex__row: !isMobile }">

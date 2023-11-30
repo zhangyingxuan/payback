@@ -15,12 +15,8 @@ const gridShortTerm = {
 };
 
 const dottedLineItemStyle = {
-  normal: {
-    lineStyle: {
-      width: 2,
-      type: 'dotted'  //'dotted'虚线 'solid'实线
-    }
-  }
+  width: 2,
+  type: 'dotted'  //'dotted'虚线 'solid'实线
 };
 
 
@@ -247,7 +243,7 @@ export const getFundsChartOption = function (xAxisData: any, yAxisData: any) {
         type: 'line',
         yAxisIndex: 0,
         data: yAxisData[1],
-        itemStyle: dottedLineItemStyle
+        lineStyle: dottedLineItemStyle
       },
       {
         name: legendData[2],
@@ -389,14 +385,14 @@ export const getIndexChartOption = function (xAxisData: any, yAxisData: any) {
         type: 'line',
         yAxisIndex: 2,
         data: yAxisData[2],
-        itemStyle: dottedLineItemStyle
+        lineStyle: dottedLineItemStyle
       },
       {
         name: legendData[3],
         type: 'line',
         yAxisIndex: 3,
         data: yAxisData[3],
-        itemStyle: dottedLineItemStyle
+        lineStyle: dottedLineItemStyle
       },
     ],
   };
@@ -613,7 +609,7 @@ export const getShortTermChartOption = function (xAxisData: any, yAxisData: any)
           fontSize: 14,
           color: colors[2],
         },
-        itemStyle: dottedLineItemStyle
+        lineStyle: dottedLineItemStyle
       },
       {
         name: legendData[3],

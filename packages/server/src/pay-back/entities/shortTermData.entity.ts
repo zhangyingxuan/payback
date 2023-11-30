@@ -32,7 +32,7 @@ export class shortTermData {
   @Column({ comment: '跌停数据', type: 'varchar', length: 3072, default: '' })
   downLimitData: string;
 
-  @Column({ comment: '跌幅大于等于15的个股', type: 'varchar', length: 1024, default: '' })
+  @Column({ comment: '跌幅大于等于15的个股', type: 'varchar', length: 2048, default: '' })
   hugeFallData: string;
 
   // TODO 目前不够完善

@@ -131,7 +131,7 @@ export function transformEvenBoardData(shortTermData: ShortTermModel[]): any[] {
       // console.log(item.createTime, ticaiData, sortObj(ticaiData));
 
       const itemData: any = {
-        createTime: dayjs(item.createTime).format('MM/DD HH:mm'),
+        createTime: item.createTime,
         createDate: dayjs(item.createTime).format('MM/DD'),
         maxHeight,
         marketHeight: maxHeight,

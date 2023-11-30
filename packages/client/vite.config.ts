@@ -5,7 +5,7 @@ import VueSetupExtend from 'vite-plugin-vue-setup-extend';
 import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
-import markdownLoader from './build/markdownLoader';
+// import markdownLoader from './build/markdownLoader';
 import { warpperEnv } from "./build";
 import path from 'path';
 import compress from 'vite-plugin-compression';
@@ -109,14 +109,15 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 		plugins: [
 			compress({ threshold: 10240 }), // gzip 压缩
 			manualChunksPlugin(), // 合并webpackChunkName
+			// 打包分析
 			visualizer({
 				gzipSize: true,
 				brotliSize: true,
 				emitFile: false,
 				filename: "stats.html", //分析图生成的文件名
 				open: true //如果存在本地服务端口，将在打包后自动展示
-			}), // 打包分析
-			markdownLoader(),
+			}),
+			// markdownLoader(),
 			vue(),
 			VueSetupExtend(),
 			AutoImport({
