@@ -330,7 +330,7 @@ function loadStockBaseData(stock, item, currentDate = null) {
   stock.name = item['股票简称'];
   // 编码
   stock.code = item.code;
-  stock.plateLevel2 = item['所属同花顺二级行业'];
+  stock.plateLevel2 = getPlateLevel2(item);
   if (currentDate) {
     // 股价
     stock.price = item['最新价'];
@@ -339,6 +339,19 @@ function loadStockBaseData(stock, item, currentDate = null) {
   }
 
   return stock;
+}
+
+/**
+ *  获取二级行业
+ * @param item 
+ * @returns 
+ */
+function getPlateLevel2(item) {
+  if (item['所属同花顺二级行业']) {
+    return item['所属同花顺二级行业'];
+  }
+
+  return item['所属同花顺行业'] ? item['所属同花顺行业'].split('-')[1] : '未知';
 }
 
 /**

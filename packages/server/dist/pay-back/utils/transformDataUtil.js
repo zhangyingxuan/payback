@@ -217,12 +217,18 @@ function loadBiddingBaseData(stock, item, currentDate) {
 function loadStockBaseData(stock, item, currentDate = null) {
     stock.name = item['股票简称'];
     stock.code = item.code;
-    stock.plateLevel2 = item['所属同花顺二级行业'];
+    stock.plateLevel2 = getPlateLevel2(item);
     if (currentDate) {
         stock.price = item['最新价'];
         stock.circulationValue = (0, commonUtil_1.fundsToFixed)(item[`a股市值(不含限售股)[${currentDate}]`]);
     }
     return stock;
+}
+function getPlateLevel2(item) {
+    if (item['所属同花顺二级行业']) {
+        return item['所属同花顺二级行业'];
+    }
+    return item['所属同花顺行业'] ? item['所属同花顺行业'].split('-')[1] : '未知';
 }
 function judgeExpected(item) {
     const { bidIncreaseT } = item;
