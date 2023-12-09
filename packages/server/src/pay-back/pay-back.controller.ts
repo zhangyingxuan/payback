@@ -100,18 +100,36 @@ export class PayBackController {
     };
   }
 
+  // 获取竞价数据
+  // @Public()
+  // @Cron('0 25 9 * * 1-5')
+  @Post('/crawlBinddingData')
+  async crawlBinddingData(@Body() body: CrawlTodayDataDto) {
+    // 是否剔除 不及预期数据；注意接收到的参数 是否为字符串
+    await this.specialStockService.crawlBinddingData(body.isRemoveIncompatible);
+    let result = null;
+    // 组装为当日连板数据
+    try {
+      const currentDayEventData = await this.shorTermService.findEvenBoardByLimit(3);
+      result = currentDayEventData[1];
+      // 竞价修改时间改为 正确的时间
+      result.biddingDataUpdateTime = currentDayEventData[0].biddingDataUpdateTime;
+      console.log(currentDayEventData[0]);
+    } catch (e) {
+      this.logger.debug(e);
+    }
+    return {
+      code: 200,
+      data: result,
+    };
+  }
+
   // @Public()
   @Get('/crawlHotListData')
   crawlHotListData() {
     return this.hotListService.crawlHotListData();
   }
 
-  // 获取竞价数据
-  // @Public()
-  @Get('/crawlBinddingData')
-  crawlBinddingData() {
-    return this.specialStockService.autoCrawlBinddingData();
-  }
   // @Public()
   @Get('/crawlShortTerm')
   crawlShortTerm() {

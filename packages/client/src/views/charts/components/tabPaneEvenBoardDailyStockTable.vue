@@ -21,20 +21,40 @@
           <!-- 涨停个股 过滤条件 -->
           <div class="dailyLimit__content flex__row_header">
             <div class="stocks_header">
-              {{ title || '今日 - 涨停个股' }} ({{
-                currentDateData.dailyLimitQuantity
-              }})<el-tooltip
+              {{ title || defaultTitle }}
+              ({{ currentDateData.dailyLimitQuantity }})
+              <el-tooltip
                 effect="dark"
                 popper-class="thsTooltip__content"
-                :content="params.dailyLimitYesterday"
+                :content="
+                  title
+                    ? params.dailyLimitYesterday
+                    : params.dailyLimitMoreThan1
+                "
                 placement="top"
               >
                 <el-icon
-                  @click.stop="openNewIwencaiWindow(params.dailyLimitYesterday)"
+                  @click.stop="
+                    openNewIwencaiWindow(
+                      title
+                        ? params.dailyLimitYesterday
+                        : params.dailyLimitMoreThan1,
+                    )
+                  "
                   class="thsTooltip__icon"
                   ><InfoFilled
                 /></el-icon>
               </el-tooltip>
+              <el-button
+                v-if="isShowRefreshBtn"
+                @click="refreshBindingData"
+                style="margin: 0 5px"
+                type="primary"
+                plain
+                size="small"
+              >
+                刷新
+              </el-button>
 
               <span class="dateTime__span">{{ updateTime }}</span>
 
@@ -215,7 +235,8 @@ import { dailyLimitOptionalStrategy, getExpected, params } from 'pay-back-core';
 import { DailyLimitStockDto } from '@/typings';
 import dayjs from 'dayjs';
 
-let emit = defineEmits(['update:currentDateData']); //自定义的更新num事件
+const defaultTitle = '今日 - 涨停个股';
+let emit = defineEmits(['refreshBindingData', 'update:currentDateData']);
 let superData = defineProps({
   currentDateData: {
     type: Object,
@@ -436,6 +457,16 @@ const stockGroupByPlateByFilter = computed(() => {
 });
 
 /**
+ * 按条件过滤后的数据，基本策略 或 竞价策略 等
+ */
+const isShowRefreshBtn = computed(() => {
+  const today = dayjs();
+  const updateTime = dayjs(today.year() + '/' + superData.updateTime);
+  // 当日数据 且 展示昨日涨停个股
+  return superData.title && today.isSame(updateTime, 'day');
+});
+
+/**
  * 获取个股真正的 高度
  * 竞价时 反包首板，不能按正常首板考量
  * 其他情况，可按首板考虑
@@ -476,6 +507,13 @@ function isConformToMyStrategyChecked(stock: any) {
 
   return isConform;
 }
+
+/**
+ * 刷新竞价数据
+ */
+const refreshBindingData: Function = _.debounce(() => {
+  emit('refreshBindingData');
+}, 500);
 
 /**
  * 按板块排序 排序
@@ -542,7 +580,7 @@ function sortStocks(stocks: []) {
 function handleTicaiClick(key: string) {
   keyword = key;
 
-  // 修改父组件传过来的值
+  // 修改父组件传过来的值；将重新渲染整个 table 数据，让数据高亮
   emit('update:currentDateData', _.cloneDeep(superData.currentDateData));
 }
 

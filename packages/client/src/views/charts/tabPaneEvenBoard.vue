@@ -203,20 +203,23 @@
     :propsData="data.currentDateData.newStock"
     :updateTime="data.currentDateData.biddingDataUpdateTime"
     :isMobile="isMobile"
+    @refreshBindingData="refreshBindingData"
   />
   <!-- 一进2 -->
   <ChoosedStockTable
     :propsData="data.currentDateData.chooseStock"
     :updateTime="data.currentDateData.biddingDataUpdateTime"
     :isMobile="isMobile"
+    @refreshBindingData="refreshBindingData"
   />
   <!-- 昨日涨停竞价情况 -->
   <DailyStockTable
     v-model:currentDateData="data.yesterdayDateData"
-    :updateTime="data.currentDateData.biddingDataUpdateTime"
+    v-model:updateTime="data.currentDateData.biddingDataUpdateTime"
     :isMobile="isMobile"
     title="昨日- 涨停竞价"
     :showBidding="true"
+    @refreshBindingData="refreshBindingData"
   />
   <!-- 当日涨停分布，按行业板块划分 -->
   <DailyStockTable
@@ -243,9 +246,10 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { fetchEvenBoardData } from '@/api/payBack';
+import { fetchEvenBoardData, crawlBinddingData } from '@/api/payBack';
 // import { fetchIndustryData } from '@/api/tonghuashun';
 import { judgeMonday } from './utils';
+import { ElMessage } from 'element-plus';
 import { transformEvenBoardData } from './utils/transformUtil';
 import { reactive, watch, computed } from 'vue';
 import { useSidebarStore } from '@/store/sidebar';
@@ -258,6 +262,7 @@ import NewStockTable from './components/tabPaneEvenBoardNewStockTable.vue';
 import ChoosedStockTable from './components/tabPaneEvenBoardChoosedStockTable.vue';
 import dayjs from 'dayjs';
 
+let loadingMessage: any = null;
 type EvenBoard = {
   maxHeight: number;
   createDate: String;
@@ -381,6 +386,37 @@ function initAutoRefresh(val: boolean) {
 }
 
 /**
+ * 刷新竞价数据
+ */
+async function refreshBindingData() {
+  loadingMessage && loadingMessage.close();
+  // 提示加载中
+  loadingMessage = ElMessage({
+    duration: 0,
+    message: '数据更新中...',
+    type: 'warning',
+  });
+  try {
+    // 根据更新范围，调用对应接口
+    const res: any = await crawlBinddingData({
+      isRemoveIncompatible: 0, // 不删除不及预期个股
+    });
+    const eventData = transformEvenBoardData([res]);
+    // 修改父组件传过来的值；
+    data.yesterdayDateData = eventData[0];
+    data.currentDateData.biddingDataUpdateTime = dayjs(
+      res.biddingDataUpdateTime,
+    ).format('MM/DD HH:mm');
+    ElMessage.success('更新成功！');
+  } catch (e: any) {
+    console.log(e);
+    ElMessage.success('更新失败！');
+  } finally {
+    loadingMessage.close();
+  }
+}
+
+/**
  * 计算晋级率
  * @param evenBoardAmount
  * @param evenBoardValue
@@ -398,13 +434,19 @@ function calPromotionRate(
     : 0;
 }
 
+/**
+ * 点击日期获取 涨停数据
+ * @param item
+ */
 async function handleDateClick(item: any) {
   data.hasSummaryTableData = false;
   data.currentDate = item.createDate;
+  // 根据创建时间获取当前 涨停数据
   const index = evenBoard.value.findIndex(
     (evenBoardItem: any) => evenBoardItem.createDate === item.createDate,
   );
   data.currentDateData = evenBoard.value[index];
+  // 昨日涨停数据，只要不是列表数据最有一条，昨日涨停数据 = 当前日期张提数据之后的一条
   data.yesterdayDateData =
     index + 1 >= evenBoard.value.length ? [] : evenBoard.value[index + 1];
 

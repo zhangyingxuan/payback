@@ -28,6 +28,16 @@
               ><InfoFilled
             /></el-icon>
           </el-tooltip>
+          <el-button
+            v-if="isShowRefreshBtn"
+            @click="refreshBindingData"
+            style="margin: 0 5px"
+            type="primary"
+            plain
+            size="small"
+          >
+            刷新
+          </el-button>
 
           <span class="dateTime__span">{{ updateTime }}</span>
         </div>
@@ -137,8 +147,10 @@
 <script lang="ts" setup>
 import _ from 'lodash-es';
 import { computed, reactive } from 'vue';
+import dayjs from 'dayjs';
 import { params } from 'pay-back-core';
 import { calcClassByBidRating, openNewIwencaiWindow } from '../utils';
+let emit = defineEmits(['refreshBindingData']);
 
 let superData = defineProps({
   propsData: {
@@ -158,6 +170,23 @@ let superData = defineProps({
 const data = reactive({
   // 展开折叠
   isShowContent: true,
+});
+
+/**
+ * 刷新竞价数据
+ */
+const refreshBindingData: Function = _.debounce(() => {
+  emit('refreshBindingData');
+}, 500);
+
+/**
+ * 按条件过滤后的数据，基本策略 或 竞价策略 等
+ */
+const isShowRefreshBtn = computed(() => {
+  const today = dayjs();
+  const updateTime = dayjs(today.year() + '/' + superData.updateTime);
+  // 当日数据 且 展示昨日涨停个股
+  return today.isSame(updateTime, 'day');
 });
 
 const stockGroupByPlate = computed(() => {

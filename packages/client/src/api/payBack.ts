@@ -31,6 +31,14 @@ export const fetchData = (params: any | null) => {
 export const crawlTodayData = (data: any | null) => {
   return http.request<ChartResult>("post", `${baseUrl}/crawlTodayData`, { data });
 }
+
+/**
+ * 爬取当日竞价数据并返回
+ * @returns 
+ */
+export const crawlBinddingData = (data: any | null) => {
+  return http.request<ChartResult>("post", `${baseUrl}/crawlBinddingData`, { data });
+}
 /**
  * 获取连板数据
  * @returns 

@@ -31,6 +31,10 @@ export declare class PayBackController {
     crawlTodayData(body: CrawlTodayDataDto): Promise<{
         code: number;
     }>;
+    crawlBinddingData(body: CrawlTodayDataDto): Promise<{
+        code: number;
+        data: any;
+    }>;
     crawlHotListData(): Promise<{
         code: number;
         data: {
@@ -42,7 +46,6 @@ export declare class PayBackController {
             updatedTime: Date;
         };
     }>;
-    crawlBinddingData(): Promise<void>;
     crawlShortTerm(): Promise<import("./dto/create-pay-back.dto").CreatePayBackDto>;
     crawlShortTermDataByDate(query: any): Promise<import("./dto/create-pay-back.dto").CreatePayBackDto | {
         code: string;

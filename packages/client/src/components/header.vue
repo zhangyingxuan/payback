@@ -150,7 +150,7 @@ import { useSidebarStore } from '../store/sidebar';
 import MyDrawer from './drawer.vue';
 import { useRouter } from 'vue-router';
 import imgurl from '../assets/img/img.jpg';
-import { crawlTodayData } from '../api/payBack';
+import { crawlTodayData } from '@/api/payBack';
 import { modifyThsSelfStocks } from '../api/thsTrade';
 import { clearLogin } from '../router/auth';
 import { isMobile } from '@/core/util';
@@ -158,7 +158,6 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import dayjs from 'dayjs';
 import Calendar from './calendar/index.vue';
 import { options } from './config';
-import { fa } from 'element-plus/es/locale';
 
 const username: string | null = localStorage.getItem('ms_username');
 const isAdmin = username === 'admin';

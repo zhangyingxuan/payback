@@ -85,11 +85,25 @@ let PayBackController = PayBackController_1 = class PayBackController {
             code: 200,
         };
     }
+    async crawlBinddingData(body) {
+        await this.specialStockService.crawlBinddingData(body.isRemoveIncompatible);
+        let result = null;
+        try {
+            const currentDayEventData = await this.shorTermService.findEvenBoardByLimit(3);
+            result = currentDayEventData[1];
+            result.biddingDataUpdateTime = currentDayEventData[0].biddingDataUpdateTime;
+            console.log(currentDayEventData[0]);
+        }
+        catch (e) {
+            this.logger.debug(e);
+        }
+        return {
+            code: 200,
+            data: result,
+        };
+    }
     crawlHotListData() {
         return this.hotListService.crawlHotListData();
-    }
-    crawlBinddingData() {
-        return this.specialStockService.autoCrawlBinddingData();
     }
     crawlShortTerm() {
         return this.shorTermService.crawlShortTermData();
@@ -185,17 +199,18 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "crawlTodayData", null);
 __decorate([
+    (0, common_1.Post)('/crawlBinddingData'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [CrawlTodayDataDto]),
+    __metadata("design:returntype", Promise)
+], PayBackController.prototype, "crawlBinddingData", null);
+__decorate([
     (0, common_1.Get)('/crawlHotListData'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], PayBackController.prototype, "crawlHotListData", null);
-__decorate([
-    (0, common_1.Get)('/crawlBinddingData'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], PayBackController.prototype, "crawlBinddingData", null);
 __decorate([
     (0, common_1.Get)('/crawlShortTerm'),
     __metadata("design:type", Function),
