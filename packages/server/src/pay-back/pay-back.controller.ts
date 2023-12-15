@@ -70,26 +70,27 @@ export class PayBackController {
   // @Cron('0 25 9 * * 1-5')
   @Post('/crawlTodayData')
   async crawlTodayData(@Body() body: CrawlTodayDataDto) {
-    let shortData, fundsData, marketData, binddingData;
+    let shortData, fundsData, marketData, binddingData, resultData;
     switch (body.fetchTodayDataType) {
       case 0:
         shortData = await this.shorTermService.crawlShortTermData();
         fundsData = await this.fundsService.crawlfundsData();
         marketData = await this.marketService.crawlMarketData();
         binddingData = await this.specialStockService.crawlBinddingData();
+        resultData = { shortData, fundsData, marketData, binddingData };
         break;
       case 1:
-        shortData = await this.shorTermService.crawlShortTermData();
+        resultData = await this.shorTermService.crawlShortTermData();
         break;
       case 2:
-        marketData = await this.marketService.crawlMarketData();
+        resultData = await this.marketService.crawlMarketData();
         break;
       case 3:
-        fundsData = await this.fundsService.crawlfundsData();
+        resultData = await this.fundsService.crawlfundsData();
         break;
       case 4:
         // 是否剔除 不及预期数据；注意接收到的参数 是否为字符串
-        binddingData = await this.specialStockService.crawlBinddingData(body.isRemoveIncompatible);
+        resultData = await this.specialStockService.crawlBinddingData(body.isRemoveIncompatible);
         break;
       default:
         break;
@@ -97,6 +98,7 @@ export class PayBackController {
 
     return {
       code: 200,
+      data: resultData,
     };
   }
 
@@ -114,7 +116,6 @@ export class PayBackController {
       result = currentDayEventData[1];
       // 竞价修改时间改为 正确的时间
       result.biddingDataUpdateTime = currentDayEventData[0].biddingDataUpdateTime;
-      console.log(currentDayEventData[0]);
     } catch (e) {
       this.logger.debug(e);
     }

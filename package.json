@@ -11,12 +11,15 @@
 		}
 	},
 	"scripts": {
+		"bootstrap": "lerna bootstrap --force-local",
+    "clean": "lerna clean && rm -rf ./node_modules",
+    "clean:dist": "rm -rf ./tgac-web-*/dist",
+    "clean:cache": "rm -rf ./packages/*/node_modules/.cache",
+    "build": "lerna run build",
+    "publish:beta": "lerna publish --force-publish --dist-tag=beta --skip-git",
+    "publish:latest": "lerna publish --force-publish --skip-git",
 		"start:server": "cd packages/server && pnpm start",
-		"start:client": "cd packages/client && pnpm start",
-		"start": "pnpm start:client & pnpm start:server",
-		"build:server": "cd packages/server & pnpm build",
-		"build:client": "cd packages/client & pnpm build",
-		"build": "pnpm build:server && pnpm build:client"
+		"start:client": "cd packages/client && pnpm start"
 	},
 	"dependencies": {
 		"@element-plus/icons-vue": "^2.0.9",

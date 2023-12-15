@@ -36,7 +36,7 @@
             plain
             size="small"
           >
-            刷新
+            更新竞价
           </el-button>
 
           <span class="dateTime__span">{{ updateTime }}</span>

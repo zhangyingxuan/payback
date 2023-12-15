@@ -30,6 +30,7 @@ export declare class PayBackController {
     autoCrawlTodayDataPM(): Promise<void>;
     crawlTodayData(body: CrawlTodayDataDto): Promise<{
         code: number;
+        data: any;
     }>;
     crawlBinddingData(body: CrawlTodayDataDto): Promise<{
         code: number;

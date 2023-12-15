@@ -53,7 +53,7 @@
                 plain
                 size="small"
               >
-                刷新
+                更新{{ showBidding ? '竞价' : '短线' }}
               </el-button>
 
               <span class="dateTime__span">{{ updateTime }}</span>
@@ -463,7 +463,7 @@ const isShowRefreshBtn = computed(() => {
   const today = dayjs();
   const updateTime = dayjs(today.year() + '/' + superData.updateTime);
   // 当日数据 且 展示昨日涨停个股
-  return superData.title && today.isSame(updateTime, 'day');
+  return today.isSame(updateTime, 'day');
 });
 
 /**
@@ -507,12 +507,12 @@ function isConformToMyStrategyChecked(stock: any) {
 
   return isConform;
 }
-
 /**
  * 刷新竞价数据
  */
 const refreshBindingData: Function = _.debounce(() => {
-  emit('refreshBindingData');
+  // superData.title有值则 刷新竞价数据，否则刷新短线数据
+  emit('refreshBindingData', superData.title);
 }, 500);
 
 /**

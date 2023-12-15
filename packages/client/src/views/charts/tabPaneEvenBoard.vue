@@ -203,14 +203,14 @@
     :propsData="data.currentDateData.newStock"
     :updateTime="data.currentDateData.biddingDataUpdateTime"
     :isMobile="isMobile"
-    @refreshBindingData="refreshBindingData"
+    @refreshBindingData="handleRefreshBindingData"
   />
   <!-- 一进2 -->
   <ChoosedStockTable
     :propsData="data.currentDateData.chooseStock"
     :updateTime="data.currentDateData.biddingDataUpdateTime"
     :isMobile="isMobile"
-    @refreshBindingData="refreshBindingData"
+    @refreshBindingData="handleRefreshBindingData"
   />
   <!-- 昨日涨停竞价情况 -->
   <DailyStockTable
@@ -219,13 +219,14 @@
     :isMobile="isMobile"
     title="昨日- 涨停竞价"
     :showBidding="true"
-    @refreshBindingData="refreshBindingData"
+    @refreshBindingData="handleRefreshBindingData"
   />
   <!-- 当日涨停分布，按行业板块划分 -->
   <DailyStockTable
     v-model:currentDateData="data.currentDateData"
     :updateTime="dayjs(data.currentDateData.createTime).format('MM/DD HH:mm')"
     :isMobile="isMobile"
+    @refreshBindingData="handleRefreshBindingData"
   />
   <div :class="{ flex__row: !isMobile }">
     <DownStockTable
@@ -246,7 +247,11 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { fetchEvenBoardData, crawlBinddingData } from '@/api/payBack';
+import {
+  fetchEvenBoardData,
+  crawlBinddingData,
+  crawlTodayData,
+} from '@/api/payBack';
 // import { fetchIndustryData } from '@/api/tonghuashun';
 import { judgeMonday } from './utils';
 import { ElMessage } from 'element-plus';
@@ -386,9 +391,10 @@ function initAutoRefresh(val: boolean) {
 }
 
 /**
- * 刷新竞价数据
+ * 刷新短线/竞价数据
+ * @param isRefreshBidding  是否刷新竞价数据
  */
-async function refreshBindingData() {
+async function handleRefreshBindingData(isRefreshBidding: Boolean = true) {
   loadingMessage && loadingMessage.close();
   // 提示加载中
   loadingMessage = ElMessage({
@@ -397,16 +403,27 @@ async function refreshBindingData() {
     type: 'warning',
   });
   try {
-    // 根据更新范围，调用对应接口
-    const res: any = await crawlBinddingData({
-      isRemoveIncompatible: 0, // 不删除不及预期个股
-    });
-    const eventData = transformEvenBoardData([res]);
-    // 修改父组件传过来的值；
-    data.yesterdayDateData = eventData[0];
-    data.currentDateData.biddingDataUpdateTime = dayjs(
-      res.biddingDataUpdateTime,
-    ).format('MM/DD HH:mm');
+    if (isRefreshBidding) {
+      // 根据更新范围，调用对应接口
+      const res: any = await crawlBinddingData({
+        isRemoveIncompatible: 0, // 不删除不及预期个股
+      });
+      const eventData = transformEvenBoardData([res]);
+      // 修改父组件传过来的值；
+      data.yesterdayDateData = eventData[0];
+      data.currentDateData.biddingDataUpdateTime = dayjs(
+        res.biddingDataUpdateTime,
+      ).format('MM/DD HH:mm');
+    } else {
+      // 爬取短线数据
+      const res: any = await crawlTodayData({
+        fetchTodayDataType: 1,
+      });
+
+      const eventData = transformEvenBoardData([res]);
+      data.currentDateData = eventData[0];
+    }
+
     ElMessage.success('更新成功！');
   } catch (e: any) {
     console.log(e);

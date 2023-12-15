@@ -42,7 +42,7 @@ export const dailyLimitOptionalStrategyStr = '流通市值大于等于20亿，�
  */
 export function dailyLimitOptionalStrategy(stock: any, currentLevel: number | string) {
   // 创业板、科创板 30*、688、83* 不自选
-  if (stock.code.startsWith('3') || stock.code.startsWith('688') || stock.code.startsWith('83')) return false;
+  if (stock.code.startsWith('3') || stock.code.startsWith('688') || stock.code.startsWith('8') || stock.code.startsWith('4')) return false;
   // 连板全部加入
   if (currentLevel != 1) return true;
   return stock.price <= 30 && (stock.circulationValue >= 20 && stock.circulationValue <= 120);
