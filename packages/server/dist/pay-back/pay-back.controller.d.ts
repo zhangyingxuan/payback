@@ -38,14 +38,7 @@ export declare class PayBackController {
     }>;
     crawlHotListData(): Promise<{
         code: number;
-        data: {
-            createTime: string;
-            stockNormal: string;
-            stockValue: string;
-            plateConcept: string;
-            plateIndustry: string;
-            updatedTime: Date;
-        };
+        data: import("./dto/create-hot-list.dto").CreateHotListDto;
     }>;
     crawlShortTerm(): Promise<import("./dto/create-pay-back.dto").CreatePayBackDto>;
     crawlShortTermDataByDate(query: any): Promise<import("./dto/create-pay-back.dto").CreatePayBackDto | {

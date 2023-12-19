@@ -45,8 +45,8 @@ export const getLonghuListOption = function (xAxisData: any, yAxisData: any, leg
     },
     toolbox: {
       feature: {
-        dataView: { show: true, readOnly: false },
-        restore: { show: true },
+        // dataView: { show: true, readOnly: false },
+        // restore: { show: true },
         saveAsImage: { show: true },
       },
     },
@@ -180,8 +180,8 @@ export const getFundsChartOption = function (xAxisData: any, yAxisData: any) {
     grid,
     toolbox: {
       feature: {
-        dataView: { show: true, readOnly: false },
-        restore: { show: true },
+        // dataView: { show: true, readOnly: false },
+        // restore: { show: true },
         saveAsImage: { show: true },
       },
     },
@@ -280,8 +280,8 @@ export const getIndexChartOption = function (xAxisData: any, yAxisData: any) {
     grid,
     toolbox: {
       feature: {
-        dataView: { show: true, readOnly: false },
-        restore: { show: true },
+        // dataView: { show: true, readOnly: false },
+        // restore: { show: true },
         saveAsImage: { show: true },
       },
     },
@@ -425,8 +425,8 @@ export const getMarketChartOption = function (xAxisData: any, yAxisData: any) {
     },
     toolbox: {
       feature: {
-        dataView: { show: true, readOnly: false },
-        restore: { show: true },
+        // dataView: { show: true, readOnly: false },
+        // restore: { show: true },
         saveAsImage: { show: true },
       },
     },
@@ -537,8 +537,8 @@ export const getShortTermChartOption = function (xAxisData: any, yAxisData: any)
     grid: gridShortTerm,
     toolbox: {
       feature: {
-        dataView: { show: true, readOnly: false },
-        restore: { show: true },
+        // dataView: { show: true, readOnly: false },
+        // restore: { show: true },
         saveAsImage: { show: true },
       },
     },

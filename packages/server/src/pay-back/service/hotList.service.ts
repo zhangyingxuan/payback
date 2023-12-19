@@ -62,7 +62,7 @@ export class HotListService {
 
     return {
       code: 200,
-      data: { ...hotListData, createTime: dayjs(hotListData.updatedTime).format('MM/DD HH:mm') }
+      data: hotListData
     };
   }
 

@@ -42,5 +42,8 @@ let superData = defineProps({
   .el-link {
     margin-left: 8px;
   }
+  /deep/.el-button {
+    margin-right: 8px;
+  }
 }
 </style>

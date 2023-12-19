@@ -64,7 +64,7 @@ let HotListService = HotListService_1 = class HotListService {
         }
         return {
             code: 200,
-            data: Object.assign(Object.assign({}, hotListData), { createTime: dayjs(hotListData.updatedTime).format('MM/DD HH:mm') })
+            data: hotListData
         };
     }
     async findAll() {

@@ -1,19 +1,13 @@
 import { Repository } from 'typeorm';
 import { hotList } from '../entities/hotList.entity';
+import { CreateHotListDto } from '../dto/create-hot-list.dto';
 export declare class HotListService {
     private readonly hotListRp;
     constructor(hotListRp: Repository<hotList>);
     private readonly logger;
     crawlHotListData(): Promise<{
         code: number;
-        data: {
-            createTime: string;
-            stockNormal: string;
-            stockValue: string;
-            plateConcept: string;
-            plateIndustry: string;
-            updatedTime: Date;
-        };
+        data: CreateHotListDto;
     }>;
     findAll(): Promise<hotList[]>;
     findByLimit(len?: number): Promise<hotList[]>;

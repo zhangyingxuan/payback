@@ -22,6 +22,15 @@
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
       <template #header>
         <CardHeader :url="cardUrls.marketChartUrl" headerTitle="大盘趋势">
+          <el-button
+            v-if="isShowUpdateBtn"
+            plain
+            type="primary"
+            @click="updateTodayData(2)"
+            size="small"
+          >
+            更新数据
+          </el-button>
           {{ data.latestMarketUpdateTime }}
         </CardHeader>
       </template>
@@ -30,6 +39,15 @@
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
       <template #header>
         <CardHeader :url="cardUrls.indexChartUrl" headerTitle="指数趋势">
+          <el-button
+            v-if="isShowUpdateBtn"
+            plain
+            type="primary"
+            @click="updateTodayData(2)"
+            size="small"
+          >
+            更新数据
+          </el-button>
           {{ data.latestMarketUpdateTime }}
         </CardHeader>
       </template>
@@ -39,6 +57,15 @@
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
       <template #header>
         <CardHeader :url="cardUrls.shortTermUrl" headerTitle="短线数据">
+          <el-button
+            v-if="isShowUpdateBtn"
+            plain
+            type="primary"
+            @click="updateTodayData(1)"
+            size="small"
+          >
+            更新数据
+          </el-button>
           {{ data.latestShortTermUpdateTime }}
         </CardHeader>
       </template>
@@ -47,6 +74,15 @@
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
       <template #header>
         <CardHeader :url="cardUrls.fundsChartUrl" headerTitle="资金流向">
+          <el-button
+            v-if="isShowUpdateBtn"
+            plain
+            type="primary"
+            @click="updateTodayData(3)"
+            size="small"
+          >
+            更新数据
+          </el-button>
           {{ data.latestFundsUpdateTime }}
         </CardHeader>
       </template>
@@ -58,6 +94,15 @@
           :url="cardUrls.hangyeFundsChartUrl"
           headerTitle="行业资金流向"
         >
+          <el-button
+            v-if="isShowUpdateBtn"
+            plain
+            type="primary"
+            @click="updateTodayData(3)"
+            size="small"
+          >
+            更新数据
+          </el-button>
           {{ data.latestFundsUpdateTime }}
         </CardHeader>
       </template>
@@ -69,6 +114,15 @@
           :url="cardUrls.gainianFundsChartUrl"
           headerTitle="概念资金流向"
         >
+          <el-button
+            v-if="isShowUpdateBtn"
+            plain
+            type="primary"
+            @click="updateTodayData(3)"
+            size="small"
+          >
+            更新数据
+          </el-button>
           {{ data.latestFundsUpdateTime }}
         </CardHeader>
       </template>
@@ -94,7 +148,9 @@ import {
   fetchChartData,
   ChartResult,
   findConceptPlateWithinNDays,
+  crawlTodayData,
 } from '@/api/payBack';
+import { ElMessage } from 'element-plus';
 import { fetchLonghuHistoryData } from '@/api/tonghuashun';
 import { ShortTermModel } from '@/api/model/ShortTermModel';
 import { MarketModel } from '@/api/model/MarketModel';
@@ -118,6 +174,7 @@ import { useSidebarStore } from '@/store/sidebar';
 import { ref, onMounted, reactive, watch, getCurrentInstance } from 'vue';
 import { isMobile } from '@/core/util';
 
+let loadingMessage: any = null;
 // 获取当前组件实例
 const { proxy }: any = getCurrentInstance();
 const echarts = proxy.$echarts;
@@ -155,6 +212,8 @@ const fundsChart = ref(); // 资金流向Chart
 const fundsByHangyeChart = ref(); // 资金流向Chart
 const fundsByGainianChart = ref(); // 资金流向Chart
 const longhuListChart = ref(); // 龙虎榜Chart
+
+const isShowUpdateBtn = [0, 6].indexOf(new Date().getDay()) == -1;
 
 // 监听变化，重新请求数据
 watch(countDays, async val => {
@@ -367,6 +426,29 @@ function initShortTermChart(shortTermData: ShortTermModel[]) {
   // 使用刚指定的配置项和数据显示图表。
   chartList.shortTermChart.setOption(option);
 }
+
+const updateTodayData = debounce(async (fetchTodayDataType = 0) => {
+  loadingMessage && loadingMessage.close();
+  // 提示加载中
+  loadingMessage = ElMessage({
+    duration: 0,
+    message: '数据更新中...',
+    type: 'warning',
+  });
+  try {
+    // 根据更新范围，调用对应接口
+    await crawlTodayData({
+      fetchTodayDataType,
+    });
+    ElMessage.success('更新成功！');
+    location.reload();
+  } catch (e: any) {
+    console.log(e);
+    ElMessage.success('更新失败！');
+  } finally {
+    loadingMessage.close();
+  }
+}, 500);
 </script>
 
 <style scoped lang="less">
