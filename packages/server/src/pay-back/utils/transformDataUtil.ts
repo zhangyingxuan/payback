@@ -361,6 +361,7 @@ function getPlateLevel2(item) {
  * @returns 
  */
 function judgeExpected(item) {
+  // 9.25-9.30 期间，竞价涨幅数据 仅为 9.25数据 不为开盘数据
   const { bidIncreaseT } = item;
   // 获取预期值
   const expected = getExpected(item);

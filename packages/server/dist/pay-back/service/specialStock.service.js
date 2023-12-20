@@ -119,6 +119,12 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
     }
 };
 __decorate([
+    (0, schedule_1.Cron)('08 25 9 * * 1-5'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], SpecialStockService.prototype, "autoCrawlBinddingData", null);
+__decorate([
     (0, schedule_1.Cron)('00 05 15 * * 1-5'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),

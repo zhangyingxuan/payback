@@ -16,7 +16,7 @@ export default {
     createMarketDataDto.shangzhengPoint = indexResult[0]['f2'];
     createMarketDataDto.shenzhengPoint = indexResult[1]['f2'];
     createMarketDataDto.beizheng50Point = indexResult[2]['f2'];
-    createMarketDataDto.chuangyePoint = indexResult[5]['f2'];
+    createMarketDataDto.chuangyePoint = indexResult[3]['f2'];
 
     // 获取同花顺分数、涨跌家数
     const marketData = await fetchMarketData();

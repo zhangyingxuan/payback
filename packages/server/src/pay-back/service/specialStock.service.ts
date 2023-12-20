@@ -21,7 +21,7 @@ export class SpecialStockService {
   private readonly logger = new Logger(SpecialStockService.name);
 
   // 竞价数据 - 早盘
-  // @Cron('08 25 9 * * 1-5')
+  @Cron('08 25 9 * * 1-5')
   async autoCrawlBinddingData() {
     this.crawlBinddingData();
   }
