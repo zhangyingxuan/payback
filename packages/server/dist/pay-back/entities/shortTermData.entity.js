@@ -54,7 +54,7 @@ __decorate([
     __metadata("design:type", String)
 ], shortTermData.prototype, "downLimitData", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '跌幅大于等于15的个股', type: 'varchar', length: 2048, default: '' }),
+    (0, typeorm_1.Column)({ comment: '跌幅大于等于15的个股', type: 'varchar', length: 4096, default: '' }),
     __metadata("design:type", String)
 ], shortTermData.prototype, "hugeFallData", void 0);
 __decorate([
