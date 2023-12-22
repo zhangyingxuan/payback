@@ -29,7 +29,7 @@ export class shortTermData {
   @Column({ comment: '连板原始数据', type: 'text', nullable: true })
   evenBoardData: string;
 
-  @Column({ comment: '跌停数据', type: 'varchar', length: 3072, default: '' })
+  @Column({ comment: '跌停数据', type: 'varchar', length: 6096, default: '' })
   downLimitData: string;
 
   @Column({ comment: '跌幅大于等于15的个股', type: 'varchar', length: 2048, default: '' })

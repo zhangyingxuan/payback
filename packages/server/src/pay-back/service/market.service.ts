@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { marketData } from '../entities/marketData.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import playWrightUtil from '../utils/playWrightUtil'
 import marketUtil from '../utils/marketUtil'
 import * as dayjs from 'dayjs';
 import { Cron } from '@nestjs/schedule';
