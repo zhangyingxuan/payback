@@ -44,6 +44,7 @@ import { addThsSelfStock, delThsSelfStock } from '../api/thsTrade';
 import { Plus, Minus } from '@element-plus/icons-vue';
 import { ref, unref } from 'vue';
 import { ClickOutside as vClickOutside, ElMessage } from 'element-plus';
+import { isAdmin } from '@/store/permiss';
 
 const stockRef = ref();
 const popoverRef = ref();
@@ -74,9 +75,6 @@ let superData = defineProps({
     default: true,
   },
 });
-
-const username: string | null = localStorage.getItem('ms_username');
-const isAdmin = username === 'admin';
 
 const thsUrl = 'http://stockpage.10jqka.com.cn/${code}/';
 const iwencaiUrl =

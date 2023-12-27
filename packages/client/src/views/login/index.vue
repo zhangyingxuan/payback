@@ -40,7 +40,6 @@ import { usePermissStore } from '@/store/permiss';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import type { FormInstance, FormRules } from 'element-plus';
-import { Lock, User } from '@element-plus/icons-vue';
 import { authLogin } from '@/api/user';
 import { UserModel } from '@/api/model/UserModel';
 import { setToken, setUserInfo } from '@/router/auth';
@@ -77,7 +76,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
         ElMessage.success('登录成功');
         const keys =
           permiss.defaultList[param.account == 'admin' ? 'admin' : 'user'];
-        permiss.handleSet(keys);
+        permiss.handleSet(keys, param.account);
         // 设置用户信息
         setUserInfo(param.account, JSON.stringify(keys));
         // 7天

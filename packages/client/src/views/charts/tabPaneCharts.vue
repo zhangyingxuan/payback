@@ -24,6 +24,7 @@
         <CardHeader :url="cardUrls.marketChartUrl" headerTitle="大盘趋势">
           <el-button
             v-if="isShowUpdateBtn"
+            v-isAdmin
             plain
             type="primary"
             @click="updateTodayData(2)"
@@ -41,6 +42,7 @@
         <CardHeader :url="cardUrls.indexChartUrl" headerTitle="指数趋势">
           <el-button
             v-if="isShowUpdateBtn"
+            v-isAdmin
             plain
             type="primary"
             @click="updateTodayData(2)"
@@ -59,6 +61,7 @@
         <CardHeader :url="cardUrls.shortTermUrl" headerTitle="短线数据">
           <el-button
             v-if="isShowUpdateBtn"
+            v-isAdmin
             plain
             type="primary"
             @click="updateTodayData(1)"
@@ -76,6 +79,7 @@
         <CardHeader :url="cardUrls.fundsChartUrl" headerTitle="资金流向">
           <el-button
             v-if="isShowUpdateBtn"
+            v-isAdmin
             plain
             type="primary"
             @click="updateTodayData(3)"
@@ -96,6 +100,7 @@
         >
           <el-button
             v-if="isShowUpdateBtn"
+            v-isAdmin
             plain
             type="primary"
             @click="updateTodayData(3)"
@@ -116,6 +121,7 @@
         >
           <el-button
             v-if="isShowUpdateBtn"
+            v-isAdmin
             plain
             type="primary"
             @click="updateTodayData(3)"

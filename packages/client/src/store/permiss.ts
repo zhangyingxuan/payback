@@ -1,5 +1,8 @@
 import { defineStore } from 'pinia';
 
+export const username: string | null = localStorage.getItem('ms_username');
+export const isAdmin = username === 'admin';
+
 interface ObjectList {
   [key: string]: string[];
 }
@@ -29,12 +32,14 @@ export const usePermissStore = defineStore('permiss', {
           '16'
         ],
         user: ['1', '2', '3', '11', '13', '14', '15']
-      }
+      },
+      isAdmin: false,
     };
   },
   actions: {
-    handleSet(val: string[]) {
+    handleSet(val: string[], userName: string) {
       this.key = val;
+      this.isAdmin = userName === 'admin';
     }
   }
 });

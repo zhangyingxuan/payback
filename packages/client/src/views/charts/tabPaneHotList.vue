@@ -4,6 +4,7 @@
       <template #header>
         <CardHeader headerTitle="行业板块" :url="url">
           <el-button
+            v-isAdmin
             type="primary"
             @click="updateHotListData"
             size="small"

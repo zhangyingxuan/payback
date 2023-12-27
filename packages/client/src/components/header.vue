@@ -16,22 +16,22 @@
           我的收藏
         </el-button>
 
-        <template v-if="isAdmin">
-          <el-button
-            type="danger"
-            @click="data.fetchTodayDataDialogVisible = true"
-            size="small"
-          >
-            更新今日数据
-          </el-button>
-          <el-button
-            type="warning"
-            @click="synchronousOptionalStocks"
-            size="small"
-          >
-            同步
-          </el-button>
-        </template>
+        <el-button
+          v-isAdmin
+          type="danger"
+          @click="data.fetchTodayDataDialogVisible = true"
+          size="small"
+        >
+          更新今日数据
+        </el-button>
+        <el-button
+          v-isAdmin
+          type="warning"
+          @click="synchronousOptionalStocks"
+          size="small"
+        >
+          同步
+        </el-button>
 
         <!-- 数据统计天数 5 10 15 20 -->
         <el-select
@@ -158,9 +158,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import dayjs from 'dayjs';
 import Calendar from './calendar/index.vue';
 import { options } from './config';
-
-const username: string | null = localStorage.getItem('ms_username');
-const isAdmin = username === 'admin';
+import { username } from '@/store/permiss';
 
 const data = reactive({
   drawerVisible: false,
