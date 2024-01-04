@@ -37,6 +37,9 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
     async autoCrawlShortTermDataMidday() {
         this.crawlShortTermData();
     }
+    async autoCrawlShortTermDataMorning() {
+        this.crawlShortTermData();
+    }
     async crawlShortTermData() {
         this.logger.debug('crawlShortTermData is Begining!');
         let isExist = false;
@@ -140,6 +143,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], ShorTermService.prototype, "autoCrawlShortTermDataMidday", null);
+__decorate([
+    (0, schedule_1.Cron)('02 25 9 * * 1-5'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ShorTermService.prototype, "autoCrawlShortTermDataMorning", null);
 ShorTermService = ShorTermService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(2, (0, typeorm_2.InjectRepository)(shortTermData_entity_1.shortTermData)),

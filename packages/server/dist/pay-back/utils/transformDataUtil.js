@@ -55,15 +55,12 @@ function transformHugeFallData(hugeFallData) {
 ;
 function transformDownLimitData(dailyLimitData, currentDate) {
     const downLimitDataArr = [];
-    let downLimitQuantity = 0;
+    let downLimitQuantity = dailyLimitData.length;
     dailyLimitData.forEach(item => {
         const downLimitStockDto = new down_limit_stock_dto_1.DownLimitStockDto();
         loadStockBaseData(downLimitStockDto, item);
         if (item[`跌停原因类型[${currentDate}]`] && item[`跌停原因类型[${currentDate}]`] !== '资金出逃') {
             downLimitStockDto.reason = item[`跌停原因类型[${currentDate}]`];
-        }
-        else {
-            downLimitQuantity++;
         }
         downLimitStockDto.closingFunds = (0, commonUtil_1.fundsToFixed)(item[`跌停封单额[${currentDate}]`]);
         downLimitDataArr.push(downLimitStockDto);

@@ -1,6 +1,6 @@
 /*!
- * index.js v0.0.5
- * (c) 2018-2023 blowsysun
+ * index.js v0.0.6
+ * (c) 2018-2024 blowsysun
  * Released under the MIT License.
  */
 import dayjs from 'dayjs';
@@ -203,8 +203,8 @@ const params = {
     dailyLimitOpenByDate: '${date}涨停打开；非ST；成交额；行业',
     hugeFall: '跌幅大于等于15的个股；行业',
     hugeFallByDate: '${date}跌幅大于等于15的个股；行业',
-    dailyLimitMoreThan1: '涨停；非ST；几天几板；涨停原因；涨停类型；涨停开板次数；封板金额；成交额；换手率；行业',
-    dailyLimitMoreThan1ByDate: '${date}涨停；非ST；几天几板；涨停原因；涨停类型；涨停开板次数；封板金额；成交额；换手率；行业',
+    dailyLimitMoreThan1: '涨停；非ST；几天几板；涨停原因；涨停类型；涨停开板次数；封板金额；成交额；换手率；流通市值；行业',
+    dailyLimitMoreThan1ByDate: '${date}涨停；非ST；几天几板；涨停原因；涨停类型；涨停开板次数；封板金额；成交额；换手率；流通市值；行业',
     // 获取昨日涨停的数据（客观数据）
     dailyLimitYesterday: '昨日涨停；涨停开板次数；首次涨停时间；最终涨停时间；几天几板；昨日竞价量情况；今日竞价量情况；集合竞价评级；竞价涨幅；竞价异动类型；非ST；行业',
     // =============== =============== 选股 start  =============== ===============

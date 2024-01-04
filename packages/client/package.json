@@ -23,7 +23,7 @@
     "hyperdown": "^2.4.29",
     "js-cookie": "^3.0.5",
     "lodash-es": "^4.17.21",
-    "pay-back-core": "^0.0.5",
+    "pay-back-core": "^0.0.6",
     "pinia": "^2.0.20",
     "qs": "^6.11.1",
     "vue": "^3.2.37",

@@ -36,6 +36,12 @@ export class ShorTermService {
     this.crawlShortTermData();
   }
 
+  // 午盘
+  @Cron('02 25 9 * * 1-5')
+  async autoCrawlShortTermDataMorning() {
+    this.crawlShortTermData();
+  }
+
   /**
    * 爬取短线数据，如果已存在则更新
    * @returns 

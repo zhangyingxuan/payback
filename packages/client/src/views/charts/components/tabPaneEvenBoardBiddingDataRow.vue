@@ -58,7 +58,7 @@ function getExpectedStr(expected: number) {
 
 <style scoped lang="less">
 .biddingData__row {
-  min-width: 520px;
+  min-width: 500px;
   > span {
     display: inline-block;
   }

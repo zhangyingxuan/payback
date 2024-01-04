@@ -1,4 +1,4 @@
-<template>
+pi<template>
   <div :class="['chartList__container', { isMobile }]">
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
       <template #header>

@@ -153,6 +153,9 @@
                 <span v-if="item.value.length > 1">
                   &nbsp;{{ item.value.length }}
                 </span>
+                <template v-if="showBidding">
+                  &nbsp;<PlateBiddingStatus :stocks="item.value" />
+                </template>
               </div>
             </div>
             <div class="col2">
@@ -161,7 +164,7 @@
                 v-for="(stock, index) in item.value"
                 :key="'stock' + index"
               >
-                <div class="dailyLimit__content">
+                <div class="dailyLimit__content" v-show="stock.isAdd">
                   <Stock
                     v-if="stock.evenBoardHeight != 1"
                     class="red large"
@@ -216,6 +219,7 @@
                 <TabPaneEvenBoardBiddingDataRow
                   v-if="showBidding"
                   :stock="stock.biddingData"
+                  v-show="stock.isAdd"
                 />
               </div>
             </div>
@@ -229,6 +233,7 @@
 import _ from 'lodash-es';
 import TabPaneEvenBoardBiddingDataRow from './tabPaneEvenBoardBiddingDataRow.vue';
 import TabPaneEvenBoardDailyStockTableHeader from './tabPaneEvenBoardDailyStockTableHeader.vue';
+import PlateBiddingStatus from '@/components/plateBiddingStatus.vue';
 import { reactive, computed } from 'vue';
 import { highlightKeyWord, openNewIwencaiWindow, isDailyLimit } from '../utils';
 import { dailyLimitOptionalStrategy, getExpected, params } from 'pay-back-core';
@@ -377,7 +382,7 @@ const stockGroupByPlate: any = computed(() => {
  * 按条件过滤后的数据，基本策略 或 竞价策略 等
  */
 const stockGroupByPlateByFilter = computed(() => {
-  const stockGroupByPlateCopy: any = {};
+  const stockGroupByPlateCopy: any = _.cloneDeep(stockGroupByPlate.value);
 
   data.myStrategyCheckedNum = 0;
   data.biddingStrategyCheckedNum = 0;
@@ -385,72 +390,75 @@ const stockGroupByPlateByFilter = computed(() => {
 
   // 遍历 按板块 划分后的数据
   let isAdd = true;
-  Object.keys(stockGroupByPlate.value).forEach((key: string) => {
-    stockGroupByPlateCopy[key] = stockGroupByPlate.value[key].filter(
-      (item: any) => {
-        isAdd = true;
-        // 需按照首板/我的策略 进行过滤处理
-        if (data.firstBoardChecked) {
-          const evenBoardHeight = getRealEvenBoardHeight(item, false);
-          data.notFirstBoardChecked = false;
-          isAdd = evenBoardHeight == 1;
-        }
-        // 只看连板 则与只看首板冲突
-        if (data.notFirstBoardChecked) {
-          const evenBoardHeight = getRealEvenBoardHeight(item, false);
-          data.firstBoardChecked = false;
-          isAdd = evenBoardHeight != 1;
-        }
-        if (data.myStrategyChecked && isAdd) {
-          isAdd = dailyLimitOptionalStrategy(item, item.evenBoardHeight);
-        }
-        if (data.evenBoardHeight != -1 && isAdd) {
-          isAdd = data.evenBoardHeight == getRealEvenBoardHeight(item, false);
-        }
-        isAdd && data.myStrategyCheckedNum++;
+  Object.keys(stockGroupByPlateCopy).forEach((key: string) => {
+    let len = 0;
+    stockGroupByPlateCopy[key].forEach((item: any) => {
+      isAdd = true;
+      // 需按照首板/我的策略 进行过滤处理
+      if (data.firstBoardChecked) {
+        const evenBoardHeight = getRealEvenBoardHeight(item, false);
+        data.notFirstBoardChecked = false;
+        isAdd = evenBoardHeight == 1;
+      }
+      // 只看连板 则与只看首板冲突
+      if (data.notFirstBoardChecked) {
+        const evenBoardHeight = getRealEvenBoardHeight(item, false);
+        data.firstBoardChecked = false;
+        isAdd = evenBoardHeight != 1;
+      }
+      if (data.myStrategyChecked && isAdd) {
+        isAdd = dailyLimitOptionalStrategy(item, item.evenBoardHeight);
+      }
+      if (data.evenBoardHeight != -1 && isAdd) {
+        isAdd = data.evenBoardHeight == getRealEvenBoardHeight(item, false);
+      }
+      isAdd && data.myStrategyCheckedNum++;
 
-        // 竞价条件过滤 2023-09-09 00:21:30
-        if (item.biddingData && isAdd) {
-          // 收盘涨停
-          if (data.closeDailyLimit && isAdd) {
-            isAdd = isDailyLimit(item.code, +item.biddingData.closeIncrease);
+      // 竞价条件过滤 2023-09-09 00:21:30
+      if (item.biddingData && isAdd) {
+        // 收盘涨停
+        if (data.closeDailyLimit && isAdd) {
+          isAdd = isDailyLimit(item.code, +item.biddingData.closeIncrease);
+        }
+        // 排除 开盘一字板
+        if (data.openDailyLimimExclude && isAdd) {
+          isAdd = !isDailyLimit(item.code, +item.biddingData.bidIncreaseT);
+        }
+
+        // 超预期
+        if ((data.exceededExpect || data.conformToExpect) && isAdd) {
+          if (data.exceededExpect && data.conformToExpect) {
+            isAdd =
+              item.biddingData.expected === 2 ||
+              item.biddingData.expected === 1;
+          } else {
+            isAdd =
+              item.biddingData.expected === (data.conformToExpect ? 1 : 2);
           }
-          // 排除 开盘一字板
-          if (data.openDailyLimimExclude && isAdd) {
-            isAdd = !isDailyLimit(item.code, +item.biddingData.bidIncreaseT);
-          }
-
-          // 超预期
-          if ((data.exceededExpect || data.conformToExpect) && isAdd) {
-            if (data.exceededExpect && data.conformToExpect) {
-              isAdd =
-                item.biddingData.expected === 2 ||
-                item.biddingData.expected === 1;
-            } else {
-              isAdd =
-                item.biddingData.expected === (data.conformToExpect ? 1 : 2);
-            }
-          }
-
-          // 看多、符合预期、首板量比大于10，只看主板
-          if (data.biddingStrategyChecked && isAdd) {
-            // ============ 竞价策略：高标的首板不能按首板考虑 !!!!!!============
-            const evenBoardHeight = getRealEvenBoardHeight(item);
-            // if(item.evenBoardHeight)
-            isAdd = isConformToMyStrategyChecked({ ...item, evenBoardHeight });
-          }
-          // 竞价符合条件个数
-          isAdd && data.biddingStrategyCheckedNum++;
-
-          // 符合条件的个股 收盘涨停个数 +1
-          isAdd &&
-            isDailyLimit(item.code, +item.biddingData.closeIncrease) &&
-            data.dailyLimitNum++;
         }
 
-        return isAdd;
-      },
-    );
+        // 看多、符合预期、首板量比大于10，只看主板
+        if (data.biddingStrategyChecked && isAdd) {
+          // ============ 竞价策略：高标的首板不能按首板考虑 !!!!!!============
+          const evenBoardHeight = getRealEvenBoardHeight(item);
+          // if(item.evenBoardHeight)
+          isAdd = isConformToMyStrategyChecked({ ...item, evenBoardHeight });
+        }
+        // 竞价符合条件个数
+        isAdd && data.biddingStrategyCheckedNum++;
+
+        // 符合条件的个股 收盘涨停个数 +1
+        isAdd &&
+          isDailyLimit(item.code, +item.biddingData.closeIncrease) &&
+          data.dailyLimitNum++;
+      }
+
+      // 标记 个数
+      item.isAdd = isAdd;
+      isAdd && len++;
+    });
+
+    stockGroupByPlateCopy[key].len = len;
   });
 
   return sortPlates(stockGroupByPlateCopy);
@@ -533,6 +541,10 @@ function sortPlates(stockGroupByPlate: any) {
   // 按 行业板块 涨停数量降序
   stockGroupByPlateArr.sort((a: any, b: any) => {
     return b.value.length - a.value.length;
+  });
+  // 按 满足筛选条件 个数数量 降序
+  stockGroupByPlateArr.sort((a: any, b: any) => {
+    return b.value.len - a.value.len;
   });
   return stockGroupByPlateArr;
 }
