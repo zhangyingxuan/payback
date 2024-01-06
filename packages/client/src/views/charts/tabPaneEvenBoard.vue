@@ -533,6 +533,11 @@ function getDateCycle() {
     return '月末';
   }
 }
+
+//暴露state和play方法
+defineExpose({
+  handleRefreshBindingData,
+});
 </script>
 
 <style scoped lang="less">

@@ -93,8 +93,8 @@
                 size="small"
               >
                 <el-option
-                  v-for="item in data.evenBoardHeightOptions"
-                  :key="item.value"
+                  v-for="(item, index) in data.evenBoardHeightOptions"
+                  :key="index"
                   :label="item.label"
                   :value="item.value"
                 />

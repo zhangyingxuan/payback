@@ -16,13 +16,9 @@
           我的收藏
         </el-button>
 
-        <el-button
-          v-isAdmin
-          type="danger"
-          @click="data.fetchTodayDataDialogVisible = true"
-          size="small"
-        >
-          更新今日数据
+        <el-button v-isAdmin type="danger" @click="fetchTodayData" size="small">
+          <!-- @click="data.fetchTodayDataDialogVisible = true" -->
+          更新全部数据
         </el-button>
         <el-button
           v-isAdmin
@@ -93,7 +89,8 @@
     </div>
   </div>
 
-  <el-dialog
+  <!-- 改为默认更新所有数据，去除二次确认 -->
+  <!-- <el-dialog
     v-model="data.fetchTodayDataDialogVisible"
     :close-on-click-modal="false"
     title="是否更新今日数据？"
@@ -113,7 +110,6 @@
         </el-select>
       </el-form-item>
       <el-form-item label="删除不及预期" v-if="data.fetchTodayDataType === 4">
-        <!-- 是否删除不及预期个股 -->
         <el-switch
           v-model="data.isRemoveIncompatible"
           inline-prompt
@@ -137,7 +133,7 @@
         </el-button>
       </span>
     </template>
-  </el-dialog>
+  </el-dialog> -->
 
   <MyDrawer
     :drawerVisible="data.drawerVisible"
@@ -146,6 +142,7 @@
 </template>
 <script setup lang="ts">
 import { onMounted, reactive } from 'vue';
+import { debounce } from 'lodash-es';
 import { useSidebarStore } from '../store/sidebar';
 import MyDrawer from './drawer.vue';
 import { useRouter } from 'vue-router';
@@ -159,6 +156,8 @@ import dayjs from 'dayjs';
 import Calendar from './calendar/index.vue';
 import { options } from './config';
 import { username } from '@/store/permiss';
+
+let loadingMessage: any = null;
 
 const data = reactive({
   drawerVisible: false,
@@ -178,8 +177,14 @@ function switchDrawerVisible() {
   data.drawerVisible = !data.drawerVisible;
 }
 
-async function fetchTodayData() {
-  data.fetchTodayDataing = true;
+const fetchTodayData = debounce(async () => {
+  loadingMessage && loadingMessage.close();
+  // 提示加载中
+  loadingMessage = ElMessage({
+    duration: 0,
+    message: '全部数据更新中...',
+    type: 'warning',
+  });
   try {
     // 根据更新范围，调用对应接口
     await crawlTodayData({
@@ -187,15 +192,14 @@ async function fetchTodayData() {
       // isRemoveIncompatible 为true 传1 否则传0
       isRemoveIncompatible: data.isRemoveIncompatible ? 1 : 0,
     });
-    data.fetchTodayDataing = false;
     ElMessage.success('更新成功！');
-    location.reload();
   } catch (e: any) {
     console.log(e);
-    data.fetchTodayDataing = false;
     ElMessage.success('更新失败！');
+  } finally {
+    loadingMessage.close();
   }
-}
+}, 500);
 
 function synchronousOptionalStocks() {
   ElMessageBox.confirm('确定要同步自选个股吗？')
