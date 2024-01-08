@@ -1,6 +1,5 @@
 <template>
-  <div class="optButtons" v-if="true">
-    <!-- <div class="optButtons" v-if="isShowUpdateBtn"> -->
+  <div class="optButtons" v-if="isShowUpdateBtn">
     <el-button
       v-for="(item, index) in updateBtns"
       :key="'updateButton' + index"
@@ -98,7 +97,7 @@ const updateTodayData = debounce(async (fetchTodayDataType = 0, index) => {
         break;
       case 4:
         // 竞价
-        evenBoard.value && evenBoard.value.handleRefreshBindingData(false);
+        evenBoard.value && evenBoard.value.handleRefreshBindingData(true);
         break;
       default:
         location.reload();

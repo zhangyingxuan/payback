@@ -88,8 +88,8 @@ export class SpecialStockService {
       const incompatibleExpectStocks = [];
 
       dailyLimitYesterdayBidding.forEach(stock => {
-        // 将不及预期个股 加入数组
-        if (stock.expected === ExpectEnum.incompatible) {
+        // 将不及预期个股 加入数组 （保留非首板 evenDays 有值则是非首板 2024-01-07 19:47:33 by zyx）
+        if (stock.evenDays && stock.expected === ExpectEnum.incompatible) {
           incompatibleExpectStocks.push(stock);
         }
       });

@@ -414,6 +414,9 @@ async function handleRefreshBindingData(isRefreshBidding: Boolean = true) {
       data.currentDateData.biddingDataUpdateTime = dayjs(
         res.biddingDataUpdateTime,
       ).format('MM/DD HH:mm');
+      // 更新新股 和 强势股 2024-01-07 14:40:45
+      data.currentDateData.newStock = data.yesterdayDateData.newStock;
+      data.currentDateData.chooseStock = data.yesterdayDateData.chooseStock;
     } else {
       // 爬取短线数据
       const res: any = await crawlTodayData({

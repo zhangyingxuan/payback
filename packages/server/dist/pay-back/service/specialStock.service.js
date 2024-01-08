@@ -78,7 +78,7 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
             this.logger.log('dealIncompatibleExpectStocks 删除不及预期个股');
             const incompatibleExpectStocks = [];
             dailyLimitYesterdayBidding.forEach(stock => {
-                if (stock.expected === transformDataUtil_1.ExpectEnum.incompatible) {
+                if (stock.evenDays && stock.expected === transformDataUtil_1.ExpectEnum.incompatible) {
                     incompatibleExpectStocks.push(stock);
                 }
             });

@@ -21,6 +21,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 let superData = defineProps({
   stocks: {
     type: Array,
@@ -43,9 +44,9 @@ function getPlateExpectCondition() {
       // exceed = 2,
       // // 不及预期
       // incompatible = 0,
-      if (biddingData.expected == 1) {
+      if (biddingData && biddingData.expected == 1) {
         conformToNum++;
-      } else if (biddingData.expected == 2) {
+      } else if (biddingData && biddingData.expected == 2) {
         exceededNum++;
       } else {
         incompatibleNum++;
@@ -59,7 +60,9 @@ function getPlateExpectCondition() {
 }
 
 // 不及预期率
-const incompatibleRate = getPlateExpectCondition();
+const incompatibleRate = computed(() => {
+  return getPlateExpectCondition();
+});
 </script>
 
 <style scoped lang="less"></style>
