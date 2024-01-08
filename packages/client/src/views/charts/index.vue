@@ -1,5 +1,5 @@
 <template>
-  <div class="optButtons" v-if="isShowUpdateBtn">
+  <div :class="['optButtons', { isMobile }]" v-if="isShowUpdateBtn">
     <el-button
       v-for="(item, index) in updateBtns"
       :key="'updateButton' + index"
@@ -12,7 +12,7 @@
       更新{{ item.title }}
     </el-button>
   </div>
-  <el-tabs type="border-card" class="reviewBoard__tabs">
+  <el-tabs type="border-card" :class="['reviewBoard__tabs', { isMobile }]">
     <!-- <el-tabs type="border-card" class="reviewBoard__tabs" @tab-change="tabChange"> -->
     <el-tab-pane label="图表复盘">
       <TabPaneCharts ref="charts" />
@@ -31,6 +31,7 @@
 </template>
 <script lang="ts" setup>
 import { ref } from 'vue';
+import { isMobile } from '@/core/util';
 import { debounce } from 'lodash-es';
 import { ElMessage } from 'element-plus';
 import TabPaneCharts from './tabPaneCharts.vue';
@@ -115,12 +116,16 @@ const updateTodayData = debounce(async (fetchTodayDataType = 0, index) => {
 <style scoped lang="less">
 // 复盘看板
 .reviewBoard__tabs {
-  position: absolute;
+  &.isMobile {
+    /deep/.el-tabs__content {
+      padding: 40px 0 15px 0;
+    }
+  }
   /deep/.el-tabs__content {
     padding: 15px 0;
   }
   .el-tab-pane {
-    height: calc(100vh - 110px);
+    height: calc(100vh - 120px);
     overflow-y: auto;
   }
 }
@@ -136,5 +141,9 @@ const updateTodayData = debounce(async (fetchTodayDataType = 0, index) => {
   flex-shrink: 0;
   display: flex;
   align-items: center;
+
+  &.isMobile {
+    top: 90px;
+  }
 }
 </style>

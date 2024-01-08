@@ -50,5 +50,5 @@ defineProps({
 </script>
 
 <style scoped lang="less">
-@import '../styles/tabPaneEvenBoardStockTable.less';
+@import '../../styles/tabPaneEvenBoardStockTable.less';
 </style>

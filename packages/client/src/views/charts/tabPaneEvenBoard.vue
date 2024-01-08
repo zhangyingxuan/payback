@@ -261,7 +261,7 @@ import { useSidebarStore } from '@/store/sidebar';
 import { storeToRefs } from 'pinia';
 import { isMobile } from '@/core/util';
 import TabPaneChartsSummaryTable from './components/tabPaneChartsSummaryTable.vue';
-import DailyStockTable from './components/tabPaneEvenBoardDailyStockTable.vue';
+import DailyStockTable from './components/tabPaneEvenBoardDailyStockTable/index.vue';
 import DownStockTable from './components/tabPaneEvenBoardDownStockTable.vue';
 import NewStockTable from './components/tabPaneEvenBoardNewStockTable.vue';
 import ChoosedStockTable from './components/tabPaneEvenBoardChoosedStockTable.vue';
@@ -424,6 +424,9 @@ async function handleRefreshBindingData(isRefreshBidding: Boolean = true) {
       });
 
       const eventData = transformEvenBoardData([res]);
+      // 更新顶部表格
+      evenBoard.value[0] = eventData[0];
+      // 更新展开内容 短线部分
       data.currentDateData = eventData[0];
     }
 

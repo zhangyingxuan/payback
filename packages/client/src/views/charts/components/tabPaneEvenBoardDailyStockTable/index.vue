@@ -146,17 +146,11 @@
             :key="key"
           >
             <div class="col1">
-              <div>
-                <!-- <Plate :code="plate.code" :name="plate.name" /> -->
-                <span class="zise">{{ item.key }}</span>
-                <br v-if="isMobile" />
-                <span v-if="item.value.length > 1">
-                  &nbsp;{{ item.value.length }}
-                </span>
-                <template v-if="showBidding">
-                  &nbsp;<PlateBiddingStatus :stocks="item.value" />
-                </template>
-              </div>
+              <PlateCol
+                :item="item"
+                :isMobile="isMobile"
+                :showBidding="showBidding"
+              />
             </div>
             <div class="col2">
               <div
@@ -231,11 +225,15 @@
 </template>
 <script lang="ts" setup>
 import _ from 'lodash-es';
-import TabPaneEvenBoardBiddingDataRow from './tabPaneEvenBoardBiddingDataRow.vue';
-import TabPaneEvenBoardDailyStockTableHeader from './tabPaneEvenBoardDailyStockTableHeader.vue';
-import PlateBiddingStatus from '@/components/plateBiddingStatus.vue';
+import TabPaneEvenBoardBiddingDataRow from './biddingDataRow.vue';
+import TabPaneEvenBoardDailyStockTableHeader from './header.vue';
+import PlateCol from './plateCol.vue';
 import { reactive, computed } from 'vue';
-import { highlightKeyWord, openNewIwencaiWindow, isDailyLimit } from '../utils';
+import {
+  highlightKeyWord,
+  openNewIwencaiWindow,
+  isDailyLimit,
+} from '../../utils';
 import { dailyLimitOptionalStrategy, getExpected, params } from 'pay-back-core';
 import { DailyLimitStockDto } from '@/typings';
 import dayjs from 'dayjs';
@@ -645,7 +643,7 @@ function getExpectedStr(stock: DailyLimitStockDto) {
 </script>
 
 <style scoped lang="less">
-@import '../styles/tabPaneEvenBoardStockTable.less';
+@import '../../styles/tabPaneEvenBoardStockTable.less';
 
 .flex__row,
 .flex__row_header {

@@ -36,7 +36,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { calcClassByBidRating } from '../utils';
+import { calcClassByBidRating } from '../../utils';
 
 defineProps({
   stock: {
