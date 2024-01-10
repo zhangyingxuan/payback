@@ -2,16 +2,14 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { marketData } from '../entities/marketData.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import marketUtil from '../utils/marketUtil'
+import marketUtil from '../utils/marketUtil';
 import * as dayjs from 'dayjs';
 import { Cron } from '@nestjs/schedule';
 import { CreateMarketDataDto } from '../dto/create-market-data.dto';
 
 @Injectable()
 export class MarketService {
-  constructor(
-    @InjectRepository(marketData) private readonly marketDataRp: Repository<marketData>
-  ) { }
+  constructor(@InjectRepository(marketData) private readonly marketDataRp: Repository<marketData>) {}
 
   private readonly logger = new Logger(MarketService.name);
 
@@ -33,7 +31,7 @@ export class MarketService {
     const todayDateStr = new Date().toLocaleDateString();
     const todayDataFromDB = await this.marketDataRp
       .createQueryBuilder('market_data')
-      .where("market_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
+      .where('market_data.createTime like :createTime', { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
       .getOne();
 
     if (todayDataFromDB) {
@@ -44,10 +42,10 @@ export class MarketService {
       marketData = await marketUtil.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
       // console.log(marketData);
       if (isExist) {
-        this.logger.log('crawlMarketData 更新数据')
+        this.logger.log('crawlMarketData 更新数据');
         await this.marketDataRp.update(todayDataFromDB.id, marketData);
       } else {
-        this.logger.log('crawlMarketData 新增数据')
+        this.logger.log('crawlMarketData 新增数据');
         await this.marketDataRp.save(marketData);
       }
 
@@ -65,7 +63,7 @@ export class MarketService {
   async findAll() {
     return await this.marketDataRp.find();
   }
-  async findByLimit(len: number = 20) {
+  async findByLimit(len = 20) {
     return await this.marketDataRp
       .createQueryBuilder('market_data')
       .offset(0)
@@ -79,17 +77,18 @@ export class MarketService {
         'market_data.shangzhengPoint',
         'market_data.shenzhengPoint',
         'market_data.chuangyePoint',
-        'market_data.beizheng50Point'])
+        'market_data.beizheng50Point',
+      ])
       .orderBy('createTime', 'DESC')
       .getMany();
   }
 
   /**
    * 获取涨跌幅TOP5板块 根据len 长度
-   * @param len 
-   * @returns 
+   * @param len
+   * @returns
    */
-  async findPlateByLimit(len: number = 20) {
+  async findPlateByLimit(len = 20) {
     return await this.marketDataRp
       .createQueryBuilder('market_data')
       .offset(0)
@@ -99,7 +98,8 @@ export class MarketService {
         'market_data.gainianRiseFloat',
         'market_data.gainianFallFloat',
         'market_data.hangyeRiseFloat',
-        'market_data.hangyeFallFloat'])
+        'market_data.hangyeFallFloat',
+      ])
       .orderBy('createTime', 'DESC')
       .getMany();
   }

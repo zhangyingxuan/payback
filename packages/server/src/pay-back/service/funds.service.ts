@@ -2,19 +2,16 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { fundsData } from '../entities/fundsData.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import fundsUtil from '../utils/fundsUtil'
+import fundsUtil from '../utils/fundsUtil';
 import { CreateFundsDataDto } from '../dto/create-funds-data.dto';
 import * as dayjs from 'dayjs';
 import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class FundsService {
-  constructor(
-    @InjectRepository(fundsData) private readonly fundsDataRp: Repository<fundsData>
-  ) { }
+  constructor(@InjectRepository(fundsData) private readonly fundsDataRp: Repository<fundsData>) {}
 
   private readonly logger = new Logger(FundsService.name);
-
 
   // 尾盘
   @Cron('0 20 16 * * 1-5')
@@ -40,7 +37,7 @@ export class FundsService {
     const todayDateStr = new Date().toLocaleDateString();
     const todayDataFromDB = await this.fundsDataRp
       .createQueryBuilder('market_data')
-      .where("market_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
+      .where('market_data.createTime like :createTime', { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
       .getOne();
 
     if (todayDataFromDB) {
@@ -52,15 +49,15 @@ export class FundsService {
       // console.log(fundsData);
 
       if (isExist) {
-        this.logger.log('crawlfundsData 更新数据')
+        this.logger.log('crawlfundsData 更新数据');
         await this.fundsDataRp.update(todayDataFromDB.id, fundsData);
       } else {
-        this.logger.log('crawlfundsData 新增数据')
+        this.logger.log('crawlfundsData 新增数据');
         await this.fundsDataRp.save(fundsData);
       }
       this.logger.debug('crawlfundsData is success!');
     } catch (e) {
-      this.logger.error('出错啦！！！', e)
+      this.logger.error('出错啦！！！', e);
     }
     // 深圳 还是 上海涨停的多 SZ. SH
     return fundsData;
@@ -69,7 +66,7 @@ export class FundsService {
   async findAll() {
     return await this.fundsDataRp.find();
   }
-  async findByLimit(len: number = 20) {
+  async findByLimit(len = 20) {
     return await this.fundsDataRp
       .createQueryBuilder('funds_data')
       .offset(0)

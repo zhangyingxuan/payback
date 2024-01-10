@@ -25,7 +25,7 @@ export function transformStockData(stockList) {
       rise_and_fall: toFixed(item.rise_and_fall),
       tag: item.tag?.concept_tag,
       hot_tag: item.tag?.popularity_tag,
-    }
+    };
   });
 }
 
@@ -37,15 +37,15 @@ export function transformPlateData(plateList) {
       rise_and_fall: toFixed(item.rise_and_fall),
       hot_tag: item.hot_tag,
       tag: item.tag,
-    }
+    };
   });
 }
 
 /**
  * 转换跌停数据
- * @param dailyLimitData 
- * @param todayDateStr 
- * @returns 
+ * @param dailyLimitData
+ * @param todayDateStr
+ * @returns
  */
 function transformHugeFallData(hugeFallData) {
   const hugeFallDataArr = [];
@@ -59,16 +59,16 @@ function transformHugeFallData(hugeFallData) {
   return {
     hugeFallDataArr,
   };
-};
+}
 /**
  * 转换跌停数据
- * @param dailyLimitData 
- * @param todayDateStr 
- * @returns 
+ * @param dailyLimitData
+ * @param todayDateStr
+ * @returns
  */
 function transformDownLimitData(dailyLimitData, currentDate) {
   const downLimitDataArr = [];
-  let downLimitQuantity = dailyLimitData.length;
+  const downLimitQuantity = dailyLimitData.length;
 
   dailyLimitData.forEach(item => {
     const downLimitStockDto = new DownLimitStockDto();
@@ -79,7 +79,7 @@ function transformDownLimitData(dailyLimitData, currentDate) {
       downLimitStockDto.reason = item[`跌停原因类型[${currentDate}]`];
     }
     // else {
-    //   // 短线跌停 +1 
+    //   // 短线跌停 +1
     //   downLimitQuantity++;
     // }
     // 封板资金 单位 亿
@@ -91,17 +91,20 @@ function transformDownLimitData(dailyLimitData, currentDate) {
     downLimitDataArr,
     downLimitQuantity,
   };
-};
+}
 
 /**
  * 转换涨停数据
- * @param downLimitData 
- * @param todayDateStr 
- * @returns 
+ * @param downLimitData
+ * @param todayDateStr
+ * @returns
  */
 function transformDailyLimitData(dailyLimitData, currentDate) {
-  let board1 = 0, maxHeight = 1, currentLevel = 0, dailyLimitReturnSealQuantity = 0;
-  let evenBoardData = { maxHeight: 1, gaobiao: [], yizi: 0 };
+  let board1 = 0,
+    maxHeight = 1,
+    currentLevel = 0,
+    dailyLimitReturnSealQuantity = 0;
+  const evenBoardData = { maxHeight: 1, gaobiao: [], yizi: 0 };
   const evenBoardLabel = `连续涨停天数[${currentDate}]`;
 
   dailyLimitData.forEach(item => {
@@ -109,7 +112,7 @@ function transformDailyLimitData(dailyLimitData, currentDate) {
     // 当前股票 连板高度
     currentLevel = item[evenBoardLabel];
     if (currentLevel > maxHeight) {
-      maxHeight = currentLevel
+      maxHeight = currentLevel;
     }
     // 累加首板数量，用于计算连板个数
     if (currentLevel === 1) {
@@ -128,16 +131,20 @@ function transformDailyLimitData(dailyLimitData, currentDate) {
     if (item[`涨停类型[${currentDate}]`] !== turnoverTypeArr[0]) {
       // 成交量类型
       dailyLimitStockDto.turnoverType = item[`涨停类型[${currentDate}]`];
-      dailyLimitStockDto.turnoverType && dailyLimitStockDto.turnoverType.indexOf(turnoverTypeArr[2]) > -1 && (evenBoardData.yizi++)
+      dailyLimitStockDto.turnoverType &&
+        dailyLimitStockDto.turnoverType.indexOf(turnoverTypeArr[2]) > -1 &&
+        evenBoardData.yizi++;
     }
     // 开板次数，如果未开板 则不保存
     if (item[`涨停开板次数[${currentDate}]`] != 0) {
       dailyLimitStockDto.openTimes = item[`涨停开板次数[${currentDate}]`];
       dailyLimitReturnSealQuantity++;
     }
-    dailyLimitStockDto.dailyTime = item[`首次涨停时间[${currentDate}]`] ? item[`首次涨停时间[${currentDate}]`].trim() : '-';
+    dailyLimitStockDto.dailyTime = item[`首次涨停时间[${currentDate}]`]
+      ? item[`首次涨停时间[${currentDate}]`].trim()
+      : '-';
     if (dailyLimitStockDto.openTimes > 0 && item[`最终涨停时间[${currentDate}]`]) {
-      dailyLimitStockDto.dailyTime += (',' + item[`最终涨停时间[${currentDate}]`].trim());
+      dailyLimitStockDto.dailyTime += ',' + item[`最终涨停时间[${currentDate}]`].trim();
     }
     // 如果是 断板连板 则统计几天几板
     const jitianjiban = item[`几天几板[${currentDate}]`];
@@ -151,23 +158,23 @@ function transformDailyLimitData(dailyLimitData, currentDate) {
       }
     }
     !evenBoardData[currentLevel] && (evenBoardData[currentLevel] = []);
-    evenBoardData[currentLevel].push(dailyLimitStockDto)
+    evenBoardData[currentLevel].push(dailyLimitStockDto);
   });
   evenBoardData.maxHeight = maxHeight;
-  evenBoardData.gaobiao.length === 0 && delete evenBoardData.gaobiao
+  evenBoardData.gaobiao.length === 0 && delete evenBoardData.gaobiao;
 
   return {
     board1,
     evenBoardData,
     dailyLimitReturnSealQuantity,
-  }
+  };
 }
 
 /**
  * 转换早盘 昨日首板 集合竞价数据
- * @param downLimitData 
- * @param todayDateStr 
- * @returns 
+ * @param downLimitData
+ * @param todayDateStr
+ * @returns
  */
 export function transformBidData(stocks, todayDateStr, yesterdayDate): Array<DailyLimitYesterdayBiddingDto> {
   const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
@@ -202,14 +209,18 @@ export function transformBidData(stocks, todayDateStr, yesterdayDate): Array<Dai
     }
 
     // 竞价量比
-    dailyLimitYesterdayBiddingDto.bidVolumeRatio = +(item[`竞价量[${currentDate}]`] / item[`竞价量[${yesterdayDate}]`]).toFixed(2);
+    dailyLimitYesterdayBiddingDto.bidVolumeRatio = +(
+      item[`竞价量[${currentDate}]`] / item[`竞价量[${yesterdayDate}]`]
+    ).toFixed(2);
     // 昨日涨停开板次数/涨停时间，便于预期差统计
     if (item[`涨停开板次数[${yesterdayDate}]`] != 0) {
       dailyLimitYesterdayBiddingDto.openTimes = item[`涨停开板次数[${yesterdayDate}]`];
     }
-    dailyLimitYesterdayBiddingDto.dailyTime = item[`首次涨停时间[${yesterdayDate}]`] ? item[`首次涨停时间[${yesterdayDate}]`].trim() : '-';
+    dailyLimitYesterdayBiddingDto.dailyTime = item[`首次涨停时间[${yesterdayDate}]`]
+      ? item[`首次涨停时间[${yesterdayDate}]`].trim()
+      : '-';
     if (dailyLimitYesterdayBiddingDto.openTimes > 0 && item[`最终涨停时间[${yesterdayDate}]`]) {
-      dailyLimitYesterdayBiddingDto.dailyTime += (',' + item[`最终涨停时间[${yesterdayDate}]`].trim());
+      dailyLimitYesterdayBiddingDto.dailyTime += ',' + item[`最终涨停时间[${yesterdayDate}]`].trim();
     }
 
     // 竞价涨幅预期值
@@ -226,9 +237,9 @@ export function transformBidData(stocks, todayDateStr, yesterdayDate): Array<Dai
 
 /**
  * 转换早盘 新股竞价数据
- * @param downLimitData 
- * @param todayDateStr 
- * @returns 
+ * @param downLimitData
+ * @param todayDateStr
+ * @returns
  */
 export function transformNewStockData(stocks, todayDateStr): Array<NewStockDto> {
   const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
@@ -249,9 +260,9 @@ export function transformNewStockData(stocks, todayDateStr): Array<NewStockDto> 
 }
 /**
  * 转换早盘 强势股竞价数据
- * @param downLimitData 
- * @param todayDateStr 
- * @returns 
+ * @param downLimitData
+ * @param todayDateStr
+ * @returns
  */
 export function transformStrongStockData(stocks, todayDateStr, yesterdayDate): Array<StrongStockDto> {
   const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
@@ -282,11 +293,11 @@ export function transformStrongStockData(stocks, todayDateStr, yesterdayDate): A
 
 /**
  * 转换短线数据
- * 
- * @param dailyLimitData 
- * @param downLimitData 
- * @param todayDateStr 
- * @returns 
+ *
+ * @param dailyLimitData
+ * @param downLimitData
+ * @param todayDateStr
+ * @returns
  */
 export function transformShortTermSourceData(dailyLimitData, downLimitData, hugeFallData, todayDateStr) {
   const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
@@ -296,9 +307,7 @@ export function transformShortTermSourceData(dailyLimitData, downLimitData, huge
   // 跌幅大于等于15的个股
   const { hugeFallDataArr } = transformHugeFallData(hugeFallData);
   // 涨停数据
-  const { board1,
-    evenBoardData,
-    dailyLimitReturnSealQuantity } = transformDailyLimitData(dailyLimitData, currentDate);
+  const { board1, evenBoardData, dailyLimitReturnSealQuantity } = transformDailyLimitData(dailyLimitData, currentDate);
 
   return {
     board1,
@@ -307,7 +316,7 @@ export function transformShortTermSourceData(dailyLimitData, downLimitData, huge
     hugeFallDataArr,
     downLimitQuantity,
     dailyLimitReturnSealQuantity,
-  }
+  };
 }
 
 /**
@@ -344,8 +353,8 @@ function loadStockBaseData(stock, item, currentDate = null) {
 
 /**
  *  获取二级行业
- * @param item 
- * @returns 
+ * @param item
+ * @returns
  */
 function getPlateLevel2(item) {
   if (item['所属同花顺二级行业']) {
@@ -357,9 +366,9 @@ function getPlateLevel2(item) {
 
 /**
  * 预期值：不符合预期0;符合预期1;超预期2
- * @param item 
- * @param bidIncreaseT 
- * @returns 
+ * @param item
+ * @param bidIncreaseT
+ * @returns
  */
 function judgeExpected(item) {
   // 9.25-9.30 期间，竞价涨幅数据 仅为 9.25数据 不为开盘数据

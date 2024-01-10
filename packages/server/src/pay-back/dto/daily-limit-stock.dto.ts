@@ -1,4 +1,3 @@
-
 export class DailyLimitStockDto {
   // 名称
   name: string;

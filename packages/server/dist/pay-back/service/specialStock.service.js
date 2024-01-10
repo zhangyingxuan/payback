@@ -46,14 +46,14 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
         if (todayDataFromDB) {
             isExist = true;
         }
-        let specialStockDto = new special_stock_dto_1.SpecialStockDto();
+        const specialStockDto = new special_stock_dto_1.SpecialStockDto();
         try {
             const yesterdayDateStr = await this.getLastTradingDayByDB(todayDateStr);
             const { dailyLimitYesterdayBidding, newStocks, chooseStock1Expected } = await (0, specialStockUtil_1.getBiddingData)(todayDateStr, yesterdayDateStr);
             specialStockDto.biddingData = JSON.stringify(dailyLimitYesterdayBidding);
             specialStockDto.newStock = JSON.stringify(newStocks);
             specialStockDto.chooseStock = JSON.stringify({
-                chooseStock1Expected
+                chooseStock1Expected,
             });
             specialStockDto.updatedTime = new Date();
             this.dealIncompatibleExpectStocks(isRemoveIncompatible, dailyLimitYesterdayBidding);
@@ -78,7 +78,7 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
             this.logger.log('dealIncompatibleExpectStocks 删除不及预期个股');
             const incompatibleExpectStocks = [];
             dailyLimitYesterdayBidding.forEach(stock => {
-                if (stock.evenDays && stock.expected === transformDataUtil_1.ExpectEnum.incompatible) {
+                if (!stock.evenDays && stock.expected === transformDataUtil_1.ExpectEnum.incompatible) {
                     incompatibleExpectStocks.push(stock);
                 }
             });
@@ -88,7 +88,9 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
     getTodayData(todayDateStr) {
         return this.specialStockRp
             .createQueryBuilder('special_stock')
-            .where("special_stock.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
+            .where('special_stock.createTime like :createTime', {
+            createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%',
+        })
             .getOne();
     }
     async findAll() {

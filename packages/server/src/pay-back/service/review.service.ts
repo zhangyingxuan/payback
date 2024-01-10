@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { reviewData } from '../entities/review.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import playWrightUtil from '../utils/playWrightUtil'
+import playWrightUtil from '../utils/playWrightUtil';
 import * as dayjs from 'dayjs';
 import { Cron } from '@nestjs/schedule';
 import { CreateMarketDataDto } from '../dto/create-market-data.dto';
@@ -11,9 +11,7 @@ import { CreateMarketDataDto } from '../dto/create-market-data.dto';
 
 @Injectable()
 export class ReviewService {
-  constructor(
-    @InjectRepository(reviewData) private readonly reviewDataRp: Repository<reviewData>
-  ) { }
+  constructor(@InjectRepository(reviewData) private readonly reviewDataRp: Repository<reviewData>) {}
 
   private readonly logger = new Logger(ReviewService.name);
 
@@ -29,7 +27,7 @@ export class ReviewService {
     const todayDateStr = new Date().toLocaleDateString();
     const todayDataFromDB = await this.reviewDataRp
       .createQueryBuilder('market_data')
-      .where("market_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
+      .where('market_data.createTime like :createTime', { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
       .getOne();
 
     if (todayDataFromDB) {
@@ -37,7 +35,7 @@ export class ReviewService {
       return {
         code: 'isExist',
         msg: todayDateStr + ' 数据已存在！',
-      }
+      };
     }
     let marketData: CreateMarketDataDto;
     try {
@@ -46,7 +44,7 @@ export class ReviewService {
       await this.reviewDataRp.save(marketData);
       this.logger.debug('updateTodayReviewData is success!');
     } catch (e) {
-      this.logger.error('出错啦！！！', e)
+      this.logger.error('出错啦！！！', e);
     }
     // 深圳 还是 上海涨停的多 SZ. SH
     return marketData;
@@ -55,7 +53,7 @@ export class ReviewService {
   async findAll() {
     return await this.reviewDataRp.find();
   }
-  async findByLimit(len: number = 20) {
+  async findByLimit(len = 20) {
     return await this.reviewDataRp
       .createQueryBuilder('market_data')
       .offset(0)
@@ -67,7 +65,7 @@ export class ReviewService {
     return await this.reviewDataRp
       .createQueryBuilder('market_data')
       .offset(0)
-      .where("market_data.createTime like :createTime", { createTime: dayjs(date).format('YYYY-MM-DD') + '%' })
+      .where('market_data.createTime like :createTime', { createTime: dayjs(date).format('YYYY-MM-DD') + '%' })
       .orderBy('createTime', 'DESC')
       .getOne();
   }

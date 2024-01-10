@@ -1,5 +1,5 @@
 // 资金数据
-import { PrimaryGeneratedColumn, Column, Entity, Timestamp } from "typeorm";
+import { PrimaryGeneratedColumn, Column, Entity, Timestamp } from 'typeorm';
 // 东方财富，历史资金流向 https://data.eastmoney.com/zjlx/dpzjlx.html
 // 北向资金流向 https://data.eastmoney.com/hsgt/index.html
 // https://datacenter-web.eastmoney.com/api/data/v1/get?callback=jQuery112305225326403222086_1682431296037&reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE

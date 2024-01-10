@@ -1,5 +1,5 @@
 // https://xueqiu.com/hq 雪球可以拿到市场点数
-import { PrimaryGeneratedColumn, Column, Entity, Timestamp, Decimal128 } from "typeorm";
+import { PrimaryGeneratedColumn, Column, Entity, Timestamp, Decimal128 } from 'typeorm';
 
 @Entity()
 export class marketData {

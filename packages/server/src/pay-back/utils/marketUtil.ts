@@ -41,4 +41,4 @@ export default {
     createMarketDataDto.createTime = new Date();
     return createMarketDataDto;
   },
-}
+};

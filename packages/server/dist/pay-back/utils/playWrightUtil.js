@@ -26,8 +26,8 @@ const getBrowser = async (autoCloseTime = browserCloseTimeOut) => {
 const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType, baseBrowser) => {
     const browser = baseBrowser ? baseBrowser : await getBrowser();
     logger.log('等待接口返回 start ====' + pageUrl);
-    let page = await browser.newPage(), browserContext;
-    return new Promise((resolve, reject) => {
+    const page = await browser.newPage();
+    return new Promise(resolve => {
         page.on('response', async (response) => {
             if (response.url().includes(apiUrl) && response.status() === 200) {
                 logger.log('等待接口返回 end ====' + pageUrl);
@@ -43,7 +43,7 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType, baseBrowser
                 }, 2000);
             }
         });
-        page.goto(pageUrl, { timeout: commonTimeOut60s, waitUntil: "domcontentloaded" });
+        page.goto(pageUrl, { timeout: commonTimeOut60s, waitUntil: 'domcontentloaded' });
     });
 };
 function getPoint(data) {
@@ -61,7 +61,7 @@ async function getRealDataJson(response, replaceStr) {
 const waitMarketDataByUrls = async (pageUrl, apiUrl, browser) => {
     logger.log('等待接口返回 start ====' + pageUrl);
     const page = await browser.newPage();
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async (resolve) => {
         const createMarketDataDto = new create_market_data_dto_1.CreateMarketDataDto();
         const state = {
             apiUrl: false,
@@ -81,25 +81,21 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl, browser) => {
             }
             if (response.url().includes('time/hs_399001/last.js') && response.status() === 200) {
                 const dataJson = await getRealDataJson(response, 'quotebridge_v6_time_hs_399001_last(');
-                const pre = dataJson.hs_399001.pre;
                 createMarketDataDto.shenzhengPoint = getPoint(dataJson.hs_399001.data);
                 state.hs_399001 = true;
             }
             if (response.url().includes('time/hs_1A0001/last.js') && response.status() === 200) {
                 const dataJson = await getRealDataJson(response, 'quotebridge_v6_time_hs_1A0001_last(');
-                const pre = dataJson.hs_1A0001.pre;
                 createMarketDataDto.shangzhengPoint = getPoint(dataJson.hs_1A0001.data);
                 state.hs_1A0001 = true;
             }
             if (response.url().includes('time/hs_399006/last.js') && response.status() === 200) {
                 const dataJson = await getRealDataJson(response, 'quotebridge_v6_time_hs_399006_last(');
-                const pre = dataJson.hs_399006.pre;
                 createMarketDataDto.chuangyePoint = getPoint(dataJson.hs_399006.data);
                 state.hs_399006 = true;
             }
             if (response.url().includes('time/151_899050/last.js') && response.status() === 200) {
                 const dataJson = await getRealDataJson(response, 'quotebridge_v6_time_151_899050_last(');
-                const pre = dataJson['151_899050'].pre;
                 createMarketDataDto.beizheng50Point = getPoint(dataJson['151_899050'].data);
                 state['151_899050'] = true;
             }
@@ -111,7 +107,7 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl, browser) => {
                 }, 1000);
             }
         });
-        page.goto(pageUrl, { timeout: commonTimeOut60s, waitUntil: "domcontentloaded" });
+        page.goto(pageUrl, { timeout: commonTimeOut60s, waitUntil: 'domcontentloaded' });
     });
 };
 exports.default = {
@@ -139,7 +135,7 @@ exports.default = {
     async getFundsData(dateStr) {
         const browser = await getBrowser(browserCloseTimeOut * 2);
         const responseForeignFunds = await waitOriginalDataByUrl('https://data.eastmoney.com/hsgt/index.html', 'reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE', 'text', browser);
-        const responseMarketTurnover = await (await (0, node_fetch_1.default)("https://push2.eastmoney.com/api/qt/ulist.np/get?cb=jQuery112304396074520394937_1688383194361&fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5&_=1688383194362")).text();
+        const responseMarketTurnover = await (await (0, node_fetch_1.default)('https://push2.eastmoney.com/api/qt/ulist.np/get?cb=jQuery112304396074520394937_1688383194361&fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5&_=1688383194362')).text();
         const hangyeFundsInflow = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.iwencaiUrl + config_1.params.hangyeFundsInflow);
         const hangyeFundsOutflow = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.iwencaiUrl + config_1.params.hangyeFundsOutflow);
         const gaiNianFundsInflow = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.iwencaiUrl + config_1.params.gainianFundsInflow);
@@ -163,6 +159,6 @@ exports.default = {
             await browser.close();
         }, 2000);
         return createFundsDataDto;
-    }
+    },
 };
 //# sourceMappingURL=playWrightUtil.js.map

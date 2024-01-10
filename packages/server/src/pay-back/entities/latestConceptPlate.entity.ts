@@ -1,5 +1,5 @@
 // 最新概念板块
-import { PrimaryGeneratedColumn, Column, Entity, Timestamp } from "typeorm";
+import { PrimaryGeneratedColumn, Column, Entity, Timestamp } from 'typeorm';
 @Entity()
 export class latestConceptPlate {
   @PrimaryGeneratedColumn()

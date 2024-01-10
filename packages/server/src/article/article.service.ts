@@ -6,9 +6,7 @@ import { CreateArticleDto } from './dto/create-article.dto';
 
 @Injectable()
 export class ArticleService {
-  constructor(
-    @InjectRepository(Article) private readonly articleRp: Repository<Article>
-  ) { }
+  constructor(@InjectRepository(Article) private readonly articleRp: Repository<Article>) {}
 
   async create(createArticleDto: CreateArticleDto) {
     // 前端传入数据createTestDto
@@ -46,7 +44,7 @@ export class ArticleService {
   }
 
   async findByTitle(article: any): Promise<any | undefined> {
-    const result = await this.articleRp.findOne({ where: { title: article.title } })
+    const result = await this.articleRp.findOne({ where: { title: article.title } });
     return result;
   }
 }

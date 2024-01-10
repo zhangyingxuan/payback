@@ -5,23 +5,21 @@ const dayjs = require("dayjs");
 function toFixed(num, floatLen = 2) {
     if (!num)
         return;
-    if (typeof (num) == 'string') {
+    if (typeof num == 'string') {
         num = +num;
     }
-    return +(num).toFixed(floatLen);
+    return +num.toFixed(floatLen);
 }
 exports.toFixed = toFixed;
-;
 function fundsToFixed(num, floatLen = 2) {
     if (!num)
         return;
-    if (typeof (num) == 'string') {
+    if (typeof num == 'string') {
         num = +num;
     }
     return +(num / 100000000).toFixed(floatLen);
 }
 exports.fundsToFixed = fundsToFixed;
-;
 function getIwencaiData(responseJson) {
     let data = [];
     try {
@@ -33,7 +31,6 @@ function getIwencaiData(responseJson) {
     return data;
 }
 exports.getIwencaiData = getIwencaiData;
-;
 function getLastTradingDay(nowStr) {
     const dayOfWeek = +dayjs(nowStr).format('ddd');
     let subtractNum = 1;

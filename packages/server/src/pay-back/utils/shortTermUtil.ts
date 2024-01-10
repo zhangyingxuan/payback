@@ -8,7 +8,7 @@ import * as dayjs from 'dayjs';
 
 /**
  * 通过接口方式获取热门数据
- * @returns 
+ * @returns
  */
 export async function getShortTermData(todayDateStr): Promise<CreatePayBackDto> {
   // 准备涨停数据
@@ -25,11 +25,19 @@ export async function getShortTermData(todayDateStr): Promise<CreatePayBackDto> 
 
 export async function getShortTermDataByDate(todayDateStr): Promise<CreatePayBackDto> {
   // 准备涨停数据
-  const dailyLimitData: any = await fetchIwencaiApi(params.dailyLimitMoreThan1ByDate.replace('${date}', todayDateStr), 100, false);
+  const dailyLimitData: any = await fetchIwencaiApi(
+    params.dailyLimitMoreThan1ByDate.replace('${date}', todayDateStr),
+    100,
+    false,
+  );
   // 跌停数据
   const downLimitData: any = await fetchIwencaiApi(params.downLimitByDate.replace('${date}', todayDateStr), 50, false);
   // 涨停打开个股
-  const dailyLimitOpenData: any = await fetchIwencaiApi(params.dailyLimitOpenByDate.replace('${date}', todayDateStr), 50, false);
+  const dailyLimitOpenData: any = await fetchIwencaiApi(
+    params.dailyLimitOpenByDate.replace('${date}', todayDateStr),
+    50,
+    false,
+  );
   // 跌幅大于等于15的个股
   const hugeFallData: any = await fetchIwencaiApi(params.hugeFallByDate.replace('${date}', todayDateStr), 50, false);
 
@@ -38,15 +46,22 @@ export async function getShortTermDataByDate(todayDateStr): Promise<CreatePayBac
 
 /**
  * 准备dto数据
- * @param dailyLimitData 
- * @param dailyLimitOpenData 
- * @param downLimitData 
- * @param todayDateStr 
- * @returns 
+ * @param dailyLimitData
+ * @param dailyLimitOpenData
+ * @param downLimitData
+ * @param todayDateStr
+ * @returns
  */
 function prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, todayDateStr) {
-  let createPayBackDto: CreatePayBackDto = new CreatePayBackDto();
-  let { board1 = 0, evenBoardData, downLimitDataArr, hugeFallDataArr, dailyLimitReturnSealQuantity, downLimitQuantity } = transformShortTermSourceData(dailyLimitData, downLimitData, hugeFallData, todayDateStr);
+  const createPayBackDto: CreatePayBackDto = new CreatePayBackDto();
+  const {
+    board1 = 0,
+    evenBoardData,
+    downLimitDataArr,
+    hugeFallDataArr,
+    dailyLimitReturnSealQuantity,
+    downLimitQuantity,
+  } = transformShortTermSourceData(dailyLimitData, downLimitData, hugeFallData, todayDateStr);
 
   // 仅存储短线跌停，即’ 资金出逃‘ 类型
   createPayBackDto.downLimitQuantity = downLimitQuantity;
@@ -54,7 +69,9 @@ function prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, 
   // 涨停打开数量
   createPayBackDto.dailyLimitOpenQuantity = dailyLimitOpenData.length;
   // 封板率 = 涨停数 / （涨停数 + 涨停打开数）
-  createPayBackDto.sealingRate = Math.round(dailyLimitData.length / (dailyLimitData.length + dailyLimitOpenData.length) * 100);
+  createPayBackDto.sealingRate = Math.round(
+    (dailyLimitData.length / (dailyLimitData.length + dailyLimitOpenData.length)) * 100,
+  );
   // 炸板率 = （涨停打开数 + 涨停未遂数） / 涨停数
   // 炸板率 = 炸板数/<炸板数+涨停数>
   createPayBackDto.dailyLimitReturnSealQuantity = dailyLimitReturnSealQuantity;
@@ -84,7 +101,10 @@ export function mergeExtra2ShortTermData(shortTermData: Array<any>, specialStock
     if (currentSpecialStock && currentSpecialStock.biddingData) {
       // 将今天的竞价数据，装载入昨日涨停数据中
       // TODO 这里的数据装载，缺少日期判断，特别是昨日日期判断
-      const evenBoardData = prepareEvenBoardData(JSON.parse(shortTermData[i + 1].evenBoardData), JSON.parse(currentSpecialStock.biddingData));
+      const evenBoardData = prepareEvenBoardData(
+        JSON.parse(shortTermData[i + 1].evenBoardData),
+        JSON.parse(currentSpecialStock.biddingData),
+      );
       shortTermData[i + 1].evenBoardData = JSON.stringify(evenBoardData);
     }
 
@@ -101,12 +121,12 @@ export function mergeExtra2ShortTermData(shortTermData: Array<any>, specialStock
 }
 /**
  * 按创建时间找到对应竞价数据
- * @param biddingDatas 
- * @param createDate 
- * @returns 
+ * @param biddingDatas
+ * @param createDate
+ * @returns
  */
 function findBiddingDataByCreateTime(biddingDatas, createDate) {
-  return biddingDatas.find((item) => {
+  return biddingDatas.find(item => {
     return dayjs(item.createTime).format(iWencaiDateFormat) === createDate;
   });
 }
@@ -118,15 +138,17 @@ function prepareEvenBoardData(evenBoardData, currentBiddingData) {
   const maxHeight = evenBoardData.maxHeight;
   // 遍历短线连板数据，将竞价数据装载进去，按照code 匹配
   for (let currentHeight = 1; currentHeight <= maxHeight; currentHeight++) {
-    evenBoardData[currentHeight] && (evenBoardData[currentHeight] = evenBoardData[currentHeight].map((item) => {
-      // 找到对应个股竞价数据
-      const biddingData = currentBiddingData.find((biddingItem) => {
-        return biddingItem.code === item.code;
-      }) || {};
-      // 竞价数据
-      item.biddingData = biddingData;
-      return item;
-    }));
+    evenBoardData[currentHeight] &&
+      (evenBoardData[currentHeight] = evenBoardData[currentHeight].map(item => {
+        // 找到对应个股竞价数据
+        const biddingData =
+          currentBiddingData.find(biddingItem => {
+            return biddingItem.code === item.code;
+          }) || {};
+        // 竞价数据
+        item.biddingData = biddingData;
+        return item;
+      }));
   }
 
   return evenBoardData;

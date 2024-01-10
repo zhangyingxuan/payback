@@ -15,7 +15,7 @@ export class ShorTermService {
     private readonly thsService: ThsService,
     private readonly specialStockService: SpecialStockService,
     @InjectRepository(shortTermData) private readonly shortTermDataRp: Repository<shortTermData>,
-  ) { }
+  ) {}
 
   private readonly logger = new Logger(ShorTermService.name);
 
@@ -44,7 +44,7 @@ export class ShorTermService {
 
   /**
    * 爬取短线数据，如果已存在则更新
-   * @returns 
+   * @returns
    */
   async crawlShortTermData() {
     this.logger.debug('crawlShortTermData is Begining!');
@@ -62,16 +62,16 @@ export class ShorTermService {
 
       // console.log(createPayBackDto);
       if (isExist) {
-        this.logger.log('crawlShortTermData 更新数据')
+        this.logger.log('crawlShortTermData 更新数据');
         await this.shortTermDataRp.update(todayDataFromDB.id, createPayBackDto);
       } else {
-        this.logger.log('crawlShortTermData 新增数据')
+        this.logger.log('crawlShortTermData 新增数据');
         await this.shortTermDataRp.save(createPayBackDto);
       }
 
       this.logger.debug('crawlShortTermData is success!');
     } catch (e) {
-      this.logger.error('出错啦！！！', e)
+      this.logger.error('出错啦！！！', e);
     }
 
     return createPayBackDto;
@@ -79,8 +79,8 @@ export class ShorTermService {
 
   /**
    * 获取对应日期的数据
-   * @param todayDateStr 
-   * @returns 
+   * @param todayDateStr
+   * @returns
    */
   async crawlShortTermDataByDate(todayDateStr) {
     this.logger.debug('crawlShortTermDataByDate is Begining!');
@@ -91,7 +91,7 @@ export class ShorTermService {
       return {
         code: 'isExist',
         msg: todayDateStr + ' 数据已存在！',
-      }
+      };
     }
 
     let createPayBackDto: CreatePayBackDto;
@@ -101,7 +101,7 @@ export class ShorTermService {
       await this.shortTermDataRp.save(createPayBackDto);
       this.logger.debug('crawlShortTermDataByDate is success!');
     } catch (e) {
-      this.logger.error('出错啦！！！', e)
+      this.logger.error('出错啦！！！', e);
     }
 
     return createPayBackDto;
@@ -109,13 +109,15 @@ export class ShorTermService {
 
   /**
    * 获取今天的数据
-   * @param todayDateStr 
-   * @returns 
+   * @param todayDateStr
+   * @returns
    */
   getTodayData(todayDateStr: string) {
     return this.shortTermDataRp
       .createQueryBuilder('short_term_data')
-      .where("short_term_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
+      .where('short_term_data.createTime like :createTime', {
+        createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%',
+      })
       .getOne();
   }
 
@@ -123,32 +125,35 @@ export class ShorTermService {
     return await this.shortTermDataRp.find();
   }
 
-  async findByLimit(len: number = 20) {
+  async findByLimit(len = 20) {
     return await this.shortTermDataRp
       .createQueryBuilder('short_term_data')
       .offset(0)
       .limit(len)
-      .select(['short_term_data.dailyLimitQuantity',
+      .select([
+        'short_term_data.dailyLimitQuantity',
         'short_term_data.downLimitQuantity',
         'short_term_data.marketHeight',
         'short_term_data.evenBoardAmount',
-        'short_term_data.createTime'])
+        'short_term_data.createTime',
+      ])
       .orderBy('createTime', 'DESC')
       .getMany();
   }
 
   /**
    * 返回连板数据，用于短线详情
-   * @param len 
-   * @returns 
+   * @param len
+   * @returns
    */
-  async findEvenBoardByLimit(len: number = 20) {
+  async findEvenBoardByLimit(len = 20) {
     // 1. 重新组装数据，将竞价数据，装入昨日涨停中
     const shortTermData = await this.shortTermDataRp
       .createQueryBuilder('short_term_data')
       .offset(0)
       .limit(len)
-      .select(['short_term_data.createTime',
+      .select([
+        'short_term_data.createTime',
         'short_term_data.evenBoardAmount',
         'short_term_data.dailyLimitQuantity',
         'short_term_data.downLimitQuantity',
@@ -157,13 +162,14 @@ export class ShorTermService {
         'short_term_data.evenBoardData',
         'short_term_data.hugeFallData',
         'short_term_data.cycle',
-        'short_term_data.downLimitData'])
+        'short_term_data.downLimitData',
+      ])
       .orderBy('createTime', 'DESC')
       .getMany();
     // 获取额外数据（新股、选股、昨日涨停竞价数据）
     const specialStocks = await this.specialStockService.findByLimit(len);
 
-    let shortTermDataResult = mergeExtra2ShortTermData(shortTermData, specialStocks);
+    const shortTermDataResult = mergeExtra2ShortTermData(shortTermData, specialStocks);
 
     return shortTermDataResult;
   }

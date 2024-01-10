@@ -57,8 +57,7 @@ __decorate([
 ], ThsTradeController.prototype, "delThsSelfStock", null);
 ThsTradeController = __decorate([
     (0, common_1.Controller)('ths-trade'),
-    __metadata("design:paramtypes", [ths_service_1.ThsService,
-        shortTerm_service_1.ShorTermService])
+    __metadata("design:paramtypes", [ths_service_1.ThsService, shortTerm_service_1.ShorTermService])
 ], ThsTradeController);
 exports.ThsTradeController = ThsTradeController;
 //# sourceMappingURL=ths-trade.controller.js.map

@@ -1,5 +1,5 @@
 // 特殊股票
-import { PrimaryGeneratedColumn, Column, Entity, Timestamp } from "typeorm";
+import { PrimaryGeneratedColumn, Column, Entity, Timestamp } from 'typeorm';
 @Entity()
 export class specialStock {
   @PrimaryGeneratedColumn()
@@ -23,6 +23,6 @@ export class specialStock {
   @Column({ type: 'timestamp', comment: '创建时间', default: () => 'current_timestamp' })
   createTime: Timestamp;
 
-  @Column({ type: "timestamp", comment: '更新时间', default: () => 'current_timestamp' })
+  @Column({ type: 'timestamp', comment: '更新时间', default: () => 'current_timestamp' })
   updatedTime: Timestamp;
 }

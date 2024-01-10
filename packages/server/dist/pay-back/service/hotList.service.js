@@ -32,7 +32,7 @@ let HotListService = HotListService_1 = class HotListService {
         const todayDateStr = new Date().toLocaleDateString();
         const todayDataFromDB = await this.hotListRp
             .createQueryBuilder('hot_list')
-            .where("hot_list.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
+            .where('hot_list.createTime like :createTime', { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
             .getOne();
         if (todayDataFromDB) {
             isExist = true;
@@ -64,7 +64,7 @@ let HotListService = HotListService_1 = class HotListService {
         }
         return {
             code: 200,
-            data: hotListData
+            data: hotListData,
         };
     }
     async findAll() {

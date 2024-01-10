@@ -16,9 +16,7 @@ let ArticleModule = class ArticleModule {
 };
 ArticleModule = __decorate([
     (0, common_1.Module)({
-        imports: [
-            typeorm_1.TypeOrmModule.forFeature([article_entity_1.Article]),
-        ],
+        imports: [typeorm_1.TypeOrmModule.forFeature([article_entity_1.Article])],
         controllers: [article_controller_1.ArticleController],
         providers: [article_service_1.ArticleService],
     })

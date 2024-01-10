@@ -1,7 +1,7 @@
 // 同花顺热榜 https://eq.10jqka.com.cn/frontend/thsTopRank/index.html?client_userid=GJkFn&back_source=wxhy&share_hxapp=isc&fontzoom=no#/
 // 大家都在看、价值投资派、趋势投资派
 
-import { PrimaryGeneratedColumn, Column, Entity, Timestamp } from "typeorm";
+import { PrimaryGeneratedColumn, Column, Entity, Timestamp } from 'typeorm';
 @Entity()
 export class hotList {
   @PrimaryGeneratedColumn()
@@ -24,6 +24,6 @@ export class hotList {
   @Column({ type: 'timestamp', comment: '创建时间', default: () => 'current_timestamp' })
   createTime: Timestamp;
 
-  @Column({ type: "timestamp", comment: '更新时间', default: () => 'current_timestamp' })
+  @Column({ type: 'timestamp', comment: '更新时间', default: () => 'current_timestamp' })
   updatedTime: Timestamp;
 }

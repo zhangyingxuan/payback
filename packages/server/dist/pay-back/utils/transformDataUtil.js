@@ -52,10 +52,9 @@ function transformHugeFallData(hugeFallData) {
         hugeFallDataArr,
     };
 }
-;
 function transformDownLimitData(dailyLimitData, currentDate) {
     const downLimitDataArr = [];
-    let downLimitQuantity = dailyLimitData.length;
+    const downLimitQuantity = dailyLimitData.length;
     dailyLimitData.forEach(item => {
         const downLimitStockDto = new down_limit_stock_dto_1.DownLimitStockDto();
         loadStockBaseData(downLimitStockDto, item);
@@ -70,10 +69,9 @@ function transformDownLimitData(dailyLimitData, currentDate) {
         downLimitQuantity,
     };
 }
-;
 function transformDailyLimitData(dailyLimitData, currentDate) {
     let board1 = 0, maxHeight = 1, currentLevel = 0, dailyLimitReturnSealQuantity = 0;
-    let evenBoardData = { maxHeight: 1, gaobiao: [], yizi: 0 };
+    const evenBoardData = { maxHeight: 1, gaobiao: [], yizi: 0 };
     const evenBoardLabel = `连续涨停天数[${currentDate}]`;
     dailyLimitData.forEach(item => {
         const dailyLimitStockDto = new daily_limit_stock_dto_1.DailyLimitStockDto();
@@ -90,15 +88,19 @@ function transformDailyLimitData(dailyLimitData, currentDate) {
         dailyLimitStockDto.turnoverRate = (0, commonUtil_1.toFixed)(item[`换手率[${currentDate}]`], 1);
         if (item[`涨停类型[${currentDate}]`] !== turnoverTypeArr[0]) {
             dailyLimitStockDto.turnoverType = item[`涨停类型[${currentDate}]`];
-            dailyLimitStockDto.turnoverType && dailyLimitStockDto.turnoverType.indexOf(turnoverTypeArr[2]) > -1 && (evenBoardData.yizi++);
+            dailyLimitStockDto.turnoverType &&
+                dailyLimitStockDto.turnoverType.indexOf(turnoverTypeArr[2]) > -1 &&
+                evenBoardData.yizi++;
         }
         if (item[`涨停开板次数[${currentDate}]`] != 0) {
             dailyLimitStockDto.openTimes = item[`涨停开板次数[${currentDate}]`];
             dailyLimitReturnSealQuantity++;
         }
-        dailyLimitStockDto.dailyTime = item[`首次涨停时间[${currentDate}]`] ? item[`首次涨停时间[${currentDate}]`].trim() : '-';
+        dailyLimitStockDto.dailyTime = item[`首次涨停时间[${currentDate}]`]
+            ? item[`首次涨停时间[${currentDate}]`].trim()
+            : '-';
         if (dailyLimitStockDto.openTimes > 0 && item[`最终涨停时间[${currentDate}]`]) {
-            dailyLimitStockDto.dailyTime += (',' + item[`最终涨停时间[${currentDate}]`].trim());
+            dailyLimitStockDto.dailyTime += ',' + item[`最终涨停时间[${currentDate}]`].trim();
         }
         const jitianjiban = item[`几天几板[${currentDate}]`];
         if (jitianjiban && jitianjiban.indexOf('天') > -1) {
@@ -146,9 +148,11 @@ function transformBidData(stocks, todayDateStr, yesterdayDate) {
         if (item[`涨停开板次数[${yesterdayDate}]`] != 0) {
             dailyLimitYesterdayBiddingDto.openTimes = item[`涨停开板次数[${yesterdayDate}]`];
         }
-        dailyLimitYesterdayBiddingDto.dailyTime = item[`首次涨停时间[${yesterdayDate}]`] ? item[`首次涨停时间[${yesterdayDate}]`].trim() : '-';
+        dailyLimitYesterdayBiddingDto.dailyTime = item[`首次涨停时间[${yesterdayDate}]`]
+            ? item[`首次涨停时间[${yesterdayDate}]`].trim()
+            : '-';
         if (dailyLimitYesterdayBiddingDto.openTimes > 0 && item[`最终涨停时间[${yesterdayDate}]`]) {
-            dailyLimitYesterdayBiddingDto.dailyTime += (',' + item[`最终涨停时间[${yesterdayDate}]`].trim());
+            dailyLimitYesterdayBiddingDto.dailyTime += ',' + item[`最终涨停时间[${yesterdayDate}]`].trim();
         }
         dailyLimitYesterdayBiddingDto.expected = judgeExpected(dailyLimitYesterdayBiddingDto);
         delete dailyLimitYesterdayBiddingDto.dailyTime;

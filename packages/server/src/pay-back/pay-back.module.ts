@@ -10,14 +10,14 @@ import { ThsService } from './service/ths.service';
 import { ApiTestService } from './service/apiTest.service';
 import { ThsTradeController } from './ths-trade.controller';
 import { PayBackController } from './pay-back.controller';
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { shortTermData } from "./entities/shortTermData.entity";
-import { specialStock } from "./entities/specialStock.entity";
-import { marketData } from "./entities/marketData.entity";
-import { fundsData } from "./entities/fundsData.entity";
-import { hotList } from "./entities/hotList.entity";
-import { latestConceptPlate } from "./entities/latestConceptPlate.entity";
-import { reviewData } from "./entities/review.entity";
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { shortTermData } from './entities/shortTermData.entity';
+import { specialStock } from './entities/specialStock.entity';
+import { marketData } from './entities/marketData.entity';
+import { fundsData } from './entities/fundsData.entity';
+import { hotList } from './entities/hotList.entity';
+import { latestConceptPlate } from './entities/latestConceptPlate.entity';
+import { reviewData } from './entities/review.entity';
 import { UsersModule } from '../users/users.module';
 
 @Module({
@@ -29,7 +29,7 @@ import { UsersModule } from '../users/users.module';
     TypeOrmModule.forFeature([hotList]),
     TypeOrmModule.forFeature([fundsData]),
     TypeOrmModule.forFeature([reviewData]),
-    TypeOrmModule.forFeature([latestConceptPlate])
+    TypeOrmModule.forFeature([latestConceptPlate]),
   ],
   controllers: [PayBackController, ThsTradeController],
   providers: [
@@ -41,7 +41,7 @@ import { UsersModule } from '../users/users.module';
     LatestConceptPlateService,
     ReviewService,
     ThsService,
-    ApiTestService
-  ]
+    ApiTestService,
+  ],
 })
-export class PayBackModule { }
+export class PayBackModule {}

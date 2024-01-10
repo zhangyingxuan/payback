@@ -1,4 +1,4 @@
-import { PrimaryGeneratedColumn, Column, Entity, Timestamp } from "typeorm";
+import { PrimaryGeneratedColumn, Column, Entity, Timestamp } from 'typeorm';
 
 @Entity()
 export class User {
@@ -18,10 +18,9 @@ export class User {
   userid: string;
   // 软删除
   @Column({
-    default: false
+    default: false,
   })
-
-  isDelete: boolean
+  isDelete: boolean;
   @Column({ type: 'timestamp', comment: '创建时间', default: () => 'current_timestamp' })
   createTime: Timestamp;
 }

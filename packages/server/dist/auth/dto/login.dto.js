@@ -17,7 +17,7 @@ class LoginDTO {
 __decorate([
     (0, swagger_1.ApiProperty)({
         description: '用户名，唯一',
-        example: '13049153466'
+        example: '13049153466',
     }),
     (0, class_validator_1.IsNotEmpty)({ message: '请输入用户名' }),
     __metadata("design:type", String)

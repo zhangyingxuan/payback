@@ -4,7 +4,7 @@ import { iwencaiUrl, params } from '../core/config';
 
 /**
  * 通过接口方式获取热门数据
- * @returns 
+ * @returns
  */
 export async function getLatestConceptPlate(currentLatestConceptPlate) {
   let createLatestConceptPlateArr = [];
@@ -20,13 +20,13 @@ export async function getLatestConceptPlate(currentLatestConceptPlate) {
   });
   // 取出待录入的 板块信息
   const latestConceptPlatesArr = latestConceptPlates.splice(0, index);
-  createLatestConceptPlateArr = latestConceptPlatesArr.map((item) => {
+  createLatestConceptPlateArr = latestConceptPlatesArr.map(item => {
     const createLatestConceptPlate = new CreateLatestConceptPlate();
     createLatestConceptPlate.name = item['指数简称'];
     createLatestConceptPlate.code = item['指数代码'];
     createLatestConceptPlate.createTime = new Date();
     return createLatestConceptPlate;
-  })
+  });
 
   return createLatestConceptPlateArr.reverse();
 }

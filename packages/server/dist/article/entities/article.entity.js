@@ -30,7 +30,7 @@ __decorate([
     __metadata("design:type", typeorm_1.Timestamp)
 ], Article.prototype, "createTime", void 0);
 __decorate([
-    (0, typeorm_1.UpdateDateColumn)({ type: "timestamp", comment: '更新时间' }),
+    (0, typeorm_1.UpdateDateColumn)({ type: 'timestamp', comment: '更新时间' }),
     __metadata("design:type", typeorm_1.Timestamp)
 ], Article.prototype, "updatedTime", void 0);
 Article = __decorate([

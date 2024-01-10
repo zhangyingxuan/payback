@@ -1,4 +1,3 @@
-
 export class CreateLatestConceptPlate {
   name: string;
 

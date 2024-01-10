@@ -1,4 +1,4 @@
-import { PrimaryGeneratedColumn, Column, Entity, Timestamp } from "typeorm";
+import { PrimaryGeneratedColumn, Column, Entity, Timestamp } from 'typeorm';
 
 @Entity()
 export class shortTermData {

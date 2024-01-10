@@ -1,4 +1,4 @@
-import { Timestamp } from "typeorm";
+import { Timestamp } from 'typeorm';
 export declare class User {
     id: number;
     name: string;

@@ -1,4 +1,3 @@
-
 export class CreateHotListDto {
   // 热门个股大家都在看Top10
   stockNormal: string;

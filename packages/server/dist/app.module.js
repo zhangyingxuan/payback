@@ -23,7 +23,6 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'prod'}`;
 function atob(a) {
     return Buffer.from(a, 'base64').toString('binary');
 }
-;
 let AppModule = class AppModule {
     configure(consumer) { }
 };
@@ -57,11 +56,12 @@ AppModule = __decorate([
             article_module_1.ArticleModule,
         ],
         controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService,
+        providers: [
+            app_service_1.AppService,
             {
                 provide: core_1.APP_GUARD,
                 useClass: jwt_auth_guard_1.JwtAuthGuard,
-            }
+            },
         ],
     })
 ], AppModule);

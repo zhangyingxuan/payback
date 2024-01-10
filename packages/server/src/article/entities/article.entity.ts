@@ -1,4 +1,4 @@
-import { PrimaryGeneratedColumn, Column, Entity, Timestamp, UpdateDateColumn } from "typeorm";
+import { PrimaryGeneratedColumn, Column, Entity, Timestamp, UpdateDateColumn } from 'typeorm';
 
 @Entity()
 export class Article {
@@ -14,6 +14,6 @@ export class Article {
   @Column({ type: 'timestamp', comment: '创建时间', default: () => 'current_timestamp' })
   createTime: Timestamp;
 
-  @UpdateDateColumn({ type: "timestamp", comment: '更新时间' })
+  @UpdateDateColumn({ type: 'timestamp', comment: '更新时间' })
   updatedTime: Timestamp;
 }

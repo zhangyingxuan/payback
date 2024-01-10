@@ -1,4 +1,3 @@
-
 export class CreatePayBackDto {
   // 涨停数量
   dailyLimitQuantity: number;

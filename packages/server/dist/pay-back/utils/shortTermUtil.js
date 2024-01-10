@@ -24,12 +24,12 @@ async function getShortTermDataByDate(todayDateStr) {
 }
 exports.getShortTermDataByDate = getShortTermDataByDate;
 function prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, todayDateStr) {
-    let createPayBackDto = new create_pay_back_dto_1.CreatePayBackDto();
-    let { board1 = 0, evenBoardData, downLimitDataArr, hugeFallDataArr, dailyLimitReturnSealQuantity, downLimitQuantity } = (0, transformDataUtil_1.transformShortTermSourceData)(dailyLimitData, downLimitData, hugeFallData, todayDateStr);
+    const createPayBackDto = new create_pay_back_dto_1.CreatePayBackDto();
+    const { board1 = 0, evenBoardData, downLimitDataArr, hugeFallDataArr, dailyLimitReturnSealQuantity, downLimitQuantity, } = (0, transformDataUtil_1.transformShortTermSourceData)(dailyLimitData, downLimitData, hugeFallData, todayDateStr);
     createPayBackDto.downLimitQuantity = downLimitQuantity;
     createPayBackDto.dailyLimitQuantity = dailyLimitData.length;
     createPayBackDto.dailyLimitOpenQuantity = dailyLimitOpenData.length;
-    createPayBackDto.sealingRate = Math.round(dailyLimitData.length / (dailyLimitData.length + dailyLimitOpenData.length) * 100);
+    createPayBackDto.sealingRate = Math.round((dailyLimitData.length / (dailyLimitData.length + dailyLimitOpenData.length)) * 100);
     createPayBackDto.dailyLimitReturnSealQuantity = dailyLimitReturnSealQuantity;
     createPayBackDto.marketHeight = evenBoardData.maxHeight;
     createPayBackDto.evenBoardAmount = dailyLimitData.length - board1;
@@ -61,20 +61,21 @@ function mergeExtra2ShortTermData(shortTermData, specialStocks) {
 }
 exports.mergeExtra2ShortTermData = mergeExtra2ShortTermData;
 function findBiddingDataByCreateTime(biddingDatas, createDate) {
-    return biddingDatas.find((item) => {
+    return biddingDatas.find(item => {
         return dayjs(item.createTime).format(pay_back_core_1.iWencaiDateFormat) === createDate;
     });
 }
 function prepareEvenBoardData(evenBoardData, currentBiddingData) {
     const maxHeight = evenBoardData.maxHeight;
     for (let currentHeight = 1; currentHeight <= maxHeight; currentHeight++) {
-        evenBoardData[currentHeight] && (evenBoardData[currentHeight] = evenBoardData[currentHeight].map((item) => {
-            const biddingData = currentBiddingData.find((biddingItem) => {
-                return biddingItem.code === item.code;
-            }) || {};
-            item.biddingData = biddingData;
-            return item;
-        }));
+        evenBoardData[currentHeight] &&
+            (evenBoardData[currentHeight] = evenBoardData[currentHeight].map(item => {
+                const biddingData = currentBiddingData.find(biddingItem => {
+                    return biddingItem.code === item.code;
+                }) || {};
+                item.biddingData = biddingData;
+                return item;
+            }));
     }
     return evenBoardData;
 }

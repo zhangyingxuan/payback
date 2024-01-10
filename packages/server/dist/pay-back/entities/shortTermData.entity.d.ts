@@ -1,4 +1,4 @@
-import { Timestamp } from "typeorm";
+import { Timestamp } from 'typeorm';
 export declare class shortTermData {
     id: number;
     dailyLimitQuantity: number;

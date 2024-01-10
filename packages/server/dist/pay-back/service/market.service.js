@@ -38,7 +38,7 @@ let MarketService = MarketService_1 = class MarketService {
         const todayDateStr = new Date().toLocaleDateString();
         const todayDataFromDB = await this.marketDataRp
             .createQueryBuilder('market_data')
-            .where("market_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
+            .where('market_data.createTime like :createTime', { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
             .getOne();
         if (todayDataFromDB) {
             isExist = true;
@@ -78,7 +78,7 @@ let MarketService = MarketService_1 = class MarketService {
             'market_data.shangzhengPoint',
             'market_data.shenzhengPoint',
             'market_data.chuangyePoint',
-            'market_data.beizheng50Point'
+            'market_data.beizheng50Point',
         ])
             .orderBy('createTime', 'DESC')
             .getMany();
@@ -93,7 +93,7 @@ let MarketService = MarketService_1 = class MarketService {
             'market_data.gainianRiseFloat',
             'market_data.gainianFallFloat',
             'market_data.hangyeRiseFloat',
-            'market_data.hangyeFallFloat'
+            'market_data.hangyeFallFloat',
         ])
             .orderBy('createTime', 'DESC')
             .getMany();

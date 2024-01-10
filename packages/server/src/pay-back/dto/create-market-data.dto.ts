@@ -1,4 +1,3 @@
-
 export class CreateMarketDataDto {
   marketPoint: number;
 

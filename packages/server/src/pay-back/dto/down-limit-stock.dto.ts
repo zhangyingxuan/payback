@@ -1,4 +1,3 @@
-
 export class DownLimitStockDto {
   // 名称
   name: string;

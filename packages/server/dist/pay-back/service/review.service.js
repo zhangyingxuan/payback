@@ -30,7 +30,7 @@ let ReviewService = ReviewService_1 = class ReviewService {
         const todayDateStr = new Date().toLocaleDateString();
         const todayDataFromDB = await this.reviewDataRp
             .createQueryBuilder('market_data')
-            .where("market_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
+            .where('market_data.createTime like :createTime', { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
             .getOne();
         if (todayDataFromDB) {
             this.logger.debug('updateTodayReviewData is end![isExist]!');
@@ -65,7 +65,7 @@ let ReviewService = ReviewService_1 = class ReviewService {
         return await this.reviewDataRp
             .createQueryBuilder('market_data')
             .offset(0)
-            .where("market_data.createTime like :createTime", { createTime: dayjs(date).format('YYYY-MM-DD') + '%' })
+            .where('market_data.createTime like :createTime', { createTime: dayjs(date).format('YYYY-MM-DD') + '%' })
             .orderBy('createTime', 'DESC')
             .getOne();
     }

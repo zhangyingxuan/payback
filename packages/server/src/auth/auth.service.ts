@@ -1,14 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
-import { LoginDTO } from './dto/login.dto'
+import { LoginDTO } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private usersService: UsersService,
-    private jwtService: JwtService
-  ) { }
+  constructor(private usersService: UsersService, private jwtService: JwtService) {}
 
   async validateUser(userInfo: LoginDTO): Promise<any> {
     const user = await this.usersService.findOne(userInfo);
@@ -27,14 +24,14 @@ export class AuthService {
         code: 200,
         data: {
           token: this.jwtService.sign(user),
-        }
+        },
       };
     } else {
       return {
         code: 200,
         data: {
           msg: '用户名或密码错误',
-        }
+        },
       };
     }
   }

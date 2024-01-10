@@ -2,16 +2,14 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { hotList } from '../entities/hotList.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getHotListData } from '../utils/hotListUtil'
+import { getHotListData } from '../utils/hotListUtil';
 import { CreateHotListDto } from '../dto/create-hot-list.dto';
 import * as dayjs from 'dayjs';
 import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class HotListService {
-  constructor(
-    @InjectRepository(hotList) private readonly hotListRp: Repository<hotList>,
-  ) { }
+  constructor(@InjectRepository(hotList) private readonly hotListRp: Repository<hotList>) {}
 
   private readonly logger = new Logger(HotListService.name);
 
@@ -29,7 +27,7 @@ export class HotListService {
     const todayDateStr = new Date().toLocaleDateString();
     const todayDataFromDB = await this.hotListRp
       .createQueryBuilder('hot_list')
-      .where("hot_list.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
+      .where('hot_list.createTime like :createTime', { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
       .getOne();
 
     if (todayDataFromDB) {
@@ -46,30 +44,30 @@ export class HotListService {
         plateIndustry: JSON.stringify(hotListData.plateIndustry),
         updatedTime: hotListData.updatedTime,
         createTime: hotListData.updatedTime,
-      }
+      };
       if (isExist) {
         this.logger.log('更新数据, id=' + todayDataFromDB.id);
         delete hotListData4Db.createTime;
         await this.hotListRp.update(todayDataFromDB.id, hotListData4Db);
       } else {
-        this.logger.log('新增数据')
+        this.logger.log('新增数据');
         await this.hotListRp.save(hotListData4Db);
       }
       this.logger.debug('crawlHotListData is success!');
     } catch (e) {
-      this.logger.error('出错啦！！！', e)
+      this.logger.error('出错啦！！！', e);
     }
 
     return {
       code: 200,
-      data: hotListData
+      data: hotListData,
     };
   }
 
   async findAll() {
     return await this.hotListRp.find();
   }
-  async findByLimit(len: number = 20) {
+  async findByLimit(len = 20) {
     return await this.hotListRp
       .createQueryBuilder('hot_list_data')
       .offset(0)

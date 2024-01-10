@@ -5,7 +5,7 @@ import { CreateArticleDto } from './dto/create-article.dto';
 
 @Controller('article')
 export class ArticleController {
-  constructor(private articleService: ArticleService) { }
+  constructor(private articleService: ArticleService) {}
 
   @Post('create')
   async create(@Body() createArticleDto: CreateArticleDto) {
@@ -13,7 +13,7 @@ export class ArticleController {
     return {
       code: 200,
       data: result,
-    }
+    };
   }
 
   @Post('remove')
@@ -22,7 +22,7 @@ export class ArticleController {
     return {
       code: 200,
       data: result,
-    }
+    };
   }
 
   @Post('update')
@@ -33,7 +33,7 @@ export class ArticleController {
     return {
       code: 200,
       data: result,
-    }
+    };
   }
 
   // @Public()
@@ -43,7 +43,7 @@ export class ArticleController {
     return {
       code: 200,
       data: result,
-    }
+    };
   }
   @Get('findOne')
   async findOne(@Query('id') id: number) {
@@ -51,7 +51,7 @@ export class ArticleController {
     return {
       code: 200,
       data: result,
-    }
+    };
   }
 
   @Get('findByTitle')

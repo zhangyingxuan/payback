@@ -133,12 +133,12 @@ let PayBackController = PayBackController_1 = class PayBackController {
                 shortTermData,
                 marketData,
                 fundsData,
-            }
+            },
         };
     }
     async fetchEvenBoardData(query) {
         const limit = +(query.limit || 20);
-        let shortTermData = await this.shorTermService.findEvenBoardByLimit(limit);
+        const shortTermData = await this.shorTermService.findEvenBoardByLimit(limit);
         return {
             code: 200,
             data: shortTermData,
@@ -146,7 +146,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
     }
     async fetchHostListData(query) {
         const limit = +(query.limit || 20);
-        let hotListData = await this.hotListService.findByLimit(limit);
+        const hotListData = await this.hotListService.findByLimit(limit);
         return {
             code: 200,
             data: hotListData,
@@ -154,7 +154,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
     }
     async fetchReveiwDataByDate(query) {
         const date = query.date || new Date();
-        let reviewData = await this.reviewService.findByDate(date);
+        const reviewData = await this.reviewService.findByDate(date);
         return {
             code: 200,
             data: reviewData,
@@ -162,7 +162,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
     }
     async findConceptPlateWithinNDays(query) {
         const nDays = +(query.nDays || 15);
-        let palateData = await this.latestConceptPlateService.findWithinNDays(nDays);
+        const palateData = await this.latestConceptPlateService.findWithinNDays(nDays);
         return {
             code: 200,
             data: palateData,
@@ -170,7 +170,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
     }
     async findConceptPlateByLimit(query) {
         const nDays = +(query.nDays || 15);
-        let palateData = await this.latestConceptPlateService.findByLimit(nDays);
+        const palateData = await this.latestConceptPlateService.findByLimit(nDays);
         return {
             code: 200,
             data: palateData,
@@ -178,7 +178,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
     }
     async findPlateByLimit(query) {
         const limit = +(query.limit || 20);
-        let palateData = await this.marketService.findPlateByLimit(limit);
+        const palateData = await this.marketService.findPlateByLimit(limit);
         return {
             code: 200,
             data: palateData,

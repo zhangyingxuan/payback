@@ -16,7 +16,7 @@ export class SpecialStockService {
   constructor(
     @InjectRepository(specialStock) private readonly specialStockRp: Repository<specialStock>,
     private readonly thsService: ThsService,
-  ) { }
+  ) {}
 
   private readonly logger = new Logger(SpecialStockService.name);
 
@@ -42,16 +42,19 @@ export class SpecialStockService {
     if (todayDataFromDB) {
       isExist = true;
     }
-    let specialStockDto: SpecialStockDto = new SpecialStockDto();
+    const specialStockDto: SpecialStockDto = new SpecialStockDto();
     try {
       const yesterdayDateStr = await this.getLastTradingDayByDB(todayDateStr);
 
       // 获取竞价情况
-      const { dailyLimitYesterdayBidding, newStocks, chooseStock1Expected } = await getBiddingData(todayDateStr, yesterdayDateStr);
+      const { dailyLimitYesterdayBidding, newStocks, chooseStock1Expected } = await getBiddingData(
+        todayDateStr,
+        yesterdayDateStr,
+      );
       specialStockDto.biddingData = JSON.stringify(dailyLimitYesterdayBidding);
       specialStockDto.newStock = JSON.stringify(newStocks);
       specialStockDto.chooseStock = JSON.stringify({
-        chooseStock1Expected
+        chooseStock1Expected,
       });
       specialStockDto.updatedTime = new Date();
 
@@ -70,16 +73,15 @@ export class SpecialStockService {
 
       this.logger.debug('autoCrawlBinddingData is success!');
     } catch (e) {
-      this.logger.error('出错啦！！！', e)
+      this.logger.error('出错啦！！！', e);
     }
 
     return specialStockDto;
   }
 
-
   /**
    * 处理不及预期个股
-   * @returns 
+   * @returns
    */
   async dealIncompatibleExpectStocks(isRemoveIncompatible, dailyLimitYesterdayBidding) {
     // 删除不及预期个股
@@ -89,7 +91,7 @@ export class SpecialStockService {
 
       dailyLimitYesterdayBidding.forEach(stock => {
         // 将不及预期个股 加入数组 （保留非首板 evenDays 有值则是非首板 2024-01-07 19:47:33 by zyx）
-        if (stock.evenDays && stock.expected === ExpectEnum.incompatible) {
+        if (!stock.evenDays && stock.expected === ExpectEnum.incompatible) {
           incompatibleExpectStocks.push(stock);
         }
       });
@@ -98,16 +100,17 @@ export class SpecialStockService {
     }
   }
 
-
   /**
    * 获取今天的数据
-   * @param todayDateStr 
-   * @returns 
+   * @param todayDateStr
+   * @returns
    */
   getTodayData(todayDateStr: string) {
     return this.specialStockRp
       .createQueryBuilder('special_stock')
-      .where("special_stock.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
+      .where('special_stock.createTime like :createTime', {
+        createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%',
+      })
       .getOne();
   }
 
@@ -115,7 +118,7 @@ export class SpecialStockService {
     return await this.specialStockRp.find();
   }
 
-  async findByLimit(len: number = 20) {
+  async findByLimit(len = 20) {
     return await this.specialStockRp
       .createQueryBuilder('special_stock')
       .offset(0)
@@ -126,7 +129,7 @@ export class SpecialStockService {
 
   /**
    * 获取数据库中 上一个交易日的日期
-   * @param todayDateStr 
+   * @param todayDateStr
    */
   async getLastTradingDayByDB(todayDateStr) {
     const dateArr: any = await this.specialStockRp

@@ -30,7 +30,8 @@ export class PayBackController {
     private readonly apiTestService: ApiTestService,
     private readonly latestConceptPlateService: LatestConceptPlateService,
     private readonly usersService: UsersService,
-    private readonly marketService: MarketService) { }
+    private readonly marketService: MarketService,
+  ) {}
 
   private readonly logger = new Logger(PayBackController.name);
 
@@ -43,7 +44,6 @@ export class PayBackController {
 
     // return await this.apiTestService.datacenterWeb();
   }
-
 
   // @Cron('0 */5 9-12 * * 1-5')
   async autoCrawlTodayDataAM() {
@@ -141,7 +141,7 @@ export class PayBackController {
   @Public()
   @Get('/crawlShortTermByDate')
   crawlShortTermDataByDate(@Query() query) {
-    const date = query.date || new Date()
+    const date = query.date || new Date();
     return this.shorTermService.crawlShortTermDataByDate(date);
   }
   // @Public()
@@ -162,7 +162,7 @@ export class PayBackController {
 
   @Get('list')
   async findByLimit(@Query() query) {
-    const limit = +(query.limit || 20)
+    const limit = +(query.limit || 20);
     const shortTermData = (await this.shorTermService.findByLimit(limit)).reverse();
     const marketData = (await this.marketService.findByLimit(limit)).reverse();
     const fundsData = (await this.fundsService.findByLimit(limit)).reverse();
@@ -172,17 +172,16 @@ export class PayBackController {
         shortTermData,
         marketData,
         fundsData,
-      }
+      },
     };
   }
-
 
   @Get('fetchEvenBoardData')
   async fetchEvenBoardData(@Query() query) {
     const limit = +(query.limit || 20);
     // isMobile
     // const isMobile = query.isMobile || 'true';
-    let shortTermData = await this.shorTermService.findEvenBoardByLimit(limit);
+    const shortTermData = await this.shorTermService.findEvenBoardByLimit(limit);
     // 移动端 日期近的在前面，PC相反
     // if (isMobile == 'true') {
     //   shortTermData = shortTermData.reverse();
@@ -196,7 +195,7 @@ export class PayBackController {
   @Get('fetchHostListData')
   async fetchHostListData(@Query() query) {
     const limit = +(query.limit || 20);
-    let hotListData = await this.hotListService.findByLimit(limit);
+    const hotListData = await this.hotListService.findByLimit(limit);
     return {
       code: 200,
       data: hotListData,
@@ -206,7 +205,7 @@ export class PayBackController {
   @Get('fetchReveiwDataByDate')
   async fetchReveiwDataByDate(@Query() query) {
     const date = query.date || new Date();
-    let reviewData = await this.reviewService.findByDate(date);
+    const reviewData = await this.reviewService.findByDate(date);
     return {
       code: 200,
       data: reviewData,
@@ -216,7 +215,7 @@ export class PayBackController {
   @Get('findConceptPlateWithinNDays')
   async findConceptPlateWithinNDays(@Query() query) {
     const nDays = +(query.nDays || 15);
-    let palateData = await this.latestConceptPlateService.findWithinNDays(nDays);
+    const palateData = await this.latestConceptPlateService.findWithinNDays(nDays);
     return {
       code: 200,
       data: palateData,
@@ -225,7 +224,7 @@ export class PayBackController {
   @Get('findConceptPlateByLimit')
   async findConceptPlateByLimit(@Query() query) {
     const nDays = +(query.nDays || 15);
-    let palateData = await this.latestConceptPlateService.findByLimit(nDays);
+    const palateData = await this.latestConceptPlateService.findByLimit(nDays);
     return {
       code: 200,
       data: palateData,
@@ -234,7 +233,7 @@ export class PayBackController {
   @Get('findPlateByLimit')
   async findPlateByLimit(@Query() query) {
     const limit = +(query.limit || 20);
-    let palateData = await this.marketService.findPlateByLimit(limit);
+    const palateData = await this.marketService.findPlateByLimit(limit);
     return {
       code: 200,
       data: palateData,

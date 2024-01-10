@@ -4,7 +4,7 @@ import { Public } from '../decorator/public.decorator';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   @Public()
   @Post('login')

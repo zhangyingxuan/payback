@@ -10,26 +10,27 @@ let isSuccess = true;
 // 四大证券 文章精华 http://stock.10jqka.com.cn/bktt_list/
 function atob(a) {
   return Buffer.from(a, 'base64').toString('binary');
-};
+}
 
 function prepareSelfStock(i, stocks, app, userid, ticket, user) {
   if (stocks) {
     for (let j = 0; j < stocks.length; j++) {
       // 仅插入 10cm的个股
-      dailyLimitOptionalStrategy(stocks[j], i) && app.add(async (ctx, next) => {
-        const result = await modifyThsSelfStocksRequest(stocks[j].code, userid, ticket, user);
-        console.log(stocks[j].name, result);
-        if (result.errorMsg === '当前用户未登录') {
-          // https://www.10jqka.com.cn/ 重新登录地址
-          ctx.logger.log('当前用户未登录：https://www.10jqka.com.cn/');
-          //  当前用户未登录，则停止之后的异步调用请求
-          isSuccess = false;
-          ctx.usersService.clearUserInfoCache();
-          // 清理用户信息缓存
-          return;
-        }
-        next();
-      });
+      dailyLimitOptionalStrategy(stocks[j], i) &&
+        app.add(async (ctx, next) => {
+          const result = await modifyThsSelfStocksRequest(stocks[j].code, userid, ticket, user);
+          console.log(stocks[j].name, result);
+          if (result.errorMsg === '当前用户未登录') {
+            // https://www.10jqka.com.cn/ 重新登录地址
+            ctx.logger.log('当前用户未登录：https://www.10jqka.com.cn/');
+            //  当前用户未登录，则停止之后的异步调用请求
+            isSuccess = false;
+            ctx.usersService.clearUserInfoCache();
+            // 清理用户信息缓存
+            return;
+          }
+          next();
+        });
       // stock.type === '0' && funcs.push(async (comm, next) => {
       //   comm = await modifyThsSelfStocksRequest(stocks[j].code, userid, ticket, user);
       //   if (comm.errorMsg === '当前用户未登录') {
@@ -45,9 +46,7 @@ function prepareSelfStock(i, stocks, app, userid, ticket, user) {
 
 @Injectable()
 export class ThsService {
-  constructor(
-    private readonly usersService: UsersService,
-  ) { }
+  constructor(private readonly usersService: UsersService) {}
 
   private readonly logger = new Logger(ThsService.name);
 
@@ -66,7 +65,7 @@ export class ThsService {
       // return;
       // 3、插入自选股
       // const funcs = [];
-      let app = new AsynTaskIterator();
+      const app = new AsynTaskIterator();
       this.logger.log(`同步自选: [高标] ${evenBoardData['gaobiao'] && evenBoardData['gaobiao'].length}；`);
       // 3.1 先加入高标
       prepareSelfStock(9, evenBoardData['gaobiao'], app, userid, ticket, user);
@@ -89,9 +88,9 @@ export class ThsService {
     };
   }
   /**
-   * 
-   * @param code 
-   * @returns 
+   *
+   * @param code
+   * @returns
    */
   async updateThsSelfStock(code, type) {
     const userInfo = await this.usersService.getUserByAccount('admin');
@@ -117,7 +116,6 @@ export class ThsService {
           data: result.errorMsg,
         };
       }
-
     } catch (e) {
       isSuccess = false;
       this.logger.log('updateThsSelfStock[' + type + '] 失败了！' + e);
@@ -130,7 +128,7 @@ export class ThsService {
    * 批量处理 添加/删除 自选个股
    */
   async batchUpdateThsSelfStock(stocks = [], type) {
-    let app = new AsynTaskIterator();
+    const app = new AsynTaskIterator();
     const userInfo = await this.usersService.getUserByAccount('admin');
     // 1、获取用户信息
     const userid = atob(userInfo.userid);
@@ -156,7 +154,7 @@ export class ThsService {
           }
           next();
         });
-      })
+      });
 
       app.run(this);
     } catch (e) {

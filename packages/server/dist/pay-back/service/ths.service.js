@@ -19,21 +19,21 @@ let isSuccess = true;
 function atob(a) {
     return Buffer.from(a, 'base64').toString('binary');
 }
-;
 function prepareSelfStock(i, stocks, app, userid, ticket, user) {
     if (stocks) {
         for (let j = 0; j < stocks.length; j++) {
-            (0, pay_back_core_1.dailyLimitOptionalStrategy)(stocks[j], i) && app.add(async (ctx, next) => {
-                const result = await (0, fetchUtil_1.modifyThsSelfStocksRequest)(stocks[j].code, userid, ticket, user);
-                console.log(stocks[j].name, result);
-                if (result.errorMsg === '当前用户未登录') {
-                    ctx.logger.log('当前用户未登录：https://www.10jqka.com.cn/');
-                    isSuccess = false;
-                    ctx.usersService.clearUserInfoCache();
-                    return;
-                }
-                next();
-            });
+            (0, pay_back_core_1.dailyLimitOptionalStrategy)(stocks[j], i) &&
+                app.add(async (ctx, next) => {
+                    const result = await (0, fetchUtil_1.modifyThsSelfStocksRequest)(stocks[j].code, userid, ticket, user);
+                    console.log(stocks[j].name, result);
+                    if (result.errorMsg === '当前用户未登录') {
+                        ctx.logger.log('当前用户未登录：https://www.10jqka.com.cn/');
+                        isSuccess = false;
+                        ctx.usersService.clearUserInfoCache();
+                        return;
+                    }
+                    next();
+                });
         }
     }
 }
@@ -49,7 +49,7 @@ let ThsService = ThsService_1 = class ThsService {
         const user = userInfo.user;
         isSuccess = true;
         try {
-            let app = new pay_back_core_1.AsynTaskIterator();
+            const app = new pay_back_core_1.AsynTaskIterator();
             this.logger.log(`同步自选: [高标] ${evenBoardData['gaobiao'] && evenBoardData['gaobiao'].length}；`);
             prepareSelfStock(9, evenBoardData['gaobiao'], app, userid, ticket, user);
             const maxHeight = evenBoardData.maxHeight;
@@ -98,7 +98,7 @@ let ThsService = ThsService_1 = class ThsService {
         };
     }
     async batchUpdateThsSelfStock(stocks = [], type) {
-        let app = new pay_back_core_1.AsynTaskIterator();
+        const app = new pay_back_core_1.AsynTaskIterator();
         const userInfo = await this.usersService.getUserByAccount('admin');
         const userid = atob(userInfo.userid);
         const ticket = userInfo.ticket;

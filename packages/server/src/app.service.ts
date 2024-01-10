@@ -10,8 +10,8 @@ export class AppService {
     const data = await new Promise((resolve, reject) => {
       setTimeout(() => {
         resolve('成功！');
-      }, 30000)
-    })
+      }, 30000);
+    });
 
     return 'Hello test!' + data;
   }

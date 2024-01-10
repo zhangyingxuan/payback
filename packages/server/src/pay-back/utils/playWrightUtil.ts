@@ -29,17 +29,23 @@ const getBrowser = async (autoCloseTime: number = browserCloseTimeOut) => {
   return browser;
 };
 /**
-* 
-* @param url
-* @returns 
-*/
-const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType: 'text' | 'json', baseBrowser?: Browser): Promise<String> => {
+ *
+ * @param url
+ * @returns
+ */
+const waitOriginalDataByUrl = async (
+  pageUrl,
+  apiUrl,
+  transfromType: 'text' | 'json',
+  baseBrowser?: Browser,
+): Promise<string> => {
   const browser = baseBrowser ? baseBrowser : await getBrowser();
   // 日志开始
   logger.log('等待接口返回 start ====' + pageUrl);
 
-  let page = await browser.newPage(), browserContext;
+  const page = await browser.newPage();
   // fix： 修复爱问财默认50条数据分页 的问题；仅 涨停进入，1核1g无法执行
+  // const browserContext;
   // if (apiUrl === 'chart/get-robot-data') {
   //   browserContext = await browser.newContext({ storageState: undefined });
   //   // 只有 涨停数据 需要100/ 页；其他页面只需要 10条即可
@@ -52,8 +58,7 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType: 'text' | 'j
   //   page = await browser.newPage();
   // }
 
-
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     page.on('response', async (response: Response) => {
       // console.log(response.url())
       if (response.url().includes(apiUrl) && response.status() === 200) {
@@ -69,10 +74,10 @@ const waitOriginalDataByUrl = async (pageUrl, apiUrl, transfromType: 'text' | 'j
         // page.close();
         setTimeout(() => {
           resolve(responseData);
-        }, 2000)
+        }, 2000);
       }
     });
-    page.goto(pageUrl, { timeout: commonTimeOut60s, waitUntil: "domcontentloaded" });
+    page.goto(pageUrl, { timeout: commonTimeOut60s, waitUntil: 'domcontentloaded' });
     // logger.log('打开页面成功 ====', pageUrl);
   });
 };
@@ -87,21 +92,21 @@ function getPoint(data) {
 
 async function getRealDataJson(response: Response, replaceStr) {
   let dataStr = await response.text();
-  dataStr = dataStr.replace(replaceStr, '')
-  dataStr = dataStr.replace(')', '')
+  dataStr = dataStr.replace(replaceStr, '');
+  dataStr = dataStr.replace(')', '');
   return JSON.parse(dataStr);
 }
 
 /**
-* 
-* @param url 准备市场 指数数据
-* @returns 
-*/
+ *
+ * @param url 准备市场 指数数据
+ * @returns
+ */
 const waitMarketDataByUrls = async (pageUrl, apiUrl, browser): Promise<CreateMarketDataDto> => {
   logger.log('等待接口返回 start ====' + pageUrl);
-  // 打开股票行情页面  
+  // 打开股票行情页面
   const page = await browser.newPage();
-  return new Promise(async (resolve, reject) => {
+  return new Promise(async resolve => {
     const createMarketDataDto = new CreateMarketDataDto();
     const state = {
       apiUrl: false,
@@ -109,7 +114,7 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl, browser): Promise<CreateMar
       hs_1A0001: false,
       hs_399006: false,
       151_899050: false,
-    }
+    };
     page.on('response', async response => {
       // console.log(response.url())
       if (response.url().includes(apiUrl) && response.status() === 200) {
@@ -124,7 +129,6 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl, browser): Promise<CreateMar
       if (response.url().includes('time/hs_399001/last.js') && response.status() === 200) {
         const dataJson = await getRealDataJson(response, 'quotebridge_v6_time_hs_399001_last(');
         // 昨收盘点数
-        const pre = dataJson.hs_399001.pre;
         createMarketDataDto.shenzhengPoint = getPoint(dataJson.hs_399001.data);
         state.hs_399001 = true;
       }
@@ -132,7 +136,6 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl, browser): Promise<CreateMar
       if (response.url().includes('time/hs_1A0001/last.js') && response.status() === 200) {
         const dataJson = await getRealDataJson(response, 'quotebridge_v6_time_hs_1A0001_last(');
         // 昨收盘点数
-        const pre = dataJson.hs_1A0001.pre;
         createMarketDataDto.shangzhengPoint = getPoint(dataJson.hs_1A0001.data);
         state.hs_1A0001 = true;
       }
@@ -140,7 +143,6 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl, browser): Promise<CreateMar
       if (response.url().includes('time/hs_399006/last.js') && response.status() === 200) {
         const dataJson = await getRealDataJson(response, 'quotebridge_v6_time_hs_399006_last(');
         // 昨收盘点数
-        const pre = dataJson.hs_399006.pre;
         createMarketDataDto.chuangyePoint = getPoint(dataJson.hs_399006.data);
         state.hs_399006 = true;
       }
@@ -148,7 +150,6 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl, browser): Promise<CreateMar
       if (response.url().includes('time/151_899050/last.js') && response.status() === 200) {
         const dataJson = await getRealDataJson(response, 'quotebridge_v6_time_151_899050_last(');
         // 昨收盘点数
-        const pre = dataJson['151_899050'].pre;
         createMarketDataDto.beizheng50Point = getPoint(dataJson['151_899050'].data);
         state['151_899050'] = true;
       }
@@ -162,8 +163,8 @@ const waitMarketDataByUrls = async (pageUrl, apiUrl, browser): Promise<CreateMar
           resolve(createMarketDataDto);
         }, 1000);
       }
-    })
-    page.goto(pageUrl, { timeout: commonTimeOut60s, waitUntil: "domcontentloaded" });
+    });
+    page.goto(pageUrl, { timeout: commonTimeOut60s, waitUntil: 'domcontentloaded' });
   });
 };
 
@@ -201,9 +202,18 @@ export default {
     const browser = await getBrowser(browserCloseTimeOut * 2);
     // TODO 轻量服务器，无法同时打开多个page ，所以待优化，promise.all 方案实施失败
     // 北向资金、南向资金 获取
-    const responseForeignFunds = await waitOriginalDataByUrl('https://data.eastmoney.com/hsgt/index.html', 'reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE', 'text', browser);
+    const responseForeignFunds = await waitOriginalDataByUrl(
+      'https://data.eastmoney.com/hsgt/index.html',
+      'reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE',
+      'text',
+      browser,
+    );
     // const responseForeignFunds = await (await fetch("https://datacenter-web.eastmoney.com/api/data/v1/get?callback=jQuery112309386087809528996_1689650979956&reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE%2CMUTUAL_TYPE%2CBOARD_TYPE%2CMUTUAL_TYPE_NAME%2CFUNDS_DIRECTION%2CINDEX_CODE%2CINDEX_NAME%2CBOARD_CODE&quoteColumns=status~07~BOARD_CODE%2CdayNetAmtIn~07~BOARD_CODE%2CdayAmtRemain~07~BOARD_CODE%2CdayAmtThreshold~07~BOARD_CODE%2Cf104~07~BOARD_CODE%2Cf105~07~BOARD_CODE%2Cf106~07~BOARD_CODE%2Cf3~03~INDEX_CODE~INDEX_f3%2CnetBuyAmt~07~BOARD_CODE&quoteType=0&pageNumber=1&pageSize=200&sortTypes=1&sortColumns=MUTUAL_TYPE&source=WEB&client=WEB&_=1689650979958")).text();
-    const responseMarketTurnover = await (await fetch("https://push2.eastmoney.com/api/qt/ulist.np/get?cb=jQuery112304396074520394937_1688383194361&fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5&_=1688383194362")).text();
+    const responseMarketTurnover = await (
+      await fetch(
+        'https://push2.eastmoney.com/api/qt/ulist.np/get?cb=jQuery112304396074520394937_1688383194361&fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5&_=1688383194362',
+      )
+    ).text();
 
     const hangyeFundsInflow = await fetchIwencaiApi(iwencaiUrl + params.hangyeFundsInflow);
     const hangyeFundsOutflow = await fetchIwencaiApi(iwencaiUrl + params.hangyeFundsOutflow);
@@ -233,5 +243,5 @@ export default {
       await browser.close();
     }, 2000);
     return createFundsDataDto;
-  }
-}
+  },
+};

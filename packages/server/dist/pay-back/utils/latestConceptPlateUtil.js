@@ -14,7 +14,7 @@ async function getLatestConceptPlate(currentLatestConceptPlate) {
         return item['指数代码'] === currentLatestConceptPlate.code;
     });
     const latestConceptPlatesArr = latestConceptPlates.splice(0, index);
-    createLatestConceptPlateArr = latestConceptPlatesArr.map((item) => {
+    createLatestConceptPlateArr = latestConceptPlatesArr.map(item => {
         const createLatestConceptPlate = new create_latest_concept_plate_1.CreateLatestConceptPlate();
         createLatestConceptPlate.name = item['指数简称'];
         createLatestConceptPlate.code = item['指数代码'];

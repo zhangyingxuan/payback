@@ -38,7 +38,7 @@ let FundsService = FundsService_1 = class FundsService {
         const todayDateStr = new Date().toLocaleDateString();
         const todayDataFromDB = await this.fundsDataRp
             .createQueryBuilder('market_data')
-            .where("market_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
+            .where('market_data.createTime like :createTime', { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
             .getOne();
         if (todayDataFromDB) {
             isExist = true;

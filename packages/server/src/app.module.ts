@@ -15,7 +15,7 @@ const envFilePath = `.env.${process.env.NODE_ENV || 'prod'}`;
 
 function atob(a) {
   return Buffer.from(a, 'base64').toString('binary');
-};
+}
 
 @Module({
   imports: [
@@ -48,11 +48,14 @@ function atob(a) {
     ArticleModule,
   ],
   controllers: [AppController],
-  providers: [AppService,
+  providers: [
+    AppService,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
-    }
+    },
   ],
 })
-export class AppModule { configure(consumer: MiddlewareConsumer) { } }
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {}
+}

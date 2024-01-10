@@ -43,7 +43,7 @@ __decorate([
 ], User.prototype, "userid", void 0);
 __decorate([
     (0, typeorm_1.Column)({
-        default: false
+        default: false,
     }),
     __metadata("design:type", Boolean)
 ], User.prototype, "isDelete", void 0);

@@ -2,14 +2,14 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { latestConceptPlate } from '../entities/latestConceptPlate.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getLatestConceptPlate } from '../utils/latestConceptPlateUtil'
+import { getLatestConceptPlate } from '../utils/latestConceptPlateUtil';
 import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class LatestConceptPlateService {
   constructor(
-    @InjectRepository(latestConceptPlate) private readonly latestConceptPlateRp: Repository<latestConceptPlate>
-  ) { }
+    @InjectRepository(latestConceptPlate) private readonly latestConceptPlateRp: Repository<latestConceptPlate>,
+  ) {}
 
   private readonly logger = new Logger(LatestConceptPlateService.name);
 
@@ -40,13 +40,13 @@ export class LatestConceptPlateService {
       latestConceptPlates = await getLatestConceptPlate(conceptPlate);
       // console.log(latestConceptPlates);
       if (latestConceptPlates) {
-        latestConceptPlates.forEach(async (latestConceptPlate) => {
+        latestConceptPlates.forEach(async latestConceptPlate => {
           await this.latestConceptPlateRp.save(latestConceptPlate);
         });
       }
       this.logger.debug('crawlLatestConceptPlateData is success!');
     } catch (e) {
-      this.logger.error('出错啦！！！', e)
+      this.logger.error('出错啦！！！', e);
     }
     // 深圳 还是 上海涨停的多 SZ. SH
     return latestConceptPlates;
@@ -57,10 +57,11 @@ export class LatestConceptPlateService {
   }
   /**
    * 获取 n 条 概念
-   * @returns 
+   * @returns
    */
-  async findByLimit(len: number = 20) {
-    return await this.latestConceptPlateRp.createQueryBuilder('latest_concept_plate')
+  async findByLimit(len = 20) {
+    return await this.latestConceptPlateRp
+      .createQueryBuilder('latest_concept_plate')
       .offset(0)
       .limit(len)
       .orderBy('createTime', 'DESC')
@@ -68,23 +69,25 @@ export class LatestConceptPlateService {
   }
   /**
    * 查找N天内的 概念
-   * @returns 
+   * @returns
    */
-  async findWithinNDays(n: number = 15) {
+  async findWithinNDays(n = 15) {
     const nDaysAgo = new Date();
     nDaysAgo.setDate(nDaysAgo.getDate() - n);
 
-    return await this.latestConceptPlateRp.createQueryBuilder('latest_concept_plate')
+    return await this.latestConceptPlateRp
+      .createQueryBuilder('latest_concept_plate')
       .where('latest_concept_plate.createTime > :date', { date: nDaysAgo })
       .orderBy('createTime', 'DESC')
       .getMany();
   }
   /**
    * 查找最新的一条
-   * @returns 
+   * @returns
    */
   async findLatestOne() {
-    return await this.latestConceptPlateRp.createQueryBuilder('latest_concept_plate')
+    return await this.latestConceptPlateRp
+      .createQueryBuilder('latest_concept_plate')
       .offset(0)
       .limit(1)
       .orderBy('createTime', 'DESC')

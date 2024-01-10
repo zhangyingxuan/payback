@@ -90,7 +90,9 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
     getTodayData(todayDateStr) {
         return this.shortTermDataRp
             .createQueryBuilder('short_term_data')
-            .where("short_term_data.createTime like :createTime", { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
+            .where('short_term_data.createTime like :createTime', {
+            createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%',
+        })
             .getOne();
     }
     async findAll() {
@@ -101,11 +103,13 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
             .createQueryBuilder('short_term_data')
             .offset(0)
             .limit(len)
-            .select(['short_term_data.dailyLimitQuantity',
+            .select([
+            'short_term_data.dailyLimitQuantity',
             'short_term_data.downLimitQuantity',
             'short_term_data.marketHeight',
             'short_term_data.evenBoardAmount',
-            'short_term_data.createTime'])
+            'short_term_data.createTime',
+        ])
             .orderBy('createTime', 'DESC')
             .getMany();
     }
@@ -114,7 +118,8 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
             .createQueryBuilder('short_term_data')
             .offset(0)
             .limit(len)
-            .select(['short_term_data.createTime',
+            .select([
+            'short_term_data.createTime',
             'short_term_data.evenBoardAmount',
             'short_term_data.dailyLimitQuantity',
             'short_term_data.downLimitQuantity',
@@ -123,11 +128,12 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
             'short_term_data.evenBoardData',
             'short_term_data.hugeFallData',
             'short_term_data.cycle',
-            'short_term_data.downLimitData'])
+            'short_term_data.downLimitData',
+        ])
             .orderBy('createTime', 'DESC')
             .getMany();
         const specialStocks = await this.specialStockService.findByLimit(len);
-        let shortTermDataResult = (0, shortTermUtil_1.mergeExtra2ShortTermData)(shortTermData, specialStocks);
+        const shortTermDataResult = (0, shortTermUtil_1.mergeExtra2ShortTermData)(shortTermData, specialStocks);
         return shortTermDataResult;
     }
 };

@@ -45,7 +45,7 @@ let AuthService = class AuthService {
                 code: 200,
                 data: {
                     token: this.jwtService.sign(user),
-                }
+                },
             };
         }
         else {
@@ -53,15 +53,14 @@ let AuthService = class AuthService {
                 code: 200,
                 data: {
                     msg: '用户名或密码错误',
-                }
+                },
             };
         }
     }
 };
 AuthService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [users_service_1.UsersService,
-        jwt_1.JwtService])
+    __metadata("design:paramtypes", [users_service_1.UsersService, jwt_1.JwtService])
 ], AuthService);
 exports.AuthService = AuthService;
 //# sourceMappingURL=auth.service.js.map
