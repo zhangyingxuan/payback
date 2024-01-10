@@ -394,7 +394,10 @@ function initAutoRefresh(val: boolean) {
  * 刷新短线/竞价数据
  * @param isRefreshBidding  是否刷新竞价数据
  */
-async function handleRefreshBindingData(isRefreshBidding: Boolean = true) {
+async function handleRefreshBindingData(
+  isRefreshBidding = true,
+  isRemoveIncompatible = 0,
+) {
   loadingMessage && loadingMessage.close();
   // 提示加载中
   loadingMessage = ElMessage({
@@ -406,7 +409,7 @@ async function handleRefreshBindingData(isRefreshBidding: Boolean = true) {
     if (isRefreshBidding) {
       // 根据更新范围，调用对应接口
       const res: any = await crawlBinddingData({
-        isRemoveIncompatible: 0, // 不删除不及预期个股
+        isRemoveIncompatible, // 不删除不及预期个股
       });
       const eventData = transformEvenBoardData([res]);
       // 修改父组件传过来的值；

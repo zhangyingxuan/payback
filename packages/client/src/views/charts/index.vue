@@ -1,16 +1,27 @@
 <template>
   <div :class="['optButtons', { isMobile }]" v-if="isShowUpdateBtn">
-    <el-button
-      v-for="(item, index) in updateBtns"
-      :key="'updateButton' + index"
-      v-isAdmin
-      plain
-      type="primary"
-      @click="updateTodayData(item.type, index)"
-      size="small"
-    >
-      更新{{ item.title }}
-    </el-button>
+    <template v-for="(item, index) in updateBtns" :key="'updateButton' + index">
+      <!-- <<checkbox class="" value="" disabled="false" checked="false" color=""> -->
+      <!-- </checkbox> -->
+      <el-switch
+        v-if="item.type === 4"
+        v-model="isRemoveIncompatible"
+        inline-prompt
+        active-text="是"
+        inactive-text="否"
+        style="margin: 0 5px"
+      />
+
+      <el-button
+        v-isAdmin
+        plain
+        type="primary"
+        @click="updateTodayData(item.type, index)"
+        size="small"
+      >
+        更新{{ item.title }}
+      </el-button>
+    </template>
   </div>
   <el-tabs type="border-card" :class="['reviewBoard__tabs', { isMobile }]">
     <!-- <el-tabs type="border-card" class="reviewBoard__tabs" @tab-change="tabChange"> -->
@@ -42,6 +53,7 @@ import { crawlTodayData } from '@/api/payBack';
 
 const evenBoard = ref<any>(null);
 const charts = ref<any>(null);
+const isRemoveIncompatible = ref<boolean>(false);
 // 周末不显示更新数据
 const isShowUpdateBtn = [0, 6].indexOf(new Date().getDay()) == -1;
 
@@ -78,6 +90,7 @@ const updateTodayData = debounce(async (fetchTodayDataType = 0, index) => {
         break;
       case 2:
       // 指数
+      // eslint-disable-next-line no-fallthrough
       case 3:
         loadingMessage && loadingMessage.close();
         // 提示加载中
@@ -98,7 +111,11 @@ const updateTodayData = debounce(async (fetchTodayDataType = 0, index) => {
         break;
       case 4:
         // 竞价
-        evenBoard.value && evenBoard.value.handleRefreshBindingData(true);
+        evenBoard.value &&
+          evenBoard.value.handleRefreshBindingData(
+            true,
+            isRemoveIncompatible.value ? 1 : 0,
+          );
         break;
       default:
         location.reload();
@@ -125,7 +142,7 @@ const updateTodayData = debounce(async (fetchTodayDataType = 0, index) => {
     padding: 15px 0;
   }
   .el-tab-pane {
-    height: calc(100vh - 120px);
+    height: calc(100vh - 125px);
     overflow-y: auto;
   }
 }
