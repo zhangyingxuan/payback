@@ -18,6 +18,7 @@ const common_1 = require("@nestjs/common");
 const shortTerm_service_1 = require("./service/shortTerm.service");
 const specialStock_service_1 = require("./service/specialStock.service");
 const market_service_1 = require("./service/market.service");
+const plate_service_1 = require("./service/plate.service");
 const funds_service_1 = require("./service/funds.service");
 const hotList_service_1 = require("./service/hotList.service");
 const latestConceptPlate_service_1 = require("./service/latestConceptPlate.service");
@@ -30,7 +31,7 @@ const dayjs = require("dayjs");
 class CrawlTodayDataDto {
 }
 let PayBackController = PayBackController_1 = class PayBackController {
-    constructor(shorTermService, specialStockService, fundsService, hotListService, reviewService, thsService, apiTestService, latestConceptPlateService, usersService, marketService) {
+    constructor(shorTermService, specialStockService, fundsService, hotListService, reviewService, thsService, apiTestService, latestConceptPlateService, usersService, marketService, plateService) {
         this.shorTermService = shorTermService;
         this.specialStockService = specialStockService;
         this.fundsService = fundsService;
@@ -41,6 +42,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
         this.latestConceptPlateService = latestConceptPlateService;
         this.usersService = usersService;
         this.marketService = marketService;
+        this.plateService = plateService;
         this.logger = new common_1.Logger(PayBackController_1.name);
     }
     async testApi() {
@@ -88,11 +90,13 @@ let PayBackController = PayBackController_1 = class PayBackController {
         };
     }
     async crawlBinddingData(body) {
-        await this.specialStockService.crawlBinddingData(body.isRemoveIncompatible);
+        const binddingData = await this.specialStockService.crawlBinddingData(body.isRemoveIncompatible);
         let result = null;
         try {
             const currentDayEventData = await this.shorTermService.findEvenBoardByLimit(3);
             result = currentDayEventData[1];
+            result.newStock = binddingData.newStock;
+            result.chooseStock = binddingData.chooseStock;
             result.biddingDataUpdateTime = currentDayEventData[0].biddingDataUpdateTime;
         }
         catch (e) {
@@ -115,6 +119,9 @@ let PayBackController = PayBackController_1 = class PayBackController {
     }
     crawlMarket() {
         return this.marketService.crawlMarketData();
+    }
+    crawlPlateData() {
+        return this.plateService.crawlPlateData();
     }
     crawlFunds() {
         return this.fundsService.crawlfundsData();
@@ -184,6 +191,14 @@ let PayBackController = PayBackController_1 = class PayBackController {
             data: palateData,
         };
     }
+    async fetchPlateOrderByDailyLimit(query) {
+        const limit = +(query.limit || 20);
+        const palateData = await this.plateService.findByLimit(limit);
+        return {
+            code: 200,
+            data: palateData,
+        };
+    }
 };
 __decorate([
     (0, public_decorator_1.Public)(),
@@ -232,6 +247,13 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], PayBackController.prototype, "crawlMarket", null);
+__decorate([
+    (0, public_decorator_1.Public)(),
+    (0, common_1.Get)('/crawlPlateData'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], PayBackController.prototype, "crawlPlateData", null);
 __decorate([
     (0, common_1.Get)('/crawlFunds'),
     __metadata("design:type", Function),
@@ -293,6 +315,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "findPlateByLimit", null);
+__decorate([
+    (0, common_1.Get)('fetchPlateOrderByDailyLimit'),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], PayBackController.prototype, "fetchPlateOrderByDailyLimit", null);
 PayBackController = PayBackController_1 = __decorate([
     (0, common_1.Controller)('pay-back'),
     __metadata("design:paramtypes", [shortTerm_service_1.ShorTermService,
@@ -304,7 +333,8 @@ PayBackController = PayBackController_1 = __decorate([
         apiTest_service_1.ApiTestService,
         latestConceptPlate_service_1.LatestConceptPlateService,
         users_service_1.UsersService,
-        market_service_1.MarketService])
+        market_service_1.MarketService,
+        plate_service_1.PlateService])
 ], PayBackController);
 exports.PayBackController = PayBackController;
 //# sourceMappingURL=pay-back.controller.js.map

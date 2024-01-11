@@ -140,7 +140,7 @@
               </span>
             </el-tooltip>
           </div>
-          <template v-for="height in heightArr">
+          <template v-for="(height, index) in heightArr" :key="index">
             <div
               :class="['table-col', getClassByHeight(height)]"
               v-if="height != 1"

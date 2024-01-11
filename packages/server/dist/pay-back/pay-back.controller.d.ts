@@ -1,6 +1,7 @@
 import { ShorTermService } from './service/shortTerm.service';
 import { SpecialStockService } from './service/specialStock.service';
 import { MarketService } from './service/market.service';
+import { PlateService } from './service/plate.service';
 import { FundsService } from './service/funds.service';
 import { HotListService } from './service/hotList.service';
 import { LatestConceptPlateService } from './service/latestConceptPlate.service';
@@ -23,7 +24,8 @@ export declare class PayBackController {
     private readonly latestConceptPlateService;
     private readonly usersService;
     private readonly marketService;
-    constructor(shorTermService: ShorTermService, specialStockService: SpecialStockService, fundsService: FundsService, hotListService: HotListService, reviewService: ReviewService, thsService: ThsService, apiTestService: ApiTestService, latestConceptPlateService: LatestConceptPlateService, usersService: UsersService, marketService: MarketService);
+    private readonly plateService;
+    constructor(shorTermService: ShorTermService, specialStockService: SpecialStockService, fundsService: FundsService, hotListService: HotListService, reviewService: ReviewService, thsService: ThsService, apiTestService: ApiTestService, latestConceptPlateService: LatestConceptPlateService, usersService: UsersService, marketService: MarketService, plateService: PlateService);
     private readonly logger;
     testApi(): Promise<any>;
     autoCrawlTodayDataAM(): Promise<void>;
@@ -46,6 +48,7 @@ export declare class PayBackController {
         msg: string;
     }>;
     crawlMarket(): Promise<import("./dto/create-market-data.dto").CreateMarketDataDto>;
+    crawlPlateData(): Promise<import("./dto/create-Plate-data.dto").CreatePlateDataDto>;
     crawlFunds(): Promise<import("./dto/create-funds-data.dto").CreateFundsDataDto>;
     crawlLatestConceptPlate(): Promise<any>;
     findByLimit(query: any): Promise<{
@@ -79,6 +82,10 @@ export declare class PayBackController {
     findPlateByLimit(query: any): Promise<{
         code: number;
         data: import("./entities/marketData.entity").marketData[];
+    }>;
+    fetchPlateOrderByDailyLimit(query: any): Promise<{
+        code: number;
+        data: import("./entities/plateData.entity").plateData[];
     }>;
 }
 export {};

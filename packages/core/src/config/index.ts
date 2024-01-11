@@ -36,13 +36,17 @@ export const params = {
   // 行业板块 主力资金 流出排序
   hangyeFundsOutflow: '行业板块主力资金流向金额倒序；所属同花顺行业级别是二级行业；',
   // 概念板块 涨幅排行
-  gainianRiseFloat: '概念板块主力资金；涨跌幅正序',
+  gainianRiseFloat: '概念板块涨跌幅正序',
   // 概念板块 跌幅排行
-  gainianFallFloat: '概念板块主力资金；涨跌幅倒序',
+  gainianFallFloat: '概念板块涨跌幅倒序',
   // 行业板块 涨幅排行
   hangyeRiseFloat: '行业板块涨跌幅正序；所属同花顺行业级别是二级行业；',
   // 行业板块 跌幅排行
   hangyeFallFloat: '行业板块涨跌幅倒序；所属同花顺行业级别是二级行业；',
   // 概念板块
   gainianPlate: '概念板块',
+  // 行业板块，按涨停个数排序
+  hangyePlateOrderByDailyLimitNum: '涨停家数大于1的行业板块，按涨停个数降序',
+  // 概念板块，按涨停个数排序
+  gainianPlateOrderByDailyLimitNum: '涨停家数大于1的概念板块，按涨停个数降序',
 }

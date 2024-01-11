@@ -1,7 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isHoliday = exports.getLastTradingDay = exports.getIwencaiData = exports.fundsToFixed = exports.toFixed = void 0;
+exports.getLastTradingDay = exports.getIwencaiData = exports.fundsToFixed = exports.toFixed = exports.ignoreGainianPlateStr = exports.ignoreGainianPlates = void 0;
 const dayjs = require("dayjs");
+exports.ignoreGainianPlates = ['融资融券', '深股通', '标普道琼斯A股', 'MSCI概念'];
+exports.ignoreGainianPlateStr = (function prepareConditionStr() {
+    return exports.ignoreGainianPlates
+        .map(item => {
+        return `指数简称不包含${item};`;
+    })
+        .join(',');
+})();
 function toFixed(num, floatLen = 2) {
     if (!num)
         return;
@@ -55,10 +63,9 @@ function getLastTradingDay(nowStr) {
     return yesterday;
 }
 exports.getLastTradingDay = getLastTradingDay;
-function isHoliday(date) {
-}
-exports.isHoliday = isHoliday;
 exports.default = {
+    ignoreGainianPlates: exports.ignoreGainianPlates,
+    ignoreGainianPlateStr: exports.ignoreGainianPlateStr,
     getIwencaiData,
     toFixed,
     fundsToFixed,

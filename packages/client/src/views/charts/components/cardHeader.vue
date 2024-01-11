@@ -15,8 +15,6 @@
   </el-row>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue';
-const url = ref();
 let superData = defineProps({
   headerTitle: {
     type: String,

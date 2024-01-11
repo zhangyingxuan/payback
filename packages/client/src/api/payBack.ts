@@ -68,6 +68,13 @@ export const findPlateByLimit = (params: any | null) => {
   return http.request<Array<any>>("get", `${baseUrl}/findPlateByLimit`, { params });
 }
 /**
+ * 获取板块 按板块内涨停家数排序
+ * @returns 
+ */
+export const fetchPlateOrderByDailyLimit = (params: any | null) => {
+  return http.request<Array<any>>("get", `${baseUrl}/fetchPlateOrderByDailyLimit`, { params });
+}
+/**
  * 获取复盘数据
  * @returns 
  */

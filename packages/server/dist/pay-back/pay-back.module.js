@@ -10,6 +10,7 @@ exports.PayBackModule = void 0;
 const common_1 = require("@nestjs/common");
 const shortTerm_service_1 = require("./service/shortTerm.service");
 const market_service_1 = require("./service/market.service");
+const plate_service_1 = require("./service/plate.service");
 const funds_service_1 = require("./service/funds.service");
 const hotList_service_1 = require("./service/hotList.service");
 const latestConceptPlate_service_1 = require("./service/latestConceptPlate.service");
@@ -23,6 +24,7 @@ const typeorm_1 = require("@nestjs/typeorm");
 const shortTermData_entity_1 = require("./entities/shortTermData.entity");
 const specialStock_entity_1 = require("./entities/specialStock.entity");
 const marketData_entity_1 = require("./entities/marketData.entity");
+const plateData_entity_1 = require("./entities/plateData.entity");
 const fundsData_entity_1 = require("./entities/fundsData.entity");
 const hotList_entity_1 = require("./entities/hotList.entity");
 const latestConceptPlate_entity_1 = require("./entities/latestConceptPlate.entity");
@@ -37,6 +39,7 @@ PayBackModule = __decorate([
             typeorm_1.TypeOrmModule.forFeature([shortTermData_entity_1.shortTermData]),
             typeorm_1.TypeOrmModule.forFeature([specialStock_entity_1.specialStock]),
             typeorm_1.TypeOrmModule.forFeature([marketData_entity_1.marketData]),
+            typeorm_1.TypeOrmModule.forFeature([plateData_entity_1.plateData]),
             typeorm_1.TypeOrmModule.forFeature([hotList_entity_1.hotList]),
             typeorm_1.TypeOrmModule.forFeature([fundsData_entity_1.fundsData]),
             typeorm_1.TypeOrmModule.forFeature([review_entity_1.reviewData]),
@@ -47,6 +50,7 @@ PayBackModule = __decorate([
             shortTerm_service_1.ShorTermService,
             specialStock_service_1.SpecialStockService,
             market_service_1.MarketService,
+            plate_service_1.PlateService,
             funds_service_1.FundsService,
             hotList_service_1.HotListService,
             latestConceptPlate_service_1.LatestConceptPlateService,

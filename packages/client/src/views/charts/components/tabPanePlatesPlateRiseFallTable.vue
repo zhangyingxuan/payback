@@ -14,13 +14,15 @@
         <div class="table__header">{{ item.createDate }}</div>
         <!-- 行业涨 -->
         <div
-          v-for="(plate, index) in item[
-            superData.isHangye ? 'hangyeRiseFloat' : 'gainianRiseFloat'
-          ]"
+          v-for="(plate, index) in item[dataKey[0]]"
           :class="['table-col', plate.class]"
           :key="'row' + index"
         >
-          <Plate :code="plate.code" :name="plate.name" />
+          <div style="display: flex; justify-content: space-between">
+            <!-- style="display: flex; justify-content: space-between; width: 100%" -->
+            <Plate :code="plate.code" :name="plate.name" />
+            <span v-if="plate.num" class="zise"> &nbsp;{{ plate.num }} 家</span>
+          </div>
           <span v-if="plate.quoteChange > 0" class="red">
             +{{ plate.quoteChange }}%
           </span>
@@ -28,19 +30,19 @@
         </div>
         <div class="line"></div>
         <!-- 行业跌 -->
-        <div
-          v-for="(plate, index) in item[
-            superData.isHangye ? 'hangyeFallFloat' : 'gainianFallFloat'
-          ]"
-          :class="['table-col', plate.class]"
-          :key="'row' + index"
-        >
-          <Plate :code="plate.code" :name="plate.name" />
-          <span v-if="plate.quoteChange > 0" class="red">
-            +{{ plate.quoteChange }}%
-          </span>
-          <span v-else class="green"> {{ plate.quoteChange }}%</span>
-        </div>
+        <template v-if="dataKey.length > 1">
+          <div
+            v-for="(plate, index) in item[dataKey[1]]"
+            :class="['table-col', plate.class]"
+            :key="'row' + index"
+          >
+            <Plate :code="plate.code" :name="plate.name" />
+            <span v-if="plate.quoteChange > 0" class="red">
+              +{{ plate.quoteChange }}%
+            </span>
+            <span v-else class="green"> {{ plate.quoteChange }}%</span>
+          </div>
+        </template>
       </div>
     </div>
   </div>
@@ -62,9 +64,9 @@ let superData = defineProps({
     type: Boolean,
     default: false,
   },
-  isHangye: {
-    type: Boolean,
-    default: false,
+  dataKey: {
+    type: Array<any>,
+    default: () => [],
   },
 });
 </script>

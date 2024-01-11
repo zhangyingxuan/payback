@@ -2,6 +2,7 @@ import { Controller, Get, Logger, Query, Post, Body } from '@nestjs/common';
 import { ShorTermService } from './service/shortTerm.service';
 import { SpecialStockService } from './service/specialStock.service';
 import { MarketService } from './service/market.service';
+import { PlateService } from './service/plate.service';
 import { FundsService } from './service/funds.service';
 import { HotListService } from './service/hotList.service';
 import { LatestConceptPlateService } from './service/latestConceptPlate.service';
@@ -31,7 +32,8 @@ export class PayBackController {
     private readonly latestConceptPlateService: LatestConceptPlateService,
     private readonly usersService: UsersService,
     private readonly marketService: MarketService,
-  ) {}
+    private readonly plateService: PlateService,
+  ) { }
 
   private readonly logger = new Logger(PayBackController.name);
 
@@ -108,12 +110,14 @@ export class PayBackController {
   @Post('/crawlBinddingData')
   async crawlBinddingData(@Body() body: CrawlTodayDataDto) {
     // 是否剔除 不及预期数据；注意接收到的参数 是否为字符串
-    await this.specialStockService.crawlBinddingData(body.isRemoveIncompatible);
+    const binddingData = await this.specialStockService.crawlBinddingData(body.isRemoveIncompatible);
     let result = null;
     // 组装为当日连板数据
     try {
       const currentDayEventData = await this.shorTermService.findEvenBoardByLimit(3);
       result = currentDayEventData[1];
+      result.newStock = binddingData.newStock;
+      result.chooseStock = binddingData.chooseStock;
       // 竞价修改时间改为 正确的时间
       result.biddingDataUpdateTime = currentDayEventData[0].biddingDataUpdateTime;
     } catch (e) {
@@ -148,6 +152,11 @@ export class PayBackController {
   @Get('/crawlMarket')
   crawlMarket() {
     return this.marketService.crawlMarketData();
+  }
+  @Public()
+  @Get('/crawlPlateData')
+  crawlPlateData() {
+    return this.plateService.crawlPlateData();
   }
   // @Public()
   @Get('/crawlFunds')
@@ -234,6 +243,15 @@ export class PayBackController {
   async findPlateByLimit(@Query() query) {
     const limit = +(query.limit || 20);
     const palateData = await this.marketService.findPlateByLimit(limit);
+    return {
+      code: 200,
+      data: palateData,
+    };
+  }
+  @Get('fetchPlateOrderByDailyLimit')
+  async fetchPlateOrderByDailyLimit(@Query() query) {
+    const limit = +(query.limit || 20);
+    const palateData = await this.plateService.findByLimit(limit);
     return {
       code: 200,
       data: palateData,

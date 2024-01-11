@@ -1,5 +1,15 @@
 import * as dayjs from 'dayjs';
 
+export const ignoreGainianPlates = ['融资融券', '深股通', '标普道琼斯A股', 'MSCI概念'];
+
+export const ignoreGainianPlateStr = (function prepareConditionStr() {
+  return ignoreGainianPlates
+    .map(item => {
+      return `指数简称不包含${item};`;
+    })
+    .join(',');
+})();
+
 export function toFixed(num, floatLen = 2) {
   if (!num) return;
   if (typeof num == 'string') {
@@ -61,11 +71,9 @@ export function getLastTradingDay(nowStr: string) {
   return yesterday;
 }
 
-export function isHoliday(date: string) {
-  // 手动输入节假日日期 数组
-}
-
 export default {
+  ignoreGainianPlates,
+  ignoreGainianPlateStr,
   getIwencaiData,
   toFixed,
   fundsToFixed,

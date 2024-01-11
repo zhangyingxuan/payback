@@ -4,6 +4,7 @@ import { CreateMarketDataDto } from '../dto/create-market-data.dto';
 import fundsUtil from './fundsUtil';
 import { fetchMarketPointFromEastmoney, fetchMarketData, fetchIwencaiApi } from '../core/fetchUtil';
 import { params } from '../core/config';
+import { ignoreGainianPlates, ignoreGainianPlateStr } from './commonUtil';
 
 export default {
   /**
@@ -25,8 +26,8 @@ export default {
     createMarketDataDto.riseAmount = marketData.zdfb_data.znum;
     createMarketDataDto.marketScore = marketData.dppj_data;
 
-    const gainianRiseFloat = await fetchIwencaiApi(params.gainianRiseFloat);
-    const gainianFallFloat = await fetchIwencaiApi(params.gainianFallFloat);
+    const gainianRiseFloat: any = await fetchIwencaiApi(params.gainianRiseFloat + ignoreGainianPlateStr);
+    const gainianFallFloat: any = await fetchIwencaiApi(params.gainianFallFloat + ignoreGainianPlateStr);
     const hangyeRiseFloat = await fetchIwencaiApi(params.hangyeRiseFloat);
     const hangyeFallFloat = await fetchIwencaiApi(params.hangyeFallFloat);
 

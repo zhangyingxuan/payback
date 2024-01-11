@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ShorTermService } from './service/shortTerm.service';
 import { MarketService } from './service/market.service';
+import { PlateService } from './service/plate.service';
 import { FundsService } from './service/funds.service';
 import { HotListService } from './service/hotList.service';
 import { LatestConceptPlateService } from './service/latestConceptPlate.service';
@@ -14,6 +15,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { shortTermData } from './entities/shortTermData.entity';
 import { specialStock } from './entities/specialStock.entity';
 import { marketData } from './entities/marketData.entity';
+import { plateData } from './entities/plateData.entity';
 import { fundsData } from './entities/fundsData.entity';
 import { hotList } from './entities/hotList.entity';
 import { latestConceptPlate } from './entities/latestConceptPlate.entity';
@@ -26,6 +28,7 @@ import { UsersModule } from '../users/users.module';
     TypeOrmModule.forFeature([shortTermData]),
     TypeOrmModule.forFeature([specialStock]),
     TypeOrmModule.forFeature([marketData]),
+    TypeOrmModule.forFeature([plateData]),
     TypeOrmModule.forFeature([hotList]),
     TypeOrmModule.forFeature([fundsData]),
     TypeOrmModule.forFeature([reviewData]),
@@ -36,6 +39,7 @@ import { UsersModule } from '../users/users.module';
     ShorTermService,
     SpecialStockService,
     MarketService,
+    PlateService,
     FundsService,
     HotListService,
     LatestConceptPlateService,
@@ -44,4 +48,4 @@ import { UsersModule } from '../users/users.module';
     ApiTestService,
   ],
 })
-export class PayBackModule {}
+export class PayBackModule { }

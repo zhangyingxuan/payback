@@ -3,12 +3,13 @@ import { fetchIwencaiApi, fetchNorhFunds } from '../core/fetchUtil';
 import { CreateFundsDataDto } from '../dto/create-funds-data.dto';
 import { params } from '../core/config';
 import fetch from 'node-fetch';
+import { ignoreGainianPlates, ignoreGainianPlateStr } from './commonUtil';
 
 export default {
   /**
    * 获取 资金数据
    */
-  async getFundsData(dateStr) {
+  async getFundsData(dateStr: string) {
     // 北向资金、南向资金 获取
     const responseForeignFunds = await fetchNorhFunds();
     // const responseForeignFunds = await (await fetch("https://datacenter-web.eastmoney.com/api/data/v1/get?callback=jQuery112309386087809528996_1689650979956&reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE%2CMUTUAL_TYPE%2CBOARD_TYPE%2CMUTUAL_TYPE_NAME%2CFUNDS_DIRECTION%2CINDEX_CODE%2CINDEX_NAME%2CBOARD_CODE&quoteColumns=status~07~BOARD_CODE%2CdayNetAmtIn~07~BOARD_CODE%2CdayAmtRemain~07~BOARD_CODE%2CdayAmtThreshold~07~BOARD_CODE%2Cf104~07~BOARD_CODE%2Cf105~07~BOARD_CODE%2Cf106~07~BOARD_CODE%2Cf3~03~INDEX_CODE~INDEX_f3%2CnetBuyAmt~07~BOARD_CODE&quoteType=0&pageNumber=1&pageSize=200&sortTypes=1&sortColumns=MUTUAL_TYPE&source=WEB&client=WEB&_=1689650979958")).text();
@@ -21,8 +22,8 @@ export default {
 
     const hangyeFundsInflow = await fetchIwencaiApi(params.hangyeFundsInflow);
     const hangyeFundsOutflow = await fetchIwencaiApi(params.hangyeFundsOutflow);
-    const gaiNianFundsInflow = await fetchIwencaiApi(params.gainianFundsInflow);
-    const gaiNianFundsOutflow = await fetchIwencaiApi(params.gainianFundsOutflow);
+    const gaiNianFundsInflow = await fetchIwencaiApi(params.gainianFundsInflow + ignoreGainianPlateStr);
+    const gaiNianFundsOutflow = await fetchIwencaiApi(params.gainianFundsOutflow + ignoreGainianPlateStr);
 
     const foreignFunds: any = this.transformForeignFunds(responseForeignFunds);
     const marketTurnover: any = this.getMarketTurnover(responseMarketTurnover);
@@ -30,6 +31,12 @@ export default {
     const hangyeFundsInflowTop3 = this.getPlateTop(hangyeFundsInflow, dateStr);
     const hangyeFundsOutflowTop3 = this.getPlateTop(hangyeFundsOutflow, dateStr);
     const gainianFundsInflowTop3 = this.getPlateTop(gaiNianFundsInflow, dateStr);
+    // const gainianFundsInflowTop3 = this.getPlateTop(
+    //   gaiNianFundsInflow.filter(item => {
+    //     return !ignoreGainianPlates.includes(item['指数简称']);
+    //   }),
+    //   dateStr,
+    // );
     const gainianFundsOutflowTop3 = this.getPlateTop(gaiNianFundsOutflow, dateStr);
 
     const createFundsDataDto = new CreateFundsDataDto();
@@ -100,7 +107,8 @@ export default {
     return platesData.splice(0, len).map(item => {
       return {
         name: item['指数简称'],
-        code: item['指数代码'],
+        code: item['code'],
+        // code: item['指数代码'],
         funds: commonUtil.fundsToFixed(item[`指数@主力资金流向[${dateStr}]`]),
         quoteChange: commonUtil.toFixed(item[`指数@涨跌幅:前复权[${dateStr}]`] || '0.0'),
       };

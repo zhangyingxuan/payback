@@ -3,8 +3,40 @@
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
       <template #header>
         <CardHeader
+          headerTitle="涨停最多的行业板块"
+          :url="'http://www.iwencai.com/unifiedwap/result?w='+params.hangyePlateOrderByDailyLimitNum+'&querytype=zhishu'"
+        >
+          {{ data.latestUpdateTimeOrderByDailyLimit }}
+        </CardHeader>
+      </template>
+      <PlateRiseFallTable
+        :data="data.plateOrderByDailyLimit"
+        :style="data.style"
+        :dataKey="['hangyeDailyLimitData']"
+      />
+    </el-card>
+
+    <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
+      <template #header>
+        <CardHeader
+          headerTitle="涨停最多的概念板块"
+          :url="'http://www.iwencai.com/unifiedwap/result?w='+params.gainianPlateOrderByDailyLimitNum+'&querytype=zhishu'"
+        >
+          <!-- url="http://www.iwencai.com/unifiedwap/result?w=概念板块主力资金；涨跌幅正序&querytype=zhishu" -->
+          {{ data.latestUpdateTimeOrderByDailyLimit }}
+        </CardHeader>
+      </template>
+      <PlateRiseFallTable
+        :data="data.plateOrderByDailyLimit"
+        :style="data.style"
+        :dataKey="['gainianDailyLimitData']"
+      />
+    </el-card>
+    <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
+      <template #header>
+        <CardHeader
           headerTitle="行业涨跌TOP5"
-          url="http://www.iwencai.com/unifiedwap/result?w=行业板块涨跌幅正序；所属同花顺行业级别是二级行业；&querytype=zhishu"
+          :url="'http://www.iwencai.com/unifiedwap/result?w='+params.hangyeRiseFloat+'&querytype=zhishu'"
         >
           {{ data.latestUpdateTime }}
         </CardHeader>
@@ -12,41 +44,52 @@
       <PlateRiseFallTable
         :data="data.plates"
         :style="data.style"
-        :isHangye="true"
+        :dataKey="['hangyeRiseFloat', 'hangyeFallFloat']"
       />
     </el-card>
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
       <template #header>
         <CardHeader
           headerTitle="概念涨跌TOP5"
-          url="http://www.iwencai.com/unifiedwap/result?w=概念板块主力资金；涨跌幅正序&querytype=zhishu"
+          :url="'http://www.iwencai.com/unifiedwap/result?w='+params.gainianRiseFloat+'&querytype=zhishu'"
         >
           {{ data.latestUpdateTime }}
         </CardHeader>
       </template>
-      <PlateRiseFallTable :data="data.plates" :style="data.style" />
+      <PlateRiseFallTable
+        :data="data.plates"
+        :style="data.style"
+        :dataKey="['gainianRiseFloat', 'gainianFallFloat']"
+      />
     </el-card>
   </div>
 </template>
 <script lang="ts" setup>
 import CardHeader from './components/cardHeader.vue';
 import PlateRiseFallTable from './components/tabPanePlatesPlateRiseFallTable.vue';
-import { findPlateByLimit } from '@/api/payBack';
+import { findPlateByLimit, fetchPlateOrderByDailyLimit } from '@/api/payBack';
 import { reactive } from 'vue';
 import { isMobile } from '@/core/util';
 import { objectToArr, arrToObject } from './utils';
 import { getChartStyle } from './utils';
 import dayjs from 'dayjs';
+import { params } from 'pay-back-core';
 
 const data: any = reactive({
   ...getChartStyle(isMobile),
   plates: {},
+  hangyeDailyLimitData: {},
   latestUpdateTime: '',
+  latestUpdateTimeOrderByDailyLimit: '',
 });
 async function initPageData() {
   let plates = await findPlateByLimit({ limit: 10 });
+  let plateOrderByDailyLimit = await fetchPlateOrderByDailyLimit({ limit: 10 });
 
   data.latestUpdateTime = dayjs(plates[0].createTime).format('MM/DD HH:mm');
+  data.latestUpdateTimeOrderByDailyLimit = dayjs(
+    plateOrderByDailyLimit[0].createTime,
+  ).format('MM/DD HH:mm');
 
   plates = plates.map(plate => {
     return {
@@ -66,10 +109,24 @@ async function initPageData() {
       createDate: dayjs(plate.createTime).format('MM/DD'),
     };
   });
+  plateOrderByDailyLimit = plateOrderByDailyLimit.map(plate => {
+    return {
+      ...plate,
+      gainianDailyLimitData: plate.gainianDailyLimitData
+        ? JSON.parse(plate.gainianDailyLimitData)
+        : '',
+      hangyeDailyLimitData: plate.hangyeDailyLimitData
+        ? JSON.parse(plate.hangyeDailyLimitData)
+        : '',
+      createTime: plate.createTime,
+      createDate: dayjs(plate.createTime).format('MM/DD'),
+    };
+  });
   updateDataClass(plates, true);
   updateDataClass(plates, false);
 
   data.plates = plates;
+  data.plateOrderByDailyLimit = plateOrderByDailyLimit;
 }
 
 function sortAndSetColor(arr: any, from: number) {
@@ -86,7 +143,7 @@ function sortAndSetColor(arr: any, from: number) {
   return arr;
 }
 
-function updateDataClass(plates: any[], isHangye: Boolean) {
+function updateDataClass(plates: any[], isHangye: boolean) {
   let riseKey: string, fallKey: string;
   if (isHangye) {
     riseKey = 'hangyeRiseFloat';
