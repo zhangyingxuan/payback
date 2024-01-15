@@ -61,6 +61,13 @@ export const crawlHotListData = () => {
   return http.request<Array<any>>("get", `${baseUrl}/crawlHotListData`);
 }
 /**
+ * 更新 板块数据，并返回
+ * @returns 
+ */
+export const crawlPlateData = () => {
+  return http.request<Array<any>>("get", `${baseUrl}/crawlPlateData`);
+}
+/**
  * 获取板块涨跌幅 TOP5
  * @returns 
  */

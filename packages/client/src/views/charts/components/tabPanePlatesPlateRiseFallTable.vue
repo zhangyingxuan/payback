@@ -18,7 +18,7 @@
           :class="['table-col', plate.class]"
           :key="'row' + index"
         >
-          <div style="display: flex; justify-content: space-between">
+          <div :class="['name__row', {flexBetween: plate.num}]">
             <!-- style="display: flex; justify-content: space-between; width: 100%" -->
             <Plate :code="plate.code" :name="plate.name" />
             <span v-if="plate.num" class="zise"> &nbsp;{{ plate.num }} 家</span>
@@ -28,9 +28,9 @@
           </span>
           <span v-else class="green"> {{ plate.quoteChange }}%</span>
         </div>
-        <div class="line"></div>
         <!-- 行业跌 -->
         <template v-if="dataKey.length > 1">
+          <div class="line"></div>
           <div
             v-for="(plate, index) in item[dataKey[1]]"
             :class="['table-col', plate.class]"
@@ -107,7 +107,7 @@ let superData = defineProps({
 
 .line {
   width: 100%;
-  border-bottom: 2px double red;
+  border-bottom: 2px double #5B9CF8;
   height: 1px;
   margin: 0px;
   padding: 0 !important;
@@ -135,20 +135,19 @@ let superData = defineProps({
     }
 
     &.isMonday {
-      border-right: 2px double red;
+      border-right: 2px double #5B9CF8;
       .table__header {
-        background-color: red !important;
+        background-color: #5B9CF8 !important;
         color: #fff !important;
       }
     }
 
     > div {
-      padding: 10px;
+      padding: 6px 8px;
     }
 
     .name__row {
       font-size: 14px;
-      margin-bottom: 5px;
     }
   }
 

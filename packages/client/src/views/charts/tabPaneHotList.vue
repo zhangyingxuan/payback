@@ -132,7 +132,6 @@ refreshHotListPage();
 .chartList__container {
   display: flex;
   flex-wrap: wrap;
-  padding: 0 5px;
 
   &.isMobile {
     > .el-card {

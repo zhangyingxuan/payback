@@ -96,14 +96,6 @@ defineProps({
   justify-content: center;
   align-content: center;
 }
-.flexBetween {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-content: center;
-  align-items: center;
-  min-height: 16px;
-}
 .table {
   overflow: auto;
   // content-visibility: auto;
@@ -142,7 +134,7 @@ defineProps({
     }
 
     > div {
-      padding: 10px;
+      padding: 6px 8px;
     }
 
     .rise {
@@ -203,6 +195,9 @@ defineProps({
     .tableColumsBorder();
     justify-content: flex-start;
     white-space: nowrap;
+    >div {
+      min-height: 18px;
+    }
   }
 }
 </style>

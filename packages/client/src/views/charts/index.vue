@@ -32,7 +32,7 @@
       <TabPaneHotList />
     </el-tab-pane>
     <el-tab-pane label="板块">
-      <TabPanePlates />
+      <TabPanePlates ref="plates" />
     </el-tab-pane>
     <el-tab-pane label="短线">
       <TabPaneEvenBoard ref="evenBoard" />
@@ -53,6 +53,7 @@ import { crawlTodayData } from '@/api/payBack';
 
 const evenBoard = ref<any>(null);
 const charts = ref<any>(null);
+const plates = ref<any>(null);
 const isRemoveIncompatible = ref<boolean>(false);
 // 周末不显示更新数据
 const isShowUpdateBtn = [0, 6].indexOf(new Date().getDay()) == -1;
@@ -68,7 +69,7 @@ const updateBtns = [
     type: 4,
   },
   {
-    title: '指数',
+    title: '市场',
     type: 2,
   },
   {
@@ -76,6 +77,24 @@ const updateBtns = [
     type: 3,
   },
 ];
+
+async function updateMarkData(fetchTodayDataType: number, index: number, plateMode = false) {
+  loadingMessage && loadingMessage.close();
+  // 提示加载中
+  loadingMessage = ElMessage({
+    duration: 0,
+    message: updateBtns[index].title + '数据更新中...',
+    type: 'warning',
+  });
+
+  // 根据更新范围，调用对应接口
+  await crawlTodayData({
+    fetchTodayDataType,
+  });
+  ElMessage.success('更新成功！');
+  charts.value && charts.value.initPage();
+  plateMode && plates.value && plates.value.initPlateByFunds();
+}
 
 const updateTodayData = debounce(async (fetchTodayDataType = 0, index) => {
   try {
@@ -89,25 +108,12 @@ const updateTodayData = debounce(async (fetchTodayDataType = 0, index) => {
         charts.value && charts.value.initPage();
         break;
       case 2:
-      // 指数
-      // eslint-disable-next-line no-fallthrough
+        // 指数
+        updateMarkData(fetchTodayDataType, index, true);
+        break;
       case 3:
-        loadingMessage && loadingMessage.close();
-        // 提示加载中
-        loadingMessage = ElMessage({
-          duration: 0,
-          message: updateBtns[index].title + '数据更新中...',
-          type: 'warning',
-        });
-
-        // 根据更新范围，调用对应接口
-        await crawlTodayData({
-          fetchTodayDataType,
-        });
-        ElMessage.success('更新成功！');
         // 资金
-        console.log(charts.value);
-        charts.value && charts.value.initPage();
+        updateMarkData(fetchTodayDataType, index, false);
         break;
       case 4:
         // 竞价
