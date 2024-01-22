@@ -1,6 +1,6 @@
 import * as dayjs from 'dayjs';
 
-export const ignoreGainianPlates = ['融资融券', '深股通', '标普道琼斯A股', 'MSCI概念'];
+export const ignoreGainianPlates = ['融资融券', '深股通', '沪股通', '标普道琼斯A股', 'MSCI概念'];
 
 export const ignoreGainianPlateStr = (function prepareConditionStr() {
   return ignoreGainianPlates

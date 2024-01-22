@@ -11,6 +11,7 @@ function getPlateTop(platesData, dateStr, len = 3) {
     return {
       name: item['指数简称'],
       code: item['code'],
+      turnover: commonUtil.fundsToFixed(item[`指数@成交额[${dateStr}]`]),
       num: item[`指数@涨停家数[${dateStr}]`],
       quoteChange: commonUtil.toFixed(item[`指数@涨跌幅:前复权[${dateStr}]`] || '0.0'),
     };

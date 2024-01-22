@@ -12,13 +12,13 @@ import * as dayjs from 'dayjs';
  */
 export async function getShortTermData(todayDateStr): Promise<CreatePayBackDto> {
   // 准备涨停数据
-  const dailyLimitData: any = await fetchIwencaiApi(params.dailyLimitMoreThan1, 100, false);
+  const dailyLimitData: any = await fetchIwencaiApi(params.dailyLimitMoreThan1, 999, false);
   // 跌停数据
-  const downLimitData: any = await fetchIwencaiApi(params.downLimit, 50, false);
+  const downLimitData: any = await fetchIwencaiApi(params.downLimit, 999, false);
   // 涨停打开个股
-  const dailyLimitOpenData: any = await fetchIwencaiApi(params.dailyLimitOpen, 50, false);
+  const dailyLimitOpenData: any = await fetchIwencaiApi(params.dailyLimitOpen, 99, false);
   // 跌幅大于等于15的个股
-  const hugeFallData: any = await fetchIwencaiApi(params.hugeFall, 50, false);
+  const hugeFallData: any = await fetchIwencaiApi(params.hugeFall, 99, false);
 
   return prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, todayDateStr);
 }

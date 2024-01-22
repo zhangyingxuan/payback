@@ -22,7 +22,6 @@ export const params = {
   // 新股
   chooseStockNewStock: '今日新股上市；行业；竞价涨幅；流通市值；',
   // =============== =============== 选股 end  =============== ===============
-
   // 近三日资金流向
   capitalFlows3: '近三日资金流向降序',
   // 数据中心地址
@@ -46,7 +45,7 @@ export const params = {
   // 概念板块
   gainianPlate: '概念板块',
   // 行业板块，按涨停个数排序
-  hangyePlateOrderByDailyLimitNum: '涨停家数大于1的行业板块，按涨停个数降序',
+  hangyePlateOrderByDailyLimitNum: '涨停家数大于1的行业板块；按涨停个数降序；成交额；',
   // 概念板块，按涨停个数排序
-  gainianPlateOrderByDailyLimitNum: '涨停家数大于1的概念板块，按涨停个数降序',
+  gainianPlateOrderByDailyLimitNum: '涨停家数大于1的概念板块；按涨停个数降序；成交额；',
 }

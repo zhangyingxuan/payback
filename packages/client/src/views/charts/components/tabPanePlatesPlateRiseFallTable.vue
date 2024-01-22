@@ -18,15 +18,18 @@
           :class="['table-col', plate.class]"
           :key="'row' + index"
         >
-          <div :class="['name__row', {flexBetween: plate.num}]">
+          <div :class="['name__row', { flexBetween: plate.num }]">
             <!-- style="display: flex; justify-content: space-between; width: 100%" -->
             <Plate :code="plate.code" :name="plate.name" />
             <span v-if="plate.num" class="zise"> &nbsp;{{ plate.num }} 家</span>
           </div>
-          <span v-if="plate.quoteChange > 0" class="red">
-            +{{ plate.quoteChange }}%
-          </span>
-          <span v-else class="green"> {{ plate.quoteChange }}%</span>
+          <div :class="{ flexBetween: plate.num }">
+            <span v-if="plate.quoteChange > 0" class="red">
+              +{{ plate.quoteChange }}%
+            </span>
+            <span v-else class="green"> {{ plate.quoteChange }}%</span>
+            <span class="tag" v-if="plate.turnover">{{ plate.turnover }} 亿</span>
+          </div>
         </div>
         <!-- 行业跌 -->
         <template v-if="dataKey.length > 1">
@@ -107,7 +110,7 @@ let superData = defineProps({
 
 .line {
   width: 100%;
-  border-bottom: 2px double #5B9CF8;
+  border-bottom: 2px double #5b9cf8;
   height: 1px;
   margin: 0px;
   padding: 0 !important;
@@ -135,9 +138,9 @@ let superData = defineProps({
     }
 
     &.isMonday {
-      border-right: 2px double #5B9CF8;
+      border-right: 2px double #5b9cf8;
       .table__header {
-        background-color: #5B9CF8 !important;
+        background-color: #5b9cf8 !important;
         color: #fff !important;
       }
     }
@@ -197,5 +200,9 @@ let superData = defineProps({
   // .plate10 {
   //   background-image: linear-gradient(#fccf31, #f55555);
   // }
+}
+
+.tag {
+  color: rgba(0, 0, 0, 0.52);
 }
 </style>

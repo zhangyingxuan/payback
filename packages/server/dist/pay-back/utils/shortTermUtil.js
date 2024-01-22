@@ -8,10 +8,10 @@ const fetchUtil_1 = require("../core/fetchUtil");
 const pay_back_core_1 = require("pay-back-core");
 const dayjs = require("dayjs");
 async function getShortTermData(todayDateStr) {
-    const dailyLimitData = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.dailyLimitMoreThan1, 100, false);
-    const downLimitData = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.downLimit, 50, false);
-    const dailyLimitOpenData = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.dailyLimitOpen, 50, false);
-    const hugeFallData = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.hugeFall, 50, false);
+    const dailyLimitData = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.dailyLimitMoreThan1, 999, false);
+    const downLimitData = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.downLimit, 999, false);
+    const dailyLimitOpenData = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.dailyLimitOpen, 99, false);
+    const hugeFallData = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.hugeFall, 99, false);
     return prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, todayDateStr);
 }
 exports.getShortTermData = getShortTermData;

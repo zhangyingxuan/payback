@@ -1,5 +1,5 @@
 /*!
- * index.js v0.0.7
+ * index.js v0.0.8
  * (c) 2018-2024 blowsysun
  * Released under the MIT License.
  */
@@ -238,9 +238,9 @@ const params = {
     // 概念板块
     gainianPlate: '概念板块',
     // 行业板块，按涨停个数排序
-    hangyePlateOrderByDailyLimitNum: '涨停家数大于1的行业板块，按涨停个数降序',
+    hangyePlateOrderByDailyLimitNum: '涨停家数大于1的行业板块；按涨停个数降序；成交额；',
     // 概念板块，按涨停个数排序
-    gainianPlateOrderByDailyLimitNum: '涨停家数大于1的概念板块，按涨停个数降序',
+    gainianPlateOrderByDailyLimitNum: '涨停家数大于1的概念板块；按涨停个数降序；成交额；',
 };
 
 export { AsynTaskIterator, chooseStockBaseCondition, dailyLimitOptionalStrategy, dailyLimitOptionalStrategyStr, getCurrentCycle, getExpected, iWencaiDateFormat, nextRegister, params };

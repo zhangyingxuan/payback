@@ -48,7 +48,10 @@ export declare class PayBackController {
         msg: string;
     }>;
     crawlMarket(): Promise<import("./dto/create-market-data.dto").CreateMarketDataDto>;
-    crawlPlateData(): Promise<import("./dto/create-Plate-data.dto").CreatePlateDataDto>;
+    crawlPlateData(): Promise<{
+        code: number;
+        data: import("./dto/create-Plate-data.dto").CreatePlateDataDto;
+    }>;
     crawlFunds(): Promise<import("./dto/create-funds-data.dto").CreateFundsDataDto>;
     crawlLatestConceptPlate(): Promise<any>;
     findByLimit(query: any): Promise<{

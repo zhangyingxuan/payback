@@ -68,6 +68,9 @@ dependencies:
   passport-local:
     specifier: ^1.0.0
     version: 1.0.0
+  pay-back-core:
+    specifier: ^0.0.7
+    version: 0.0.7
   playwright:
     specifier: ^1.32.3
     version: 1.32.3
@@ -83,6 +86,9 @@ dependencies:
   rxjs:
     specifier: ^7.8.0
     version: 7.8.0
+  svg-captcha:
+    specifier: ^1.4.0
+    version: 1.4.0
   typeorm:
     specifier: ^0.3.15
     version: 0.3.15(ts-node@10.9.1)
@@ -581,6 +587,13 @@ packages:
   /@bcoe/v8-coverage@0.2.3:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
     dev: true
+
+  /@colors/colors@1.5.0:
+    resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==, tarball: https://registry.npmmirror.com/@colors/colors/-/colors-1.5.0.tgz}
+    engines: {node: '>=0.1.90'}
+    requiresBuild: true
+    dev: true
+    optional: true
 
   /@cspotcode/source-map-support@0.8.1:
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
@@ -2206,7 +2219,7 @@ packages:
       normalize-path: 3.0.0
       readdirp: 3.6.0
     optionalDependencies:
-      fsevents: registry.npmmirror.com/fsevents@2.3.2
+      fsevents: 2.3.2
 
   /chrome-trace-event@1.0.3:
     resolution: {integrity: sha512-p3KULyQg4S7NIHixdwbGX+nFHkoBiA4YQmyWtjb8XngSKV124nJmRysgAeujbUVb15vh+RvFUfCPqU7rXk+hZg==}
@@ -2266,7 +2279,7 @@ packages:
     dependencies:
       string-width: 4.2.3
     optionalDependencies:
-      '@colors/colors': registry.npmmirror.com/@colors/colors@1.5.0
+      '@colors/colors': 1.5.0
     dev: true
 
   /cli-width@3.0.0:
@@ -2433,6 +2446,10 @@ packages:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
+
+  /dayjs@1.11.10:
+    resolution: {integrity: sha512-vjAczensTgRcqDERK0SR2XMwsF/tSvnvlv6VcF2GIhg6Sx4yOIt/irsr1RDJsKiIyBzJDpCoXiWWq28MqH2cnQ==, tarball: https://registry.npmmirror.com/dayjs/-/dayjs-1.11.10.tgz}
+    dev: false
 
   /dayjs@1.11.7:
     resolution: {integrity: sha512-+Yw9U6YO5TQohxLcIkrXBeY73WP3ejHWVvx8XCk3gxvQDCTEmS48ZrSZCKciI7Bhl/uCMyxYtE9UqRILmFphkQ==}
@@ -3043,6 +3060,13 @@ packages:
   /fs.realpath@1.0.0:
     resolution: {integrity: sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==}
 
+  /fsevents@2.3.2:
+    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==, tarball: https://registry.npmmirror.com/fsevents/-/fsevents-2.3.2.tgz}
+    engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
+    os: [darwin]
+    requiresBuild: true
+    optional: true
+
   /function-bind@1.1.1:
     resolution: {integrity: sha512-yIovAzMX49sF8Yl58fSCWJ5svSLuaibPxXQJFLmBObTuCr0Mf1KiPopGM9NiFjiYBCbfaa2Fh6breQ6ANVTI0A==}
 
@@ -3608,7 +3632,7 @@ packages:
       micromatch: 4.0.5
       walker: 1.0.8
     optionalDependencies:
-      fsevents: registry.npmmirror.com/fsevents@2.3.2
+      fsevents: 2.3.2
     dev: true
 
   /jest-leak-detector@29.5.0:
@@ -3919,7 +3943,7 @@ packages:
     dependencies:
       universalify: 2.0.0
     optionalDependencies:
-      graceful-fs: registry.npmmirror.com/graceful-fs@4.2.11
+      graceful-fs: 4.2.11
 
   /jsonwebtoken@9.0.0:
     resolution: {integrity: sha512-tuGfYXxkQGDPnLJ7SibiQgVgeDgfbPq2k2ICcbgqW8WxWLBAxKQM/ZCu/IT8SOSwmaYl4dpTFCW5xZv7YbbWUw==}
@@ -4296,6 +4320,13 @@ packages:
       mimic-fn: 2.1.0
     dev: true
 
+  /opentype.js@0.7.3:
+    resolution: {integrity: sha512-Veui5vl2bLonFJ/SjX/WRWJT3SncgiZNnKUyahmXCc2sa1xXW15u3R/3TN5+JFiP7RsjK5ER4HA5eWaEmV9deA==, tarball: https://registry.npmmirror.com/opentype.js/-/opentype.js-0.7.3.tgz}
+    hasBin: true
+    dependencies:
+      tiny-inflate: 1.0.3
+    dev: false
+
   /optionator@0.9.1:
     resolution: {integrity: sha512-74RlY5FCnhq4jRxVUPKDaRwrVNXMqsGsiW6AJw4XK8hmtm10wC0ypZBLw5IIp85NZMr91+qd1RvvENwg7jjRFw==}
     engines: {node: '>= 0.8.0'}
@@ -4485,6 +4516,12 @@ packages:
 
   /pause@0.0.1:
     resolution: {integrity: sha512-KG8UEiEVkR3wGEb4m5yZkVCzigAD+cVEJck2CzYZO37ZGJfctvVptVO192MwrtPhzONn6go8ylnOdMhKqi4nfg==}
+    dev: false
+
+  /pay-back-core@0.0.7:
+    resolution: {integrity: sha512-MrrAdZMO47Bvht8U4o91Et2ookEoL3G/F3St0D+fHx4Wdwp74FOJfk08bkf3Y5gArRQDA09FIrRkgdH7PJ6eQg==, tarball: https://registry.npmmirror.com/pay-back-core/-/pay-back-core-0.0.7.tgz}
+    dependencies:
+      dayjs: 1.11.10
     dev: false
 
   /picocolors@1.0.0:
@@ -5041,6 +5078,13 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
+  /svg-captcha@1.4.0:
+    resolution: {integrity: sha512-/fkkhavXPE57zRRCjNqAP3txRCSncpMx3NnNZL7iEoyAtYwUjPhJxW6FQTQPG5UPEmCrbFoXS10C3YdJlW7PDg==, tarball: https://registry.npmmirror.com/svg-captcha/-/svg-captcha-1.4.0.tgz}
+    engines: {node: '>=4.x'}
+    dependencies:
+      opentype.js: 0.7.3
+    dev: false
+
   /swagger-ui-dist@4.18.2:
     resolution: {integrity: sha512-oVBoBl9Dg+VJw8uRWDxlyUyHoNEDC0c1ysT6+Boy6CTgr2rUcLcfPon4RvxgS2/taNW6O0+US+Z/dlAsWFjOAQ==}
     dev: false
@@ -5140,6 +5184,10 @@ packages:
   /through@2.3.8:
     resolution: {integrity: sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg==}
     dev: true
+
+  /tiny-inflate@1.0.3:
+    resolution: {integrity: sha512-pkY1fj1cKHb2seWDy0B16HeWyczlJA9/WW3u3c4z/NiWDsO3DOU5D7nhTLE9CF0yXv/QZFY7sEJmj24dK+Rrqw==, tarball: https://registry.npmmirror.com/tiny-inflate/-/tiny-inflate-1.0.3.tgz}
+    dev: false
 
   /tmp@0.0.33:
     resolution: {integrity: sha512-jRCJlojKnZ3addtTOjdIqoRuPEKBvNXcGYqzO6zWZX8KfKEpnGY5jfggJQ3EjKuu8D4bJRr0y+cYJFmYbImXGw==}
@@ -5695,15 +5743,6 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
-  registry.npmmirror.com/@colors/colors@1.5.0:
-    resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@colors/colors/-/colors-1.5.0.tgz}
-    name: '@colors/colors'
-    version: 1.5.0
-    engines: {node: '>=0.1.90'}
-    requiresBuild: true
-    dev: true
-    optional: true
-
   registry.npmmirror.com/@types/cache-manager@4.0.3:
     resolution: {integrity: sha512-tPo2eUsvPVk/i2AU7BKy2ekSoKFOkST918GF7Qvc4IMNTRHyekEWJtWS9sBdi+DaF/4saiBkgWji5HqH3X7W8g==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@types/cache-manager/-/cache-manager-4.0.3.tgz}
     name: '@types/cache-manager'
@@ -5792,22 +5831,6 @@ packages:
     dependencies:
       ms: registry.npmmirror.com/ms@2.1.2
     dev: true
-
-  registry.npmmirror.com/fsevents@2.3.2:
-    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/fsevents/-/fsevents-2.3.2.tgz}
-    name: fsevents
-    version: 2.3.2
-    engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
-    os: [darwin]
-    requiresBuild: true
-    optional: true
-
-  registry.npmmirror.com/graceful-fs@4.2.11:
-    resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/graceful-fs/-/graceful-fs-4.2.11.tgz}
-    name: graceful-fs
-    version: 4.2.11
-    requiresBuild: true
-    optional: true
 
   registry.npmmirror.com/lodash.clonedeep@4.5.0:
     resolution: {integrity: sha512-H5ZhCF25riFd9uB5UCkVKo61m3S/xZk1x4wA6yp/L3RFP6Z/eHH1ymQcGLo7J3GMPfm0V/7m1tryHuGVxpqEBQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/lodash.clonedeep/-/lodash.clonedeep-4.5.0.tgz}

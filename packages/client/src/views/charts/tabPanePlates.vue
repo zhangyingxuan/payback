@@ -4,9 +4,13 @@
       <template #header>
         <CardHeader
           headerTitle="涨停最多的行业板块"
-          :url="'https://www.iwencai.com/unifiedwap/result?w='+params.hangyePlateOrderByDailyLimitNum+'&querytype=zhishu'"
+          :url="
+            'https://www.iwencai.com/unifiedwap/result?w=' +
+            params.hangyePlateOrderByDailyLimitNum +
+            '&querytype=zhishu'
+          "
         >
-        <el-button
+          <el-button
             v-isAdmin
             type="primary"
             @click="updateData"
@@ -29,7 +33,11 @@
       <template #header>
         <CardHeader
           headerTitle="涨停最多的概念板块"
-          :url="'https://www.iwencai.com/unifiedwap/result?w='+params.gainianPlateOrderByDailyLimitNum+'&querytype=zhishu'"
+          :url="
+            'https://www.iwencai.com/unifiedwap/result?w=' +
+            params.gainianPlateOrderByDailyLimitNum +
+            '&querytype=zhishu'
+          "
         >
           <!-- url="http://www.iwencai.com/unifiedwap/result?w=概念板块主力资金；涨跌幅正序&querytype=zhishu" -->
           {{ data.latestUpdateTimeOrderByDailyLimit }}
@@ -45,7 +53,11 @@
       <template #header>
         <CardHeader
           headerTitle="行业涨跌TOP5"
-          :url="'https://www.iwencai.com/unifiedwap/result?w='+params.hangyeRiseFloat+'&querytype=zhishu'"
+          :url="
+            'https://www.iwencai.com/unifiedwap/result?w=' +
+            params.hangyeRiseFloat +
+            '&querytype=zhishu'
+          "
         >
           {{ data.latestUpdateTime }}
         </CardHeader>
@@ -60,7 +72,11 @@
       <template #header>
         <CardHeader
           headerTitle="概念涨跌TOP5"
-          :url="'https://www.iwencai.com/unifiedwap/result?w='+params.gainianRiseFloat+'&querytype=zhishu'"
+          :url="
+            'https://www.iwencai.com/unifiedwap/result?w=' +
+            params.gainianRiseFloat +
+            '&querytype=zhishu'
+          "
         >
           {{ data.latestUpdateTime }}
         </CardHeader>
@@ -76,7 +92,11 @@
 <script lang="ts" setup>
 import CardHeader from './components/cardHeader.vue';
 import PlateRiseFallTable from './components/tabPanePlatesPlateRiseFallTable.vue';
-import { findPlateByLimit, fetchPlateOrderByDailyLimit,crawlPlateData } from '@/api/payBack';
+import {
+  findPlateByLimit,
+  fetchPlateOrderByDailyLimit,
+  crawlPlateData,
+} from '@/api/payBack';
 import { reactive } from 'vue';
 import { isMobile } from '@/core/util';
 import { objectToArr, arrToObject } from './utils';
@@ -97,7 +117,7 @@ const data: any = reactive({
  * 初始化 按资金排序的板块
  */
 async function initPlateByFunds() {
-   let plates = await findPlateByLimit({ limit: 10 });
+  let plates = await findPlateByLimit({ limit: 10 });
   data.latestUpdateTime = dayjs(plates[0].createTime).format('MM/DD HH:mm');
 
   plates = plates.map(plate => {
@@ -118,7 +138,7 @@ async function initPlateByFunds() {
       createDate: dayjs(plate.createTime).format('MM/DD'),
     };
   });
-  
+
   updateDataClass(plates, true);
   updateDataClass(plates, false);
 
@@ -129,7 +149,7 @@ async function initPlateByFunds() {
  */
 async function initPlateOrderByDailyLimit() {
   let plateOrderByDailyLimit = await fetchPlateOrderByDailyLimit({ limit: 10 });
-    data.latestUpdateTimeOrderByDailyLimit = dayjs(
+  data.latestUpdateTimeOrderByDailyLimit = dayjs(
     plateOrderByDailyLimit[0].createTime,
   ).format('MM/DD HH:mm');
 
@@ -140,22 +160,22 @@ async function initPlateOrderByDailyLimit() {
 }
 
 async function initPageData() {
- initPlateByFunds();
+  initPlateByFunds();
   initPlateOrderByDailyLimit();
 }
 
 function transformDailyLimitDataToObj(plate: any) {
- return {
-      ...plate,
-      gainianDailyLimitData: plate.gainianDailyLimitData
-        ? JSON.parse(plate.gainianDailyLimitData)
-        : '',
-      hangyeDailyLimitData: plate.hangyeDailyLimitData
-        ? JSON.parse(plate.hangyeDailyLimitData)
-        : '',
-      createTime: plate.createTime,
-      createDate: dayjs(plate.createTime).format('MM/DD'),
-    }
+  return {
+    ...plate,
+    gainianDailyLimitData: plate.gainianDailyLimitData
+      ? JSON.parse(plate.gainianDailyLimitData)
+      : '',
+    hangyeDailyLimitData: plate.hangyeDailyLimitData
+      ? JSON.parse(plate.hangyeDailyLimitData)
+      : '',
+    createTime: plate.createTime,
+    createDate: dayjs(plate.createTime).format('MM/DD'),
+  };
 }
 
 function sortAndSetColor(arr: any, from: number) {
@@ -220,14 +240,27 @@ async function updateData() {
   const todayPlatesData: any = await crawlPlateData();
   const todayDate = dayjs(todayPlatesData.createTime).format('YYYY/MM/DD');
   // 按时间找到 今天的行业 数据，并替换为最新的
-  const latestDataIndex = data.plateOrderByDailyLimit.findIndex((plate: any) => {
-     const currentDate = dayjs(plate.createTime).format('YYYY/MM/DD');
-     return currentDate === todayDate;
-  });
+  const latestDataIndex = data.plateOrderByDailyLimit.findIndex(
+    (plate: any) => {
+      const currentDate = dayjs(plate.createTime).format('YYYY/MM/DD');
+      return currentDate === todayDate;
+    },
+  );
+  console.log(latestDataIndex);
   data.latestUpdateTimeOrderByDailyLimit = dayjs(
     todayPlatesData.createTime,
   ).format('MM/DD HH:mm');
-  data.plateOrderByDailyLimit.splice(latestDataIndex, 1, transformDailyLimitDataToObj(todayPlatesData));
+  if (latestDataIndex === -1) {
+    data.plateOrderByDailyLimit.unshift(
+      transformDailyLimitDataToObj(todayPlatesData),
+    );
+  } else {
+    data.plateOrderByDailyLimit.splice(
+      latestDataIndex,
+      1,
+      transformDailyLimitDataToObj(todayPlatesData),
+    );
+  }
   // console.log(todayDate, todayPlatesData, latestDataIndex, data.plateOrderByDailyLimit);
 }
 

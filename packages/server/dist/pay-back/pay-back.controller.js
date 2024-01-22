@@ -60,14 +60,15 @@ let PayBackController = PayBackController_1 = class PayBackController {
         this.logger.debug('定时任务执行了！0 */5 13-15 * * 1-5');
     }
     async crawlTodayData(body) {
-        let shortData, fundsData, marketData, binddingData, resultData;
+        let shortData, fundsData, marketData, binddingData, resultData, plateData;
         switch (body.fetchTodayDataType) {
             case 0:
                 shortData = await this.shorTermService.crawlShortTermData();
                 fundsData = await this.fundsService.crawlfundsData();
                 marketData = await this.marketService.crawlMarketData();
                 binddingData = await this.specialStockService.crawlBinddingData();
-                resultData = { shortData, fundsData, marketData, binddingData };
+                plateData = await this.plateService.crawlPlateData();
+                resultData = {};
                 break;
             case 1:
                 resultData = await this.shorTermService.crawlShortTermData();
@@ -120,8 +121,12 @@ let PayBackController = PayBackController_1 = class PayBackController {
     crawlMarket() {
         return this.marketService.crawlMarketData();
     }
-    crawlPlateData() {
-        return this.plateService.crawlPlateData();
+    async crawlPlateData() {
+        const data = await this.plateService.crawlPlateData();
+        return {
+            code: 200,
+            data,
+        };
     }
     crawlFunds() {
         return this.fundsService.crawlfundsData();
@@ -252,7 +257,7 @@ __decorate([
     (0, common_1.Get)('/crawlPlateData'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "crawlPlateData", null);
 __decorate([
     (0, common_1.Get)('/crawlFunds'),

@@ -33,7 +33,7 @@ export class PayBackController {
     private readonly usersService: UsersService,
     private readonly marketService: MarketService,
     private readonly plateService: PlateService,
-  ) { }
+  ) {}
 
   private readonly logger = new Logger(PayBackController.name);
 
@@ -72,14 +72,16 @@ export class PayBackController {
   // @Cron('0 25 9 * * 1-5')
   @Post('/crawlTodayData')
   async crawlTodayData(@Body() body: CrawlTodayDataDto) {
-    let shortData, fundsData, marketData, binddingData, resultData;
+    let shortData, fundsData, marketData, binddingData, resultData, plateData;
     switch (body.fetchTodayDataType) {
       case 0:
         shortData = await this.shorTermService.crawlShortTermData();
         fundsData = await this.fundsService.crawlfundsData();
         marketData = await this.marketService.crawlMarketData();
         binddingData = await this.specialStockService.crawlBinddingData();
-        resultData = { shortData, fundsData, marketData, binddingData };
+        plateData = await this.plateService.crawlPlateData();
+        resultData = {};
+        // resultData = { shortData, fundsData, marketData, binddingData, plateData };
         break;
       case 1:
         resultData = await this.shorTermService.crawlShortTermData();
@@ -153,10 +155,18 @@ export class PayBackController {
   crawlMarket() {
     return this.marketService.crawlMarketData();
   }
+  /**
+   * 爬取最新 涨停家数较多的 板块数据
+   * @returns
+   */
   @Public()
   @Get('/crawlPlateData')
-  crawlPlateData() {
-    return this.plateService.crawlPlateData();
+  async crawlPlateData() {
+    const data = await this.plateService.crawlPlateData();
+    return {
+      code: 200,
+      data,
+    };
   }
   // @Public()
   @Get('/crawlFunds')
