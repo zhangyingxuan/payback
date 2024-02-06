@@ -1,11 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.promiseLimit = exports.modifyThsSelfStocksRequest = exports.ThsOprate = exports.fetchNorhFunds = exports.fetchMarketPoint = exports.fetchMarketPointFromEastmoney = exports.clearThsSelfStocks = exports.fetchMarketData = exports.fetchIwencaiApi = void 0;
+exports.promiseLimit = exports.modifyThsSelfStocksRequest = exports.ThsOprate = exports.fetchNorhFunds = exports.fetchMarketPoint = exports.fetchMarketPointFromEastmoney = exports.clearThsSelfStocks = exports.fetchMarketData = exports.fetchIwencai = exports.fetchStocksByIwencai = exports.fetchIwencaiApi = void 0;
 const hexin_v_1 = require("./hexin-v");
 const node_fetch_1 = require("node-fetch");
 const commonUtil_1 = require("../utils/commonUtil");
 const qs_1 = require("qs");
-async function fetchIwencaiApi(question, pageSize = 5, isPlate = true) {
+async function fetchIwencaiApi(question, pageSize = 5) {
+    const result = await fetchIwencai(question, pageSize, true);
+    return (0, commonUtil_1.getIwencaiData)(result);
+}
+exports.fetchIwencaiApi = fetchIwencaiApi;
+async function fetchStocksByIwencai(question, pageSize = 50) {
+    const result = await fetchIwencai(question, pageSize, false);
+    return (0, commonUtil_1.getStocksDataByIwencai)(result);
+}
+exports.fetchStocksByIwencai = fetchStocksByIwencai;
+async function fetchIwencai(question, pageSize = 5, isPlate = false) {
     const body = {
         source: 'Ths_iwencai_Xuangu',
         version: '2.0',
@@ -30,9 +40,9 @@ async function fetchIwencaiApi(question, pageSize = 5, isPlate = true) {
         mode: 'cors',
         credentials: 'include',
     });
-    return (0, commonUtil_1.getIwencaiData)(await result.json());
+    return await result.json();
 }
-exports.fetchIwencaiApi = fetchIwencaiApi;
+exports.fetchIwencai = fetchIwencai;
 async function fetchMarketData() {
     const result = await (0, node_fetch_1.default)('http://q.10jqka.com.cn/api.php?t=indexflash&', {
         headers: {

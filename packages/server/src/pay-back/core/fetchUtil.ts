@@ -1,6 +1,6 @@
 import { createV } from './hexin-v';
 import fetch from 'node-fetch';
-import { getIwencaiData } from '../utils/commonUtil';
+import { getIwencaiData, getStocksDataByIwencai } from '../utils/commonUtil';
 import { stringify } from 'qs';
 
 /**
@@ -10,7 +10,37 @@ import { stringify } from 'qs';
  * @param isPlate
  * @returns
  */
-export async function fetchIwencaiApi(question, pageSize = 5, isPlate = true) {
+export async function fetchIwencaiApi(question, pageSize = 5) {
+  const result = await fetchIwencai(question, pageSize, true);
+
+  // const text = await result.text();
+  // return getIwencaiData(JSON.parse(text));
+  return getIwencaiData(result);
+}
+
+/**
+ * 获取个股数据 通过 爱问财数据
+ * @param question
+ * @param pageSize
+ * @param isPlate
+ * @returns
+ */
+export async function fetchStocksByIwencai(question, pageSize = 50) {
+  const result = await fetchIwencai(question, pageSize, false);
+
+  // const text = await result.text();
+  // return getIwencaiData(JSON.parse(text));
+  return getStocksDataByIwencai(result);
+}
+
+/**
+ * 获取爱问财数据
+ * @param question
+ * @param pageSize
+ * @param isPlate
+ * @returns
+ */
+export async function fetchIwencai(question, pageSize = 5, isPlate = false) {
   const body = {
     source: 'Ths_iwencai_Xuangu',
     version: '2.0',
@@ -39,8 +69,9 @@ export async function fetchIwencaiApi(question, pageSize = 5, isPlate = true) {
 
   // const text = await result.text();
   // return getIwencaiData(JSON.parse(text));
-  return getIwencaiData(await result.json());
+  return await result.json();
 }
+
 /**
  * 获取市场核心数据
  * @returns

@@ -68,7 +68,6 @@ function transformHugeFallData(hugeFallData) {
  */
 function transformDownLimitData(dailyLimitData, currentDate) {
   const downLimitDataArr = [];
-  const downLimitQuantity = dailyLimitData.length;
 
   dailyLimitData.forEach(item => {
     const downLimitStockDto = new DownLimitStockDto();
@@ -87,10 +86,7 @@ function transformDownLimitData(dailyLimitData, currentDate) {
     downLimitDataArr.push(downLimitStockDto);
   });
 
-  return {
-    downLimitDataArr,
-    downLimitQuantity,
-  };
+  return downLimitDataArr;
 }
 
 /**
@@ -303,7 +299,7 @@ export function transformShortTermSourceData(dailyLimitData, downLimitData, huge
   const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
 
   // 跌停数据
-  const { downLimitDataArr, downLimitQuantity } = transformDownLimitData(downLimitData, currentDate);
+  const downLimitDataArr = transformDownLimitData(downLimitData, currentDate);
   // 跌幅大于等于15的个股
   const { hugeFallDataArr } = transformHugeFallData(hugeFallData);
   // 涨停数据
@@ -314,7 +310,6 @@ export function transformShortTermSourceData(dailyLimitData, downLimitData, huge
     evenBoardData,
     downLimitDataArr,
     hugeFallDataArr,
-    downLimitQuantity,
     dailyLimitReturnSealQuantity,
   };
 }

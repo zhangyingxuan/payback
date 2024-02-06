@@ -10,7 +10,7 @@ import { ReviewService } from './service/review.service';
 import { ThsService } from './service/ths.service';
 import { ApiTestService } from './service/apiTest.service';
 import { Public } from '../decorator/public.decorator';
-import { Cron } from '@nestjs/schedule';
+// import { Cron } from '@nestjs/schedule';
 import { UsersService } from '../users/users.service';
 import * as dayjs from 'dayjs';
 
@@ -137,7 +137,7 @@ export class PayBackController {
     return this.hotListService.crawlHotListData();
   }
 
-  // @Public()
+  @Public()
   @Get('/crawlShortTerm')
   crawlShortTerm() {
     return this.shorTermService.crawlShortTermData();
@@ -146,7 +146,7 @@ export class PayBackController {
   // 示例：http://localhost:3000/blowsysun/pay-back/crawlShortTermDataByDate?date=2023-06-26
   @Public()
   @Get('/crawlShortTermByDate')
-  crawlShortTermDataByDate(@Query() query) {
+  crawlShortTermByDate(@Query() query) {
     const date = query.date || new Date();
     return this.shorTermService.crawlShortTermDataByDate(date);
   }

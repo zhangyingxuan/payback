@@ -114,7 +114,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
     crawlShortTerm() {
         return this.shorTermService.crawlShortTermData();
     }
-    crawlShortTermDataByDate(query) {
+    crawlShortTermByDate(query) {
         const date = query.date || new Date();
         return this.shorTermService.crawlShortTermDataByDate(date);
     }
@@ -233,6 +233,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PayBackController.prototype, "crawlHotListData", null);
 __decorate([
+    (0, public_decorator_1.Public)(),
     (0, common_1.Get)('/crawlShortTerm'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -245,7 +246,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
-], PayBackController.prototype, "crawlShortTermDataByDate", null);
+], PayBackController.prototype, "crawlShortTermByDate", null);
 __decorate([
     (0, common_1.Get)('/crawlMarket'),
     __metadata("design:type", Function),

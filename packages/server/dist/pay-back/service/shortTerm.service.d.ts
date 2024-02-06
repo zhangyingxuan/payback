@@ -13,10 +13,7 @@ export declare class ShorTermService {
     autoCrawlShortTermDataMidday(): Promise<void>;
     autoCrawlShortTermDataMorning(): Promise<void>;
     crawlShortTermData(): Promise<CreatePayBackDto>;
-    crawlShortTermDataByDate(todayDateStr: any): Promise<CreatePayBackDto | {
-        code: string;
-        msg: string;
-    }>;
+    crawlShortTermDataByDate(todayDateStr: any): Promise<CreatePayBackDto>;
     getTodayData(todayDateStr: string): Promise<shortTermData>;
     findAll(): Promise<shortTermData[]>;
     findByLimit(len?: number): Promise<shortTermData[]>;

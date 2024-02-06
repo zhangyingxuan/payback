@@ -7,26 +7,29 @@ const config_1 = require("../core/config");
 const fetchUtil_1 = require("../core/fetchUtil");
 const pay_back_core_1 = require("pay-back-core");
 const dayjs = require("dayjs");
+const dailyLimitNum = 999;
+const downLimitNum = 99;
+const otherNum = 50;
 async function getShortTermData(todayDateStr) {
-    const dailyLimitData = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.dailyLimitMoreThan1, 999, false);
-    const downLimitData = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.downLimit, 999, false);
-    const dailyLimitOpenData = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.dailyLimitOpen, 99, false);
-    const hugeFallData = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.hugeFall, 99, false);
+    const dailyLimitData = await (0, fetchUtil_1.fetchStocksByIwencai)(config_1.params.dailyLimitMoreThan1, dailyLimitNum);
+    const downLimitData = await (0, fetchUtil_1.fetchStocksByIwencai)(config_1.params.downLimit, downLimitNum);
+    const dailyLimitOpenData = await (0, fetchUtil_1.fetchStocksByIwencai)(config_1.params.dailyLimitOpen, otherNum);
+    const hugeFallData = await (0, fetchUtil_1.fetchStocksByIwencai)(config_1.params.hugeFall, otherNum);
     return prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, todayDateStr);
 }
 exports.getShortTermData = getShortTermData;
 async function getShortTermDataByDate(todayDateStr) {
-    const dailyLimitData = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.dailyLimitMoreThan1ByDate.replace('${date}', todayDateStr), 100, false);
-    const downLimitData = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.downLimitByDate.replace('${date}', todayDateStr), 50, false);
-    const dailyLimitOpenData = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.dailyLimitOpenByDate.replace('${date}', todayDateStr), 50, false);
-    const hugeFallData = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.hugeFallByDate.replace('${date}', todayDateStr), 50, false);
+    const dailyLimitData = await (0, fetchUtil_1.fetchStocksByIwencai)(config_1.params.dailyLimitMoreThan1ByDate.replace('${date}', todayDateStr), dailyLimitNum);
+    const downLimitData = await (0, fetchUtil_1.fetchStocksByIwencai)(config_1.params.downLimitByDate.replace('${date}', todayDateStr), downLimitNum);
+    const dailyLimitOpenData = await (0, fetchUtil_1.fetchStocksByIwencai)(config_1.params.dailyLimitOpenByDate.replace('${date}', todayDateStr), otherNum);
+    const hugeFallData = await (0, fetchUtil_1.fetchStocksByIwencai)(config_1.params.hugeFallByDate.replace('${date}', todayDateStr), otherNum);
     return prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, todayDateStr);
 }
 exports.getShortTermDataByDate = getShortTermDataByDate;
 function prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, todayDateStr) {
     const createPayBackDto = new create_pay_back_dto_1.CreatePayBackDto();
-    const { board1 = 0, evenBoardData, downLimitDataArr, hugeFallDataArr, dailyLimitReturnSealQuantity, downLimitQuantity, } = (0, transformDataUtil_1.transformShortTermSourceData)(dailyLimitData, downLimitData, hugeFallData, todayDateStr);
-    createPayBackDto.downLimitQuantity = downLimitQuantity;
+    const { board1 = 0, evenBoardData, downLimitDataArr, hugeFallDataArr, dailyLimitReturnSealQuantity, } = (0, transformDataUtil_1.transformShortTermSourceData)(dailyLimitData.data, downLimitData.data, hugeFallData.data, todayDateStr);
+    createPayBackDto.downLimitQuantity = downLimitData.length;
     createPayBackDto.dailyLimitQuantity = dailyLimitData.length;
     createPayBackDto.dailyLimitOpenQuantity = dailyLimitOpenData.length;
     createPayBackDto.sealingRate = Math.round((dailyLimitData.length / (dailyLimitData.length + dailyLimitOpenData.length)) * 100);

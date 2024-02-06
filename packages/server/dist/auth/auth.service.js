@@ -37,9 +37,9 @@ let AuthService = class AuthService {
         }
         return null;
     }
-    async login(user) {
+    async login(user, req) {
         const result = await this.validateUser(user);
-        console.log(`用户登录：${result ? result.name : '失败'}` + user.account);
+        console.log(`用户登录：${result ? result.name : '失败'}` + user.account + ' ip：' + req.ip);
         if (result) {
             return {
                 code: 200,

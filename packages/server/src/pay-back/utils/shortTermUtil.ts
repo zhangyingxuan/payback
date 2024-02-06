@@ -1,10 +1,15 @@
 import { CreatePayBackDto } from '../dto/create-pay-back.dto';
-import { SpecialStockDto } from '../dto/special-stock.dto';
 import { transformShortTermSourceData } from '../utils/transformDataUtil';
 import { params } from '../core/config';
-import { fetchIwencaiApi } from '../core/fetchUtil';
+import { fetchStocksByIwencai } from '../core/fetchUtil';
 import { getCurrentCycle, iWencaiDateFormat } from 'pay-back-core';
 import * as dayjs from 'dayjs';
+
+const dailyLimitNum = 999;
+// 跌停个股只需考虑数量，无需所有个股都存储
+const downLimitNum = 99;
+// 跌停个股只需考虑数量，无需所有个股都存储
+const otherNum = 50;
 
 /**
  * 通过接口方式获取热门数据
@@ -12,34 +17,38 @@ import * as dayjs from 'dayjs';
  */
 export async function getShortTermData(todayDateStr): Promise<CreatePayBackDto> {
   // 准备涨停数据
-  const dailyLimitData: any = await fetchIwencaiApi(params.dailyLimitMoreThan1, 999, false);
+  const dailyLimitData: any = await fetchStocksByIwencai(params.dailyLimitMoreThan1, dailyLimitNum);
   // 跌停数据
-  const downLimitData: any = await fetchIwencaiApi(params.downLimit, 999, false);
+  const downLimitData: any = await fetchStocksByIwencai(params.downLimit, downLimitNum);
   // 涨停打开个股
-  const dailyLimitOpenData: any = await fetchIwencaiApi(params.dailyLimitOpen, 99, false);
+  const dailyLimitOpenData: any = await fetchStocksByIwencai(params.dailyLimitOpen, otherNum);
   // 跌幅大于等于15的个股
-  const hugeFallData: any = await fetchIwencaiApi(params.hugeFall, 99, false);
+  const hugeFallData: any = await fetchStocksByIwencai(params.hugeFall, otherNum);
 
   return prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, todayDateStr);
 }
 
 export async function getShortTermDataByDate(todayDateStr): Promise<CreatePayBackDto> {
   // 准备涨停数据
-  const dailyLimitData: any = await fetchIwencaiApi(
+  const dailyLimitData: any = await fetchStocksByIwencai(
     params.dailyLimitMoreThan1ByDate.replace('${date}', todayDateStr),
-    100,
-    false,
+    dailyLimitNum,
   );
   // 跌停数据
-  const downLimitData: any = await fetchIwencaiApi(params.downLimitByDate.replace('${date}', todayDateStr), 50, false);
+  const downLimitData: any = await fetchStocksByIwencai(
+    params.downLimitByDate.replace('${date}', todayDateStr),
+    downLimitNum,
+  );
   // 涨停打开个股
-  const dailyLimitOpenData: any = await fetchIwencaiApi(
+  const dailyLimitOpenData: any = await fetchStocksByIwencai(
     params.dailyLimitOpenByDate.replace('${date}', todayDateStr),
-    50,
-    false,
+    otherNum,
   );
   // 跌幅大于等于15的个股
-  const hugeFallData: any = await fetchIwencaiApi(params.hugeFallByDate.replace('${date}', todayDateStr), 50, false);
+  const hugeFallData: any = await fetchStocksByIwencai(
+    params.hugeFallByDate.replace('${date}', todayDateStr),
+    otherNum,
+  );
 
   return prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, todayDateStr);
 }
@@ -60,11 +69,10 @@ function prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, 
     downLimitDataArr,
     hugeFallDataArr,
     dailyLimitReturnSealQuantity,
-    downLimitQuantity,
-  } = transformShortTermSourceData(dailyLimitData, downLimitData, hugeFallData, todayDateStr);
+  } = transformShortTermSourceData(dailyLimitData.data, downLimitData.data, hugeFallData.data, todayDateStr);
 
   // 仅存储短线跌停，即’ 资金出逃‘ 类型
-  createPayBackDto.downLimitQuantity = downLimitQuantity;
+  createPayBackDto.downLimitQuantity = downLimitData.length;
   createPayBackDto.dailyLimitQuantity = dailyLimitData.length;
   // 涨停打开数量
   createPayBackDto.dailyLimitOpenQuantity = dailyLimitOpenData.length;

@@ -42,6 +42,28 @@ export function getIwencaiData(responseJson) {
   return data;
 }
 
+/**
+ * 获取个股数据 通过iwencai数据
+ * @param responseJson
+ * @returns
+ */
+export function getStocksDataByIwencai(responseJson) {
+  let data = [];
+  let length = 0;
+  try {
+    const result = responseJson.data.answer[0].txt[0].content.components[0].data;
+    data = result.datas;
+    length = result.meta.extra.row_count;
+  } catch (e) {
+    console.log('[error log] getIwencaiData 数据结构错误！', e);
+    // console.log('[error log] getIwencaiData 数据结构错误！' + responseJson)
+  }
+  return {
+    data,
+    length,
+  };
+}
+
 export function getLastTradingDay(nowStr: string) {
   const dayOfWeek = +dayjs(nowStr).format('ddd');
   let subtractNum = 1;

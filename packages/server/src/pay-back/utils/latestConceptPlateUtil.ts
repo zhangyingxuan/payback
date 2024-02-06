@@ -8,7 +8,7 @@ import { iwencaiUrl, params } from '../core/config';
  */
 export async function getLatestConceptPlate(currentLatestConceptPlate) {
   let createLatestConceptPlateArr = [];
-  const latestConceptPlates = await fetchIwencaiApi(iwencaiUrl + params.gainianPlate);
+  const latestConceptPlates: any = await fetchIwencaiApi(iwencaiUrl + params.gainianPlate);
 
   // 与最新板块比较，判断是否 有新增的概念板块，如有 则返回
   if (currentLatestConceptPlate.code === latestConceptPlates[0]['code']) {

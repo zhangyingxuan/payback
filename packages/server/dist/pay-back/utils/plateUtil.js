@@ -19,9 +19,9 @@ exports.default = {
     async getPlateData(dateStr) {
         const createPlateDataDto = new create_Plate_data_dto_1.CreatePlateDataDto();
         const gainianDailyLimitData = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.gainianPlateOrderByDailyLimitNum + commonUtil_1.default.ignoreGainianPlateStr, 5);
-        const hangyeDailyLimitData = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.hangyePlateOrderByDailyLimitNum, 5);
-        const gainianDailyLimitDataTop = getPlateTop(gainianDailyLimitData, dateStr, 5);
-        const hangyeDailyLimitDataTop = getPlateTop(hangyeDailyLimitData, dateStr, 5);
+        const hangyeDailyLimitData = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.hangyePlateOrderByDailyLimitNum);
+        const gainianDailyLimitDataTop = getPlateTop(gainianDailyLimitData, dateStr);
+        const hangyeDailyLimitDataTop = getPlateTop(hangyeDailyLimitData, dateStr);
         createPlateDataDto.gainianDailyLimitData = JSON.stringify(gainianDailyLimitDataTop);
         createPlateDataDto.gainianDailyLimitNum = gainianDailyLimitDataTop[0].num;
         createPlateDataDto.hangyeDailyLimitData = JSON.stringify(hangyeDailyLimitDataTop);

@@ -2,7 +2,7 @@ import { AuthService } from './auth.service';
 export declare class AuthController {
     private authService;
     constructor(authService: AuthService);
-    login(body: any): Promise<{
+    login(body: any, req: any): Promise<{
         code: number;
         data: {
             token: string;
@@ -16,4 +16,5 @@ export declare class AuthController {
         };
     }>;
     getProfile(req: any): any;
+    getCode(res: any, req: any): void;
 }

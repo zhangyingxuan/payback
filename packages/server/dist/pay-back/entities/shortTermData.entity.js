@@ -18,31 +18,31 @@ __decorate([
     __metadata("design:type", Number)
 ], shortTermData.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '涨停数量', type: 'tinyint', default: 0 }),
+    (0, typeorm_1.Column)({ comment: '涨停数量', type: 'smallint', default: 0 }),
     __metadata("design:type", Number)
 ], shortTermData.prototype, "dailyLimitQuantity", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '涨停打开数量', type: 'tinyint', default: 0 }),
+    (0, typeorm_1.Column)({ comment: '涨停打开数量', type: 'smallint', default: 0 }),
     __metadata("design:type", Number)
 ], shortTermData.prototype, "dailyLimitOpenQuantity", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '涨停回封数量', type: 'tinyint', default: 0 }),
+    (0, typeorm_1.Column)({ comment: '涨停回封数量', type: 'smallint', default: 0 }),
     __metadata("design:type", Number)
 ], shortTermData.prototype, "dailyLimitReturnSealQuantity", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '跌停数量', type: 'smallint', default: 0 }),
+    __metadata("design:type", Number)
+], shortTermData.prototype, "downLimitQuantity", void 0);
 __decorate([
     (0, typeorm_1.Column)({ comment: '涨停封板率', type: 'tinyint', default: 0 }),
     __metadata("design:type", Number)
 ], shortTermData.prototype, "sealingRate", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '跌停数量', type: 'tinyint', default: 0 }),
-    __metadata("design:type", Number)
-], shortTermData.prototype, "downLimitQuantity", void 0);
-__decorate([
     (0, typeorm_1.Column)({ comment: '最高连板，市场高度', type: 'tinyint', default: 0 }),
     __metadata("design:type", Number)
 ], shortTermData.prototype, "marketHeight", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '连板数量', type: 'tinyint', default: 0 }),
+    (0, typeorm_1.Column)({ comment: '连板数量', type: 'smallint', default: 0 }),
     __metadata("design:type", Number)
 ], shortTermData.prototype, "evenBoardAmount", void 0);
 __decorate([

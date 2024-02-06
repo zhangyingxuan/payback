@@ -20,6 +20,5 @@ export declare function transformShortTermSourceData(dailyLimitData: any, downLi
     };
     downLimitDataArr: any[];
     hugeFallDataArr: any[];
-    downLimitQuantity: any;
     dailyLimitReturnSealQuantity: number;
 };

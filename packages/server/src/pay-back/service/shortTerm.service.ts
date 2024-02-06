@@ -3,7 +3,7 @@ import { CreatePayBackDto } from '../dto/create-pay-back.dto';
 import { Repository } from 'typeorm';
 import { shortTermData } from '../entities/shortTermData.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getShortTermData, getShortTermDataByDate, mergeExtra2ShortTermData } from '../utils/shortTermUtil';
+import { getShortTermData, mergeExtra2ShortTermData, getShortTermDataByDate } from '../utils/shortTermUtil';
 import { ThsService } from './ths.service';
 import * as dayjs from 'dayjs';
 import { Cron } from '@nestjs/schedule';
@@ -84,22 +84,27 @@ export class ShorTermService {
    */
   async crawlShortTermDataByDate(todayDateStr) {
     this.logger.debug('crawlShortTermDataByDate is Begining!');
+    let isExist = false;
     const todayDataFromDB = await this.getTodayData(todayDateStr);
 
     if (todayDataFromDB) {
-      this.logger.debug('crawlShortTermData is end![isExist]');
-      return {
-        code: 'isExist',
-        msg: todayDateStr + ' 数据已存在！',
-      };
+      isExist = true;
     }
-
     let createPayBackDto: CreatePayBackDto;
     try {
       createPayBackDto = await getShortTermDataByDate(todayDateStr);
+      createPayBackDto.createTime = new Date(todayDateStr);
+
       // console.log(createPayBackDto);
-      await this.shortTermDataRp.save(createPayBackDto);
-      this.logger.debug('crawlShortTermDataByDate is success!');
+      if (isExist) {
+        this.logger.log('crawlShortTermData 更新数据');
+        await this.shortTermDataRp.update(todayDataFromDB.id, createPayBackDto);
+      } else {
+        this.logger.log('crawlShortTermData 新增数据');
+        await this.shortTermDataRp.save(createPayBackDto);
+      }
+
+      this.logger.debug('crawlShortTermData is success!');
     } catch (e) {
       this.logger.error('出错啦！！！', e);
     }

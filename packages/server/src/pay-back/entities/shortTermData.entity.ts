@@ -5,25 +5,25 @@ export class shortTermData {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ comment: '涨停数量', type: 'tinyint', default: 0 })
+  @Column({ comment: '涨停数量', type: 'smallint', default: 0 })
   dailyLimitQuantity: number;
 
-  @Column({ comment: '涨停打开数量', type: 'tinyint', default: 0 })
+  @Column({ comment: '涨停打开数量', type: 'smallint', default: 0 })
   dailyLimitOpenQuantity: number;
 
-  @Column({ comment: '涨停回封数量', type: 'tinyint', default: 0 })
+  @Column({ comment: '涨停回封数量', type: 'smallint', default: 0 })
   dailyLimitReturnSealQuantity: number;
+
+  @Column({ comment: '跌停数量', type: 'smallint', default: 0 })
+  downLimitQuantity: number;
 
   @Column({ comment: '涨停封板率', type: 'tinyint', default: 0 })
   sealingRate: number;
 
-  @Column({ comment: '跌停数量', type: 'tinyint', default: 0 })
-  downLimitQuantity: number;
-
   @Column({ comment: '最高连板，市场高度', type: 'tinyint', default: 0 })
   marketHeight: number;
 
-  @Column({ comment: '连板数量', type: 'tinyint', default: 0 })
+  @Column({ comment: '连板数量', type: 'smallint', default: 0 })
   evenBoardAmount: number;
 
   @Column({ comment: '连板原始数据', type: 'text', nullable: true })

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getLastTradingDay = exports.getIwencaiData = exports.fundsToFixed = exports.toFixed = exports.ignoreGainianPlateStr = exports.ignoreGainianPlates = void 0;
+exports.getLastTradingDay = exports.getStocksDataByIwencai = exports.getIwencaiData = exports.fundsToFixed = exports.toFixed = exports.ignoreGainianPlateStr = exports.ignoreGainianPlates = void 0;
 const dayjs = require("dayjs");
 exports.ignoreGainianPlates = ['融资融券', '深股通', '沪股通', '标普道琼斯A股', 'MSCI概念'];
 exports.ignoreGainianPlateStr = (function prepareConditionStr() {
@@ -39,6 +39,23 @@ function getIwencaiData(responseJson) {
     return data;
 }
 exports.getIwencaiData = getIwencaiData;
+function getStocksDataByIwencai(responseJson) {
+    let data = [];
+    let length = 0;
+    try {
+        const result = responseJson.data.answer[0].txt[0].content.components[0].data;
+        data = result.datas;
+        length = result.meta.extra.row_count;
+    }
+    catch (e) {
+        console.log('[error log] getIwencaiData 数据结构错误！', e);
+    }
+    return {
+        data,
+        length,
+    };
+}
+exports.getStocksDataByIwencai = getStocksDataByIwencai;
 function getLastTradingDay(nowStr) {
     const dayOfWeek = +dayjs(nowStr).format('ddd');
     let subtractNum = 1;

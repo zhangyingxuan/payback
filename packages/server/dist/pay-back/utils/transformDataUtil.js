@@ -54,7 +54,6 @@ function transformHugeFallData(hugeFallData) {
 }
 function transformDownLimitData(dailyLimitData, currentDate) {
     const downLimitDataArr = [];
-    const downLimitQuantity = dailyLimitData.length;
     dailyLimitData.forEach(item => {
         const downLimitStockDto = new down_limit_stock_dto_1.DownLimitStockDto();
         loadStockBaseData(downLimitStockDto, item);
@@ -64,10 +63,7 @@ function transformDownLimitData(dailyLimitData, currentDate) {
         downLimitStockDto.closingFunds = (0, commonUtil_1.fundsToFixed)(item[`跌停封单额[${currentDate}]`]);
         downLimitDataArr.push(downLimitStockDto);
     });
-    return {
-        downLimitDataArr,
-        downLimitQuantity,
-    };
+    return downLimitDataArr;
 }
 function transformDailyLimitData(dailyLimitData, currentDate) {
     let board1 = 0, maxHeight = 1, currentLevel = 0, dailyLimitReturnSealQuantity = 0;
@@ -196,7 +192,7 @@ function transformStrongStockData(stocks, todayDateStr, yesterdayDate) {
 exports.transformStrongStockData = transformStrongStockData;
 function transformShortTermSourceData(dailyLimitData, downLimitData, hugeFallData, todayDateStr) {
     const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
-    const { downLimitDataArr, downLimitQuantity } = transformDownLimitData(downLimitData, currentDate);
+    const downLimitDataArr = transformDownLimitData(downLimitData, currentDate);
     const { hugeFallDataArr } = transformHugeFallData(hugeFallData);
     const { board1, evenBoardData, dailyLimitReturnSealQuantity } = transformDailyLimitData(dailyLimitData, currentDate);
     return {
@@ -204,7 +200,6 @@ function transformShortTermSourceData(dailyLimitData, downLimitData, hugeFallDat
         evenBoardData,
         downLimitDataArr,
         hugeFallDataArr,
-        downLimitQuantity,
         dailyLimitReturnSealQuantity,
     };
 }

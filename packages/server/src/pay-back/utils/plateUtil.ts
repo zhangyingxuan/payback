@@ -29,10 +29,10 @@ export default {
       params.gainianPlateOrderByDailyLimitNum + commonUtil.ignoreGainianPlateStr,
       5,
     );
-    const hangyeDailyLimitData = await fetchIwencaiApi(params.hangyePlateOrderByDailyLimitNum, 5);
+    const hangyeDailyLimitData = await fetchIwencaiApi(params.hangyePlateOrderByDailyLimitNum);
 
-    const gainianDailyLimitDataTop = getPlateTop(gainianDailyLimitData, dateStr, 5);
-    const hangyeDailyLimitDataTop = getPlateTop(hangyeDailyLimitData, dateStr, 5);
+    const gainianDailyLimitDataTop = getPlateTop(gainianDailyLimitData, dateStr);
+    const hangyeDailyLimitDataTop = getPlateTop(hangyeDailyLimitData, dateStr);
     createPlateDataDto.gainianDailyLimitData = JSON.stringify(gainianDailyLimitDataTop);
     createPlateDataDto.gainianDailyLimitNum = gainianDailyLimitDataTop[0].num;
     createPlateDataDto.hangyeDailyLimitData = JSON.stringify(hangyeDailyLimitDataTop);
