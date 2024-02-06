@@ -23,7 +23,7 @@ export class AppController {
       };
     } else {
       console.log('登录错误');
-      console.log(contactList);
+      console.log(contactList.length);
 
       const bot = getRobotInstance();
       // 获取 新的机器人，并设置为全局变量

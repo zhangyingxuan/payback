@@ -26,7 +26,6 @@ let AppController = class AppController {
         const msg = query.msg;
         const room = await this.botInstance.Contact.find({ name: '太阳' });
         const contactList = await this.botInstance.Contact.findAll();
-        console.log(contactList);
         if (room) {
             await room.say(msg || '抓到你了');
             return {
@@ -35,6 +34,7 @@ let AppController = class AppController {
         }
         else {
             console.log('登录错误');
+            console.log(contactList.length);
             const bot = (0, ding_dong_bot_1.getRobotInstance)();
             return {
                 code: 500,
