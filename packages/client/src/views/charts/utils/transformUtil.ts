@@ -1,6 +1,6 @@
 
 import { FundsModel } from '../../../api/model/FundsModel';
-import { ShortTermModel } from '../../../api/model/shortTermModel';
+import { ShortTermModel } from '../../../api/model/ShortTermModel';
 import dayjs from 'dayjs';
 import _ from 'lodash-es';
 import { FundsKey } from '../utils/index.d';
@@ -12,9 +12,9 @@ import { getCurrentCycle } from 'pay-back-core';
  * @param key
  */
 export const transformFundsData = (fundsData: FundsModel[], key: FundsKey) => {
-  let xAxisData: any[] = [];
+  const xAxisData: any[] = [];
   // 流入Top5 + 流出Top5 共10条数据
-  let series: Object[] = [];
+  const series: Object[] = [];
   const legendData: any = [];
   const inData: any = {
     inTop1: [],
@@ -168,7 +168,7 @@ function sortObj(obj: any) {
   // 将对象转换为数组 便于排序
   const arr: any[] = [];
   Object.keys(obj).forEach(key => {
-    let o = { key: '', value: 0 };
+    const o = { key: '', value: 0 };
     o.key = key;
     o.value = obj[key];
     arr.push(o);

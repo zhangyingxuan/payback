@@ -1,7 +1,5 @@
 import dayjs from 'dayjs';
-import { DailyLimitStockDto } from '@/typings';
 import { iwencaiUrl } from '@/views/charts/utils/config';
-import exp from 'constants';
 /**
  * 对象转数组
  * @param obj 
@@ -10,7 +8,7 @@ import exp from 'constants';
 export function objectToArr(obj: any) {
   const arr: any[] = [];
   Object.keys(obj).forEach(key => {
-    let o = { key: '', value: [] };
+    const o = { key: '', value: [] };
     o.key = key;
     o.value = obj[key];
     arr.push(o);
@@ -48,7 +46,7 @@ export function judgeMonday(date: string) {
  */
 export function getCurrentDay(date: string) {
   const day = dayjs(date).day();
-  var week = ['日', '一', '二', '三', '四', '五', '六'];
+  const week = ['日', '一', '二', '三', '四', '五', '六'];
   // console.log(date, '周' + week[day]);
 
   return '周' + week[day];
@@ -65,8 +63,8 @@ export function highlightKeyWord(result: string, keyword: string) {
     * 使用字符串的replace方法进行替换
     * stringObject.replace('被替换的值',替换的值)
     */
-    let replaceReg = new RegExp(keyword, 'ig');
-    let replaceString = `<span class="searchWord">${keyword}</span>`;
+    const replaceReg = new RegExp(keyword, 'ig');
+    const replaceString = `<span class="searchWord">${keyword}</span>`;
     result = result.replace(replaceReg, replaceString);
   }
   return result;
@@ -113,21 +111,45 @@ export function getChartStyle(isMobile: boolean) {
   };
 }
 
+export const stockTypes = {
+  kechuang: ['688'],
+  chuangye: ['3'],
+  beijing: ['8', '4'],
+}
+
 /**
  * 判断是否涨停
  * @param stockCode  个股代码
  * @param increaseDecline  涨跌幅
  */
 export function isDailyLimit(stockCode: string, increaseDecline: number) {
-  // 涨停判断：主板大于 9.5；其他需大于19
+  // 涨停判断：主板大于 9.5；其他需大于19；京 29
   let dailyLimitIncrease = 9.5;
   if (
     stockCode.startsWith('688') ||
-    stockCode.startsWith('3') ||
-    stockCode.startsWith('83')
+    stockCode.startsWith('3')
   ) {
     dailyLimitIncrease = 19.5;
+  } else if (stockCode.startsWith('4') ||
+    stockCode.startsWith('8')) {
+    dailyLimitIncrease = 29.5;
   }
 
   return increaseDecline > dailyLimitIncrease;
+}
+/**
+ * 是否 主板个股
+ * @param stockCode  个股代码
+ * @param increaseDecline  涨跌幅
+ */
+export function isMainPlate(stockCode: string) {
+  if (
+    stockCode.startsWith('688') ||
+    stockCode.startsWith('3') || stockCode.startsWith('4') ||
+    stockCode.startsWith('8')
+  ) {
+    return false;
+  }
+
+  return true;
 }

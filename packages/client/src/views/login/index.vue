@@ -19,15 +19,25 @@
             type="password"
             placeholder="password"
             v-model="param.password"
-            @keyup.enter="submitForm(login)"
           >
             <template #prepend> 密码 </template>
+          </el-input>
+        </el-form-item>
+        <el-form-item prop="code">
+          <el-input
+            placeholder="code"
+            v-model="param.code"
+            @keyup.enter="submitForm(login)"
+          >
+            <template #prepend> 验证码 </template>
+            <template #append>
+              <img :src="data.codeImg" class="captchaImg" @click="refreshCodeImg" />
+            </template>
           </el-input>
         </el-form-item>
         <div class="login-btn">
           <el-button type="primary" @click="submitForm(login)">登录</el-button>
         </div>
-        <!-- <p class="login-tips">Tips : 用户名和密码随便填。</p> -->
       </el-form>
     </div>
   </div>
@@ -40,14 +50,20 @@ import { usePermissStore } from '@/store/permiss';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import type { FormInstance, FormRules } from 'element-plus';
-import { authLogin } from '@/api/user';
+import { authLogin, getCode } from '@/api/user';
 import { UserModel } from '@/api/model/UserModel';
 import { setToken, setUserInfo } from '@/router/auth';
 
+
+let interval: any = null;
 const router = useRouter();
 const param = reactive<UserModel>({
   account: '',
   password: '',
+  code: '',
+});
+const data = reactive({
+  codeImg: ''
 });
 
 const rules: FormRules = {
@@ -95,6 +111,22 @@ const submitForm = (formEl: FormInstance | undefined) => {
 
 const tags = useTagsStore();
 tags.clearTags();
+
+/**
+ * 刷新 验证码
+ */
+async function refreshCodeImg() {
+  const res = await getCode();
+  if (typeof URL !== 'undefined') {
+    // 使用 URL.createObjectURL()
+    data.codeImg = URL.createObjectURL(res);
+  }
+  interval && clearInterval(interval);
+  interval = setInterval(() => {
+    refreshCodeImg();
+  }, 5 * 60 * 1000);
+}
+refreshCodeImg();
 </script>
 
 <style scoped>
@@ -144,5 +176,11 @@ tags.clearTags();
   font-size: 12px;
   line-height: 30px;
   color: #fff;
+}
+/deep/.el-input-group__append {
+  padding: 0;
+}
+.captchaImg {
+  height: 32px;
 }
 </style>

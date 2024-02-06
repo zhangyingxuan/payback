@@ -71,9 +71,8 @@ class PureHttp {
       (response: PureHttpResponse) => {
         const data = response.data;
         // console.log(response)
-        // url: "tonghuashun/dataapi/transaction/market/v1/history_count"
         const url = response.config.url || '';
-        if (data.code != 200 && isNotWhiteUrl(url)) {
+        if (data.code != 200 && isNotWhiteUrl(url) && response.config.responseType != 'blob') {
           ElMessage({
             showClose: true,
             message: data.data,
@@ -86,6 +85,7 @@ class PureHttp {
         // console.log(error);
         if (error.response) {
           // 解析错误码
+          // eslint-disable-next-line no-unsafe-optional-chaining
           const { statusCode }: any = error.response?.data;
           // 如果返回401，则 清空storage 及 cookie，跳转至登录页
           if (statusCode === 401) {
@@ -122,8 +122,12 @@ class PureHttp {
     return new Promise((resolve, reject) => {
       PureHttp.axiosInstance
         .request(config)
-        .then((response) => {
-          resolve(response.data);
+        .then((response: any) => {
+          if (config.responseType === 'blob') {
+            resolve(response);
+          } else {
+            resolve(response.data);
+          }
         })
         .catch(error => {
           reject(error);

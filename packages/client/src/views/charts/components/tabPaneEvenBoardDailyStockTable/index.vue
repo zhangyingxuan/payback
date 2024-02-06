@@ -82,8 +82,8 @@
                   </el-tooltip>
                 </div>
               </el-checkbox>
-              <el-checkbox v-model="data.firstBoardChecked"> 首板 </el-checkbox>
-              <el-checkbox v-model="data.notFirstBoardChecked">
+              <el-checkbox v-model="data.firstBoardChecked" @change="handleFirstBoardChecked"> 首板 </el-checkbox>
+              <el-checkbox v-model="data.notFirstBoardChecked" @change="handleNotFirstBoardChecked">
                 连板
               </el-checkbox>
               <el-select
@@ -109,7 +109,7 @@
                 <el-tooltip
                   class="box-item"
                   effect="dark"
-                  content="看多，超预期或符合预期；换手率>=5%，竞价量比大于10（连板及反包除外）"
+                  content="超预期；换手率>=5%，竞价量比大于10（连板及反包除外）"
                   placement="top"
                 >
                   <el-icon><InfoFilled /></el-icon>
@@ -233,6 +233,7 @@ import {
   highlightKeyWord,
   openNewIwencaiWindow,
   isDailyLimit,
+  isMainPlate,
 } from '../../utils';
 import { dailyLimitOptionalStrategy, getExpected, params } from 'pay-back-core';
 import { DailyLimitStockDto } from '@/typings';
@@ -358,6 +359,7 @@ const stockGroupByPlate: any = computed(() => {
       });
   });
 
+  // eslint-disable-next-line vue/no-side-effects-in-computed-properties
   data.evenBoardHeightOptions = Array.from(evenBoardHeightOptions)
     .map((item: any) => {
       return {
@@ -368,6 +370,7 @@ const stockGroupByPlate: any = computed(() => {
     .sort((a: any, b: any) => {
       return b.value - a.value;
     });
+  // eslint-disable-next-line vue/no-side-effects-in-computed-properties
   data.evenBoardHeightOptions.unshift({
     label: '全部',
     value: -1,
@@ -381,10 +384,9 @@ const stockGroupByPlate: any = computed(() => {
  */
 const stockGroupByPlateByFilter = computed(() => {
   const stockGroupByPlateCopy: any = _.cloneDeep(stockGroupByPlate.value);
-
-  data.myStrategyCheckedNum = 0;
-  data.biddingStrategyCheckedNum = 0;
-  data.dailyLimitNum = 0;
+  let myStrategyCheckedNum = 0;
+  let biddingStrategyCheckedNum = 0;
+  let dailyLimitNum = 0;
 
   // 遍历 按板块 划分后的数据
   let isAdd = true;
@@ -392,25 +394,22 @@ const stockGroupByPlateByFilter = computed(() => {
     let len = 0;
     stockGroupByPlateCopy[key].forEach((item: any) => {
       isAdd = true;
+      const evenBoardHeight = getRealEvenBoardHeight(item, false);
       // 需按照首板/我的策略 进行过滤处理
       if (data.firstBoardChecked) {
-        const evenBoardHeight = getRealEvenBoardHeight(item, false);
-        data.notFirstBoardChecked = false;
         isAdd = evenBoardHeight == 1;
       }
       // 只看连板 则与只看首板冲突
       if (data.notFirstBoardChecked) {
-        const evenBoardHeight = getRealEvenBoardHeight(item, false);
-        data.firstBoardChecked = false;
         isAdd = evenBoardHeight != 1;
       }
       if (data.myStrategyChecked && isAdd) {
         isAdd = dailyLimitOptionalStrategy(item, item.evenBoardHeight);
       }
       if (data.evenBoardHeight != -1 && isAdd) {
-        isAdd = data.evenBoardHeight == getRealEvenBoardHeight(item, false);
+        isAdd = data.evenBoardHeight == evenBoardHeight;
       }
-      isAdd && data.myStrategyCheckedNum++;
+      isAdd && myStrategyCheckedNum++;
 
       // 竞价条件过滤 2023-09-09 00:21:30
       if (item.biddingData && isAdd) {
@@ -443,12 +442,12 @@ const stockGroupByPlateByFilter = computed(() => {
           isAdd = isConformToMyStrategyChecked({ ...item, evenBoardHeight });
         }
         // 竞价符合条件个数
-        isAdd && data.biddingStrategyCheckedNum++;
+        isAdd && biddingStrategyCheckedNum++;
 
         // 符合条件的个股 收盘涨停个数 +1
         isAdd &&
           isDailyLimit(item.code, +item.biddingData.closeIncrease) &&
-          data.dailyLimitNum++;
+          dailyLimitNum++;
       }
 
       // 标记 个数
@@ -459,8 +458,32 @@ const stockGroupByPlateByFilter = computed(() => {
     stockGroupByPlateCopy[key].len = len;
   });
 
+  // 更新 各种数量
+  updateNums(myStrategyCheckedNum, biddingStrategyCheckedNum, dailyLimitNum);
+
   return sortPlates(stockGroupByPlateCopy);
 });
+
+function updateNums(myStrategyCheckedNum: number, biddingStrategyCheckedNum: number, dailyLimitNum: number) {
+    data.myStrategyCheckedNum = myStrategyCheckedNum;
+  data.biddingStrategyCheckedNum = biddingStrategyCheckedNum;
+  data.dailyLimitNum = dailyLimitNum;
+}
+
+/**
+ * 点击 首板复选框
+ */
+function handleFirstBoardChecked(checked: any) {
+  data.firstBoardChecked = checked;
+  data.notFirstBoardChecked = false;
+}
+/**
+ * 点击 连板复选框
+ */
+function handleNotFirstBoardChecked(checked: any) {
+  data.notFirstBoardChecked = checked;
+  data.firstBoardChecked = false;
+}
 
 /**
  * 按条件过滤后的数据，基本策略 或 竞价策略 等
@@ -495,15 +518,14 @@ function getRealEvenBoardHeight(item: any, isBiddingMode = true) {
  */
 function isConformToMyStrategyChecked(stock: any) {
   // 只看主板
-  if (stock.code.startsWith('3') || stock.code.startsWith('688')) {
+  if (!isMainPlate(stock.code)) {
     return false;
   }
 
   const biddingData = stock.biddingData;
-  // 竞价看多，超预期或符合预期
+  // 超预期
   let isConform =
-    biddingData.bidRating === '看多' &&
-    (biddingData.expected === 2 || biddingData.expected === 1);
+    (biddingData.expected === 2);
   // 首板 必须竞价量比大于10，换手率>=5%
   if (stock.evenBoardHeight === '1' && isConform) {
     isConform =
@@ -516,7 +538,7 @@ function isConformToMyStrategyChecked(stock: any) {
 /**
  * 刷新竞价数据
  */
-const refreshBindingData: Function = _.debounce(() => {
+const refreshBindingData = _.debounce(() => {
   // superData.title有值则 刷新竞价数据，否则刷新短线数据
   emit('refreshBindingData', superData.title);
 }, 500);
