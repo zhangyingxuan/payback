@@ -31,10 +31,10 @@ export default {
     const hangyeRiseFloat = await fetchIwencaiApi(params.hangyeRiseFloat);
     const hangyeFallFloat = await fetchIwencaiApi(params.hangyeFallFloat);
 
-    const gainianRiseFloatTop3 = fundsUtil.getPlateTop(gainianRiseFloat, dateStr, 5);
-    const gainianFallFloatTop3 = fundsUtil.getPlateTop(gainianFallFloat, dateStr, 5);
-    const hangyeRiseFloatTop3 = fundsUtil.getPlateTop(hangyeRiseFloat, dateStr, 5);
-    const hangyeFallFloatTop3 = fundsUtil.getPlateTop(hangyeFallFloat, dateStr, 5);
+    const gainianRiseFloatTop3 = fundsUtil.getPlateTop(gainianRiseFloat, dateStr);
+    const gainianFallFloatTop3 = fundsUtil.getPlateTop(gainianFallFloat, dateStr);
+    const hangyeRiseFloatTop3 = fundsUtil.getPlateTop(hangyeRiseFloat, dateStr);
+    const hangyeFallFloatTop3 = fundsUtil.getPlateTop(hangyeFallFloat, dateStr);
     createMarketDataDto.gainianRiseFloat = JSON.stringify(gainianRiseFloatTop3);
     createMarketDataDto.gainianFallFloat = JSON.stringify(gainianFallFloatTop3);
     createMarketDataDto.hangyeRiseFloat = JSON.stringify(hangyeRiseFloatTop3);

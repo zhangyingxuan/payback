@@ -5,8 +5,7 @@ import { fetchIwencaiApi } from '../core/fetchUtil';
 import { params } from '../core/config';
 import commonUtil from './commonUtil';
 
-function getPlateTop(platesData, dateStr, len = 3) {
-  // const platesData = commonUtil.getIwencaiData(responseJson);
+function getPlateTop(platesData, dateStr, len = 5) {
   return platesData.splice(0, len).map(item => {
     return {
       name: item['指数简称'],
@@ -27,7 +26,6 @@ export default {
 
     const gainianDailyLimitData = await fetchIwencaiApi(
       params.gainianPlateOrderByDailyLimitNum + commonUtil.ignoreGainianPlateStr,
-      5,
     );
     const hangyeDailyLimitData = await fetchIwencaiApi(params.hangyePlateOrderByDailyLimitNum);
 

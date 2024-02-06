@@ -28,16 +28,10 @@ export default {
     const foreignFunds: any = this.transformForeignFunds(responseForeignFunds);
     const marketTurnover: any = this.getMarketTurnover(responseMarketTurnover);
     // 获取行业板块流入 Top3
-    const hangyeFundsInflowTop3 = this.getPlateTop(hangyeFundsInflow, dateStr);
-    const hangyeFundsOutflowTop3 = this.getPlateTop(hangyeFundsOutflow, dateStr);
-    const gainianFundsInflowTop3 = this.getPlateTop(gaiNianFundsInflow, dateStr);
-    // const gainianFundsInflowTop3 = this.getPlateTop(
-    //   gaiNianFundsInflow.filter(item => {
-    //     return !ignoreGainianPlates.includes(item['指数简称']);
-    //   }),
-    //   dateStr,
-    // );
-    const gainianFundsOutflowTop3 = this.getPlateTop(gaiNianFundsOutflow, dateStr);
+    const hangyeFundsInflowTop3 = this.getPlateTop(hangyeFundsInflow, dateStr, 3);
+    const hangyeFundsOutflowTop3 = this.getPlateTop(hangyeFundsOutflow, dateStr, 3);
+    const gainianFundsInflowTop3 = this.getPlateTop(gaiNianFundsInflow, dateStr, 3);
+    const gainianFundsOutflowTop3 = this.getPlateTop(gaiNianFundsOutflow, dateStr, 3);
 
     const createFundsDataDto = new CreateFundsDataDto();
     // 万亿

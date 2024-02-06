@@ -181,10 +181,10 @@ export default {
     const hangyeRiseFloat = await fetchIwencaiApi(params.hangyeRiseFloat);
     const hangyeFallFloat = await fetchIwencaiApi(params.hangyeFallFloat);
 
-    const gainianRiseFloatTop3 = fundsUtil.getPlateTop(gainianRiseFloat, dateStr, 5);
-    const gainianFallFloatTop3 = fundsUtil.getPlateTop(gainianFallFloat, dateStr, 5);
-    const hangyeRiseFloatTop3 = fundsUtil.getPlateTop(hangyeRiseFloat, dateStr, 5);
-    const hangyeFallFloatTop3 = fundsUtil.getPlateTop(hangyeFallFloat, dateStr, 5);
+    const gainianRiseFloatTop3 = fundsUtil.getPlateTop(gainianRiseFloat, dateStr);
+    const gainianFallFloatTop3 = fundsUtil.getPlateTop(gainianFallFloat, dateStr);
+    const hangyeRiseFloatTop3 = fundsUtil.getPlateTop(hangyeRiseFloat, dateStr);
+    const hangyeFallFloatTop3 = fundsUtil.getPlateTop(hangyeFallFloat, dateStr);
     response.gainianRiseFloat = JSON.stringify(gainianRiseFloatTop3);
     response.gainianFallFloat = JSON.stringify(gainianFallFloatTop3);
     response.hangyeRiseFloat = JSON.stringify(hangyeRiseFloatTop3);
@@ -223,10 +223,10 @@ export default {
     const foreignFunds: any = fundsUtil.transformForeignFunds(responseForeignFunds);
     const marketTurnover: any = fundsUtil.getMarketTurnover(responseMarketTurnover);
     // 获取行业板块流入 Top3
-    const hangyeFundsInflowTop3 = fundsUtil.getPlateTop(hangyeFundsInflow, dateStr);
-    const hangyeFundsOutflowTop3 = fundsUtil.getPlateTop(hangyeFundsOutflow, dateStr);
-    const gainianFundsInflowTop3 = fundsUtil.getPlateTop(gaiNianFundsInflow, dateStr);
-    const gainianFundsOutflowTop3 = fundsUtil.getPlateTop(gaiNianFundsOutflow, dateStr);
+    const hangyeFundsInflowTop3 = fundsUtil.getPlateTop(hangyeFundsInflow, dateStr, 3);
+    const hangyeFundsOutflowTop3 = fundsUtil.getPlateTop(hangyeFundsOutflow, dateStr, 3);
+    const gainianFundsInflowTop3 = fundsUtil.getPlateTop(gaiNianFundsInflow, dateStr, 3);
+    const gainianFundsOutflowTop3 = fundsUtil.getPlateTop(gaiNianFundsOutflow, dateStr, 3);
 
     const createFundsDataDto = new CreateFundsDataDto();
     // 万亿
