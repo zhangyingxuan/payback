@@ -22,17 +22,17 @@ export async function getBiddingData(todayDateStr, yesterdayDateStr) {
   // 新股数据
   const newStocksRs: any = await fetchStocksByIwencai(params.chooseStockNewStock, otherNum);
   // 昨日首板竞价情况
-  const dailyLimitYesterdayBidding = transformBidData(dailyLimitYesterdayDataRs, todayDateStr, yesterdayDateStr);
+  const dailyLimitYesterdayBidding = transformBidData(dailyLimitYesterdayDataRs.data, todayDateStr, yesterdayDateStr);
   // // 一进二竞价，看多标的
   // const chooseStock1to2Pds = transformBidData(chooseStock1to2, todayDateStr, yesterdayDateStr);
   // const chooseStock1to2Dtos = chooseStock1to2Pds.filter(stock => {
   //   // 过滤 量比大于10，超预期及符合预期
   //   return stock.bidVolumeRatio >= 10 && (stock.expected != 0);
   // })
-  const chooseStock1Expected = transformStrongStockData(chooseStock1ExpectedRs, todayDateStr, yesterdayDateStr);
+  const chooseStock1Expected = transformStrongStockData(chooseStock1ExpectedRs.data, todayDateStr, yesterdayDateStr);
 
   // 新股数据
-  const newStocks = transformNewStockData(newStocksRs, todayDateStr);
+  const newStocks = transformNewStockData(newStocksRs.data, todayDateStr);
 
   return { dailyLimitYesterdayBidding, newStocks, chooseStock1Expected };
 }
