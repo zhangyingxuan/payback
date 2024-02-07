@@ -181,14 +181,14 @@ export default {
     const hangyeRiseFloat = await fetchIwencaiApi(params.hangyeRiseFloat);
     const hangyeFallFloat = await fetchIwencaiApi(params.hangyeFallFloat);
 
-    const gainianRiseFloatTop3 = fundsUtil.getPlateTop(gainianRiseFloat, dateStr);
-    const gainianFallFloatTop3 = fundsUtil.getPlateTop(gainianFallFloat, dateStr);
-    const hangyeRiseFloatTop3 = fundsUtil.getPlateTop(hangyeRiseFloat, dateStr);
-    const hangyeFallFloatTop3 = fundsUtil.getPlateTop(hangyeFallFloat, dateStr);
-    response.gainianRiseFloat = JSON.stringify(gainianRiseFloatTop3);
-    response.gainianFallFloat = JSON.stringify(gainianFallFloatTop3);
-    response.hangyeRiseFloat = JSON.stringify(hangyeRiseFloatTop3);
-    response.hangyeFallFloat = JSON.stringify(hangyeFallFloatTop3);
+    const gainianRiseFloatTop5 = fundsUtil.getPlateTop(gainianRiseFloat, dateStr);
+    const gainianFallFloatTop5 = fundsUtil.getPlateTop(gainianFallFloat, dateStr);
+    const hangyeRiseFloatTop5 = fundsUtil.getPlateTop(hangyeRiseFloat, dateStr);
+    const hangyeFallFloatTop5 = fundsUtil.getPlateTop(hangyeFallFloat, dateStr);
+    response.gainianRiseFloat = JSON.stringify(gainianRiseFloatTop5);
+    response.gainianFallFloat = JSON.stringify(gainianFallFloatTop5);
+    response.hangyeRiseFloat = JSON.stringify(hangyeRiseFloatTop5);
+    response.hangyeFallFloat = JSON.stringify(hangyeFallFloatTop5);
     response.createTime = new Date();
     setTimeout(async () => {
       await browser.close();

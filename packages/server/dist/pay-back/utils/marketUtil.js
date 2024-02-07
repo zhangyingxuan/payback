@@ -22,14 +22,14 @@ exports.default = {
         const gainianFallFloat = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.gainianFallFloat + commonUtil_1.ignoreGainianPlateStr);
         const hangyeRiseFloat = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.hangyeRiseFloat);
         const hangyeFallFloat = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.hangyeFallFloat);
-        const gainianRiseFloatTop3 = fundsUtil_1.default.getPlateTop(gainianRiseFloat, dateStr);
-        const gainianFallFloatTop3 = fundsUtil_1.default.getPlateTop(gainianFallFloat, dateStr);
-        const hangyeRiseFloatTop3 = fundsUtil_1.default.getPlateTop(hangyeRiseFloat, dateStr);
-        const hangyeFallFloatTop3 = fundsUtil_1.default.getPlateTop(hangyeFallFloat, dateStr);
-        createMarketDataDto.gainianRiseFloat = JSON.stringify(gainianRiseFloatTop3);
-        createMarketDataDto.gainianFallFloat = JSON.stringify(gainianFallFloatTop3);
-        createMarketDataDto.hangyeRiseFloat = JSON.stringify(hangyeRiseFloatTop3);
-        createMarketDataDto.hangyeFallFloat = JSON.stringify(hangyeFallFloatTop3);
+        const gainianRiseFloatTop5 = fundsUtil_1.default.getPlateTop(gainianRiseFloat, dateStr);
+        const gainianFallFloatTop5 = fundsUtil_1.default.getPlateTop(gainianFallFloat, dateStr);
+        const hangyeRiseFloatTop5 = fundsUtil_1.default.getPlateTop(hangyeRiseFloat, dateStr);
+        const hangyeFallFloatTop5 = fundsUtil_1.default.getPlateTop(hangyeFallFloat, dateStr);
+        createMarketDataDto.gainianRiseFloat = JSON.stringify(gainianRiseFloatTop5);
+        createMarketDataDto.gainianFallFloat = JSON.stringify(gainianFallFloatTop5);
+        createMarketDataDto.hangyeRiseFloat = JSON.stringify(hangyeRiseFloatTop5);
+        createMarketDataDto.hangyeFallFloat = JSON.stringify(hangyeFallFloatTop5);
         createMarketDataDto.createTime = new Date();
         return createMarketDataDto;
     },

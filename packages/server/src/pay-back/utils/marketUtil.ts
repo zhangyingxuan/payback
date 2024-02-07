@@ -4,7 +4,7 @@ import { CreateMarketDataDto } from '../dto/create-market-data.dto';
 import fundsUtil from './fundsUtil';
 import { fetchMarketPointFromEastmoney, fetchMarketData, fetchIwencaiApi } from '../core/fetchUtil';
 import { params } from '../core/config';
-import { ignoreGainianPlates, ignoreGainianPlateStr } from './commonUtil';
+import { ignoreGainianPlateStr } from './commonUtil';
 
 export default {
   /**
@@ -31,14 +31,14 @@ export default {
     const hangyeRiseFloat = await fetchIwencaiApi(params.hangyeRiseFloat);
     const hangyeFallFloat = await fetchIwencaiApi(params.hangyeFallFloat);
 
-    const gainianRiseFloatTop3 = fundsUtil.getPlateTop(gainianRiseFloat, dateStr);
-    const gainianFallFloatTop3 = fundsUtil.getPlateTop(gainianFallFloat, dateStr);
-    const hangyeRiseFloatTop3 = fundsUtil.getPlateTop(hangyeRiseFloat, dateStr);
-    const hangyeFallFloatTop3 = fundsUtil.getPlateTop(hangyeFallFloat, dateStr);
-    createMarketDataDto.gainianRiseFloat = JSON.stringify(gainianRiseFloatTop3);
-    createMarketDataDto.gainianFallFloat = JSON.stringify(gainianFallFloatTop3);
-    createMarketDataDto.hangyeRiseFloat = JSON.stringify(hangyeRiseFloatTop3);
-    createMarketDataDto.hangyeFallFloat = JSON.stringify(hangyeFallFloatTop3);
+    const gainianRiseFloatTop5 = fundsUtil.getPlateTop(gainianRiseFloat, dateStr);
+    const gainianFallFloatTop5 = fundsUtil.getPlateTop(gainianFallFloat, dateStr);
+    const hangyeRiseFloatTop5 = fundsUtil.getPlateTop(hangyeRiseFloat, dateStr);
+    const hangyeFallFloatTop5 = fundsUtil.getPlateTop(hangyeFallFloat, dateStr);
+    createMarketDataDto.gainianRiseFloat = JSON.stringify(gainianRiseFloatTop5);
+    createMarketDataDto.gainianFallFloat = JSON.stringify(gainianFallFloatTop5);
+    createMarketDataDto.hangyeRiseFloat = JSON.stringify(hangyeRiseFloatTop5);
+    createMarketDataDto.hangyeFallFloat = JSON.stringify(hangyeFallFloatTop5);
     createMarketDataDto.createTime = new Date();
     return createMarketDataDto;
   },

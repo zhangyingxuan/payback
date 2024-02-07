@@ -96,7 +96,7 @@ export default {
     const responseMarketTurnoverJson = JSON.parse(marketTurnoverStr).data.diff;
     return responseMarketTurnoverJson[0].f6 + responseMarketTurnoverJson[1].f6;
   },
-  getPlateTop(platesData, dateStr, len = 3) {
+  getPlateTop(platesData, dateStr, len = 5) {
     // const platesData = commonUtil.getIwencaiData(responseJson);
     return platesData.splice(0, len).map(item => {
       return {
