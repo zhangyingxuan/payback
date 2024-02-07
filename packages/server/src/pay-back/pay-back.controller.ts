@@ -41,10 +41,10 @@ export class PayBackController {
   @Get('testApi')
   async testApi() {
     // return await this.apiTestService.otherTest();
-    return await this.usersService.getUserByAccount('admin');
+    // return await this.usersService.getUserByAccount('admin');
     // return await this.apiTestService.fetchExternalData();
-
     // return await this.apiTestService.datacenterWeb();
+    return 'testApi';
   }
 
   // @Cron('0 */5 9-12 * * 1-5')

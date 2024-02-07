@@ -7,7 +7,7 @@ import * as dayjs from 'dayjs';
 
 const dailyLimitNum = 999;
 // 跌停个股只需考虑数量，无需所有个股都存储
-const downLimitNum = 99;
+const downLimitNum = 50;
 // 跌停个股只需考虑数量，无需所有个股都存储
 const otherNum = 50;
 

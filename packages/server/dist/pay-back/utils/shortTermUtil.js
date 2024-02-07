@@ -8,7 +8,7 @@ const fetchUtil_1 = require("../core/fetchUtil");
 const pay_back_core_1 = require("pay-back-core");
 const dayjs = require("dayjs");
 const dailyLimitNum = 999;
-const downLimitNum = 99;
+const downLimitNum = 50;
 const otherNum = 50;
 async function getShortTermData(todayDateStr) {
     const dailyLimitData = await (0, fetchUtil_1.fetchStocksByIwencai)(config_1.params.dailyLimitMoreThan1, dailyLimitNum);

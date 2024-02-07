@@ -25,7 +25,7 @@ let AuthController = class AuthController {
         const { code } = body;
         const storedCaptcha = req.session.captcha;
         if (code && storedCaptcha && code.toLowerCase() === storedCaptcha.toLowerCase()) {
-            return this.authService.login(body, req);
+            return await this.authService.login(body, req);
         }
         else {
             return {
@@ -44,7 +44,7 @@ let AuthController = class AuthController {
             size: 4,
             noise: 2,
             color: true,
-            background: '#666',
+            fontSize: 60,
         });
         req.session.captcha = captcha.text;
         res.set('Content-Type', 'image/svg+xml');

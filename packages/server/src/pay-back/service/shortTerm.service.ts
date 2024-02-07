@@ -86,14 +86,16 @@ export class ShorTermService {
     this.logger.debug('crawlShortTermDataByDate is Begining!');
     let isExist = false;
     const todayDataFromDB = await this.getTodayData(todayDateStr);
-
     if (todayDataFromDB) {
       isExist = true;
     }
     let createPayBackDto: CreatePayBackDto;
     try {
       createPayBackDto = await getShortTermDataByDate(todayDateStr);
-      createPayBackDto.createTime = new Date(todayDateStr);
+      const dateTime = new Date(todayDateStr);
+      dateTime.setHours(15);
+      dateTime.setMinutes(55);
+      createPayBackDto.createTime = dateTime;
 
       // console.log(createPayBackDto);
       if (isExist) {

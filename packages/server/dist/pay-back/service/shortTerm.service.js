@@ -76,7 +76,10 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
         let createPayBackDto;
         try {
             createPayBackDto = await (0, shortTermUtil_1.getShortTermDataByDate)(todayDateStr);
-            createPayBackDto.createTime = new Date(todayDateStr);
+            const dateTime = new Date(todayDateStr);
+            dateTime.setHours(15);
+            dateTime.setMinutes(55);
+            createPayBackDto.createTime = dateTime;
             if (isExist) {
                 this.logger.log('crawlShortTermData 更新数据');
                 await this.shortTermDataRp.update(todayDataFromDB.id, createPayBackDto);

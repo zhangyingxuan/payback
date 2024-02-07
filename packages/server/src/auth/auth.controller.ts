@@ -16,7 +16,7 @@ export class AuthController {
 
     if (code && storedCaptcha && code.toLowerCase() === storedCaptcha.toLowerCase()) {
       // 验证码校验成功
-      return this.authService.login(body, req);
+      return await this.authService.login(body, req);
     } else {
       // 验证码校验失败
       return {
@@ -40,7 +40,8 @@ export class AuthController {
       size: 4,
       noise: 2,
       color: true,
-      background: '#666',
+      fontSize: 60,
+      // background: '#666',
     });
     req.session.captcha = captcha.text;
     res.set('Content-Type', 'image/svg+xml');
