@@ -10,8 +10,9 @@ const dayjs = require("dayjs");
 const dailyLimitNum = 999;
 const downLimitNum = 50;
 const otherNum = 50;
+const dailyLimitPatchStr = '；按连板天数降序';
 async function getShortTermData(todayDateStr) {
-    const dailyLimitData = await (0, fetchUtil_1.fetchStocksByIwencai)(config_1.params.dailyLimitMoreThan1, dailyLimitNum);
+    const dailyLimitData = await (0, fetchUtil_1.fetchStocksByIwencai)(config_1.params.dailyLimitMoreThan1 + dailyLimitPatchStr, dailyLimitNum);
     const downLimitData = await (0, fetchUtil_1.fetchStocksByIwencai)(config_1.params.downLimit, downLimitNum);
     const dailyLimitOpenData = await (0, fetchUtil_1.fetchStocksByIwencai)(config_1.params.dailyLimitOpen, otherNum);
     const hugeFallData = await (0, fetchUtil_1.fetchStocksByIwencai)(config_1.params.hugeFall, otherNum);
@@ -19,7 +20,7 @@ async function getShortTermData(todayDateStr) {
 }
 exports.getShortTermData = getShortTermData;
 async function getShortTermDataByDate(todayDateStr) {
-    const dailyLimitData = await (0, fetchUtil_1.fetchStocksByIwencai)(config_1.params.dailyLimitMoreThan1ByDate.replace('${date}', todayDateStr), dailyLimitNum);
+    const dailyLimitData = await (0, fetchUtil_1.fetchStocksByIwencai)(config_1.params.dailyLimitMoreThan1ByDate.replace('${date}', todayDateStr) + dailyLimitPatchStr, dailyLimitNum);
     const downLimitData = await (0, fetchUtil_1.fetchStocksByIwencai)(config_1.params.downLimitByDate.replace('${date}', todayDateStr), downLimitNum);
     const dailyLimitOpenData = await (0, fetchUtil_1.fetchStocksByIwencai)(config_1.params.dailyLimitOpenByDate.replace('${date}', todayDateStr), otherNum);
     const hugeFallData = await (0, fetchUtil_1.fetchStocksByIwencai)(config_1.params.hugeFallByDate.replace('${date}', todayDateStr), otherNum);

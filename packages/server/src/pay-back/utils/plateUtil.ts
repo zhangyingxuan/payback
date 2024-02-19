@@ -1,5 +1,3 @@
-// 开发须知：
-// 轻量服务器 1核1G 仅支持1个 browser 1个page 同时打开，否则会阻塞执行
 import { CreatePlateDataDto } from '../dto/create-Plate-data.dto';
 import { fetchIwencaiApi } from '../core/fetchUtil';
 import { params } from '../core/config';

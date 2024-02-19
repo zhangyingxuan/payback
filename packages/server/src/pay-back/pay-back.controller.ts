@@ -143,7 +143,7 @@ export class PayBackController {
     return this.shorTermService.crawlShortTermData();
   }
 
-  // 示例：http://localhost:3000/blowsysun/pay-back/crawlShortTermDataByDate?date=2023-06-26
+  // 示例：http://localhost:3000/blowsysun/pay-back/crawlShortTermByDate?date=2023-06-26
   @Public()
   @Get('/crawlShortTermByDate')
   crawlShortTermByDate(@Query() query) {
