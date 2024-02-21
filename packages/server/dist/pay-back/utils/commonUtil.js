@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getLastTradingDay = exports.getStocksDataByIwencai = exports.getIwencaiData = exports.fundsToFixed = exports.toFixed = exports.ignoreGainianPlateStr = exports.ignoreGainianPlates = void 0;
+exports.getLastTradingDay = exports.getStocksPagingDataByIwencai = exports.getStocksDataByIwencai = exports.getIwencaiData = exports.fundsToFixed = exports.toFixed = exports.ignoreGainianPlateStr = exports.ignoreGainianPlates = void 0;
 const dayjs = require("dayjs");
 exports.ignoreGainianPlates = ['融资融券', '深股通', '沪股通', '标普道琼斯A股', 'MSCI概念'];
 exports.ignoreGainianPlateStr = (function prepareConditionStr() {
@@ -42,10 +42,13 @@ exports.getIwencaiData = getIwencaiData;
 function getStocksDataByIwencai(responseJson) {
     let data = [];
     let length = 0;
+    let extra, condition;
     try {
         const result = responseJson.data.answer[0].txt[0].content.components[0].data;
         data = result.datas;
-        length = result.meta.extra.row_count;
+        extra = result.meta.extra;
+        length = extra.row_count;
+        condition = extra.condition;
     }
     catch (e) {
         console.log('[error log] getIwencaiData 数据结构错误！', e);
@@ -53,9 +56,21 @@ function getStocksDataByIwencai(responseJson) {
     return {
         data,
         length,
+        condition,
     };
 }
 exports.getStocksDataByIwencai = getStocksDataByIwencai;
+function getStocksPagingDataByIwencai(responseJson) {
+    let data = [];
+    try {
+        data = responseJson.answer.components[0].data.datas;
+    }
+    catch (e) {
+        console.log('[error log] getIwencaiData 数据结构错误！', e);
+    }
+    return data;
+}
+exports.getStocksPagingDataByIwencai = getStocksPagingDataByIwencai;
 function getLastTradingDay(nowStr) {
     const dayOfWeek = +dayjs(nowStr).format('ddd');
     let subtractNum = 1;

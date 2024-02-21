@@ -4,7 +4,7 @@ exports.getBiddingData = void 0;
 const transformDataUtil_1 = require("./transformDataUtil");
 const config_1 = require("../core/config");
 const fetchUtil_1 = require("../core/fetchUtil");
-const dailyLimitNum = 999;
+const dailyLimitNum = 100;
 const otherNum = 99;
 async function getBiddingData(todayDateStr, yesterdayDateStr) {
     const dailyLimitYesterdayDataRs = await (0, fetchUtil_1.fetchStocksByIwencai)(config_1.params.dailyLimitYesterday, dailyLimitNum);

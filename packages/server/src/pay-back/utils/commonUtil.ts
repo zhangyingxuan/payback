@@ -50,10 +50,14 @@ export function getIwencaiData(responseJson) {
 export function getStocksDataByIwencai(responseJson) {
   let data = [];
   let length = 0;
+  let extra, condition;
   try {
     const result = responseJson.data.answer[0].txt[0].content.components[0].data;
     data = result.datas;
-    length = result.meta.extra.row_count;
+    extra = result.meta.extra;
+    length = extra.row_count;
+    // 取出condition
+    condition = extra.condition;
   } catch (e) {
     console.log('[error log] getIwencaiData 数据结构错误！', e);
     // console.log('[error log] getIwencaiData 数据结构错误！' + responseJson)
@@ -61,7 +65,23 @@ export function getStocksDataByIwencai(responseJson) {
   return {
     data,
     length,
+    condition,
   };
+}
+
+/**
+ * 获取个股分页数据
+ * @param responseJson
+ * @returns
+ */
+export function getStocksPagingDataByIwencai(responseJson) {
+  let data = [];
+  try {
+    data = responseJson.answer.components[0].data.datas;
+  } catch (e) {
+    console.log('[error log] getIwencaiData 数据结构错误！', e);
+  }
+  return data;
 }
 
 export function getLastTradingDay(nowStr: string) {

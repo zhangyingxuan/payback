@@ -2,7 +2,7 @@ import { transformBidData, transformNewStockData, transformStrongStockData } fro
 import { params } from '../core/config';
 import { fetchStocksByIwencai } from '../core/fetchUtil';
 
-const dailyLimitNum = 999;
+const dailyLimitNum = 100;
 const otherNum = 99;
 
 /**

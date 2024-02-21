@@ -5,14 +5,12 @@ import { fetchStocksByIwencai } from '../core/fetchUtil';
 import { getCurrentCycle, iWencaiDateFormat } from 'pay-back-core';
 import * as dayjs from 'dayjs';
 
-// TODO 最多单页查询100条数据，目前仅保证连板梯队完整（通过连板天数降序保证 连板数据完整） 2024-02-17 23:20:40
-const dailyLimitNum = 999;
+// 最多单页查询100条数据，循环分页查询完整数据 2024-02-17 23:20:40
+const dailyLimitNum = 100;
 // 跌停个股只需考虑数量，无需所有个股都存储
 const downLimitNum = 50;
 // 跌停个股只需考虑数量，无需所有个股都存储
 const otherNum = 50;
-
-const dailyLimitPatchStr = '；按连板天数降序';
 
 /**
  * 通过接口方式获取热门数据
@@ -20,10 +18,7 @@ const dailyLimitPatchStr = '；按连板天数降序';
  */
 export async function getShortTermData(todayDateStr): Promise<CreatePayBackDto> {
   // 准备涨停数据
-  const dailyLimitData: any = await fetchStocksByIwencai(
-    params.dailyLimitMoreThan1 + dailyLimitPatchStr,
-    dailyLimitNum,
-  );
+  const dailyLimitData: any = await fetchStocksByIwencai(params.dailyLimitMoreThan1, dailyLimitNum);
   // 跌停数据
   const downLimitData: any = await fetchStocksByIwencai(params.downLimit, downLimitNum);
   // 涨停打开个股
@@ -37,7 +32,7 @@ export async function getShortTermData(todayDateStr): Promise<CreatePayBackDto> 
 export async function getShortTermDataByDate(todayDateStr): Promise<CreatePayBackDto> {
   // 准备涨停数据
   const dailyLimitData: any = await fetchStocksByIwencai(
-    params.dailyLimitMoreThan1ByDate.replace('${date}', todayDateStr) + dailyLimitPatchStr,
+    params.dailyLimitMoreThan1ByDate.replace('${date}', todayDateStr),
     dailyLimitNum,
   );
   // 跌停数据

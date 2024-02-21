@@ -1,7 +1,10 @@
 import { createV } from './hexin-v';
 import fetch from 'node-fetch';
-import { getIwencaiData, getStocksDataByIwencai } from '../utils/commonUtil';
+import { getIwencaiData, getStocksDataByIwencai, getStocksPagingDataByIwencai } from '../utils/commonUtil';
 import { stringify } from 'qs';
+
+// 爱问财最大分页码为100
+const maxPageSize = 100;
 
 /**
  * 获取爱问财数据
@@ -18,6 +21,11 @@ export async function fetchIwencaiApi(question, pageSize = 5) {
   return getIwencaiData(result);
 }
 
+interface IwencaiStockResult {
+  data: any;
+  length: number;
+  condition: Array<any>;
+}
 /**
  * 获取个股数据 通过 爱问财数据
  * @param question
@@ -26,11 +34,34 @@ export async function fetchIwencaiApi(question, pageSize = 5) {
  * @returns
  */
 export async function fetchStocksByIwencai(question, pageSize = 50) {
-  const result = await fetchIwencai(question, pageSize, false);
+  pageSize = pageSize > maxPageSize ? maxPageSize : pageSize;
+  // 设置强制 终止死循环次数，最多20页，意味着 2000条数据 2024-02-20 15:08:36
+  let pageNum = 1;
+  const maxRequestTimes = 20;
+  let data;
 
-  // const text = await result.text();
-  // return getIwencaiData(JSON.parse(text));
-  return getStocksDataByIwencai(result);
+  let result = await fetchIwencai(question, pageSize, false);
+  const iwencaiStockResult: IwencaiStockResult = getStocksDataByIwencai(result);
+  // 需要分页
+  if (iwencaiStockResult.length > iwencaiStockResult.data.length) {
+    while (true) {
+      result = await getDataListByIwencai(question, pageSize, ++pageNum, iwencaiStockResult.condition);
+      // 分页数据 第二页开始，临时数据
+      data = getStocksPagingDataByIwencai(result);
+      iwencaiStockResult.data.push(...data);
+      // 4种情况需终止：1、异常 累计数据长度大于查询结果获取的数据长度 2、异常 获取到的数据为空 3、返回数据的真实长度小于分页数 4、已查询20次，强制查询分页数据
+      if (
+        data.length === 0 ||
+        iwencaiStockResult.data.length >= iwencaiStockResult.length ||
+        data.length < maxPageSize ||
+        pageNum >= maxRequestTimes
+      ) {
+        break;
+      }
+    }
+  }
+
+  return iwencaiStockResult;
 }
 
 /**
@@ -46,6 +77,7 @@ export async function fetchIwencai(question, pageSize = 5, isPlate = false) {
     version: '2.0',
     question: question,
     perpage: pageSize,
+    // 已验证，爱问财接口 无法执行分页 2024-02-21 12:12:10
     page: 1,
     secondary_intent: isPlate ? 'zhishu' : 'stock',
     add_info: '{"urp":{"scene":1,"company":1,"business":1},"contentType":"json","searchInfo":true}',
@@ -67,8 +99,45 @@ export async function fetchIwencai(question, pageSize = 5, isPlate = false) {
     credentials: 'include',
   });
 
-  // const text = await result.text();
-  // return getIwencaiData(JSON.parse(text));
+  return await result.json();
+}
+
+/**
+ * 获取爱问财数据
+ * @param question
+ * @param pageSize
+ * @param isPlate
+ * @returns
+ */
+export async function getDataListByIwencai(question, pageSize = 5, pageNum = 1, condition) {
+  const body = {
+    urp_sort_way: 'desc',
+    query: question,
+    query_type: 'stock',
+    source: 'Ths_iwencai_Xuangu',
+    perpage: pageSize,
+    page: pageNum,
+    comp_id: 6836372,
+    uuid: 24087,
+    condition,
+  };
+
+  const result = await fetch('https://www.iwencai.com/gateway/urp/v7/landing/getDataList', {
+    headers: {
+      accept: 'application/json, text/plain, */*',
+      'accept-language': 'zh-CN,zh;q=0.9',
+      'cache-control': 'no-cache',
+      'content-type': 'application/x-www-form-urlencoded',
+      'hexin-v': createV(),
+      pragma: 'no-cache',
+    },
+    body: stringify(body),
+    referrerPolicy: 'strict-origin-when-cross-origin',
+    method: 'POST',
+    mode: 'cors',
+    credentials: 'include',
+  });
+
   return await result.json();
 }
 
