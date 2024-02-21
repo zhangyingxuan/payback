@@ -78,7 +78,17 @@ const updateBtns = [
   },
 ];
 
-async function updateMarkData(fetchTodayDataType: number, index: number, plateMode = false) {
+/**
+ * 更新市场数据
+ * @param fetchTodayDataType
+ * @param index
+ * @param plateMode
+ */
+async function updateMarkData(
+  fetchTodayDataType: number,
+  index: number,
+  plateMode = false,
+) {
   loadingMessage && loadingMessage.close();
   // 提示加载中
   loadingMessage = ElMessage({

@@ -82,8 +82,16 @@
                   </el-tooltip>
                 </div>
               </el-checkbox>
-              <el-checkbox v-model="data.firstBoardChecked" @change="handleFirstBoardChecked"> 首板 </el-checkbox>
-              <el-checkbox v-model="data.notFirstBoardChecked" @change="handleNotFirstBoardChecked">
+              <el-checkbox
+                v-model="data.firstBoardChecked"
+                @change="handleFirstBoardChecked"
+              >
+                首板
+              </el-checkbox>
+              <el-checkbox
+                v-model="data.notFirstBoardChecked"
+                @change="handleNotFirstBoardChecked"
+              >
                 连板
               </el-checkbox>
               <el-select
@@ -438,7 +446,6 @@ const stockGroupByPlateByFilter = computed(() => {
         if (data.biddingStrategyChecked && isAdd) {
           // ============ 竞价策略：高标的首板不能按首板考虑 !!!!!!============
           const evenBoardHeight = getRealEvenBoardHeight(item);
-          // if(item.evenBoardHeight)
           isAdd = isConformToMyStrategyChecked({ ...item, evenBoardHeight });
         }
         // 竞价符合条件个数
@@ -464,8 +471,12 @@ const stockGroupByPlateByFilter = computed(() => {
   return sortPlates(stockGroupByPlateCopy);
 });
 
-function updateNums(myStrategyCheckedNum: number, biddingStrategyCheckedNum: number, dailyLimitNum: number) {
-    data.myStrategyCheckedNum = myStrategyCheckedNum;
+function updateNums(
+  myStrategyCheckedNum: number,
+  biddingStrategyCheckedNum: number,
+  dailyLimitNum: number,
+) {
+  data.myStrategyCheckedNum = myStrategyCheckedNum;
   data.biddingStrategyCheckedNum = biddingStrategyCheckedNum;
   data.dailyLimitNum = dailyLimitNum;
 }
@@ -524,8 +535,7 @@ function isConformToMyStrategyChecked(stock: any) {
 
   const biddingData = stock.biddingData;
   // 超预期
-  let isConform =
-    (biddingData.expected === 2);
+  let isConform = biddingData.expected === 2;
   // 首板 必须竞价量比大于10，换手率>=5%
   if (stock.evenBoardHeight === '1' && isConform) {
     isConform =
@@ -558,14 +568,27 @@ function sortPlates(stockGroupByPlate: any) {
     stockGroupByPlateArr.push(o);
   });
 
-  // 按 行业板块 涨停数量降序
+  // 1. 按 行业板块 涨停数量降序
   stockGroupByPlateArr.sort((a: any, b: any) => {
     return b.value.length - a.value.length;
   });
-  // 按 满足筛选条件 个数数量 降序
+  // 2. 按 满足筛选条件 个数数量 降序
   stockGroupByPlateArr.sort((a: any, b: any) => {
     return b.value.len - a.value.len;
   });
+
+  //  3. 连板情况过滤时，强制按连板高度排序
+  let aHeight, bHeight;
+  if (data.notFirstBoardChecked) {
+    stockGroupByPlateArr.sort((a: any, b: any) => {
+      aHeight = +getRealEvenBoardHeight(a.value[0], true);
+      bHeight = +getRealEvenBoardHeight(b.value[0], true);
+      return bHeight - aHeight;
+    });
+  }
+
+  // 4. 超预期过滤时，按板块达标率排序
+
   return stockGroupByPlateArr;
 }
 
@@ -574,29 +597,11 @@ function sortPlates(stockGroupByPlate: any) {
  * @param stocks
  */
 function sortStocks(stocks: []) {
-  stocks.sort((a: any, b: any) => {
-    if (
-      a.evenBoardHeight.indexOf('，') > -1 &&
-      b.evenBoardHeight.indexOf('，') > -1
-    ) {
-      return (
-        +a.evenBoardHeight.split('，')[0] - +b.evenBoardHeight.split('，')[0]
-      );
-    }
-    if (a.evenBoardHeight.indexOf('天') > -1) {
-      if (a.evenBoardHeight.indexOf('，') > -1) {
-        return +a.evenBoardHeight.split('，')[0] >= +b.evenBoardHeight ? -1 : 1;
-      }
-      return -1;
-    }
-
-    return b.evenBoardHeight - a.evenBoardHeight;
-  });
   // 首板按涨停时间排序
   stocks.sort((a: any, b: any) => {
-    if (a.evenBoardHeight != '1' || b.evenBoardHeight != '1') {
-      return 0;
-    }
+    // if (a.evenBoardHeight != '1' || b.evenBoardHeight != '1') {
+    //   return 0;
+    // }
     const aStart =
       a.dailyTime.indexOf(',') > -1 ? a.dailyTime.split(',')[0] : a.dailyTime;
     const bStart =
@@ -605,6 +610,15 @@ function sortStocks(stocks: []) {
     return dayjs('2023-09-05' + aStart).isBefore(dayjs('2023-09-05' + bStart))
       ? -1
       : 1;
+  });
+
+  let aHeight, bHeight;
+  // 连板高度降序
+  stocks.sort((a: any, b: any) => {
+    aHeight = +getRealEvenBoardHeight(a, true);
+    bHeight = +getRealEvenBoardHeight(b, true);
+
+    return bHeight - aHeight;
   });
   return stocks;
 }

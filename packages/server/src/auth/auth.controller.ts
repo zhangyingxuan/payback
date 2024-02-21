@@ -40,8 +40,9 @@ export class AuthController {
       size: 4,
       noise: 2,
       color: true,
-      fontSize: 60,
-      // background: '#666',
+      fontSize: 80,
+      inverse: false,
+      background: '#F5F7FA',
     });
     req.session.captcha = captcha.text;
     res.set('Content-Type', 'image/svg+xml');

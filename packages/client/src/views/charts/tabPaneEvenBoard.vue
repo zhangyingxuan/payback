@@ -270,12 +270,12 @@ import dayjs from 'dayjs';
 let loadingMessage: any = null;
 type EvenBoard = {
   maxHeight: number;
-  createDate: String;
+  createDate: string;
 };
 let evenBoard = reactive<any>({ value: [] });
 
 const data: {
-  isShowContent: Boolean;
+  isShowContent: boolean;
   currentDateData: any;
   yesterdayDateData: any;
   currentDate: string;
@@ -406,6 +406,7 @@ async function handleRefreshBindingData(
     type: 'warning',
   });
   try {
+    // 更新 竞价
     if (isRefreshBidding) {
       // 根据更新范围，调用对应接口
       const res: any = await crawlBinddingData({
@@ -421,16 +422,30 @@ async function handleRefreshBindingData(
       data.currentDateData.newStock = data.yesterdayDateData.newStock;
       data.currentDateData.chooseStock = data.yesterdayDateData.chooseStock;
     } else {
-      // 爬取短线数据
+      // 更新 短线数据
       const res: any = await crawlTodayData({
         fetchTodayDataType: 1,
       });
 
       const eventData = transformEvenBoardData([res]);
-      // 更新顶部表格
-      evenBoard.value[0] = eventData[0];
       // 更新展开内容 短线部分
       data.currentDateData = eventData[0];
+      // - 判断是否为第一次更新,按日期判断
+      if (
+        dayjs(evenBoard.value[0].createDate).isSame(
+          dayjs(eventData[0].createDate),
+        )
+      ) {
+        // 非第一次更新
+        // 更新展开内容 短线部分
+        data.currentDateData = eventData[0];
+      } else {
+        // 第一次新增
+        evenBoard.value.push(eventData[0]);
+        // 还需获取竞价数据
+        await handleRefreshBindingData(true);
+        initPage(countDays.value);
+      }
     }
 
     ElMessage.success('更新成功！');
@@ -475,23 +490,6 @@ async function handleDateClick(item: any) {
   // 昨日涨停数据，只要不是列表数据最有一条，昨日涨停数据 = 当前日期张提数据之后的一条
   data.yesterdayDateData =
     index + 1 >= evenBoard.value.length ? [] : evenBoard.value[index + 1];
-
-  // console.log(evenBoard.value[index]);
-  // 获取复盘数据 TODO 暂时废弃 2023-10-12 11:31:12
-  // const result: any = await fetchReveiwDataByDate({ date: item.createTime });
-  // if (result) {
-  //   data.hasSummaryTableData = true;
-  //   data.summaryTableData[0].value = result.cycle
-  //     ? result.cycle
-  //     : getDateCycle();
-  //   data.summaryTableData[1].value = getDateCycle();
-  //   data.summaryTableData[2].value = result.marketScore;
-  //   data.summaryTableData[3].value = result.marketMood;
-  //   data.summaryTableData[4].value = result.totalLeader;
-  //   data.summaryTableData[5].value = result.plateLeader;
-  //   data.summaryTableData[6].value = result.strongestPlate;
-  //   data.summaryTableData[7].value = result.strongestTopic;
-  // }
 }
 
 const heightArr = computed(() => {
@@ -523,23 +521,6 @@ function getClassByHeight(height: any) {
     case 8:
     default:
       return 'height7';
-  }
-}
-
-// ========================================================================
-const now = dayjs();
-
-/**
- * 获取时间周期
- */
-function getDateCycle() {
-  const day = now.date();
-  if (day >= 1 && day <= 10) {
-    return '月初';
-  } else if (day > 10 && day <= 20) {
-    return '月中';
-  } else {
-    return '月末';
   }
 }
 
