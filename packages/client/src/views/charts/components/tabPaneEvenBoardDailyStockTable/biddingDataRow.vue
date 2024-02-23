@@ -1,6 +1,21 @@
 <!-- 集合竞价数据 -->
 <template>
   <div v-if="stock" class="biddingData__row">
+    <span class="middle" :class="{ 'red bold': stock.bidIncreaseT >= 7 }">
+      {{ stock.bidIncreaseT && +stock.bidIncreaseT.toFixed(2) }}
+    </span>
+    <span class="middle" :class="{ 'red bold': stock.expected === 2 }">
+      {{ getExpectedStr(stock.expected) }}
+    </span>
+    <span
+      class="middle"
+      :class="{
+        'red bold': stock.closeIncrease >= 5,
+        green: stock.closeIncrease < 0,
+      }"
+    >
+      {{ stock.closeIncrease }}
+    </span>
     [
     <span class="small" :class="calcClassByBidRating(stock.bidRating)"
       >{{ stock.bidRating }}
@@ -18,21 +33,7 @@
     <span class="middle" :class="{ 'red bold': stock.bidVolumeRatio >= 10 }">
       {{ stock.bidVolumeRatio }}
     </span>
-    <span class="middle" :class="{ 'red bold': stock.bidIncreaseT >= 7 }">
-      {{ stock.bidIncreaseT && +stock.bidIncreaseT.toFixed(2) }}
-    </span>
-    ]&nbsp;&nbsp;
-    <span class="middle" :class="{ 'red bold': stock.expected === 2 }">
-      {{ getExpectedStr(stock.expected) }}
-    </span>
-    <span
-      :class="{
-        'red bold': stock.closeIncrease >= 5,
-        green: stock.closeIncrease < 0,
-      }"
-    >
-      {{ stock.closeIncrease }}
-    </span>
+    ]
   </div>
 </template>
 <script lang="ts" setup>

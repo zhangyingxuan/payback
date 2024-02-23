@@ -7,124 +7,147 @@
     :dataList="data.summaryTableData"
     :isMobile="isMobile"
   />
-  <div :class="['table', { isMobile }]">
-    <div class="table__container">
-      <!-- 第一列，title -->
-      <div :class="['date-col first-col', { isMobile }]">
-        <div
-          class="table__header"
-          @click="
-            () => {
-              data.isShowContent = !data.isShowContent;
-            }
-          "
-        >
-          {{ data.isShowContent ? '收起' : '展开' }}
-          <el-checkbox v-if="!isMobile" v-model="data.showOp"></el-checkbox>
-        </div>
-        <div v-show="data.isShowContent" class="dynamic__col">
-          <div class="table-col height1">周期</div>
-          <div class="table-col height1">晋级率</div>
-          <!-- <div class="table-col height1">市场</div> -->
-          <div class="table-col height1">连板数</div>
-          <div class="table-col height1">涨停</div>
-          <div class="table-col height1">一字</div>
-          <div class="table-col height1">封板率</div>
-          <!-- <div class="table-col height1">炸板率</div> -->
-          <div class="table-col height1 green">跌停</div>
-          <div class="table-col height1 green">大面</div>
-          <div class="table-col">反包</div>
-          <template v-for="height in heightArr" :key="'row1' + height">
-            <div
-              :class="['table-col', getClassByHeight(height)]"
-              v-if="height != 1"
-            >
-              {{ height }}
-            </div>
-            <div v-else class="table-col height1">首板</div>
-          </template>
-          <div class="table-col downLimitStock__plate">跌停股</div>
-        </div>
-      </div>
 
-      <!-- 内容列，循环展示 -->
+  <div :class="['evenBoard__table', { isMobile }]">
+    <!-- 第一列，title -->
+    <div :class="['date-col first-col', { isMobile }]">
+      <div
+        class="table__header"
+        @click="
+          () => {
+            data.isShowContent = !data.isShowContent;
+          }
+        "
+      >
+        {{ data.isShowContent ? '收起' : '展开' }}
+        <el-checkbox v-if="!isMobile" v-model="data.showOp"></el-checkbox>
+      </div>
+      <div v-show="data.isShowContent" class="dynamic__col">
+        <div class="table-col height1">周期</div>
+        <div class="table-col height1">晋级率</div>
+        <!-- <div class="table-col height1">市场</div> -->
+        <div class="table-col height1">连板数</div>
+        <div class="table-col height1">涨停</div>
+        <div class="table-col height1">一字</div>
+        <div class="table-col height1">封板率</div>
+        <!-- <div class="table-col height1">炸板率</div> -->
+        <div class="table-col height1 green">跌停</div>
+        <div class="table-col height1 green">大面</div>
+        <div class="table-col">反包</div>
+        <template v-for="height in heightArr" :key="'row1' + height">
+          <div
+            :class="['table-col', getClassByHeight(height)]"
+            v-if="height != 1"
+          >
+            {{ height }}
+          </div>
+          <div v-else class="table-col height1">首板</div>
+        </template>
+        <div class="table-col downLimitStock__plate">跌停股</div>
+      </div>
+    </div>
+
+    <!-- 内容列，循环展示 -->
+    <div
+      :class="[
+        'date-col',
+        { isMobile },
+        { isMonday: judgeMonday(item.createTime) },
+      ]"
+      v-for="(item, index) in evenBoard.value"
+      :key="'evenBoard' + index"
+    >
+      <!-- 日期列 -->
       <div
         :class="[
-          'date-col',
-          { isMobile },
-          { isMonday: judgeMonday(item.createTime) },
+          'table__header',
+          { isActive: item.createDate === data.currentDate },
         ]"
-        v-for="(item, index) in evenBoard.value"
-        :key="'evenBoard' + index"
+        @click="handleDateClick(item)"
       >
-        <!-- 日期列 -->
-        <div
-          :class="[
-            'table__header',
-            { isActive: item.createDate === data.currentDate },
-          ]"
-          @click="handleDateClick(item)"
-        >
-          {{ item.createDate }}
-          <el-icon>
-            <SuccessFilled />
-          </el-icon>
-        </div>
+        {{ item.createDate }}
+        <el-icon>
+          <SuccessFilled />
+        </el-icon>
+      </div>
 
-        <div v-show="data.isShowContent" class="dynamic__col">
-          <!-- 周期 -->
-          <div class="table-col height1">
-            <el-tag class="ml-2" :type="getType(item.cycle)" effect="dark">{{
-              item.cycle
-            }}</el-tag>
-          </div>
-          <!-- 连板晋级率=今日连板家数/昨日涨停家数。 -->
-          <div
-            class="table-col height1"
-            :class="{
-              green:
-                calPromotionRate(item.evenBoardAmount, evenBoard.value, index) <
-                20,
-            }"
+      <div v-show="data.isShowContent" class="dynamic__col">
+        <!-- 周期 -->
+        <div class="table-col height1">
+          <el-tag class="ml-2" :type="getType(item.cycle)" effect="dark">{{
+            item.cycle
+          }}</el-tag>
+        </div>
+        <!-- 连板晋级率=今日连板家数/昨日涨停家数。 -->
+        <div
+          class="table-col height1"
+          :class="{
+            green:
+              calPromotionRate(item.evenBoardAmount, evenBoard.value, index) <
+              20,
+          }"
+        >
+          {{ calPromotionRate(item.evenBoardAmount, evenBoard.value, index) }}%
+        </div>
+        <!-- 连板数 -->
+        <div class="table-col height1">{{ item.evenBoardAmount }}</div>
+        <!-- 涨停数量 -->
+        <div
+          class="table-col height1"
+          :class="{ gray: item.dailyLimitQuantity < 50 }"
+        >
+          {{ item.dailyLimitQuantity }}
+        </div>
+        <!-- 一字 -->
+        <div class="table-col height1">
+          {{ item.yizi }}
+        </div>
+        <!-- 封板率 -->
+        <div
+          class="table-col height1"
+          :class="{ green: item.sealingRate < 70 }"
+        >
+          {{ item.sealingRate }}%
+        </div>
+        <!-- 跌停数 -->
+        <div class="table-col height1 green">
+          {{ item.downLimitQuantity }}
+        </div>
+        <!-- 大面数量 -->
+        <div class="table-col height1 green">
+          {{ item.hugeFallData ? item.hugeFallData.length : '' }}
+        </div>
+        <!-- 反包 -->
+        <div class="table-col">
+          <el-tooltip
+            effect="dark"
+            placement="top"
+            v-for="(stock, index) in item.evenBoardData.gaobiao"
+            :content="stock.reason"
+            :key="'stock' + index"
           >
-            {{
-              calPromotionRate(item.evenBoardAmount, evenBoard.value, index)
-            }}%
-          </div>
-          <!-- 连板数 -->
-          <div class="table-col height1">{{ item.evenBoardAmount }}</div>
-          <!-- 涨停数量 -->
+            <span>
+              <Stock
+                :showOp="data.showOp"
+                :name="stock.name"
+                :code="stock.code"
+              />
+              <span class="gray" style="display: inline-block">{{
+                stock.evenDays
+              }}</span>
+            </span>
+          </el-tooltip>
+        </div>
+        <template v-for="(height, index) in heightArr" :key="index">
           <div
-            class="table-col height1"
-            :class="{ gray: item.dailyLimitQuantity < 50 }"
+            :class="['table-col', getClassByHeight(height)]"
+            v-if="height != 1"
+            :key="'row' + height"
           >
-            {{ item.dailyLimitQuantity }}
-          </div>
-          <!-- 一字 -->
-          <div class="table-col height1">
-            {{ item.yizi }}
-          </div>
-          <!-- 封板率 -->
-          <div
-            class="table-col height1"
-            :class="{ green: item.sealingRate < 70 }"
-          >
-            {{ item.sealingRate }}%
-          </div>
-          <!-- 跌停数 -->
-          <div class="table-col height1 green">
-            {{ item.downLimitQuantity }}
-          </div>
-          <!-- 大面数量 -->
-          <div class="table-col height1 green">
-            {{ item.hugeFallData ? item.hugeFallData.length : '' }}
-          </div>
-          <!-- 反包 -->
-          <div class="table-col">
             <el-tooltip
               effect="dark"
               placement="top"
-              v-for="(stock, index) in item.evenBoardData.gaobiao"
+              v-for="(stock, index) in item.evenBoardData[height]"
               :content="stock.reason"
               :key="'stock' + index"
             >
@@ -134,64 +157,38 @@
                   :name="stock.name"
                   :code="stock.code"
                 />
-                <span class="gray" style="display: inline-block">{{
-                  stock.evenDays
-                }}</span>
               </span>
             </el-tooltip>
           </div>
-          <template v-for="(height, index) in heightArr" :key="index">
-            <div
-              :class="['table-col', getClassByHeight(height)]"
-              v-if="height != 1"
-              :key="'row' + height"
-            >
-              <el-tooltip
-                effect="dark"
-                placement="top"
-                v-for="(stock, index) in item.evenBoardData[height]"
-                :content="stock.reason"
-                :key="'stock' + index"
+          <div v-else class="table-col height1">
+            <span v-if="item.evenBoardData && item.evenBoardData[1]">{{
+              item.evenBoardData[1].length
+            }}</span>
+          </div>
+        </template>
+        <!-- 跌停数据 -->
+        <div class="table-col">
+          <el-tooltip
+            effect="dark"
+            placement="top"
+            v-for="(stock, index) in item.downLimitData"
+            :content="stock.plateLevel2"
+            :key="'downLimitStock' + index"
+          >
+            <span>
+              <Stock
+                :showOp="data.showOp"
+                :name="stock.name"
+                :code="stock.code"
+              />
+              <span
+                v-if="!isMobile"
+                class="downLimitStock__plate"
+                type="success"
+                >{{ stock.plateLevel2 }}</span
               >
-                <span>
-                  <Stock
-                    :showOp="data.showOp"
-                    :name="stock.name"
-                    :code="stock.code"
-                  />
-                </span>
-              </el-tooltip>
-            </div>
-            <div v-else class="table-col height1">
-              <span v-if="item.evenBoardData && item.evenBoardData[1]">{{
-                item.evenBoardData[1].length
-              }}</span>
-            </div>
-          </template>
-          <!-- 跌停数据 -->
-          <div class="table-col">
-            <el-tooltip
-              effect="dark"
-              placement="top"
-              v-for="(stock, index) in item.downLimitData"
-              :content="stock.plateLevel2"
-              :key="'downLimitStock' + index"
-            >
-              <span>
-                <Stock
-                  :showOp="data.showOp"
-                  :name="stock.name"
-                  :code="stock.code"
-                />
-                <span
-                  v-if="!isMobile"
-                  class="downLimitStock__plate"
-                  type="success"
-                  >{{ stock.plateLevel2 }}</span
-                >
-              </span>
-            </el-tooltip>
-          </div>
+            </span>
+          </el-tooltip>
         </div>
       </div>
     </div>
@@ -282,6 +279,8 @@ const data: {
   summaryTableData: any[];
   hasSummaryTableData: boolean;
   showOp: boolean;
+  virtualRef: any;
+  virtualRefData: any;
 } = reactive({
   isShowContent: true,
   showOp: false,
@@ -331,6 +330,8 @@ const data: {
     //   value: '资金净流入top3 + 板块',
     // },
   ],
+  virtualRef: null,
+  virtualRefData: null,
 });
 
 const siderBar = useSidebarStore();
@@ -480,7 +481,7 @@ function calPromotionRate(
  * @param item
  */
 async function handleDateClick(item: any) {
-  data.hasSummaryTableData = false;
+  // data.hasSummaryTableData = false;
   data.currentDate = item.createDate;
   // 根据创建时间获取当前 涨停数据
   const index = evenBoard.value.findIndex(
@@ -540,17 +541,6 @@ defineExpose({
   border-left: 1px solid @tableColumsBorderColor;
   border-top: 1px solid @tableColumsBorderColor;
 }
-.table {
-  padding: 0 15px;
-  margin-bottom: 10px;
-  // content-visibility: auto;
-  &.isMobile {
-    padding: 0;
-  }
-}
-.table * {
-  box-sizing: border-box;
-}
 
 .flex__row {
   display: flex;
@@ -568,7 +558,12 @@ defineExpose({
   align-content: center;
 }
 
-.table__container {
+.evenBoard__table * {
+  box-sizing: border-box;
+}
+
+.evenBoard__table {
+  margin: 0 15px 15px 10px;
   overflow: auto;
   display: flex;
   flex-direction: row;
@@ -576,6 +571,9 @@ defineExpose({
   // border-left: 1px solid @tableColumsBorderColor;
   .tableContentBorder();
   .tableColumsBorder();
+  &.isMobile {
+    margin: 0;
+  }
 
   .date-col {
     .flexCenter();

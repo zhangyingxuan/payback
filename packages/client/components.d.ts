@@ -58,6 +58,8 @@ declare module '@vue/runtime-core' {
     RouterView: typeof import('vue-router')['RouterView']
     Sidebar: typeof import('./src/components/sidebar.vue')['default']
     Stock: typeof import('./src/components/stock.vue')['default']
+    'Stock copy': typeof import('./src/components/stock copy.vue')['default']
+    StockPopover: typeof import('./src/components/stockPopover.vue')['default']
     Tags: typeof import('./src/components/tags.vue')['default']
   }
 }

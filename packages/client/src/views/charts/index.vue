@@ -1,8 +1,6 @@
 <template>
   <div :class="['optButtons', { isMobile }]" v-if="isShowUpdateBtn">
     <template v-for="(item, index) in updateBtns" :key="'updateButton' + index">
-      <!-- <<checkbox class="" value="" disabled="false" checked="false" color=""> -->
-      <!-- </checkbox> -->
       <el-switch
         v-if="item.type === 4"
         v-model="isRemoveIncompatible"
@@ -41,7 +39,7 @@
   </el-tabs>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, reactive, provide } from 'vue';
 import { isMobile } from '@/core/util';
 import { debounce } from 'lodash-es';
 import { ElMessage } from 'element-plus';

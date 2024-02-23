@@ -16,12 +16,15 @@
 }
 
 .table {
-  padding: 0 15px;
+  margin: 0 15px 15px 10px;
   font-size: 12px;
+  overflow: auto;
+  border-top: 1px solid @tableColumsBorderColor;
+  border-right: 1px solid @tableColumsBorderColor;
   // content-visibility: auto;
 
   &.isMobile {
-    padding: 0;
+    margin: 0;
     .table-row {
       .col1 {
         flex: 0 0 83px;
@@ -35,22 +38,16 @@
       }
     }
   }
-}
-
-.table__container {
-  overflow: auto;
-  border-top: 1px solid @tableColumsBorderColor;
-  border-right: 1px solid @tableColumsBorderColor;
 
   .table__header {
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    > .col1, > .col2 {
+    > .col1,
+    > .col2 {
       background-color: @tableColumsBorderColor;
     }
   }
-
 
   .table-row {
     display: flex;
@@ -68,7 +65,6 @@
     }
   }
 }
-
 
 .ticai__item:hover {
   color: #000;

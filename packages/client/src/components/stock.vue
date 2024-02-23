@@ -4,8 +4,7 @@
     :class="class"
     @click="handleClick"
     @dblclick="handleDblClick"
-    ref="stockRef"
-    v-click-outside="onClickOutside"
+    @mouseover="(e: Event) => handleShowPoper(e, superData)"
   >
     {{ superData.name }}
     <template v-if="superData.showCode">&nbsp;{{ superData.code }}</template>
@@ -22,35 +21,11 @@
       京
     </el-tag>
   </span>
-  <el-popover
-    trigger="hover"
-    placement="right"
-    popper-class="stockOp__popperClass"
-    ref="popoverRef"
-    virtual-triggering
-    :virtual-ref="stockRef"
-    v-if="isAdmin && showOp"
-  >
-    <template #default>
-      <el-button-group class="op__btnGroup">
-        <el-button @click="handleAdd" type="primary" :icon="Plus" />
-        <el-button @click="handleDel" type="primary" :icon="Minus" />
-      </el-button-group>
-    </template>
-  </el-popover>
 </template>
 <script lang="ts" setup>
-import { addThsSelfStock, delThsSelfStock } from '../api/thsTrade';
-import { Plus, Minus } from '@element-plus/icons-vue';
-import { ref, unref } from 'vue';
-import { ClickOutside as vClickOutside, ElMessage } from 'element-plus';
-import { isAdmin } from '@/store/permiss';
+import { inject } from 'vue';
 
-const stockRef = ref();
-const popoverRef = ref();
-const onClickOutside = () => {
-  unref(popoverRef) && unref(popoverRef).popperRef?.delayHide?.();
-};
+const showPoper: any = inject('showPoper');
 
 let timer: any = null;
 let superData = defineProps({
@@ -98,25 +73,8 @@ function handleDblClick() {
   window.open(iwencaiUrl.replace('${code}', superData.code), '_blank');
 }
 
-async function handleAdd() {
-  const result = await addThsSelfStock({ code: superData.code });
-  if (!result) {
-    ElMessage({
-      showClose: true,
-      message: '添加自选成功',
-      type: 'success',
-    });
-  }
-}
-async function handleDel() {
-  const result = await delThsSelfStock({ code: superData.code });
-  if (!result) {
-    ElMessage({
-      showClose: true,
-      message: '删除自选成功',
-      type: 'success',
-    });
-  }
+function handleShowPoper(e: Event, superData: any) {
+  showPoper(e.target, superData);
 }
 </script>
 

@@ -103,6 +103,7 @@ import { objectToArr, arrToObject } from './utils';
 import { getChartStyle } from './utils';
 import dayjs from 'dayjs';
 import { params } from 'pay-back-core';
+import { ElMessage } from 'element-plus';
 
 const data: any = reactive({
   ...getChartStyle(isMobile),
@@ -237,7 +238,9 @@ function updateDataClass(plates: any[], isHangye: boolean) {
  * 更新涨停家数较多的 板块数据
  */
 async function updateData() {
+  data.loading = true;
   const todayPlatesData: any = await crawlPlateData();
+  data.loading = false;
   const todayDate = dayjs(todayPlatesData.createTime).format('YYYY/MM/DD');
   // 按时间找到 今天的行业 数据，并替换为最新的
   const latestDataIndex = data.plateOrderByDailyLimit.findIndex(
@@ -246,7 +249,6 @@ async function updateData() {
       return currentDate === todayDate;
     },
   );
-  console.log(latestDataIndex);
   data.latestUpdateTimeOrderByDailyLimit = dayjs(
     todayPlatesData.createTime,
   ).format('MM/DD HH:mm');
@@ -261,7 +263,7 @@ async function updateData() {
       transformDailyLimitDataToObj(todayPlatesData),
     );
   }
-  // console.log(todayDate, todayPlatesData, latestDataIndex, data.plateOrderByDailyLimit);
+  ElMessage.success('更新成功');
 }
 
 initPageData();

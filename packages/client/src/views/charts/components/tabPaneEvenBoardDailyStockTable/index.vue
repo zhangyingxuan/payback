@@ -4,230 +4,224 @@
 <!-- 封单大于 1亿的 标红 -->
 <template>
   <div :class="['table', { isMobile }]">
-    <div class="table__container">
-      <div class="table__header table-row">
-        <div
-          class="col1"
-          @click="
-            () => {
-              data.isShowContent = !data.isShowContent;
-            }
-          "
-        >
-          行业板块&nbsp;
-          <el-icon v-if="!isMobile"><ArrowDownBold /></el-icon>
-        </div>
-        <div class="col2 red flex__row">
-          <!-- 涨停个股 过滤条件 -->
-          <div class="dailyLimit__content flex__row_header">
-            <div class="stocks_header">
-              {{ title || defaultTitle }}
-              ({{ currentDateData.dailyLimitQuantity }})
-              <el-tooltip
-                effect="dark"
-                popper-class="thsTooltip__content"
-                :content="
-                  title
-                    ? params.dailyLimitYesterday
-                    : params.dailyLimitMoreThan1
+    <div class="table__header table-row">
+      <div
+        class="col1"
+        @click="
+          () => {
+            data.isShowContent = !data.isShowContent;
+          }
+        "
+      >
+        行业板块&nbsp;
+        <el-icon v-if="!isMobile"><ArrowDownBold /></el-icon>
+      </div>
+      <div class="col2 red flex__row">
+        <!-- 涨停个股 过滤条件 -->
+        <div class="dailyLimit__content flex__row_header">
+          <div class="stocks_header">
+            {{ title || defaultTitle }}
+            ({{ currentDateData.dailyLimitQuantity }})
+            <el-tooltip
+              effect="dark"
+              popper-class="thsTooltip__content"
+              :content="
+                title ? params.dailyLimitYesterday : params.dailyLimitMoreThan1
+              "
+              placement="top"
+            >
+              <el-icon
+                @click.stop="
+                  openNewIwencaiWindow(
+                    title
+                      ? params.dailyLimitYesterday
+                      : params.dailyLimitMoreThan1,
+                  )
                 "
-                placement="top"
-              >
-                <el-icon
-                  @click.stop="
-                    openNewIwencaiWindow(
-                      title
-                        ? params.dailyLimitYesterday
-                        : params.dailyLimitMoreThan1,
-                    )
-                  "
-                  class="thsTooltip__icon"
-                  ><InfoFilled
-                /></el-icon>
-              </el-tooltip>
-              <el-button
-                v-if="isShowRefreshBtn"
-                @click="refreshBindingData"
-                style="margin: 0 5px"
-                type="primary"
-                plain
-                size="small"
-              >
-                更新{{ showBidding ? '竞价' : '短线' }}
-              </el-button>
+                class="thsTooltip__icon"
+                ><InfoFilled
+              /></el-icon>
+            </el-tooltip>
+            <el-button
+              v-if="isShowRefreshBtn"
+              @click="refreshBindingData"
+              style="margin: 0 5px"
+              type="primary"
+              plain
+              size="small"
+            >
+              更新{{ showBidding ? '竞价' : '短线' }}
+            </el-button>
 
-              <span class="dateTime__span">{{ updateTime }}</span>
+            <span class="dateTime__span">{{ updateTime }}</span>
 
-              <span
-                v-for="(item, index) in currentDateData.ticaiData"
-                :key="'span' + index"
-                @click.stop="handleTicaiClick(item.key)"
-                class="ticai__item"
-              >
-                {{ item.key }}{{ item.value }}&nbsp;
-              </span>
-            </div>
-
-            <div class="stocks_header">
-              <el-checkbox v-model="data.myStrategyChecked">
-                <div class="stocks_header">
-                  我的策略 ({{ data.myStrategyCheckedNum }})&nbsp;
-                  <el-tooltip
-                    class="box-item"
-                    effect="dark"
-                    content="价格低于30元，流通市值20-120亿，非ST，非科创，非创业板"
-                    placement="top"
-                  >
-                    <el-icon><InfoFilled /></el-icon>
-                  </el-tooltip>
-                </div>
-              </el-checkbox>
-              <el-checkbox
-                v-model="data.firstBoardChecked"
-                @change="handleFirstBoardChecked"
-              >
-                首板
-              </el-checkbox>
-              <el-checkbox
-                v-model="data.notFirstBoardChecked"
-                @change="handleNotFirstBoardChecked"
-              >
-                连板
-              </el-checkbox>
-              <el-select
-                class="select"
-                v-model="data.evenBoardHeight"
-                placeholder="连板高度"
-                size="small"
-              >
-                <el-option
-                  v-for="(item, index) in data.evenBoardHeightOptions"
-                  :key="index"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </div>
+            <span
+              v-for="(item, index) in currentDateData.ticaiData"
+              :key="'span' + index"
+              @click.stop="handleTicaiClick(item.key)"
+              class="ticai__item"
+            >
+              {{ item.key }}{{ item.value }}&nbsp;
+            </span>
           </div>
-          <!-- 集合竞价 过滤条件 -->
-          <div v-if="showBidding" class="biddingData__filter--row">
-            <el-checkbox v-model="data.biddingStrategyChecked">
+
+          <div class="stocks_header">
+            <el-checkbox v-model="data.myStrategyChecked">
               <div class="stocks_header">
-                竞价策略 ({{ data.biddingStrategyCheckedNum }})&nbsp;
+                我的策略 ({{ data.myStrategyCheckedNum }})&nbsp;
                 <el-tooltip
                   class="box-item"
                   effect="dark"
-                  content="超预期；换手率>=5%，竞价量比大于10（连板及反包除外）"
+                  content="价格低于30元，流通市值20-120亿，非ST，非科创，非创业板"
                   placement="top"
                 >
                   <el-icon><InfoFilled /></el-icon>
                 </el-tooltip>
-                <span class="red bold">
-                  &nbsp;{{
-                    (
-                      data.dailyLimitNum / data.biddingStrategyCheckedNum
-                    ).toFixed(2)
-                  }}
-                </span>
               </div>
             </el-checkbox>
-            <el-checkbox v-model="data.exceededExpect">超预期</el-checkbox>
-            <el-checkbox v-model="data.conformToExpect">符合预期</el-checkbox>
-            <el-checkbox v-model="data.openDailyLimimExclude">
-              去一字
+            <el-checkbox
+              v-model="data.firstBoardChecked"
+              @change="handleFirstBoardChecked"
+            >
+              首板
             </el-checkbox>
-            <el-checkbox v-model="data.closeDailyLimit">收盘涨停</el-checkbox>
+            <el-checkbox
+              v-model="data.notFirstBoardChecked"
+              @change="handleNotFirstBoardChecked"
+            >
+              连板
+            </el-checkbox>
+            <el-select
+              class="select"
+              v-model="data.evenBoardHeight"
+              placeholder="连板高度"
+              size="small"
+            >
+              <el-option
+                v-for="(item, index) in data.evenBoardHeightOptions"
+                :key="index"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
           </div>
+        </div>
+        <!-- 集合竞价 过滤条件 -->
+        <div v-if="showBidding" class="biddingData__filter--row">
+          <el-checkbox v-model="data.biddingStrategyChecked">
+            <div class="stocks_header">
+              竞价策略 ({{ data.biddingStrategyCheckedNum }})&nbsp;
+              <el-tooltip
+                class="box-item"
+                effect="dark"
+                content="超预期；换手率>=5%，竞价量比大于10（连板及反包除外）"
+                placement="top"
+              >
+                <el-icon><InfoFilled /></el-icon>
+              </el-tooltip>
+              <span class="red bold">
+                &nbsp;{{
+                  (data.dailyLimitNum / data.biddingStrategyCheckedNum).toFixed(
+                    2,
+                  )
+                }}
+              </span>
+            </div>
+          </el-checkbox>
+          <el-checkbox v-model="data.exceededExpect">超预期</el-checkbox>
+          <el-checkbox v-model="data.conformToExpect">符合预期</el-checkbox>
+          <el-checkbox v-model="data.openDailyLimimExclude">
+            去一字
+          </el-checkbox>
+          <el-checkbox v-model="data.closeDailyLimit">收盘涨停</el-checkbox>
         </div>
       </div>
+    </div>
 
-      <TabPaneEvenBoardDailyStockTableHeader
-        :showBidding="showBidding"
-        :platesLength="stockGroupByPlateByFilter.length"
-      />
+    <TabPaneEvenBoardDailyStockTableHeader
+      :showBidding="showBidding"
+      :platesLength="stockGroupByPlateByFilter.length"
+    />
 
-      <transition name="h1">
-        <div v-show="data.isShowContent" class="table__content">
-          <div
-            class="table-row"
-            v-for="(item, key) in stockGroupByPlateByFilter"
-            :key="key"
-          >
-            <div class="col1">
-              <PlateCol
-                :item="item"
-                :isMobile="isMobile"
-                :showBidding="showBidding"
-              />
-            </div>
-            <div class="col2">
-              <div
-                class="dailyLimit__row"
-                v-for="(stock, index) in item.value"
-                :key="'stock' + index"
+    <div
+      v-show="data.isShowContent"
+      class="table-row"
+      v-for="(item, key) in stockGroupByPlateByFilter"
+      :key="key"
+    >
+      <div class="col1">
+        <PlateCol
+          :item="item"
+          :isMobile="isMobile"
+          :showBidding="showBidding"
+        />
+      </div>
+      <div class="col2">
+        <div
+          class="dailyLimit__row"
+          v-for="(stock, index) in item.value"
+          :key="'stock' + index"
+        >
+          <div class="dailyLimit__content" v-show="stock.isAdd">
+            <Stock
+              v-if="stock.evenBoardHeight != 1"
+              class="red large--fixed"
+              :name="stock.name + '(' + stock.evenBoardHeight + ')'"
+              :code="stock.code"
+            />
+            <Stock v-else class="large" :name="stock.name" :code="stock.code" />
+            &nbsp;[&nbsp;
+            <span
+              class="orange content-large"
+              v-html="highlightKeyWord(stock.reason, keyword)"
+            ></span>
+            <span class="lanse middle">{{ stock.price }}</span>
+            <span
+              :class="{
+                'red bold': stock.closingFunds > 1,
+                middle: true,
+              }"
+            >
+              {{ stock.closingFunds }} 亿
+            </span>
+            <!-- 换手率 -->
+            <span
+              v-if="stock.turnoverRate"
+              :class="calcClass(stock)"
+              class="middle"
+            >
+              {{ stock.turnoverRate }} %
+            </span>
+            <span class="zise content-middle">
+              {{ stock.circulationValue }} 亿
+            </span>
+            <span class="large">
+              {{ transformTime(stock.dailyTime) }}
+              <!-- 如果是一字涨停，则标注 -->
+              <el-tag
+                v-if="stock.dailyTime === '09:30:00'"
+                size="small"
+                type="error"
+                round
+                >1</el-tag
               >
-                <div class="dailyLimit__content" v-show="stock.isAdd">
-                  <Stock
-                    v-if="stock.evenBoardHeight != 1"
-                    class="red large"
-                    :name="stock.name + '(' + stock.evenBoardHeight + ')'"
-                    :code="stock.code"
-                  />
-                  <Stock
-                    v-else
-                    class="large"
-                    :name="stock.name"
-                    :code="stock.code"
-                  />
-                  &nbsp;[&nbsp;
-                  <span
-                    class="orange content-large"
-                    v-html="highlightKeyWord(stock.reason, keyword)"
-                  ></span>
-                  <span class="lanse middle">{{ stock.price }}</span>
-                  <span
-                    :class="{
-                      'red bold': stock.closingFunds > 1,
-                      middle: true,
-                    }"
-                  >
-                    {{ stock.closingFunds }} 亿
-                  </span>
-                  <!-- 换手率 -->
-                  <span
-                    v-if="stock.turnoverRate"
-                    :class="calcClass(stock)"
-                    class="middle"
-                  >
-                    {{ stock.turnoverRate }} %
-                  </span>
-                  <span class="zise content-middle">
-                    {{ stock.circulationValue }} 亿
-                  </span>
-                  <span class="large">
-                    {{ transformTime(stock.dailyTime) }}
-                  </span>
-                  <span class="lvse small text-center">
-                    {{ stock.openTimes }}
-                  </span>
-                  ]&nbsp;&nbsp;
-                  <span class="red bold middle">{{
-                    getExpectedStr(stock)
-                  }}</span>
-                  <span v-if="stock.turnoverType" class="red large">
-                    {{ stock.turnoverType }}
-                  </span>
-                </div>
-                <TabPaneEvenBoardBiddingDataRow
-                  v-if="showBidding"
-                  :stock="stock.biddingData"
-                  v-show="stock.isAdd"
-                />
-              </div>
-            </div>
+            </span>
+            <span class="lvse small text-center">
+              {{ stock.openTimes }}
+            </span>
+            ]&nbsp;&nbsp;
+            <span class="red bold middle">{{ getExpectedStr(stock) }}</span>
+            <!-- <span v-if="stock.turnoverType" class="red large">
+              {{ stock.turnoverType }}
+            </span> -->
           </div>
+          <TabPaneEvenBoardBiddingDataRow
+            v-if="showBidding"
+            :stock="stock.biddingData"
+            v-show="stock.isAdd"
+          />
         </div>
-      </transition>
+      </div>
     </div>
   </div>
 </template>

@@ -28,7 +28,9 @@
               +{{ plate.quoteChange }}%
             </span>
             <span v-else class="green"> {{ plate.quoteChange }}%</span>
-            <span class="tag" v-if="plate.turnover">{{ plate.turnover }} 亿</span>
+            <span class="tag" v-if="plate.turnover"
+              >{{ plate.turnover }} 亿</span
+            >
           </div>
         </div>
         <!-- 行业跌 -->
@@ -51,7 +53,6 @@
   </div>
 </template>
 <script lang="ts" setup>
-import _ from 'lodash-es';
 import { judgeMonday } from '../utils';
 
 let superData = defineProps({

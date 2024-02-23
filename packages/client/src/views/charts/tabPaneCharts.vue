@@ -1,22 +1,16 @@
 <template>
   <div
-    class="noice__container"
+    class="el-alert el-alert--error is-light noice__container"
     v-if="data.latestConceptPlates && data.latestConceptPlates.length > 0"
   >
-    <div class="el-alert el-alert--error is-light">
-      <div class="el-alert__content">
-        <span class="el-alert__title">
-          <span
-            v-for="(item, index) in data.latestConceptPlates"
-            :key="index"
-            class="latestConceptPlates__item"
-          >
-            <Plate :name="item.name" :code="item.code" />
-            <span>{{ item.createTime }}</span>
-          </span>
-        </span>
-      </div>
-    </div>
+    <span
+      v-for="(item, index) in data.latestConceptPlates"
+      :key="index"
+      class="latestConceptPlates__item"
+    >
+      <Plate :name="item.name" :code="item.code" />
+      <span>{{ item.createTime }}</span>
+    </span>
   </div>
   <div class="chartList__container">
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
@@ -157,7 +151,7 @@ const longhuListChart = ref(); // 龙虎榜Chart
 
 // 监听变化，重新请求数据
 watch(countDays, async val => {
-  await initPage();
+  await initPage(val);
 });
 
 // 获取15天内最新概念
@@ -172,7 +166,7 @@ findConceptPlateWithinNDays({ limit: 15 }).then((result: any) => {
 });
 
 onMounted(async () => {
-  await initPage();
+  await initPage(countDays.value);
   window.addEventListener(
     'resize',
     debounce(() => {
@@ -183,8 +177,7 @@ onMounted(async () => {
   );
 });
 
-async function initPage() {
-  const pageSize: number = countDays.value;
+async function initPage(pageSize = 15) {
   // 初始化龙虎榜数据
   initlonghuListChart(pageSize);
 
@@ -390,6 +383,7 @@ defineExpose({
 
 .noice__container {
   margin-bottom: 15px;
+  font-size: 12px;
   .latestConceptPlates__item {
     margin-right: 20px;
     > span {

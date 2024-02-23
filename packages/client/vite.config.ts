@@ -1,7 +1,8 @@
 import { UserConfigExport, loadEnv, ConfigEnv } from 'vite';
 import { resolve } from "path";
 import vue from '@vitejs/plugin-vue';
-import VueSetupExtend from 'vite-plugin-vue-setup-extend';
+// 暂时注释 该插件，便于调试，该插件用于 steup语法糖下 按组件name 区分
+// import VueSetupExtend from 'vite-plugin-vue-setup-extend';
 import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
@@ -104,7 +105,7 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 					drop_debugger: true,
 				},
 			},
-			sourcemap: false,
+			sourcemap: true,
 		},
 		plugins: [
 			compress({ threshold: 10240 }), // gzip 压缩
@@ -119,7 +120,7 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 			}),
 			// markdownLoader(),
 			vue(),
-			VueSetupExtend(),
+			// VueSetupExtend(),
 			AutoImport({
 				resolvers: [ElementPlusResolver()]
 			}),

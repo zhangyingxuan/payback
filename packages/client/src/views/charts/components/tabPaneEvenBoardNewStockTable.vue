@@ -1,123 +1,118 @@
 <!-- 集合竞价数据 -->
 <template>
   <div :class="['table', { isMobile }]" v-if="stockGroupByPlate.length > 0">
-    <div class="table__container">
-      <div class="table__header table-row">
-        <div
-          class="col1"
-          @click="
-            () => {
-              data.isShowContent = !data.isShowContent;
-            }
-          "
+    <div class="table__header table-row">
+      <div
+        class="col1"
+        @click="
+          () => {
+            data.isShowContent = !data.isShowContent;
+          }
+        "
+      >
+        行业板块&nbsp;
+        <el-icon v-if="!isMobile"><ArrowDownBold /></el-icon>
+      </div>
+      <div class="col2 red stocks_header">
+        新股
+        <el-tooltip
+          effect="dark"
+          :content="params.chooseStockNewStock"
+          placement="top"
         >
-          行业板块&nbsp;
-          <el-icon v-if="!isMobile"><ArrowDownBold /></el-icon>
-        </div>
-        <div class="col2 red stocks_header">
-          新股
-          <el-tooltip
-            effect="dark"
-            :content="params.chooseStockNewStock"
-            placement="top"
-          >
-            <el-icon
-              @click="openNewIwencaiWindow(params.chooseStockNewStock)"
-              class="thsTooltip__icon"
-              ><InfoFilled
-            /></el-icon>
-          </el-tooltip>
-          <span class="dateTime__span">{{ updateTime }}</span>
-        </div>
+          <el-icon
+            @click="openNewIwencaiWindow(params.chooseStockNewStock)"
+            class="thsTooltip__icon"
+            ><InfoFilled
+          /></el-icon>
+        </el-tooltip>
+        <span class="dateTime__span">{{ updateTime }}</span>
       </div>
-      <div class="table__header table-row">
-        <div class="col1">板块名</div>
-        <div class="col2">
-          <span class="stock large">个股名</span>
-          [
-          <span class="small">竞价</span>
-          <span class="middle">竞价评级</span>
-          <span class="middle lanse">股价</span>
-          <!-- <span class="middle"> 换手率 </span> -->
-          <span class="middle">流通市值</span>
-          <span class="middle red">竞价涨幅</span>
-          ]&nbsp;&nbsp;
-          <span class="middle red">收盘涨幅</span>
-          <span class="middle">区间收益</span>
-        </div>
-      </div>
-
-      <!-- 内容区域 start -->
-      <div v-show="data.isShowContent" class="table__content">
-        <div
-          class="table-row"
-          v-for="(item, key) in stockGroupByPlate"
-          :key="key"
-        >
-          <div class="col1">
-            <div>
-              <span class="zise">{{ item.key }}</span>
-              <br v-if="isMobile" />
-              <span v-if="item.value.length > 1">
-                &nbsp;{{ item.value.length }}
-              </span>
-            </div>
-          </div>
-          <div :class="`col2 ${isMobile ? 'isMobile' : ''}`">
-            <div v-for="(stock, index) in item.value" :key="'stock' + index">
-              <Stock class="large" :name="stock.name" :code="stock.code" />
-              [ &nbsp;<span
-                class="small"
-                :class="calcClassByBidRating(stock.bidRating)"
-                >{{ stock.bidRating }}</span
-              >
-              <span
-                class="middle"
-                :class="{
-                  'red bold':
-                    stock.bidChangeTypeT === '竞价抢筹' ||
-                    stock.bidChangeTypeT === '大幅高开',
-                }"
-              >
-                {{ stock.bidChangeTypeT }}&nbsp;
-              </span>
-              <span class="lanse middle">{{ stock.price }}</span>
-              <!-- 换手率 -->
-              <span v-if="stock.turnoverRate" class="middle">
-                换手率{{ stock.turnoverRate }} %
-              </span>
-              <span class="zise middle">{{ stock.circulationValue }}亿</span>
-              <span
-                :class="{ 'red bold': stock.bidIncreaseT >= 7, middle: true }"
-              >
-                {{ stock.bidIncreaseT && +stock.bidIncreaseT.toFixed(2) }}
-              </span>
-              ]&nbsp;&nbsp;
-              <span
-                :class="{
-                  'red bold': stock.closeIncrease >= 5,
-                  green: stock.closeIncrease < 0,
-                  middle: true,
-                }"
-              >
-                {{ stock.closeIncrease }}
-              </span>
-              <span
-                class="middle"
-                :class="
-                  stock.closeIncrease - stock.bidIncreaseT >= 0
-                    ? 'red bold'
-                    : 'green'
-                "
-              >
-                {{ (stock.closeIncrease - stock.bidIncreaseT).toFixed(2) }}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- 内容区域 end -->
     </div>
+    <div class="table__header table-row">
+      <div class="col1">板块名</div>
+      <div class="col2">
+        <span class="stock large">个股名</span>
+        [
+        <span class="small">竞价</span>
+        <span class="middle">竞价评级</span>
+        <span class="middle lanse">股价</span>
+        <!-- <span class="middle"> 换手率 </span> -->
+        <span class="middle">流通市值</span>
+        <span class="middle red">竞价涨幅</span>
+        ]&nbsp;&nbsp;
+        <span class="middle red">收盘涨幅</span>
+        <span class="middle">区间收益</span>
+      </div>
+    </div>
+
+    <!-- 内容区域 start -->
+    <div
+      v-show="data.isShowContent"
+      class="table-row"
+      v-for="(item, key) in stockGroupByPlate"
+      :key="key"
+    >
+      <div class="col1">
+        <div>
+          <span class="zise">{{ item.key }}</span>
+          <br v-if="isMobile" />
+          <span v-if="item.value.length > 1">
+            &nbsp;{{ item.value.length }}
+          </span>
+        </div>
+      </div>
+      <div :class="`col2 ${isMobile ? 'isMobile' : ''}`">
+        <div v-for="(stock, index) in item.value" :key="'stock' + index">
+          <Stock class="large" :name="stock.name" :code="stock.code" />
+          [ &nbsp;<span
+            class="small"
+            :class="calcClassByBidRating(stock.bidRating)"
+            >{{ stock.bidRating }}</span
+          >
+          <span
+            class="middle"
+            :class="{
+              'red bold':
+                stock.bidChangeTypeT === '竞价抢筹' ||
+                stock.bidChangeTypeT === '大幅高开',
+            }"
+          >
+            {{ stock.bidChangeTypeT }}&nbsp;
+          </span>
+          <span class="lanse middle">{{ stock.price }}</span>
+          <!-- 换手率 -->
+          <span v-if="stock.turnoverRate" class="middle">
+            换手率{{ stock.turnoverRate }} %
+          </span>
+          <span class="zise middle">{{ stock.circulationValue }}亿</span>
+          <span :class="{ 'red bold': stock.bidIncreaseT >= 7, middle: true }">
+            {{ stock.bidIncreaseT && +stock.bidIncreaseT.toFixed(2) }}
+          </span>
+          ]&nbsp;&nbsp;
+          <span
+            :class="{
+              'red bold': stock.closeIncrease >= 5,
+              green: stock.closeIncrease < 0,
+              middle: true,
+            }"
+          >
+            {{ stock.closeIncrease }}
+          </span>
+          <span
+            class="middle"
+            :class="
+              stock.closeIncrease - stock.bidIncreaseT >= 0
+                ? 'red bold'
+                : 'green'
+            "
+          >
+            {{ (stock.closeIncrease - stock.bidIncreaseT).toFixed(2) }}
+          </span>
+        </div>
+      </div>
+    </div>
+    <!-- 内容区域 end -->
   </div>
 </template>
 <script lang="ts" setup>

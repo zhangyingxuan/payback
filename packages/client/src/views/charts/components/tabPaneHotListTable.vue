@@ -3,57 +3,55 @@
   <!-- 行数取决于 时间范围内 最高连板 -->
   <!-- 列数取决于 日期数量 -->
   <div class="table">
-    <div class="table__container">
+    <div
+      :class="[
+        'date-col',
+        {
+          isMobile: isMobile,
+          isMonday: judgeMonday(item.createTime),
+        },
+      ]"
+      v-for="(item, index) in data"
+      :key="'evenBoard' + index"
+    >
+      <div class="table__header">
+        {{ item.updatedTime }} {{ getCurrentDay(item.createTime) }}
+      </div>
       <div
-        :class="[
-          'date-col',
-          {
-            isMobile: isMobile,
-            isMonday: judgeMonday(item.createTime),
-          },
-        ]"
-        v-for="(item, index) in data"
-        :key="'evenBoard' + index"
+        v-for="(hot, index) in item[type]"
+        class="table-col"
+        :key="'row' + index"
       >
-        <div class="table__header">
-          {{ item.updatedTime }} {{ getCurrentDay(item.createTime) }}
+        <div class="name__row flexBetween">
+          <Stock
+            v-if="type.includes('stock')"
+            :name="hot.name"
+            :code="hot.code"
+          />
+          <Plate v-else :name="hot.name" :code="hot.code" />
+          <span v-if="hot.rise_and_fall > 0" class="rise">
+            +{{ hot.rise_and_fall }}%</span
+          >
+          <span v-else class="fall"> {{ hot.rise_and_fall }}%</span>
         </div>
-        <div
-          v-for="(hot, index) in item[type]"
-          class="table-col"
-          :key="'row' + index"
-        >
-          <div class="name__row flexBetween">
-            <Stock
-              v-if="type.includes('stock')"
-              :name="hot.name"
-              :code="hot.code"
-            />
-            <Plate v-else :name="hot.name" :code="hot.code" />
-            <span v-if="hot.rise_and_fall > 0" class="rise">
-              +{{ hot.rise_and_fall }}%</span
-            >
-            <span v-else class="fall"> {{ hot.rise_and_fall }}%</span>
+        <div class="flexBetween">
+          <div v-if="hot.hot_tag" class="tag red">
+            <div class="tabBorder red"></div>
+            {{ hot.hot_tag }}
           </div>
-          <div class="flexBetween">
-            <div v-if="hot.hot_tag" class="tag red">
-              <div class="tabBorder red"></div>
-              {{ hot.hot_tag }}
-            </div>
-            <template v-if="Array.isArray(hot.tag)">
-              <div
-                v-for="(tag, index) in hot.tag"
-                :key="'tag' + index"
-                class="tag"
-              >
-                <div class="tabBorder"></div>
-                {{ tag }}
-              </div>
-            </template>
-            <div v-else-if="hot.tag" class="tag">
+          <template v-if="Array.isArray(hot.tag)">
+            <div
+              v-for="(tag, index) in hot.tag"
+              :key="'tag' + index"
+              class="tag"
+            >
               <div class="tabBorder"></div>
-              {{ hot.tag }}
+              {{ tag }}
             </div>
+          </template>
+          <div v-else-if="hot.tag" class="tag">
+            <div class="tabBorder"></div>
+            {{ hot.tag }}
           </div>
         </div>
       </div>
@@ -96,15 +94,12 @@ defineProps({
   justify-content: center;
   align-content: center;
 }
-.table {
-  overflow: auto;
-  // content-visibility: auto;
-}
 .table * {
   box-sizing: border-box;
 }
 
-.table__container {
+.table {
+  overflow: auto;
   display: flex;
   flex-direction: row;
   text-align: center;
@@ -195,7 +190,7 @@ defineProps({
     .tableColumsBorder();
     justify-content: flex-start;
     white-space: nowrap;
-    >div {
+    > div {
       min-height: 18px;
     }
   }
