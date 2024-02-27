@@ -4,7 +4,7 @@
     :class="class"
     @click="handleClick"
     @dblclick="handleDblClick"
-    @mouseover="(e: Event) => handleShowPoper(e, superData)"
+    @mouseover="(e: Event) => handleShowMoreInfo(e)"
   >
     {{ superData.name }}
     <template v-if="superData.showCode">&nbsp;{{ superData.code }}</template>
@@ -26,6 +26,7 @@
 import { inject } from 'vue';
 
 const showPoper: any = inject('showPoper');
+const showTooltip: any = inject('showTooltip');
 
 let timer: any = null;
 let superData = defineProps({
@@ -48,6 +49,14 @@ let superData = defineProps({
   showOp: {
     type: Boolean,
     default: true,
+  },
+  showTooltip: {
+    type: Boolean,
+    default: false,
+  },
+  toolTipContent: {
+    type: String,
+    default: '',
   },
 });
 
@@ -73,8 +82,9 @@ function handleDblClick() {
   window.open(iwencaiUrl.replace('${code}', superData.code), '_blank');
 }
 
-function handleShowPoper(e: Event, superData: any) {
-  showPoper(e.target, superData);
+function handleShowMoreInfo(e: Event) {
+  superData.showOp && showPoper(e.target, superData);
+  superData.showTooltip && showTooltip(e.target, superData);
 }
 </script>
 

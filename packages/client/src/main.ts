@@ -6,6 +6,7 @@ import 'element-plus/dist/index.css';
 import './assets/css/icon.css';
 import Stock from './components/stock.vue';
 import StockPopover from './components/stockPopover.vue';
+import StockTooltip from './components/stockTooltip.vue';
 import Plate from './components/plate.vue';
 import { init as VMdEditorInit } from '@/core/VMdEditor';
 import { init as ElementPlusInit } from '@/core/ElementPlus';
@@ -31,6 +32,7 @@ app.use(router);
 // 全局组件注册
 app.component('Stock', Stock);
 app.component('StockPopover', StockPopover);
+app.component('StockTooltip', StockTooltip);
 app.component('Plate', Plate);
 
 app.mount('#app');

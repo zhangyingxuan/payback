@@ -169,7 +169,12 @@
               :name="stock.name + '(' + stock.evenBoardHeight + ')'"
               :code="stock.code"
             />
-            <Stock v-else class="large" :name="stock.name" :code="stock.code" />
+            <Stock
+              v-else
+              class="large--fixed"
+              :name="stock.name"
+              :code="stock.code"
+            />
             &nbsp;[&nbsp;
             <span
               class="orange content-large"
@@ -201,7 +206,7 @@
               <el-tag
                 v-if="stock.dailyTime === '09:30:00'"
                 size="small"
-                type="error"
+                type="danger"
                 round
                 >1</el-tag
               >

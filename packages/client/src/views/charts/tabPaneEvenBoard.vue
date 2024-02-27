@@ -119,24 +119,21 @@
         </div>
         <!-- 反包 -->
         <div class="table-col">
-          <el-tooltip
-            effect="dark"
-            placement="top"
+          <span
             v-for="(stock, index) in item.evenBoardData.gaobiao"
-            :content="stock.reason"
             :key="'stock' + index"
           >
-            <span>
-              <Stock
-                :showOp="data.showOp"
-                :name="stock.name"
-                :code="stock.code"
-              />
-              <span class="gray" style="display: inline-block">{{
-                stock.evenDays
-              }}</span>
+            <Stock
+              :showTooltip="true"
+              :toolTipContent="stock.reason"
+              :showOp="data.showOp"
+              :name="stock.name"
+              :code="stock.code"
+            />
+            <span class="gray" style="display: inline-block">
+              {{ stock.evenDays }}
             </span>
-          </el-tooltip>
+          </span>
         </div>
         <template v-for="(height, index) in heightArr" :key="index">
           <div
@@ -144,21 +141,15 @@
             v-if="height != 1"
             :key="'row' + height"
           >
-            <el-tooltip
-              effect="dark"
-              placement="top"
+            <Stock
               v-for="(stock, index) in item.evenBoardData[height]"
-              :content="stock.reason"
               :key="'stock' + index"
-            >
-              <span>
-                <Stock
-                  :showOp="data.showOp"
-                  :name="stock.name"
-                  :code="stock.code"
-                />
-              </span>
-            </el-tooltip>
+              :showTooltip="true"
+              :toolTipContent="stock.reason"
+              :showOp="data.showOp"
+              :name="stock.name"
+              :code="stock.code"
+            />
           </div>
           <div v-else class="table-col height1">
             <span v-if="item.evenBoardData && item.evenBoardData[1]">{{
@@ -168,27 +159,24 @@
         </template>
         <!-- 跌停数据 -->
         <div class="table-col">
-          <el-tooltip
-            effect="dark"
-            placement="top"
+          <span
             v-for="(stock, index) in item.downLimitData"
-            :content="stock.plateLevel2"
             :key="'downLimitStock' + index"
           >
-            <span>
-              <Stock
-                :showOp="data.showOp"
-                :name="stock.name"
-                :code="stock.code"
-              />
-              <span
-                v-if="!isMobile"
-                class="downLimitStock__plate"
-                type="success"
-                >{{ stock.plateLevel2 }}</span
-              >
-            </span>
-          </el-tooltip>
+            <Stock
+              :showTooltip="true"
+              :toolTipContent="stock.reason"
+              :showOp="data.showOp"
+              :name="stock.name"
+              :code="stock.code"
+            />
+            <span
+              v-if="!isMobile"
+              class="downLimitStock__plate"
+              type="success"
+              >{{ stock.plateLevel2 }}</span
+            >
+          </span>
         </div>
       </div>
     </div>

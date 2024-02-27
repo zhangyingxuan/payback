@@ -45,7 +45,7 @@
         <template #label>
           <div class="cell-item">
             2.发酵（行情确认，分歧转一致的过程）
-            <el-tag size="small" type="error">【赚钱】</el-tag>
+            <el-tag size="small" type="danger">【赚钱】</el-tag>
           </div>
         </template>
         特征：出现一只打破空间&gt;=5，带动板块，赚钱效应启动，并出现涨停潮（情绪发酵期是龙头股选手大展身手、上仓位的最关键阶段），连板股数量&gt;=10；没有天地板、炸板大面票，昨日断板票今天会有修复，大长腿也经常出现<br />
@@ -56,7 +56,7 @@
         <template #label>
           <div class="cell-item">
             3. 高潮期(加速上涨，龙头筑顶）
-            <el-tag size="small" type="error">【赚钱】</el-tag>
+            <el-tag size="small" type="danger">【赚钱】</el-tag>
           </div>
         </template>
         特征：市场总龙头开始震荡筑顶，各种加速缩量板甚至连续一字板个股出现，且出现补涨龙时，指数情绪周期彻底达到高潮。板块出现批量涨停潮，连板股数量&gt;=15；梯队整齐，几乎没有高位炸板、炸板大面、昨日涨停今天跌停、昨日涨停今天闷杀，无-&gt;10%短线大面股<br />

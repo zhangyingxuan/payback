@@ -5,7 +5,7 @@
     popper-class="stockOp__popperClass"
     virtual-triggering
     :virtual-ref="virtualRef"
-    v-if="isAdmin && virtualRefData?.showOp"
+    v-if="isAdmin"
   >
     <template #default>
       <el-button-group class="op__btnGroup">
