@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.promiseLimit = exports.modifyThsSelfStocksRequest = exports.ThsOprate = exports.fetchNorhFunds = exports.fetchMarketPoint = exports.fetchMarketPointFromEastmoney = exports.clearThsSelfStocks = exports.fetchMarketData = exports.getDataListByIwencai = exports.fetchIwencai = exports.fetchStocksByIwencai = exports.fetchIwencaiApi = void 0;
+exports.promiseLimit = exports.modifyThsSelfPlatesRequest = exports.modifyThsSelfStocksRequest = exports.ThsOprate = exports.fetchNorhFunds = exports.fetchMarketPoint = exports.fetchMarketPointFromEastmoney = exports.clearThsSelfStocks = exports.fetchMarketData = exports.getDataListByIwencai = exports.fetchIwencai = exports.fetchStocksByIwencai = exports.fetchIwencaiApi = void 0;
 const hexin_v_1 = require("./hexin-v");
 const node_fetch_1 = require("node-fetch");
 const commonUtil_1 = require("../utils/commonUtil");
@@ -238,6 +238,39 @@ async function modifyThsSelfStocksRequest(code, userid, ticket, user, type = Ths
     return await result.json();
 }
 exports.modifyThsSelfStocksRequest = modifyThsSelfStocksRequest;
+async function modifyThsSelfPlatesRequest(code, userid, ticket, user, type = ThsOprate.add) {
+    const payload = {
+        add: 'add',
+        del: 'remove',
+    };
+    const result = await (0, node_fetch_1.default)('https://www.iwencai.com/iwencai/userinfo/iwc/userinfo/self-stock/index/' + payload[type], {
+        headers: {
+            accept: 'application/json, text/javascript, */*; q=0.01',
+            'accept-language': 'zh-CN,zh;q=0.9',
+            'cache-control': 'no-cache',
+            pragma: 'no-cache',
+            'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
+            'sec-ch-ua-mobile': '?0',
+            'sec-ch-ua-platform': '"macOS"',
+            'sec-fetch-dest': 'empty',
+            'sec-fetch-mode': 'cors',
+            'sec-fetch-site': 'same-origin',
+            'x-requested-with': 'XMLHttpRequest',
+            Cookie: `userid=${userid}; u_name=mo_${userid}; escapename=mo_${userid}; user=${user}; ticket=${ticket};`,
+        },
+        referrer: `https://www.iwencai.com/unifiedwap/result?w=${code}%20&querytype=zhishu`,
+        referrerPolicy: 'strict-origin-when-cross-origin',
+        body: {
+            codes: code + '_48',
+            type: 2,
+        },
+        method: 'POST',
+        mode: 'cors',
+        credentials: 'include',
+    });
+    return await result.json();
+}
+exports.modifyThsSelfPlatesRequest = modifyThsSelfPlatesRequest;
 function promiseLimit(promises, limit) {
     return new Promise(resolve => {
         let resolvedCount = 0;

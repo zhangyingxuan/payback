@@ -5,6 +5,7 @@ import { shortTermData } from '../entities/shortTermData.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getShortTermData, mergeExtra2ShortTermData, getShortTermDataByDate } from '../utils/shortTermUtil';
 import { ThsService } from './ths.service';
+import { SystemConfigService } from './systemConfig.service';
 import * as dayjs from 'dayjs';
 import { Cron } from '@nestjs/schedule';
 import { SpecialStockService } from './specialStock.service';
@@ -14,8 +15,9 @@ export class ShorTermService {
   constructor(
     private readonly thsService: ThsService,
     private readonly specialStockService: SpecialStockService,
+    private readonly systemConfigService: SystemConfigService,
     @InjectRepository(shortTermData) private readonly shortTermDataRp: Repository<shortTermData>,
-  ) {}
+  ) { }
 
   private readonly logger = new Logger(ShorTermService.name);
 
@@ -24,10 +26,13 @@ export class ShorTermService {
   // * 10 * * * *：每小时一次，十分钟开始
   // 0 */30 9-17 * * *：上午九时至下午五时，每三十分钟一次
   // 0 30 11 * * 1-5：星期一至星期五上午11:30
-  @Cron('0 20 15 * * 1-5')
+  @Cron('0 12 13 * * 1-5')
   async autoCrawlShortTermDataLateSession() {
     const result = await this.crawlShortTermData();
-    process.env.NODE_ENV !== 'dev' && this.thsService.modifyThsSelfStocks(JSON.parse(result.evenBoardData));
+    const sysTemconfig = await this.systemConfigService.findLatestOne();
+    const isAutoModifyThsSelfStocks = process.env.NODE_ENV !== 'dev' && sysTemconfig.isAutoAddSelfStock;
+    // 读取配置中是否加入自选
+    isAutoModifyThsSelfStocks && this.thsService.modifyThsSelfStocks(JSON.parse(result.evenBoardData));
   }
 
   // 午盘

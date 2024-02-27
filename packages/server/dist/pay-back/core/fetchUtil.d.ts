@@ -18,5 +18,6 @@ export declare enum ThsOprate {
     exc = "exc"
 }
 export declare function modifyThsSelfStocksRequest(code: any, userid: any, ticket: any, user: any, type?: ThsOprate): Promise<any>;
+export declare function modifyThsSelfPlatesRequest(code: any, userid: any, ticket: any, user: any, type?: ThsOprate): Promise<any>;
 export declare function promiseLimit(promises: any, limit: any): Promise<unknown>;
 export {};

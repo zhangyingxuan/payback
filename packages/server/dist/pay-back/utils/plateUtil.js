@@ -23,9 +23,9 @@ exports.default = {
         const gainianDailyLimitDataTop = getPlateTop(gainianDailyLimitData, dateStr);
         const hangyeDailyLimitDataTop = getPlateTop(hangyeDailyLimitData, dateStr);
         createPlateDataDto.gainianDailyLimitData = JSON.stringify(gainianDailyLimitDataTop);
-        createPlateDataDto.gainianDailyLimitNum = gainianDailyLimitDataTop[0].num;
+        createPlateDataDto.gainianDailyLimitNum = gainianDailyLimitDataTop ? gainianDailyLimitDataTop[0].num : 0;
         createPlateDataDto.hangyeDailyLimitData = JSON.stringify(hangyeDailyLimitDataTop);
-        createPlateDataDto.hangyeDailyLimitNum = hangyeDailyLimitDataTop[0].num;
+        createPlateDataDto.hangyeDailyLimitNum = hangyeDailyLimitDataTop ? hangyeDailyLimitDataTop[0].num : 0;
         createPlateDataDto.createTime = new Date();
         return createPlateDataDto;
     },

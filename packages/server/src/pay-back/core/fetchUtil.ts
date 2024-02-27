@@ -321,6 +321,52 @@ export async function modifyThsSelfStocksRequest(code, userid, ticket, user, typ
 }
 
 /**
+ * 修改 同花顺 自选板块 2024-02-27
+ * @param code
+ * @param userid
+ * @param ticket
+ * @param user
+ * @param type
+ * @returns
+ */
+export async function modifyThsSelfPlatesRequest(code, userid, ticket, user, type = ThsOprate.add) {
+  const payload = {
+    add: 'add',
+    del: 'remove',
+  };
+
+  const result = await fetch(
+    'https://www.iwencai.com/iwencai/userinfo/iwc/userinfo/self-stock/index/' + payload[type],
+    {
+      headers: {
+        accept: 'application/json, text/javascript, */*; q=0.01',
+        'accept-language': 'zh-CN,zh;q=0.9',
+        'cache-control': 'no-cache',
+        pragma: 'no-cache',
+        'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"macOS"',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-origin',
+        'x-requested-with': 'XMLHttpRequest',
+        Cookie: `userid=${userid}; u_name=mo_${userid}; escapename=mo_${userid}; user=${user}; ticket=${ticket};`,
+      },
+      referrer: `https://www.iwencai.com/unifiedwap/result?w=${code}%20&querytype=zhishu`,
+      referrerPolicy: 'strict-origin-when-cross-origin',
+      body: {
+        codes: code + '_48',
+        type: 2,
+      },
+      method: 'POST',
+      mode: 'cors',
+      credentials: 'include',
+    },
+  );
+  return await result.json();
+}
+
+/**
  * 并发限制
  * @param promises
  * @param limit

@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { modifyThsSelfStocksRequest, clearThsSelfStocks } from '../core/fetchUtil';
+import { modifyThsSelfStocksRequest, modifyThsSelfPlatesRequest } from '../core/fetchUtil';
 import { AsynTaskIterator, dailyLimitOptionalStrategy } from 'pay-back-core';
 import { UsersService } from '../../users/users.service';
 
@@ -46,10 +46,15 @@ function prepareSelfStock(i, stocks, app, userid, ticket, user) {
 
 @Injectable()
 export class ThsService {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   private readonly logger = new Logger(ThsService.name);
 
+  /**
+   * 同步 今日 连板数据
+   * @param evenBoardData
+   * @returns
+   */
   async modifyThsSelfStocks(evenBoardData) {
     const userInfo = await this.usersService.getUserByAccount('admin');
     // 1、获取用户信息
@@ -88,7 +93,7 @@ export class ThsService {
     };
   }
   /**
-   *
+   *  更新单个自选股（用于手动操作新增 或 删除 自选）
    * @param code
    * @returns
    */
@@ -125,7 +130,7 @@ export class ThsService {
     };
   }
   /**
-   * 批量处理 添加/删除 自选个股
+   * 批量处理 添加/删除 自选个股（用于去除 竞价不及预期的个股）
    */
   async batchUpdateThsSelfStock(stocks = [], type) {
     const app = new AsynTaskIterator();
@@ -157,6 +162,44 @@ export class ThsService {
       });
 
       app.run(this);
+    } catch (e) {
+      isSuccess = false;
+      this.logger.log('updateThsSelfStock[' + type + '] 失败了！' + e);
+    }
+    return {
+      code: isSuccess ? 200 : 400,
+    };
+  }
+
+  /**
+   *  更新单个自选板块（用于手动操作新增板块）
+   * @param code
+   * @returns
+   */
+  async updateThsSelfPlate(code, type) {
+    const userInfo = await this.usersService.getUserByAccount('admin');
+    // 1、获取用户信息
+    const userid = atob(userInfo.userid);
+    const ticket = userInfo.ticket;
+    const user = userInfo.user;
+    // 重置成功状态
+    isSuccess = true;
+
+    try {
+      const result = await modifyThsSelfPlatesRequest(code, userid, ticket, user, type);
+      // this.logger.log(result);
+      if (result.errorCode !== 0) {
+        if (result.errorMsg === '当前用户未登录') {
+          this.logger.log('[updateThsSelfStock] 当前用户未登录：https://www.10jqka.com.cn/');
+          // 清理用户信息缓存
+          this.usersService.clearUserInfoCache();
+        }
+        isSuccess = false;
+        return {
+          code: 400,
+          data: result.errorMsg,
+        };
+      }
     } catch (e) {
       isSuccess = false;
       this.logger.log('updateThsSelfStock[' + type + '] 失败了！' + e);

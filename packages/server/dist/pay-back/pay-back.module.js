@@ -17,6 +17,7 @@ const latestConceptPlate_service_1 = require("./service/latestConceptPlate.servi
 const review_service_1 = require("./service/review.service");
 const specialStock_service_1 = require("./service/specialStock.service");
 const ths_service_1 = require("./service/ths.service");
+const systemConfig_service_1 = require("./service/systemConfig.service");
 const apiTest_service_1 = require("./service/apiTest.service");
 const ths_trade_controller_1 = require("./ths-trade.controller");
 const pay_back_controller_1 = require("./pay-back.controller");
@@ -29,6 +30,7 @@ const fundsData_entity_1 = require("./entities/fundsData.entity");
 const hotList_entity_1 = require("./entities/hotList.entity");
 const latestConceptPlate_entity_1 = require("./entities/latestConceptPlate.entity");
 const review_entity_1 = require("./entities/review.entity");
+const systemConfig_entity_1 = require("./entities/systemConfig.entity");
 const users_module_1 = require("../users/users.module");
 let PayBackModule = class PayBackModule {
 };
@@ -43,6 +45,7 @@ PayBackModule = __decorate([
             typeorm_1.TypeOrmModule.forFeature([hotList_entity_1.hotList]),
             typeorm_1.TypeOrmModule.forFeature([fundsData_entity_1.fundsData]),
             typeorm_1.TypeOrmModule.forFeature([review_entity_1.reviewData]),
+            typeorm_1.TypeOrmModule.forFeature([systemConfig_entity_1.systemConfig]),
             typeorm_1.TypeOrmModule.forFeature([latestConceptPlate_entity_1.latestConceptPlate]),
         ],
         controllers: [pay_back_controller_1.PayBackController, ths_trade_controller_1.ThsTradeController],
@@ -56,6 +59,7 @@ PayBackModule = __decorate([
             latestConceptPlate_service_1.LatestConceptPlateService,
             review_service_1.ReviewService,
             ths_service_1.ThsService,
+            systemConfig_service_1.SystemConfigService,
             apiTest_service_1.ApiTestService,
         ],
     })
