@@ -417,8 +417,7 @@ async function handleRefreshBindingData(
       });
 
       const eventData = transformEvenBoardData([res]);
-      // 更新展开内容 短线部分
-      data.currentDateData = eventData[0];
+
       // - 判断是否为第一次更新,按日期判断
       if (
         dayjs(evenBoard.value[0].createDate).isSame(
@@ -426,11 +425,22 @@ async function handleRefreshBindingData(
         )
       ) {
         // 非第一次更新
+        // 备份今日数据
+        const temp = JSON.parse(JSON.stringify(data.currentDateData));
         // 更新顶部表格
         evenBoard.value[0] = eventData[0];
+        // 更新展开内容 短线部分
+        data.currentDateData = eventData[0];
+        // 保留 竞价原来的部分
+        data.currentDateData.biddingDataUpdateTime = temp.biddingDataUpdateTime;
+        data.currentDateData.newStock = temp.newStock;
+        data.currentDateData.chooseStock = temp.chooseStock;
       } else {
         // 第一次新增
+        // 更新顶部表格
         evenBoard.value.push(eventData[0]);
+        // 更新展开内容 短线部分
+        data.currentDateData = eventData[0];
         // 还需获取竞价数据
         await handleRefreshBindingData(true);
         initPage(countDays.value);
