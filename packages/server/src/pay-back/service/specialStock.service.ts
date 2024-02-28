@@ -16,7 +16,7 @@ export class SpecialStockService {
   constructor(
     @InjectRepository(specialStock) private readonly specialStockRp: Repository<specialStock>,
     private readonly thsService: ThsService,
-  ) {}
+  ) { }
 
   private readonly logger = new Logger(SpecialStockService.name);
 
@@ -34,14 +34,7 @@ export class SpecialStockService {
   async crawlBinddingData(isRemoveIncompatible = 0) {
     this.logger.debug('autoCrawlBinddingData is Begining!');
 
-    let isExist = false;
-    // 如果存在数据，则返回已有该数据
     const todayDateStr = new Date().toLocaleDateString();
-    const todayDataFromDB = await this.getTodayData(todayDateStr);
-
-    if (todayDataFromDB) {
-      isExist = true;
-    }
     const specialStockDto: SpecialStockDto = new SpecialStockDto();
     try {
       const yesterdayDateStr = await this.getLastTradingDayByDB(todayDateStr);
@@ -59,10 +52,13 @@ export class SpecialStockService {
       specialStockDto.updatedTime = new Date();
 
       // 处理不及预期个股
-      this.dealIncompatibleExpectStocks(isRemoveIncompatible, dailyLimitYesterdayBidding);
+      isRemoveIncompatible && this.dealIncompatibleExpectStocks(dailyLimitYesterdayBidding);
 
       // console.log(specialStockDto);
-      if (isExist) {
+
+      // 如果存在数据
+      const todayDataFromDB = await this.getTodayData(todayDateStr);
+      if (todayDataFromDB) {
         this.logger.log('autoCrawlBinddingData 更新数据');
         await this.specialStockRp.update(todayDataFromDB.id, specialStockDto);
       } else {
@@ -83,21 +79,19 @@ export class SpecialStockService {
    * 处理不及预期个股
    * @returns
    */
-  async dealIncompatibleExpectStocks(isRemoveIncompatible, dailyLimitYesterdayBidding) {
+  async dealIncompatibleExpectStocks(dailyLimitYesterdayBidding) {
     // 删除不及预期个股
-    if (isRemoveIncompatible) {
-      this.logger.log('dealIncompatibleExpectStocks 删除不及预期个股');
-      const incompatibleExpectStocks = [];
+    this.logger.log('dealIncompatibleExpectStocks 删除不及预期个股');
+    const incompatibleExpectStocks = [];
 
-      dailyLimitYesterdayBidding.forEach(stock => {
-        // 将不及预期个股 加入数组 （保留非首板 evenDays 有值则是非首板 2024-01-07 19:47:33 by zyx）
-        if (!stock.evenDays && stock.expected === ExpectEnum.incompatible) {
-          incompatibleExpectStocks.push(stock);
-        }
-      });
-      // 批量 剔除低于预期的昨日涨停个股（首板），集合竞价开盘价低于预期， 且成交量不足，未匹配量；
-      this.thsService.batchUpdateThsSelfStock(incompatibleExpectStocks, ThsOprate.del);
-    }
+    dailyLimitYesterdayBidding.forEach(stock => {
+      // 将不及预期个股 加入数组 （保留非首板 evenDays 有值则是非首板 2024-01-07 19:47:33 by zyx）
+      if (!stock.evenDays && stock.expected === ExpectEnum.incompatible) {
+        incompatibleExpectStocks.push(stock);
+      }
+    });
+    // 批量 剔除低于预期的昨日涨停个股（首板），集合竞价开盘价低于预期， 且成交量不足，未匹配量；
+    this.thsService.batchUpdateThsSelfStock(incompatibleExpectStocks, ThsOprate.del);
   }
 
   /**
@@ -123,7 +117,7 @@ export class SpecialStockService {
       .createQueryBuilder('special_stock')
       .offset(0)
       .limit(len)
-      .orderBy('createTime', 'DESC')
+      .orderBy('updatedTime', 'DESC')
       .getMany();
   }
 
@@ -137,7 +131,7 @@ export class SpecialStockService {
       .offset(0)
       .limit(2)
       .select(['special_stock.createTime'])
-      .orderBy('createTime', 'DESC')
+      .orderBy('updatedTime', 'DESC')
       .getMany();
 
     const currentDate = dayjs(todayDateStr).format(iWencaiDateFormat);

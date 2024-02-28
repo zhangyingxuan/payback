@@ -34,19 +34,15 @@ let PlateService = PlateService_1 = class PlateService {
     }
     async crawlPlateData() {
         this.logger.debug('crawlPlateData is Begining!');
-        let isExist = false;
         const todayDateStr = new Date().toLocaleDateString();
-        const todayDataFromDB = await this.plateDataRp
-            .createQueryBuilder('plate_data')
-            .where('plate_data.createTime like :createTime', { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
-            .getOne();
-        if (todayDataFromDB) {
-            isExist = true;
-        }
         let plateData;
         try {
             plateData = await plateUtil_1.default.getPlateData(dayjs(todayDateStr).format('YYYYMMDD'));
-            if (isExist) {
+            const todayDataFromDB = await this.plateDataRp
+                .createQueryBuilder('plate_data')
+                .where('plate_data.createTime like :createTime', { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
+                .getOne();
+            if (todayDataFromDB) {
                 this.logger.log('crawlPlateData 更新数据');
                 await this.plateDataRp.update(todayDataFromDB.id, plateData);
             }

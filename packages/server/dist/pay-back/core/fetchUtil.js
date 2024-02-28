@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.promiseLimit = exports.modifyThsSelfPlatesRequest = exports.modifyThsSelfStocksRequest = exports.ThsOprate = exports.fetchNorhFunds = exports.fetchMarketPoint = exports.fetchMarketPointFromEastmoney = exports.clearThsSelfStocks = exports.fetchMarketData = exports.getDataListByIwencai = exports.fetchIwencai = exports.fetchStocksByIwencai = exports.fetchIwencaiApi = void 0;
+exports.promiseLimit = exports.modifyThsSelfPlatesRequest = exports.modifyThsSelfStocksRequest = exports.ThsOprate = exports.fetchNorhFunds = exports.fetchMarketPoint = exports.fetchMarketPointFromEastmoney = exports.clearThsSelfStocks = exports.fetchMarketData = exports.fetchStockPagingDataList = exports.fetchIwencai = exports.fetchAllStocksByIwencai = exports.fetchIwencaiApi = void 0;
 const hexin_v_1 = require("./hexin-v");
 const node_fetch_1 = require("node-fetch");
 const commonUtil_1 = require("../utils/commonUtil");
@@ -11,16 +11,15 @@ async function fetchIwencaiApi(question, pageSize = 5) {
     return (0, commonUtil_1.getIwencaiData)(result);
 }
 exports.fetchIwencaiApi = fetchIwencaiApi;
-async function fetchStocksByIwencai(question, pageSize = 50) {
-    pageSize = pageSize > maxPageSize ? maxPageSize : pageSize;
+async function fetchAllStocksByIwencai(question, limit = null) {
     let pageNum = 1;
     const maxRequestTimes = 20;
     let data;
-    let result = await fetchIwencai(question, pageSize, false);
+    let result = await fetchIwencai(question, limit ? limit : maxPageSize, false);
     const iwencaiStockResult = (0, commonUtil_1.getStocksDataByIwencai)(result);
-    if (iwencaiStockResult.length > iwencaiStockResult.data.length) {
+    if (iwencaiStockResult.length > iwencaiStockResult.data.length && !limit) {
         while (true) {
-            result = await getDataListByIwencai(question, pageSize, ++pageNum, iwencaiStockResult.condition);
+            result = await fetchStockPagingDataList(question, maxPageSize, ++pageNum, iwencaiStockResult.condition);
             data = (0, commonUtil_1.getStocksPagingDataByIwencai)(result);
             iwencaiStockResult.data.push(...data);
             if (data.length === 0 ||
@@ -33,7 +32,7 @@ async function fetchStocksByIwencai(question, pageSize = 50) {
     }
     return iwencaiStockResult;
 }
-exports.fetchStocksByIwencai = fetchStocksByIwencai;
+exports.fetchAllStocksByIwencai = fetchAllStocksByIwencai;
 async function fetchIwencai(question, pageSize = 5, isPlate = false) {
     const body = {
         source: 'Ths_iwencai_Xuangu',
@@ -62,7 +61,7 @@ async function fetchIwencai(question, pageSize = 5, isPlate = false) {
     return await result.json();
 }
 exports.fetchIwencai = fetchIwencai;
-async function getDataListByIwencai(question, pageSize = 5, pageNum = 1, condition) {
+async function fetchStockPagingDataList(question, pageSize = 5, pageNum = 1, condition) {
     const body = {
         urp_sort_way: 'desc',
         query: question,
@@ -91,7 +90,7 @@ async function getDataListByIwencai(question, pageSize = 5, pageNum = 1, conditi
     });
     return await result.json();
 }
-exports.getDataListByIwencai = getDataListByIwencai;
+exports.fetchStockPagingDataList = fetchStockPagingDataList;
 async function fetchMarketData() {
     const result = await (0, node_fetch_1.default)('http://q.10jqka.com.cn/api.php?t=indexflash&', {
         headers: {

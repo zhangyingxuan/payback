@@ -9,7 +9,7 @@ import { CreatePlateDataDto } from '../dto/create-plate-data.dto';
 
 @Injectable()
 export class PlateService {
-  constructor(@InjectRepository(plateData) private readonly plateDataRp: Repository<plateData>) {}
+  constructor(@InjectRepository(plateData) private readonly plateDataRp: Repository<plateData>) { }
 
   private readonly logger = new Logger(PlateService.name);
 
@@ -26,22 +26,19 @@ export class PlateService {
 
   async crawlPlateData() {
     this.logger.debug('crawlPlateData is Begining!');
-    let isExist = false;
-    // 如果存在数据，则返回已有该数据
     const todayDateStr = new Date().toLocaleDateString();
-    const todayDataFromDB = await this.plateDataRp
-      .createQueryBuilder('plate_data')
-      .where('plate_data.createTime like :createTime', { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
-      .getOne();
 
-    if (todayDataFromDB) {
-      isExist = true;
-    }
     let plateData: CreatePlateDataDto;
     try {
       plateData = await plateUtil.getPlateData(dayjs(todayDateStr).format('YYYYMMDD'));
       // console.log(plateData);
-      if (isExist) {
+
+      // 如果存在数据，则返回已有该数据
+      const todayDataFromDB = await this.plateDataRp
+        .createQueryBuilder('plate_data')
+        .where('plate_data.createTime like :createTime', { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
+        .getOne();
+      if (todayDataFromDB) {
         this.logger.log('crawlPlateData 更新数据');
         await this.plateDataRp.update(todayDataFromDB.id, plateData);
       } else {
@@ -52,9 +49,6 @@ export class PlateService {
       this.logger.debug('crawlPlateData is success!');
     } catch (e) {
       this.logger.error('出错啦！！！', e);
-      // this.logger.debug('crawlPlateData retry！playWrightUtil.getplateData');
-      // plateData = await playWrightUtil.getplateData(dayjs(todayDateStr).format('YYYYMMDD'));
-      // console.log(plateData);
     }
 
     return plateData;

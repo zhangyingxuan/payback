@@ -9,7 +9,7 @@ import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class FundsService {
-  constructor(@InjectRepository(fundsData) private readonly fundsDataRp: Repository<fundsData>) {}
+  constructor(@InjectRepository(fundsData) private readonly fundsDataRp: Repository<fundsData>) { }
 
   private readonly logger = new Logger(FundsService.name);
 
@@ -32,23 +32,19 @@ export class FundsService {
   // 0 30 11 * * 1-5：星期一至星期五上午11:30
   async crawlfundsData() {
     this.logger.debug('crawlfundsData is Begining!');
-    let isExist = false;
-    // 如果存在数据，则返回已有该数据
     const todayDateStr = new Date().toLocaleDateString();
-    const todayDataFromDB = await this.fundsDataRp
-      .createQueryBuilder('market_data')
-      .where('market_data.createTime like :createTime', { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
-      .getOne();
-
-    if (todayDataFromDB) {
-      isExist = true;
-    }
     let fundsData: CreateFundsDataDto;
     try {
       fundsData = await fundsUtil.getFundsData(dayjs(todayDateStr).format('YYYYMMDD'));
-      // console.log(fundsData);
+      // 如果存在数据，则返回已有该数据
+      const todayDataFromDB = await this.fundsDataRp
+        .createQueryBuilder('market_data')
+        .where('market_data.createTime like :createTime', {
+          createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%',
+        })
+        .getOne();
 
-      if (isExist) {
+      if (todayDataFromDB) {
         this.logger.log('crawlfundsData 更新数据');
         await this.fundsDataRp.update(todayDataFromDB.id, fundsData);
       } else {

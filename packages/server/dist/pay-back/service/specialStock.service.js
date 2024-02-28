@@ -40,12 +40,7 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
     }
     async crawlBinddingData(isRemoveIncompatible = 0) {
         this.logger.debug('autoCrawlBinddingData is Begining!');
-        let isExist = false;
         const todayDateStr = new Date().toLocaleDateString();
-        const todayDataFromDB = await this.getTodayData(todayDateStr);
-        if (todayDataFromDB) {
-            isExist = true;
-        }
         const specialStockDto = new special_stock_dto_1.SpecialStockDto();
         try {
             const yesterdayDateStr = await this.getLastTradingDayByDB(todayDateStr);
@@ -56,8 +51,9 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
                 chooseStock1Expected,
             });
             specialStockDto.updatedTime = new Date();
-            this.dealIncompatibleExpectStocks(isRemoveIncompatible, dailyLimitYesterdayBidding);
-            if (isExist) {
+            isRemoveIncompatible && this.dealIncompatibleExpectStocks(dailyLimitYesterdayBidding);
+            const todayDataFromDB = await this.getTodayData(todayDateStr);
+            if (todayDataFromDB) {
                 this.logger.log('autoCrawlBinddingData 更新数据');
                 await this.specialStockRp.update(todayDataFromDB.id, specialStockDto);
             }
@@ -73,17 +69,15 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
         }
         return specialStockDto;
     }
-    async dealIncompatibleExpectStocks(isRemoveIncompatible, dailyLimitYesterdayBidding) {
-        if (isRemoveIncompatible) {
-            this.logger.log('dealIncompatibleExpectStocks 删除不及预期个股');
-            const incompatibleExpectStocks = [];
-            dailyLimitYesterdayBidding.forEach(stock => {
-                if (!stock.evenDays && stock.expected === transformDataUtil_1.ExpectEnum.incompatible) {
-                    incompatibleExpectStocks.push(stock);
-                }
-            });
-            this.thsService.batchUpdateThsSelfStock(incompatibleExpectStocks, fetchUtil_1.ThsOprate.del);
-        }
+    async dealIncompatibleExpectStocks(dailyLimitYesterdayBidding) {
+        this.logger.log('dealIncompatibleExpectStocks 删除不及预期个股');
+        const incompatibleExpectStocks = [];
+        dailyLimitYesterdayBidding.forEach(stock => {
+            if (!stock.evenDays && stock.expected === transformDataUtil_1.ExpectEnum.incompatible) {
+                incompatibleExpectStocks.push(stock);
+            }
+        });
+        this.thsService.batchUpdateThsSelfStock(incompatibleExpectStocks, fetchUtil_1.ThsOprate.del);
     }
     getTodayData(todayDateStr) {
         return this.specialStockRp
@@ -101,7 +95,7 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
             .createQueryBuilder('special_stock')
             .offset(0)
             .limit(len)
-            .orderBy('createTime', 'DESC')
+            .orderBy('updatedTime', 'DESC')
             .getMany();
     }
     async getLastTradingDayByDB(todayDateStr) {
@@ -110,7 +104,7 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
             .offset(0)
             .limit(2)
             .select(['special_stock.createTime'])
-            .orderBy('createTime', 'DESC')
+            .orderBy('updatedTime', 'DESC')
             .getMany();
         const currentDate = dayjs(todayDateStr).format(pay_back_core_1.iWencaiDateFormat);
         let lastTradingDay = dayjs(dateArr[0].createTime).format(pay_back_core_1.iWencaiDateFormat);

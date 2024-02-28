@@ -46,16 +46,12 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
     }
     async crawlShortTermData() {
         this.logger.debug('crawlShortTermData is Begining!');
-        let isExist = false;
         const todayDateStr = new Date().toLocaleDateString();
-        const todayDataFromDB = await this.getTodayData(todayDateStr);
-        if (todayDataFromDB) {
-            isExist = true;
-        }
         let createPayBackDto;
         try {
             createPayBackDto = await (0, shortTermUtil_1.getShortTermData)(todayDateStr);
-            if (isExist) {
+            const todayDataFromDB = await this.getTodayData(todayDateStr);
+            if (todayDataFromDB) {
                 this.logger.log('crawlShortTermData 更新数据');
                 await this.shortTermDataRp.update(todayDataFromDB.id, createPayBackDto);
             }
@@ -72,11 +68,6 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
     }
     async crawlShortTermDataByDate(todayDateStr) {
         this.logger.debug('crawlShortTermDataByDate is Begining!');
-        let isExist = false;
-        const todayDataFromDB = await this.getTodayData(todayDateStr);
-        if (todayDataFromDB) {
-            isExist = true;
-        }
         let createPayBackDto;
         try {
             createPayBackDto = await (0, shortTermUtil_1.getShortTermDataByDate)(todayDateStr);
@@ -84,7 +75,8 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
             dateTime.setHours(15);
             dateTime.setMinutes(55);
             createPayBackDto.createTime = dateTime;
-            if (isExist) {
+            const todayDataFromDB = await this.getTodayData(todayDateStr);
+            if (todayDataFromDB) {
                 this.logger.log('crawlShortTermData 更新数据');
                 await this.shortTermDataRp.update(todayDataFromDB.id, createPayBackDto);
             }

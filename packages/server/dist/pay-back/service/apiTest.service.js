@@ -20,7 +20,6 @@ const hotList_entity_1 = require("../entities/hotList.entity");
 const typeorm_2 = require("@nestjs/typeorm");
 const node_fetch_1 = require("node-fetch");
 const hexin_v_1 = require("../core/hexin-v");
-const zlib = require('node:zlib');
 const qs_1 = require("qs");
 const fetchUtil_1 = require("../core/fetchUtil");
 const apiUrls = {
@@ -148,7 +147,7 @@ let ApiTestService = ApiTestService_1 = class ApiTestService {
             .catch(e => console.error(e));
     }
     async otherTest() {
-        const chooseStock1ExpectedRs = await (0, fetchUtil_1.fetchStocksByIwencai)('竞价看多；竞价抢筹；竞价涨幅>0；10个交易日内有涨停；昨日未涨停；集中度70<=11；昨日收盘获利>=50%；行业；股价低于30元；流通市值<=120亿；流通市值>=20亿；非创业板；非科创板；非ST', 100);
+        const chooseStock1ExpectedRs = await (0, fetchUtil_1.fetchAllStocksByIwencai)('竞价看多；竞价抢筹；竞价涨幅>0；10个交易日内有涨停；昨日未涨停；集中度70<=11；昨日收盘获利>=50%；行业；股价低于30元；流通市值<=120亿；流通市值>=20亿；非创业板；非科创板；非ST');
         console.log(chooseStock1ExpectedRs);
     }
     async findAll() {

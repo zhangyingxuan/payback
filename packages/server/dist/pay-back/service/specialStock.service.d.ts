@@ -10,7 +10,7 @@ export declare class SpecialStockService {
     autoCrawlBinddingData(): Promise<void>;
     autoCrawlBinddingDataLateSession(): Promise<void>;
     crawlBinddingData(isRemoveIncompatible?: number): Promise<SpecialStockDto>;
-    dealIncompatibleExpectStocks(isRemoveIncompatible: any, dailyLimitYesterdayBidding: any): Promise<void>;
+    dealIncompatibleExpectStocks(dailyLimitYesterdayBidding: any): Promise<void>;
     getTodayData(todayDateStr: string): Promise<specialStock>;
     findAll(): Promise<specialStock[]>;
     findByLimit(len?: number): Promise<specialStock[]>;

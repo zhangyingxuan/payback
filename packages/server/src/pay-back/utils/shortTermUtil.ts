@@ -1,12 +1,10 @@
 import { CreatePayBackDto } from '../dto/create-pay-back.dto';
 import { transformShortTermSourceData } from '../utils/transformDataUtil';
 import { params } from '../core/config';
-import { fetchStocksByIwencai } from '../core/fetchUtil';
+import { fetchAllStocksByIwencai } from '../core/fetchUtil';
 import { getCurrentCycle, iWencaiDateFormat } from 'pay-back-core';
 import * as dayjs from 'dayjs';
 
-// 最多单页查询100条数据，循环分页查询完整数据 2024-02-17 23:20:40
-const dailyLimitNum = 100;
 // 跌停个股只需考虑数量，无需所有个股都存储
 const downLimitNum = 50;
 // 跌停个股只需考虑数量，无需所有个股都存储
@@ -18,35 +16,33 @@ const otherNum = 50;
  */
 export async function getShortTermData(todayDateStr): Promise<CreatePayBackDto> {
   // 准备涨停数据
-  const dailyLimitData: any = await fetchStocksByIwencai(params.dailyLimitMoreThan1, dailyLimitNum);
+  const dailyLimitData: any = await fetchAllStocksByIwencai(params.dailyLimitMoreThan1);
   // 跌停数据
-  const downLimitData: any = await fetchStocksByIwencai(params.downLimit, downLimitNum);
+  const downLimitData: any = await fetchAllStocksByIwencai(params.downLimit, downLimitNum);
   // 涨停打开个股
-  const dailyLimitOpenData: any = await fetchStocksByIwencai(params.dailyLimitOpen, otherNum);
+  const dailyLimitOpenData: any = await fetchAllStocksByIwencai(params.dailyLimitOpen);
   // 跌幅大于等于15的个股
-  const hugeFallData: any = await fetchStocksByIwencai(params.hugeFall, otherNum);
+  const hugeFallData: any = await fetchAllStocksByIwencai(params.hugeFall, otherNum);
 
   return prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, todayDateStr);
 }
 
 export async function getShortTermDataByDate(todayDateStr): Promise<CreatePayBackDto> {
   // 准备涨停数据
-  const dailyLimitData: any = await fetchStocksByIwencai(
+  const dailyLimitData: any = await fetchAllStocksByIwencai(
     params.dailyLimitMoreThan1ByDate.replace('${date}', todayDateStr),
-    dailyLimitNum,
   );
   // 跌停数据
-  const downLimitData: any = await fetchStocksByIwencai(
+  const downLimitData: any = await fetchAllStocksByIwencai(
     params.downLimitByDate.replace('${date}', todayDateStr),
     downLimitNum,
   );
   // 涨停打开个股
-  const dailyLimitOpenData: any = await fetchStocksByIwencai(
+  const dailyLimitOpenData: any = await fetchAllStocksByIwencai(
     params.dailyLimitOpenByDate.replace('${date}', todayDateStr),
-    otherNum,
   );
   // 跌幅大于等于15的个股
-  const hugeFallData: any = await fetchStocksByIwencai(
+  const hugeFallData: any = await fetchAllStocksByIwencai(
     params.hugeFallByDate.replace('${date}', todayDateStr),
     otherNum,
   );

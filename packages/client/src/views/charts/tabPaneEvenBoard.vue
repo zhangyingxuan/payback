@@ -426,8 +426,8 @@ async function handleRefreshBindingData(
         )
       ) {
         // 非第一次更新
-        // 更新展开内容 短线部分
-        data.currentDateData = eventData[0];
+        // 更新顶部表格
+        evenBoard.value[0] = eventData[0];
       } else {
         // 第一次新增
         evenBoard.value.push(eventData[0]);

@@ -27,16 +27,8 @@ let HotListService = HotListService_1 = class HotListService {
         this.logger = new common_1.Logger(HotListService_1.name);
     }
     async crawlHotListData() {
-        let isExist = false;
         this.logger.debug('crawlHotListData is Begining!');
         const todayDateStr = new Date().toLocaleDateString();
-        const todayDataFromDB = await this.hotListRp
-            .createQueryBuilder('hot_list')
-            .where('hot_list.createTime like :createTime', { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
-            .getOne();
-        if (todayDataFromDB) {
-            isExist = true;
-        }
         let hotListData;
         try {
             hotListData = await (0, hotListUtil_1.getHotListData)();
@@ -48,7 +40,11 @@ let HotListService = HotListService_1 = class HotListService {
                 updatedTime: hotListData.updatedTime,
                 createTime: hotListData.updatedTime,
             };
-            if (isExist) {
+            const todayDataFromDB = await this.hotListRp
+                .createQueryBuilder('hot_list')
+                .where('hot_list.createTime like :createTime', { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
+                .getOne();
+            if (todayDataFromDB) {
                 this.logger.log('更新数据, id=' + todayDataFromDB.id);
                 delete hotListData4Db.createTime;
                 await this.hotListRp.update(todayDataFromDB.id, hotListData4Db);

@@ -9,7 +9,7 @@ import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class HotListService {
-  constructor(@InjectRepository(hotList) private readonly hotListRp: Repository<hotList>) {}
+  constructor(@InjectRepository(hotList) private readonly hotListRp: Repository<hotList>) { }
 
   private readonly logger = new Logger(HotListService.name);
 
@@ -21,19 +21,8 @@ export class HotListService {
   // @Cron('0 30 */1 * * *') // 每小时执行一次，30分钟开始
   @Cron('0 */30 7-23 * * *') // 每小时执行一次，30分钟开始
   async crawlHotListData() {
-    let isExist = false;
     this.logger.debug('crawlHotListData is Begining!');
-    // 如果存在数据，则返回已有该数据
     const todayDateStr = new Date().toLocaleDateString();
-    const todayDataFromDB = await this.hotListRp
-      .createQueryBuilder('hot_list')
-      .where('hot_list.createTime like :createTime', { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
-      .getOne();
-
-    if (todayDataFromDB) {
-      // 如果有数据则更新
-      isExist = true;
-    }
     let hotListData: CreateHotListDto;
     try {
       hotListData = await getHotListData();
@@ -45,7 +34,14 @@ export class HotListService {
         updatedTime: hotListData.updatedTime,
         createTime: hotListData.updatedTime,
       };
-      if (isExist) {
+
+      // 如果存在数据，则返回已有该数据
+      const todayDataFromDB = await this.hotListRp
+        .createQueryBuilder('hot_list')
+        .where('hot_list.createTime like :createTime', { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
+        .getOne();
+
+      if (todayDataFromDB) {
         this.logger.log('更新数据, id=' + todayDataFromDB.id);
         delete hotListData4Db.createTime;
         await this.hotListRp.update(todayDataFromDB.id, hotListData4Db);

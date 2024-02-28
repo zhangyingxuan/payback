@@ -34,19 +34,17 @@ let FundsService = FundsService_1 = class FundsService {
     }
     async crawlfundsData() {
         this.logger.debug('crawlfundsData is Begining!');
-        let isExist = false;
         const todayDateStr = new Date().toLocaleDateString();
-        const todayDataFromDB = await this.fundsDataRp
-            .createQueryBuilder('market_data')
-            .where('market_data.createTime like :createTime', { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
-            .getOne();
-        if (todayDataFromDB) {
-            isExist = true;
-        }
         let fundsData;
         try {
             fundsData = await fundsUtil_1.default.getFundsData(dayjs(todayDateStr).format('YYYYMMDD'));
-            if (isExist) {
+            const todayDataFromDB = await this.fundsDataRp
+                .createQueryBuilder('market_data')
+                .where('market_data.createTime like :createTime', {
+                createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%',
+            })
+                .getOne();
+            if (todayDataFromDB) {
                 this.logger.log('crawlfundsData 更新数据');
                 await this.fundsDataRp.update(todayDataFromDB.id, fundsData);
             }

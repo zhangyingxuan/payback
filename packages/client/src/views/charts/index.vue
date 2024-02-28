@@ -39,7 +39,7 @@
   </el-tabs>
 </template>
 <script lang="ts" setup>
-import { ref, reactive, provide } from 'vue';
+import { ref } from 'vue';
 import { isMobile } from '@/core/util';
 import { debounce } from 'lodash-es';
 import { ElMessage } from 'element-plus';

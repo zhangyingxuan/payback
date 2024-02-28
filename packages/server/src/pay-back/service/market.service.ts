@@ -9,7 +9,7 @@ import { CreateMarketDataDto } from '../dto/create-market-data.dto';
 
 @Injectable()
 export class MarketService {
-  constructor(@InjectRepository(marketData) private readonly marketDataRp: Repository<marketData>) {}
+  constructor(@InjectRepository(marketData) private readonly marketDataRp: Repository<marketData>) { }
 
   private readonly logger = new Logger(MarketService.name);
 
@@ -26,22 +26,20 @@ export class MarketService {
 
   async crawlMarketData() {
     this.logger.debug('crawlMarketData is Begining!');
-    let isExist = false;
-    // 如果存在数据，则返回已有该数据
     const todayDateStr = new Date().toLocaleDateString();
-    const todayDataFromDB = await this.marketDataRp
-      .createQueryBuilder('market_data')
-      .where('market_data.createTime like :createTime', { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
-      .getOne();
 
-    if (todayDataFromDB) {
-      isExist = true;
-    }
     let marketData: CreateMarketDataDto;
     try {
       marketData = await marketUtil.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
-      // console.log(marketData);
-      if (isExist) {
+
+      // 如果存在数据，则返回已有该数据
+      const todayDataFromDB = await this.marketDataRp
+        .createQueryBuilder('market_data')
+        .where('market_data.createTime like :createTime', {
+          createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%',
+        })
+        .getOne();
+      if (todayDataFromDB) {
         this.logger.log('crawlMarketData 更新数据');
         await this.marketDataRp.update(todayDataFromDB.id, marketData);
       } else {
@@ -52,9 +50,6 @@ export class MarketService {
       this.logger.debug('crawlMarketData is success!');
     } catch (e) {
       this.logger.error('出错啦！！！', e);
-      // this.logger.debug('crawlMarketData retry！playWrightUtil.getMarketData');
-      // marketData = await playWrightUtil.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
-      // console.log(marketData);
     }
 
     return marketData;

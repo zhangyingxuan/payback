@@ -29,27 +29,30 @@ interface IwencaiStockResult {
 /**
  * 获取个股数据 通过 爱问财数据
  * @param question
- * @param pageSize
+ * @param limit 如果传了 limit 则 不需要查询所有数据
  * @param isPlate
  * @returns
  */
-export async function fetchStocksByIwencai(question, pageSize = 50) {
-  pageSize = pageSize > maxPageSize ? maxPageSize : pageSize;
+export async function fetchAllStocksByIwencai(question, limit = null) {
   // 设置强制 终止死循环次数，最多20页，意味着 2000条数据 2024-02-20 15:08:36
   let pageNum = 1;
   const maxRequestTimes = 20;
   let data;
 
-  let result = await fetchIwencai(question, pageSize, false);
+  let result = await fetchIwencai(question, limit ? limit : maxPageSize, false);
   const iwencaiStockResult: IwencaiStockResult = getStocksDataByIwencai(result);
-  // 需要分页
-  if (iwencaiStockResult.length > iwencaiStockResult.data.length) {
+  // 需要分页：还有多余数据未查出，且需要查更多
+  if (iwencaiStockResult.length > iwencaiStockResult.data.length && !limit) {
     while (true) {
-      result = await getDataListByIwencai(question, pageSize, ++pageNum, iwencaiStockResult.condition);
+      result = await fetchStockPagingDataList(question, maxPageSize, ++pageNum, iwencaiStockResult.condition);
       // 分页数据 第二页开始，临时数据
       data = getStocksPagingDataByIwencai(result);
       iwencaiStockResult.data.push(...data);
-      // 4种情况需终止：1、异常 累计数据长度大于查询结果获取的数据长度 2、异常 获取到的数据为空 3、返回数据的真实长度小于分页数 4、已查询20次，强制查询分页数据
+      // 4种情况需终止：
+      // 1、异常 累计数据长度大于查询结果获取的数据长度
+      // 2、异常 获取到的数据为空
+      // 3、返回数据的真实长度小于分页数
+      // 4、已查询20次，强制查询分页数据
       if (
         data.length === 0 ||
         iwencaiStockResult.data.length >= iwencaiStockResult.length ||
@@ -103,13 +106,13 @@ export async function fetchIwencai(question, pageSize = 5, isPlate = false) {
 }
 
 /**
- * 获取爱问财数据
+ * 获取爱问财数据 分页数据
  * @param question
  * @param pageSize
  * @param isPlate
  * @returns
  */
-export async function getDataListByIwencai(question, pageSize = 5, pageNum = 1, condition) {
+export async function fetchStockPagingDataList(question, pageSize = 5, pageNum = 1, condition) {
   const body = {
     urp_sort_way: 'desc',
     query: question,

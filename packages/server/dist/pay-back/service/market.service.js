@@ -34,19 +34,17 @@ let MarketService = MarketService_1 = class MarketService {
     }
     async crawlMarketData() {
         this.logger.debug('crawlMarketData is Begining!');
-        let isExist = false;
         const todayDateStr = new Date().toLocaleDateString();
-        const todayDataFromDB = await this.marketDataRp
-            .createQueryBuilder('market_data')
-            .where('market_data.createTime like :createTime', { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
-            .getOne();
-        if (todayDataFromDB) {
-            isExist = true;
-        }
         let marketData;
         try {
             marketData = await marketUtil_1.default.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
-            if (isExist) {
+            const todayDataFromDB = await this.marketDataRp
+                .createQueryBuilder('market_data')
+                .where('market_data.createTime like :createTime', {
+                createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%',
+            })
+                .getOne();
+            if (todayDataFromDB) {
                 this.logger.log('crawlMarketData 更新数据');
                 await this.marketDataRp.update(todayDataFromDB.id, marketData);
             }
