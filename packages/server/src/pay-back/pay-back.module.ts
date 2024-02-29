@@ -12,6 +12,7 @@ import { SystemConfigService } from './service/systemConfig.service';
 import { ApiTestService } from './service/apiTest.service';
 import { ThsTradeController } from './ths-trade.controller';
 import { PayBackController } from './pay-back.controller';
+import { SystemConfigController } from './systemConfig.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { shortTermData } from './entities/shortTermData.entity';
 import { specialStock } from './entities/specialStock.entity';
@@ -37,7 +38,7 @@ import { UsersModule } from '../users/users.module';
     TypeOrmModule.forFeature([systemConfig]),
     TypeOrmModule.forFeature([latestConceptPlate]),
   ],
-  controllers: [PayBackController, ThsTradeController],
+  controllers: [PayBackController, ThsTradeController, SystemConfigController],
   providers: [
     ShorTermService,
     SpecialStockService,

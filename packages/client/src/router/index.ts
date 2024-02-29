@@ -76,6 +76,15 @@ const routes: RouteRecordRaw[] = [
         component: () => import(/* webpackChunkName: "latestConceptPlate" */ '../views/latestConceptPlate/index.vue'),
       },
       {
+        path: '/systemConfig',
+        name: 'systemConfig',
+        meta: {
+          title: '系统配置',
+          permiss: '11',
+        },
+        component: () => import(/* webpackChunkName: "systemConfig" */ '../views/systemConfig/index.vue'),
+      },
+      {
         path: '/form',
         name: 'baseform',
         meta: {

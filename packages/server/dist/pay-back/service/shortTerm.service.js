@@ -142,7 +142,7 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
     }
 };
 __decorate([
-    (0, schedule_1.Cron)('0 12 13 * * 1-5'),
+    (0, schedule_1.Cron)('0 20 15 * * 1-5'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)

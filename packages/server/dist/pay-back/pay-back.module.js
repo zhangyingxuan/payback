@@ -21,6 +21,7 @@ const systemConfig_service_1 = require("./service/systemConfig.service");
 const apiTest_service_1 = require("./service/apiTest.service");
 const ths_trade_controller_1 = require("./ths-trade.controller");
 const pay_back_controller_1 = require("./pay-back.controller");
+const systemConfig_controller_1 = require("./systemConfig.controller");
 const typeorm_1 = require("@nestjs/typeorm");
 const shortTermData_entity_1 = require("./entities/shortTermData.entity");
 const specialStock_entity_1 = require("./entities/specialStock.entity");
@@ -48,7 +49,7 @@ PayBackModule = __decorate([
             typeorm_1.TypeOrmModule.forFeature([systemConfig_entity_1.systemConfig]),
             typeorm_1.TypeOrmModule.forFeature([latestConceptPlate_entity_1.latestConceptPlate]),
         ],
-        controllers: [pay_back_controller_1.PayBackController, ths_trade_controller_1.ThsTradeController],
+        controllers: [pay_back_controller_1.PayBackController, ths_trade_controller_1.ThsTradeController, systemConfig_controller_1.SystemConfigController],
         providers: [
             shortTerm_service_1.ShorTermService,
             specialStock_service_1.SpecialStockService,

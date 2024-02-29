@@ -103,6 +103,12 @@ const items: any = [
     title: '最新概念',
     permiss: '1',
   },
+  {
+    icon: 'Setting',
+    index: '/systemConfig',
+    title: '系统配置',
+    permiss: '1',
+  },
   // {
   //   icon: 'Odometer',
   //   index: '/dashboard',

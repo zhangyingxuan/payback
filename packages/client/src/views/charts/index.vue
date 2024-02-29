@@ -1,5 +1,5 @@
 <template>
-  <div :class="['optButtons', { isMobile }]" v-if="isShowUpdateBtn">
+  <div :class="['optButtons', { isMobile }]" v-if="isShowUpdateBtn" v-isAdmin>
     <template v-for="(item, index) in updateBtns" :key="'updateButton' + index">
       <el-switch
         v-if="item.type === 4"
@@ -11,7 +11,6 @@
       />
 
       <el-button
-        v-isAdmin
         plain
         type="primary"
         @click="updateTodayData(item.type, index)"

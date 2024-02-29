@@ -16,6 +16,27 @@ export class SystemConfigService {
    * 查找最新的一条
    * @returns
    */
+  async updateSystemConfig(systemConfigDto) {
+    const currentConfig = await this.findLatestOne();
+    // TODO 校验参数？
+    let result;
+
+    try {
+      this.logger.log('updateSystemConfig 更新数据');
+      await this.sysTemconfigServiceRp.update(currentConfig.id, systemConfigDto);
+
+      this.logger.debug('updateSystemConfig is success!');
+      result = '更新成功';
+    } catch (e) {
+      this.logger.error('出错啦！！！', e);
+      result = '出错啦！！！' + e;
+    }
+    return result;
+  }
+  /**
+   * 查找最新的一条
+   * @returns
+   */
   async findLatestOne() {
     return await this.sysTemconfigServiceRp
       .createQueryBuilder('system_config')
