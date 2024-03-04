@@ -20,7 +20,15 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)({ comment: '每日收盘是否自动添加自选个股 0不添加 1添加', type: 'tinyint', width: 1, default: 0 }),
     __metadata("design:type", Boolean)
-], systemConfig.prototype, "isAutoAddSelfStock", void 0);
+], systemConfig.prototype, "isAutoAddSelf", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '自选连板 0不添加 1添加', type: 'tinyint', width: 1, default: 0 }),
+    __metadata("design:type", Boolean)
+], systemConfig.prototype, "isAutoAddSelfEvenBoard", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '自选首板 0不添加 1添加', type: 'tinyint', width: 1, default: 0 }),
+    __metadata("design:type", Boolean)
+], systemConfig.prototype, "isAutoAddSelfFirstBoard", void 0);
 __decorate([
     (0, typeorm_1.Column)({ comment: '基础配置', type: 'varchar', length: 512, nullable: true }),
     __metadata("design:type", String)

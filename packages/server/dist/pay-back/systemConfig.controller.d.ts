@@ -1,6 +1,8 @@
 import { SystemConfigService } from './service/systemConfig.service';
 declare class SystemConfigDto {
-    isAutoAddSelfStock: number;
+    isAutoAddSelf: number;
+    isAutoAddSelfEvenBoard: number;
+    isAutoAddSelfFirstBoard: number;
 }
 export declare class SystemConfigController {
     private readonly systemConfigService;

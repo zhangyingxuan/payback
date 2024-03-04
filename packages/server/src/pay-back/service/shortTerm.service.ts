@@ -5,7 +5,6 @@ import { shortTermData } from '../entities/shortTermData.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getShortTermData, mergeExtra2ShortTermData, getShortTermDataByDate } from '../utils/shortTermUtil';
 import { ThsService } from './ths.service';
-import { SystemConfigService } from './systemConfig.service';
 import * as dayjs from 'dayjs';
 import { Cron } from '@nestjs/schedule';
 import { SpecialStockService } from './specialStock.service';
@@ -15,7 +14,6 @@ export class ShorTermService {
   constructor(
     private readonly thsService: ThsService,
     private readonly specialStockService: SpecialStockService,
-    private readonly systemConfigService: SystemConfigService,
     @InjectRepository(shortTermData) private readonly shortTermDataRp: Repository<shortTermData>,
   ) { }
 
@@ -29,10 +27,8 @@ export class ShorTermService {
   @Cron('0 20 15 * * 1-5')
   async autoCrawlShortTermDataLateSession() {
     const result = await this.crawlShortTermData();
-    const sysTemconfig = await this.systemConfigService.findLatestOne();
-    const isAutoModifyThsSelfStocks = process.env.NODE_ENV !== 'dev' && sysTemconfig.isAutoAddSelfStock;
     // 读取配置中是否加入自选
-    isAutoModifyThsSelfStocks && this.thsService.modifyThsSelfStocks(JSON.parse(result.evenBoardData));
+    process.env.NODE_ENV !== 'dev' && this.thsService.autoModifyThsSelfStocks(JSON.parse(result.evenBoardData));
   }
 
   // 午盘

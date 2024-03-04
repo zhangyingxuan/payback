@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { modifyThsSelfStocksRequest, modifyThsSelfPlatesRequest } from '../core/fetchUtil';
 import { AsynTaskIterator, dailyLimitOptionalStrategy } from 'pay-back-core';
 import { UsersService } from '../../users/users.service';
+import { SystemConfigService } from './systemConfig.service';
 
 let isSuccess = true;
 
@@ -46,17 +47,32 @@ function prepareSelfStock(i, stocks, app, userid, ticket, user) {
 
 @Injectable()
 export class ThsService {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService, private readonly systemConfigService: SystemConfigService) { }
 
   private readonly logger = new Logger(ThsService.name);
+
+  async autoModifyThsSelfStocks(evenBoardData) {
+    // 获取系统配置
+    const sysTemconfig = await this.systemConfigService.findLatestOne();
+    const isAutoAddSelf = sysTemconfig.isAutoAddSelf;
+
+    if (!isAutoAddSelf) {
+      return;
+    }
+
+    return await this.modifyThsSelfStocks(evenBoardData, sysTemconfig);
+  }
 
   /**
    * 同步 今日 连板数据
    * @param evenBoardData
    * @returns
    */
-  async modifyThsSelfStocks(evenBoardData) {
+  async modifyThsSelfStocks(evenBoardData, sysTemconfig) {
     const userInfo = await this.usersService.getUserByAccount('admin');
+    const isAutoAddSelfEvenBoard = sysTemconfig ? sysTemconfig.isAutoAddSelfEvenBoard : true;
+    const isAutoAddSelfFirstBoard = sysTemconfig ? sysTemconfig.isAutoAddSelfFirstBoard : true;
+
     // 1、获取用户信息
     const userid = atob(userInfo.userid);
     const ticket = userInfo.ticket;
@@ -79,7 +95,13 @@ export class ThsService {
       for (let i = maxHeight; i >= 1; i--) {
         this.logger.log(`同步自选: [${i}板] ${evenBoardData[i + ''] && evenBoardData[i + ''].length}；`);
         const stocks = evenBoardData[i + ''];
-        prepareSelfStock(i, stocks, app, userid, ticket, user);
+        if (i === 1) {
+          // 加入首板
+          isAutoAddSelfFirstBoard && prepareSelfStock(i, stocks, app, userid, ticket, user);
+        } else {
+          // 加入连板
+          isAutoAddSelfEvenBoard && prepareSelfStock(i, stocks, app, userid, ticket, user);
+        }
       }
       // this.nextRegister(funcs);
       app.run(this);

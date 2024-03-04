@@ -6,7 +6,7 @@ import { ThsOprate } from './core/fetchUtil';
 
 @Controller('ths-trade')
 export class ThsTradeController {
-  constructor(private readonly thsService: ThsService, private readonly shorTermService: ShorTermService) {}
+  constructor(private readonly thsService: ThsService, private readonly shorTermService: ShorTermService) { }
 
   /**
    * 同步自选
@@ -17,7 +17,7 @@ export class ThsTradeController {
   async modifyThsSelfStocks() {
     // 获取今天的短线数据
     const result: any = (await this.shorTermService.findEvenBoardByLimit(1))[0];
-    return this.thsService.modifyThsSelfStocks(JSON.parse(result.evenBoardData));
+    return this.thsService.modifyThsSelfStocks(JSON.parse(result.evenBoardData), null);
   }
   /**
    * 新增自选

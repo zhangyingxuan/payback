@@ -20,23 +20,19 @@ const shortTermData_entity_1 = require("../entities/shortTermData.entity");
 const typeorm_2 = require("@nestjs/typeorm");
 const shortTermUtil_1 = require("../utils/shortTermUtil");
 const ths_service_1 = require("./ths.service");
-const systemConfig_service_1 = require("./systemConfig.service");
 const dayjs = require("dayjs");
 const schedule_1 = require("@nestjs/schedule");
 const specialStock_service_1 = require("./specialStock.service");
 let ShorTermService = ShorTermService_1 = class ShorTermService {
-    constructor(thsService, specialStockService, systemConfigService, shortTermDataRp) {
+    constructor(thsService, specialStockService, shortTermDataRp) {
         this.thsService = thsService;
         this.specialStockService = specialStockService;
-        this.systemConfigService = systemConfigService;
         this.shortTermDataRp = shortTermDataRp;
         this.logger = new common_1.Logger(ShorTermService_1.name);
     }
     async autoCrawlShortTermDataLateSession() {
         const result = await this.crawlShortTermData();
-        const sysTemconfig = await this.systemConfigService.findLatestOne();
-        const isAutoModifyThsSelfStocks = process.env.NODE_ENV !== 'dev' && sysTemconfig.isAutoAddSelfStock;
-        isAutoModifyThsSelfStocks && this.thsService.modifyThsSelfStocks(JSON.parse(result.evenBoardData));
+        process.env.NODE_ENV !== 'dev' && this.thsService.autoModifyThsSelfStocks(JSON.parse(result.evenBoardData));
     }
     async autoCrawlShortTermDataMidday() {
         this.crawlShortTermData();
@@ -161,10 +157,9 @@ __decorate([
 ], ShorTermService.prototype, "autoCrawlShortTermDataMorning", null);
 ShorTermService = ShorTermService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __param(3, (0, typeorm_2.InjectRepository)(shortTermData_entity_1.shortTermData)),
+    __param(2, (0, typeorm_2.InjectRepository)(shortTermData_entity_1.shortTermData)),
     __metadata("design:paramtypes", [ths_service_1.ThsService,
         specialStock_service_1.SpecialStockService,
-        systemConfig_service_1.SystemConfigService,
         typeorm_1.Repository])
 ], ShorTermService);
 exports.ShorTermService = ShorTermService;

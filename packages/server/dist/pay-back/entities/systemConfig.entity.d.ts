@@ -1,7 +1,9 @@
 import { Timestamp } from 'typeorm';
 export declare class systemConfig {
     id: number;
-    isAutoAddSelfStock: boolean;
+    isAutoAddSelf: boolean;
+    isAutoAddSelfEvenBoard: boolean;
+    isAutoAddSelfFirstBoard: boolean;
     baseConfig: string;
     biddingConfig: string;
     createTime: Timestamp;

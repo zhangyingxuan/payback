@@ -15,6 +15,7 @@ const common_1 = require("@nestjs/common");
 const fetchUtil_1 = require("../core/fetchUtil");
 const pay_back_core_1 = require("pay-back-core");
 const users_service_1 = require("../../users/users.service");
+const systemConfig_service_1 = require("./systemConfig.service");
 let isSuccess = true;
 function atob(a) {
     return Buffer.from(a, 'base64').toString('binary');
@@ -38,12 +39,23 @@ function prepareSelfStock(i, stocks, app, userid, ticket, user) {
     }
 }
 let ThsService = ThsService_1 = class ThsService {
-    constructor(usersService) {
+    constructor(usersService, systemConfigService) {
         this.usersService = usersService;
+        this.systemConfigService = systemConfigService;
         this.logger = new common_1.Logger(ThsService_1.name);
     }
-    async modifyThsSelfStocks(evenBoardData) {
+    async autoModifyThsSelfStocks(evenBoardData) {
+        const sysTemconfig = await this.systemConfigService.findLatestOne();
+        const isAutoAddSelf = sysTemconfig.isAutoAddSelf;
+        if (!isAutoAddSelf) {
+            return;
+        }
+        return await this.modifyThsSelfStocks(evenBoardData, sysTemconfig);
+    }
+    async modifyThsSelfStocks(evenBoardData, sysTemconfig) {
         const userInfo = await this.usersService.getUserByAccount('admin');
+        const isAutoAddSelfEvenBoard = sysTemconfig ? sysTemconfig.isAutoAddSelfEvenBoard : true;
+        const isAutoAddSelfFirstBoard = sysTemconfig ? sysTemconfig.isAutoAddSelfFirstBoard : true;
         const userid = atob(userInfo.userid);
         const ticket = userInfo.ticket;
         const user = userInfo.user;
@@ -56,7 +68,12 @@ let ThsService = ThsService_1 = class ThsService {
             for (let i = maxHeight; i >= 1; i--) {
                 this.logger.log(`同步自选: [${i}板] ${evenBoardData[i + ''] && evenBoardData[i + ''].length}；`);
                 const stocks = evenBoardData[i + ''];
-                prepareSelfStock(i, stocks, app, userid, ticket, user);
+                if (i === 1) {
+                    isAutoAddSelfFirstBoard && prepareSelfStock(i, stocks, app, userid, ticket, user);
+                }
+                else {
+                    isAutoAddSelfEvenBoard && prepareSelfStock(i, stocks, app, userid, ticket, user);
+                }
             }
             app.run(this);
         }
@@ -159,7 +176,7 @@ let ThsService = ThsService_1 = class ThsService {
 };
 ThsService = ThsService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [users_service_1.UsersService])
+    __metadata("design:paramtypes", [users_service_1.UsersService, systemConfig_service_1.SystemConfigService])
 ], ThsService);
 exports.ThsService = ThsService;
 //# sourceMappingURL=ths.service.js.map

@@ -1,9 +1,15 @@
 import { UsersService } from '../../users/users.service';
+import { SystemConfigService } from './systemConfig.service';
 export declare class ThsService {
     private readonly usersService;
-    constructor(usersService: UsersService);
+    private readonly systemConfigService;
+    constructor(usersService: UsersService, systemConfigService: SystemConfigService);
     private readonly logger;
-    modifyThsSelfStocks(evenBoardData: any): Promise<{
+    autoModifyThsSelfStocks(evenBoardData: any): Promise<{
+        code: number;
+        data: any;
+    }>;
+    modifyThsSelfStocks(evenBoardData: any, sysTemconfig: any): Promise<{
         code: number;
         data: any;
     }>;

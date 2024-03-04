@@ -2,14 +2,12 @@ import { CreatePayBackDto } from '../dto/create-pay-back.dto';
 import { Repository } from 'typeorm';
 import { shortTermData } from '../entities/shortTermData.entity';
 import { ThsService } from './ths.service';
-import { SystemConfigService } from './systemConfig.service';
 import { SpecialStockService } from './specialStock.service';
 export declare class ShorTermService {
     private readonly thsService;
     private readonly specialStockService;
-    private readonly systemConfigService;
     private readonly shortTermDataRp;
-    constructor(thsService: ThsService, specialStockService: SpecialStockService, systemConfigService: SystemConfigService, shortTermDataRp: Repository<shortTermData>);
+    constructor(thsService: ThsService, specialStockService: SpecialStockService, shortTermDataRp: Repository<shortTermData>);
     private readonly logger;
     autoCrawlShortTermDataLateSession(): Promise<void>;
     autoCrawlShortTermDataMidday(): Promise<void>;

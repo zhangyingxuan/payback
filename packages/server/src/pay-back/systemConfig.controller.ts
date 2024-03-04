@@ -3,7 +3,9 @@ import { SystemConfigService } from './service/systemConfig.service';
 // import { Public } from '../decorator/public.decorator';
 
 class SystemConfigDto {
-  isAutoAddSelfStock: number;
+  isAutoAddSelf: number;
+  isAutoAddSelfEvenBoard: number;
+  isAutoAddSelfFirstBoard: number;
 }
 
 @Controller('system-config')
