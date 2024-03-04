@@ -25,7 +25,7 @@ let ThsTradeController = class ThsTradeController {
     }
     async modifyThsSelfStocks() {
         const result = (await this.shorTermService.findEvenBoardByLimit(1))[0];
-        return this.thsService.modifyThsSelfStocks(JSON.parse(result.evenBoardData), null);
+        return this.thsService.autoModifyThsSelfStocks(JSON.parse(result.evenBoardData));
     }
     async addThsSelfStock(code) {
         return this.thsService.updateThsSelfStock(code, fetchUtil_1.ThsOprate.add);

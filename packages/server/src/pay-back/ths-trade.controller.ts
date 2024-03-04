@@ -17,7 +17,7 @@ export class ThsTradeController {
   async modifyThsSelfStocks() {
     // 获取今天的短线数据
     const result: any = (await this.shorTermService.findEvenBoardByLimit(1))[0];
-    return this.thsService.modifyThsSelfStocks(JSON.parse(result.evenBoardData), null);
+    return this.thsService.autoModifyThsSelfStocks(JSON.parse(result.evenBoardData));
   }
   /**
    * 新增自选

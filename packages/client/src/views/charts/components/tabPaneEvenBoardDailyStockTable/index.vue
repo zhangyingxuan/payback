@@ -59,7 +59,10 @@
               v-for="(item, index) in currentDateData.ticaiData"
               :key="'span' + index"
               @click.stop="handleTicaiClick(item.key)"
-              class="ticai__item"
+              :class="{
+                ticai__item: true,
+                searchWord: data.keyword === item.key,
+              }"
             >
               {{ item.key }}{{ item.value }}&nbsp;
             </span>
@@ -344,8 +347,6 @@ const stockGroupByPlate: any = computed(() => {
     label: '全部',
     value: -1,
   });
-
-  console.log(stockGroupByPlateTemp, stockGroupByPlateArr);
   return stockGroupByPlateArr;
 });
 
@@ -553,7 +554,6 @@ function sortPlates(stockGroupByPlateArr: any) {
     });
   }
 
-  console.log(stockGroupByPlateArr);
   // 4. 超预期过滤时，按板块达标率排序
 
   return stockGroupByPlateArr;

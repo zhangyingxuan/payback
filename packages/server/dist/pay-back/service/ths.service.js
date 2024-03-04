@@ -69,9 +69,11 @@ let ThsService = ThsService_1 = class ThsService {
                 this.logger.log(`同步自选: [${i}板] ${evenBoardData[i + ''] && evenBoardData[i + ''].length}；`);
                 const stocks = evenBoardData[i + ''];
                 if (i === 1) {
+                    console.log('isAutoAddSelfFirstBoard==', isAutoAddSelfFirstBoard);
                     isAutoAddSelfFirstBoard && prepareSelfStock(i, stocks, app, userid, ticket, user);
                 }
                 else {
+                    console.log('isAutoAddSelfEvenBoard==', isAutoAddSelfEvenBoard);
                     isAutoAddSelfEvenBoard && prepareSelfStock(i, stocks, app, userid, ticket, user);
                 }
             }

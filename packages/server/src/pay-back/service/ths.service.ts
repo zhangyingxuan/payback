@@ -96,9 +96,11 @@ export class ThsService {
         this.logger.log(`同步自选: [${i}板] ${evenBoardData[i + ''] && evenBoardData[i + ''].length}；`);
         const stocks = evenBoardData[i + ''];
         if (i === 1) {
+          console.log('isAutoAddSelfFirstBoard==', isAutoAddSelfFirstBoard);
           // 加入首板
           isAutoAddSelfFirstBoard && prepareSelfStock(i, stocks, app, userid, ticket, user);
         } else {
+          console.log('isAutoAddSelfEvenBoard==', isAutoAddSelfEvenBoard);
           // 加入连板
           isAutoAddSelfEvenBoard && prepareSelfStock(i, stocks, app, userid, ticket, user);
         }
