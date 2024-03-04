@@ -12,7 +12,7 @@
     <!-- 第一列，title -->
     <div :class="['date-col first-col', { isMobile }]">
       <div
-        class="table__header"
+        class="table__header link"
         @click="
           () => {
             data.isShowContent = !data.isShowContent;

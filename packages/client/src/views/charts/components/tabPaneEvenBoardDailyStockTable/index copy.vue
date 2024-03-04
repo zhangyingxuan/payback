@@ -313,20 +313,6 @@ const stockGroupByPlate: any = computed(() => {
       });
   });
 
-  // 将对象转换为数组 便于排序
-  const stockGroupByPlateArr: any[] = [];
-  Object.keys(stockGroupByPlateTemp).forEach(key => {
-    let o = {
-      key: '',
-      value: [],
-      closingFundsTotal: stockGroupByPlateTemp[key].closingFundsTotal,
-    };
-    o.key = key;
-    // 板块内 个股按 连板高度降序 => 首次涨停时间降序
-    o.value = sortStocks(stockGroupByPlateTemp[key]);
-    stockGroupByPlateArr.push(o);
-  });
-
   // 连板高度 可选项
   // eslint-disable-next-line vue/no-side-effects-in-computed-properties
   data.evenBoardHeightOptions = Array.from(evenBoardHeightOptions)
@@ -345,8 +331,8 @@ const stockGroupByPlate: any = computed(() => {
     value: -1,
   });
 
-  console.log(stockGroupByPlateTemp, stockGroupByPlateArr);
-  return stockGroupByPlateArr;
+  console.log(stockGroupByPlateTemp);
+  return stockGroupByPlateTemp;
 });
 
 /**
@@ -360,9 +346,9 @@ const stockGroupByPlateByFilter = computed(() => {
 
   // 遍历 按板块 划分后的数据
   let isAdd = true;
-  stockGroupByPlateCopy.forEach((plateData: any) => {
+  Object.keys(stockGroupByPlateCopy).forEach((key: string) => {
     let len = 0;
-    plateData.value.forEach((item: DailyLimitStockDto) => {
+    stockGroupByPlateCopy[key].forEach((item: DailyLimitStockDto) => {
       isAdd = true;
       const evenBoardHeight = getRealEvenBoardHeight(item, false);
       // 需按照首板/我的策略 进行过滤处理
@@ -428,11 +414,13 @@ const stockGroupByPlateByFilter = computed(() => {
       isAdd && len++;
     });
 
-    plateData.len = len;
+    stockGroupByPlateCopy[key].len = len;
   });
 
   // 更新 各种数量
   updateNums(myStrategyCheckedNum, biddingStrategyCheckedNum, dailyLimitNum);
+
+  console.log(stockGroupByPlateCopy);
 
   return sortPlates(stockGroupByPlateCopy);
 });
@@ -526,7 +514,21 @@ const refreshBindingData = _.debounce(() => {
  * 按板块排序 排序
  * @param stockGroupByPlate
  */
-function sortPlates(stockGroupByPlateArr: any) {
+function sortPlates(stockGroupByPlate: any) {
+  // 将对象转换为数组 便于排序
+  const stockGroupByPlateArr: any[] = [];
+  Object.keys(stockGroupByPlate).forEach(key => {
+    let o = {
+      key: '',
+      value: [],
+      closingFundsTotal: stockGroupByPlate[key].closingFundsTotal,
+    };
+    o.key = key;
+    // 板块内 个股按 连板高度降序 => 首次涨停时间降序
+    o.value = sortStocks(stockGroupByPlate[key]);
+    stockGroupByPlateArr.push(o);
+  });
+
   // 1. 按 行业板块 涨停数量降序
   stockGroupByPlateArr.sort((a: any, b: any) => {
     return b.value.length - a.value.length;

@@ -26,4 +26,11 @@ export interface DailyLimitStockDto {
   openTimes: number;
   // 涨停时间（首次，最终）
   dailyTime: string;
+  // 连板高度
+  evenBoardHeight?: string;
+  // 竞价数据
+  biddingData?: any;
+  // =========== 其他数据
+  // 竞价数据
+  isAdd?: any;
 }

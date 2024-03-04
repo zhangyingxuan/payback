@@ -19,9 +19,12 @@
       </div>
     </div>
     <br v-if="isMobile" />
-    <span v-if="item.value.length > 1" class="gray" style="font-weight: 500">
-      &nbsp;{{ item.value.length }}
-    </span>
+    <div>
+      <div>{{ item.closingFundsTotal.toFixed(2) }}</div>
+      <div v-if="item.value.length > 1" class="gray" style="font-weight: 500">
+        {{ item.len }}/{{ item.value.length }}
+      </div>
+    </div>
   </div>
 </template>
 
