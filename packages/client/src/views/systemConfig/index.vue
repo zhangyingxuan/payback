@@ -9,6 +9,7 @@
         </div>
       </template>
       <el-form ref="formRef" :rules="rules" :model="form" label-width="120px">
+        <el-divider content-position="left">自选设置</el-divider>
         <el-form-item label="自动加入自选" prop="isAutoAddSelf">
           <el-switch
             v-model="form.isAutoAddSelf"
@@ -28,6 +29,24 @@
         <el-form-item label="自选首板" prop="isAutoAddSelfFirstBoard">
           <el-switch
             v-model="form.isAutoAddSelfFirstBoard"
+            inline-prompt
+            active-text="是"
+            inactive-text="否"
+          ></el-switch>
+        </el-form-item>
+
+        <el-divider content-position="left">竞价设置</el-divider>
+        <el-form-item label="竞价删除连板" prop="isBinddingDelEventBoard">
+          <el-switch
+            v-model="form.isBinddingDelEventBoard"
+            inline-prompt
+            active-text="是"
+            inactive-text="否"
+          ></el-switch>
+        </el-form-item>
+        <el-form-item label="竞价删除首板" prop="isBinddingDelFirstBoard">
+          <el-switch
+            v-model="form.isBinddingDelFirstBoard"
             inline-prompt
             active-text="是"
             inactive-text="否"
@@ -57,6 +76,8 @@ const form = reactive({
   isAutoAddSelf: false,
   isAutoAddSelfEvenBoard: false,
   isAutoAddSelfFirstBoard: false,
+  isBinddingDelEventBoard: false,
+  isBinddingDelFirstBoard: false,
 });
 async function initPage() {
   // 获取配置信息
@@ -64,6 +85,8 @@ async function initPage() {
   form.isAutoAddSelf = !!configInfo.isAutoAddSelf;
   form.isAutoAddSelfEvenBoard = !!configInfo.isAutoAddSelfEvenBoard;
   form.isAutoAddSelfFirstBoard = !!configInfo.isAutoAddSelfFirstBoard;
+  form.isBinddingDelEventBoard = !!configInfo.isBinddingDelEventBoard;
+  form.isBinddingDelFirstBoard = !!configInfo.isBinddingDelFirstBoard;
 }
 
 // 提交

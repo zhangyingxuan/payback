@@ -27,6 +27,7 @@ const ths_service_1 = require("./service/ths.service");
 const apiTest_service_1 = require("./service/apiTest.service");
 const public_decorator_1 = require("../decorator/public.decorator");
 const users_service_1 = require("../users/users.service");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const dayjs = require("dayjs");
 class CrawlTodayDataDto {
 }
@@ -59,14 +60,15 @@ let PayBackController = PayBackController_1 = class PayBackController {
     async autoCrawlTodayDataPM() {
         this.logger.debug('定时任务执行了！0 */5 13-15 * * 1-5');
     }
-    async crawlTodayData(body) {
+    async crawlTodayData(body, req) {
+        var _a, _b;
         let shortData, fundsData, marketData, binddingData, resultData, plateData;
         switch (body.fetchTodayDataType) {
             case 0:
                 shortData = await this.shorTermService.crawlShortTermData();
                 fundsData = await this.fundsService.crawlfundsData();
                 marketData = await this.marketService.crawlMarketData();
-                binddingData = await this.specialStockService.crawlBinddingData();
+                binddingData = await this.specialStockService.crawlBinddingData(0, (_a = req.user) === null || _a === void 0 ? void 0 : _a.account);
                 plateData = await this.plateService.crawlPlateData();
                 resultData = {};
                 break;
@@ -80,7 +82,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
                 resultData = await this.fundsService.crawlfundsData();
                 break;
             case 4:
-                resultData = await this.specialStockService.crawlBinddingData(body.isRemoveIncompatible);
+                resultData = await this.specialStockService.crawlBinddingData(body.isRemoveIncompatible, (_b = req.user) === null || _b === void 0 ? void 0 : _b.account);
                 break;
             default:
                 break;
@@ -90,8 +92,9 @@ let PayBackController = PayBackController_1 = class PayBackController {
             data: resultData,
         };
     }
-    async crawlBinddingData(body) {
-        const binddingData = await this.specialStockService.crawlBinddingData(body.isRemoveIncompatible);
+    async crawlBinddingData(body, req) {
+        var _a;
+        const binddingData = await this.specialStockService.crawlBinddingData(body.isRemoveIncompatible, (_a = req.user) === null || _a === void 0 ? void 0 : _a.account);
         let result = null;
         try {
             const currentDayEventData = await this.shorTermService.findEvenBoardByLimit(3);
@@ -214,16 +217,20 @@ __decorate([
 ], PayBackController.prototype, "testApi", null);
 __decorate([
     (0, common_1.Post)('/crawlTodayData'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [CrawlTodayDataDto]),
+    __metadata("design:paramtypes", [CrawlTodayDataDto, Object]),
     __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "crawlTodayData", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)('/crawlBinddingData'),
     __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [CrawlTodayDataDto]),
+    __metadata("design:paramtypes", [CrawlTodayDataDto, Object]),
     __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "crawlBinddingData", null);
 __decorate([

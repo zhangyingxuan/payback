@@ -18,43 +18,78 @@ const shortTerm_service_1 = require("./service/shortTerm.service");
 const ths_service_1 = require("./service/ths.service");
 const public_decorator_1 = require("../decorator/public.decorator");
 const fetchUtil_1 = require("./core/fetchUtil");
+const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 let ThsTradeController = class ThsTradeController {
     constructor(thsService, shorTermService) {
         this.thsService = thsService;
         this.shorTermService = shorTermService;
     }
-    async modifyThsSelfStocks() {
+    async modifyThsSelfStocks(req) {
         const result = (await this.shorTermService.findEvenBoardByLimit(1))[0];
-        return this.thsService.autoModifyThsSelfStocks(JSON.parse(result.evenBoardData));
+        return await this.thsService.autoModifyThsSelfStocks(JSON.parse(result.evenBoardData), req.account);
     }
-    async addThsSelfStock(code) {
-        return this.thsService.updateThsSelfStock(code, fetchUtil_1.ThsOprate.add);
+    async addThsSelfStock(code, req) {
+        var _a;
+        return this.thsService.updateThsSelfStock(code, fetchUtil_1.ThsOprate.add, (_a = req.user) === null || _a === void 0 ? void 0 : _a.account);
     }
-    async delThsSelfStock(code) {
-        return this.thsService.updateThsSelfStock(code, fetchUtil_1.ThsOprate.del);
+    async delThsSelfStock(code, req) {
+        var _a;
+        return this.thsService.updateThsSelfStock(code, fetchUtil_1.ThsOprate.del, (_a = req.user) === null || _a === void 0 ? void 0 : _a.account);
+    }
+    async addThsSelfPlate(code, req) {
+        var _a;
+        return this.thsService.updateThsSelfPlate(code, fetchUtil_1.ThsOprate.add, (_a = req.user) === null || _a === void 0 ? void 0 : _a.account);
+    }
+    async delThsSelfPlate(code, req) {
+        var _a;
+        return this.thsService.updateThsSelfPlate(code, fetchUtil_1.ThsOprate.del, (_a = req.user) === null || _a === void 0 ? void 0 : _a.account);
     }
 };
 __decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.Get)('modifyThsSelfStocks'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ThsTradeController.prototype, "modifyThsSelfStocks", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)('addThsSelfStock'),
     __param(0, (0, common_1.Body)('code')),
+    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], ThsTradeController.prototype, "addThsSelfStock", null);
 __decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)('delThsSelfStock'),
     __param(0, (0, common_1.Body)('code')),
+    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], ThsTradeController.prototype, "delThsSelfStock", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Post)('addThsSelfPlate'),
+    __param(0, (0, common_1.Body)('code')),
+    __param(1, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], ThsTradeController.prototype, "addThsSelfPlate", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Post)('delThsSelfPlate'),
+    __param(0, (0, common_1.Body)('code')),
+    __param(1, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
+], ThsTradeController.prototype, "delThsSelfPlate", null);
 ThsTradeController = __decorate([
     (0, common_1.Controller)('ths-trade'),
     __metadata("design:paramtypes", [ths_service_1.ThsService, shortTerm_service_1.ShorTermService])

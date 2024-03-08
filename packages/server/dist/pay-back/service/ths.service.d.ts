@@ -5,29 +5,18 @@ export declare class ThsService {
     private readonly systemConfigService;
     constructor(usersService: UsersService, systemConfigService: SystemConfigService);
     private readonly logger;
-    autoModifyThsSelfStocks(evenBoardData: any): Promise<{
-        code: number;
-        data: any;
-    }>;
-    modifyThsSelfStocks(evenBoardData: any, sysTemconfig: any): Promise<{
-        code: number;
-        data: any;
-    }>;
-    updateThsSelfStock(code: any, type: any): Promise<{
-        code: number;
-        data: any;
-    } | {
-        code: number;
-        data?: undefined;
-    }>;
-    batchUpdateThsSelfStock(stocks: any[], type: any): Promise<{
+    autoModifyThsSelfStocks(evenBoardData: any, account: any): Promise<{
         code: number;
     }>;
-    updateThsSelfPlate(code: any, type: any): Promise<{
+    batchUpdateThsSelfStock(stocks: any[], type: any, account: any): Promise<{
         code: number;
-        data: any;
-    } | {
+    }>;
+    updateThsSelfStock(code: any, type: any, account: any): Promise<{
         code: number;
-        data?: undefined;
+        data: string;
+    }>;
+    updateThsSelfPlate(code: any, type: any, account: any): Promise<{
+        code: number;
+        data: string;
     }>;
 }

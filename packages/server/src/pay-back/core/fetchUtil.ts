@@ -280,10 +280,19 @@ export async function fetchNorhFunds() {
 
 export enum ThsOprate {
   add = 'add',
-  del = 'del',
+  del = 'remove',
   exc = 'exc',
 }
 
+/**
+ * 老的 更新自选个股 的接口，仅支持更新个股，不能更新板块
+ * @param code
+ * @param userid
+ * @param ticket
+ * @param user
+ * @param type
+ * @returns
+ */
 export async function modifyThsSelfStocksRequest(code, userid, ticket, user, type = ThsOprate.add) {
   // # 更改同花顺自选股列表
   // # method: add 添加, del 删除, exc 排序
@@ -291,7 +300,7 @@ export async function modifyThsSelfStocksRequest(code, userid, ticket, user, typ
   const pos = '1';
   const payload = {
     add: { stockcode: code, op: 'add' },
-    del: { stockcode: code, op: 'del' },
+    remove: { stockcode: code, op: 'del' },
     exc: { stockcode: code, op: 'exc', pos: pos, callback: 'callbacknew' },
   };
   // https://t.10jqka.com.cn/newcircle/group/modifySelfStock/?op=add&stockcode=000551_33
@@ -332,40 +341,28 @@ export async function modifyThsSelfStocksRequest(code, userid, ticket, user, typ
  * @param type
  * @returns
  */
-export async function modifyThsSelfPlatesRequest(code, userid, ticket, user, type = ThsOprate.add) {
-  const payload = {
-    add: 'add',
-    del: 'remove',
-  };
+export async function modifyThsSelfRequest(code, userid, ticket, user, type = ThsOprate.add, isPlate = false) {
+  const codeSuffix = isPlate ? '_48' : '_33';
 
-  const result = await fetch(
-    'https://www.iwencai.com/iwencai/userinfo/iwc/userinfo/self-stock/index/' + payload[type],
-    {
-      headers: {
-        accept: 'application/json, text/javascript, */*; q=0.01',
-        'accept-language': 'zh-CN,zh;q=0.9',
-        'cache-control': 'no-cache',
-        pragma: 'no-cache',
-        'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"macOS"',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'same-origin',
-        'x-requested-with': 'XMLHttpRequest',
-        Cookie: `userid=${userid}; u_name=mo_${userid}; escapename=mo_${userid}; user=${user}; ticket=${ticket};`,
-      },
-      referrer: `https://www.iwencai.com/unifiedwap/result?w=${code}%20&querytype=zhishu`,
-      referrerPolicy: 'strict-origin-when-cross-origin',
-      body: {
-        codes: code + '_48',
-        type: 2,
-      },
-      method: 'POST',
-      mode: 'cors',
-      credentials: 'include',
+  const result = await fetch('https://www.iwencai.com/iwencai/userinfo/iwc/userinfo/self-stock/index/' + type, {
+    headers: {
+      Accept: 'application/json, text/plain, */*',
+      'Content-Type': 'application/json',
+      'Hexin-V': 'A0FxrGogwHjAQCxMgvkBCLc5VoZebrX63-JZdKOWPcinim_4677FMG8yaV0w',
+      Cookie: `userid=${userid}; u_name=mo_${userid}; escapename=mo_${userid}; user=${user}; ticket=${ticket};`,
     },
-  );
+    // referrer: `https://www.iwencai.com/unifiedwap/result?w=${code}%20&querytype=${isPlate ? 'zhishu' : 'stock'}`,
+    // referrerPolicy: 'strict-origin-when-cross-origin',
+    body: JSON.stringify({
+      // 个股：6开头 _17；8开头 _151；0开头 _33
+      // 板块_48
+      codes: code + codeSuffix,
+      type: 2,
+    }),
+    method: 'POST',
+    mode: 'cors',
+    credentials: 'include',
+  });
   return await result.json();
 }
 

@@ -1,4 +1,4 @@
-import { Controller, Get, Logger, Query, Post, Body } from '@nestjs/common';
+import { Controller, Get, Logger, Query, Post, Body, UseGuards, Request } from '@nestjs/common';
 import { ShorTermService } from './service/shortTerm.service';
 import { SpecialStockService } from './service/specialStock.service';
 import { MarketService } from './service/market.service';
@@ -12,6 +12,7 @@ import { ApiTestService } from './service/apiTest.service';
 import { Public } from '../decorator/public.decorator';
 // import { Cron } from '@nestjs/schedule';
 import { UsersService } from '../users/users.service';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import * as dayjs from 'dayjs';
 
 class CrawlTodayDataDto {
@@ -33,7 +34,7 @@ export class PayBackController {
     private readonly usersService: UsersService,
     private readonly marketService: MarketService,
     private readonly plateService: PlateService,
-  ) {}
+  ) { }
 
   private readonly logger = new Logger(PayBackController.name);
 
@@ -71,14 +72,15 @@ export class PayBackController {
   // @Public()
   // @Cron('0 25 9 * * 1-5')
   @Post('/crawlTodayData')
-  async crawlTodayData(@Body() body: CrawlTodayDataDto) {
+  @UseGuards(JwtAuthGuard)
+  async crawlTodayData(@Body() body: CrawlTodayDataDto, @Request() req) {
     let shortData, fundsData, marketData, binddingData, resultData, plateData;
     switch (body.fetchTodayDataType) {
       case 0:
         shortData = await this.shorTermService.crawlShortTermData();
         fundsData = await this.fundsService.crawlfundsData();
         marketData = await this.marketService.crawlMarketData();
-        binddingData = await this.specialStockService.crawlBinddingData();
+        binddingData = await this.specialStockService.crawlBinddingData(0, req.user?.account);
         plateData = await this.plateService.crawlPlateData();
         resultData = {};
         // resultData = { shortData, fundsData, marketData, binddingData, plateData };
@@ -94,7 +96,7 @@ export class PayBackController {
         break;
       case 4:
         // 是否剔除 不及预期数据；注意接收到的参数 是否为字符串
-        resultData = await this.specialStockService.crawlBinddingData(body.isRemoveIncompatible);
+        resultData = await this.specialStockService.crawlBinddingData(body.isRemoveIncompatible, req.user?.account);
         break;
       default:
         break;
@@ -109,10 +111,11 @@ export class PayBackController {
   // 获取竞价数据
   // @Public()
   // @Cron('0 25 9 * * 1-5')
+  @UseGuards(JwtAuthGuard)
   @Post('/crawlBinddingData')
-  async crawlBinddingData(@Body() body: CrawlTodayDataDto) {
+  async crawlBinddingData(@Body() body: CrawlTodayDataDto, @Request() req) {
     // 是否剔除 不及预期数据；注意接收到的参数 是否为字符串
-    const binddingData = await this.specialStockService.crawlBinddingData(body.isRemoveIncompatible);
+    const binddingData = await this.specialStockService.crawlBinddingData(body.isRemoveIncompatible, req.user?.account);
     let result = null;
     // 组装为当日连板数据
     try {

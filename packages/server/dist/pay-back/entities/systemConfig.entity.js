@@ -38,6 +38,14 @@ __decorate([
     __metadata("design:type", String)
 ], systemConfig.prototype, "biddingConfig", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ comment: '是否竞价删除 连板', type: 'tinyint', width: 1, default: 0 }),
+    __metadata("design:type", Boolean)
+], systemConfig.prototype, "isBinddingDelEventBoard", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ comment: '是否竞价删除 首板', type: 'tinyint', width: 1, default: 0 }),
+    __metadata("design:type", Boolean)
+], systemConfig.prototype, "isBinddingDelFirstBoard", void 0);
+__decorate([
     (0, typeorm_1.Column)({ type: 'timestamp', comment: '创建时间', default: () => 'current_timestamp' }),
     __metadata("design:type", typeorm_1.Timestamp)
 ], systemConfig.prototype, "createTime", void 0);

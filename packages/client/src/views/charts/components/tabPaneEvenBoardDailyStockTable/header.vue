@@ -4,7 +4,18 @@
 <!-- 封单大于 1亿的 标红 -->
 <template>
   <div class="table__header table-row">
-    <div class="col1">板块名 ({{ platesLength }})</div>
+    <div class="col1" @click="handleSortByIncompatibleRateDesc">
+      板块名 ({{ platesLength }})
+      <el-tooltip
+        v-if="showBidding"
+        class="box-item"
+        effect="dark"
+        content="【红色】不及预期率 < 0.3，且存在超预期个股【绿色】不及预期率 > 0.5"
+        placement="top"
+      >
+        <el-icon><InfoFilled /></el-icon>
+      </el-tooltip>
+    </div>
     <div class="col2">
       <div class="dailyLimit__row">
         <div class="dailyLimit__content">
@@ -37,7 +48,8 @@
   </div>
 </template>
 <script lang="ts" setup>
-defineProps({
+let emit = defineEmits(['sortByIncompatibleRateDesc']);
+const props = defineProps({
   showBidding: {
     type: Boolean,
     default: true,
@@ -47,6 +59,15 @@ defineProps({
     default: 0,
   },
 });
+
+/**
+ * 按不及预期率 降序
+ */
+function handleSortByIncompatibleRateDesc() {
+  if (props.showBidding) {
+    emit('sortByIncompatibleRateDesc');
+  }
+}
 </script>
 
 <style scoped lang="less">

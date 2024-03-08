@@ -18,6 +18,11 @@
       </router-view> -->
 
       <!-- 全局注入 个股新增 删除popover组件 -->
+      <PlatePopover
+        :virtualRefData="data.popoverVirtualPlateRefData"
+        :virtualRef="data.popoverVirtualPlateRef"
+      />
+      <!-- 全局注入 个股新增 删除popover组件 -->
       <StockPopover
         :virtualRefData="data.popoverVirtualRefData"
         :virtualRef="data.popoverVirtualRef"
@@ -49,20 +54,29 @@ const data: {
   popoverVirtualRefData: any;
   tooltipVirtualRef: any;
   tooltipVirtualRefData: any;
+  popoverVirtualPlateRef: any;
+  popoverVirtualPlateRefData: any;
 } = reactive({
   popoverVirtualRef: null,
   popoverVirtualRefData: null,
   tooltipVirtualRef: null,
   tooltipVirtualRefData: null,
+  popoverVirtualPlateRef: null,
+  popoverVirtualPlateRefData: null,
 });
 const showPoper = (target: any, superData: any) => {
   data.popoverVirtualRef = target;
   data.popoverVirtualRefData = superData;
+};
+const showPlatePoper = (target: any, superData: any) => {
+  data.popoverVirtualPlateRef = target;
+  data.popoverVirtualPlateRefData = superData;
 };
 const showTooltip = (target: any, superData: any) => {
   data.tooltipVirtualRef = target;
   data.tooltipVirtualRefData = superData;
 };
 provide('showPoper', showPoper);
+provide('showPlatePoper', showPlatePoper);
 provide('showTooltip', showTooltip);
 </script>

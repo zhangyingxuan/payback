@@ -1,7 +1,7 @@
 import Cookies from 'js-cookie';
 // token 值 在 Cookie 中key名称
-const TokenKey: string = 'payback_token';
-const RefreshTokenKey: string = 'payback_refreshToken';
+const TokenKey = 'payback_token';
+const RefreshTokenKey = 'payback_refreshToken';
 export const UserAccount = 'ms_username';
 export const UserRoles = 'ms_keys';
 

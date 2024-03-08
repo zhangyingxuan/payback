@@ -28,7 +28,8 @@ export class ShorTermService {
   async autoCrawlShortTermDataLateSession() {
     const result = await this.crawlShortTermData();
     // 读取配置中是否加入自选
-    process.env.NODE_ENV !== 'dev' && this.thsService.autoModifyThsSelfStocks(JSON.parse(result.evenBoardData));
+    process.env.NODE_ENV !== 'dev' &&
+      this.thsService.autoModifyThsSelfStocks(JSON.parse(result.evenBoardData), 'admin');
   }
 
   // 午盘

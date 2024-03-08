@@ -32,7 +32,8 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
     }
     async autoCrawlShortTermDataLateSession() {
         const result = await this.crawlShortTermData();
-        process.env.NODE_ENV !== 'dev' && this.thsService.autoModifyThsSelfStocks(JSON.parse(result.evenBoardData));
+        process.env.NODE_ENV !== 'dev' &&
+            this.thsService.autoModifyThsSelfStocks(JSON.parse(result.evenBoardData), 'admin');
     }
     async autoCrawlShortTermDataMidday() {
         this.crawlShortTermData();

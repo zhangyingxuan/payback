@@ -112,26 +112,57 @@
         <!-- 集合竞价 过滤条件 -->
         <div v-if="showBidding" class="biddingData__filter--row">
           <el-checkbox v-model="data.biddingStrategyChecked">
-            <div class="stocks_header">
-              竞价策略 ({{ data.biddingStrategyCheckedNum }})&nbsp;
-              <el-tooltip
-                class="box-item"
-                effect="dark"
-                content="超预期；换手率>=5%，竞价量比大于10（连板及反包除外）"
-                placement="top"
-              >
-                <el-icon><InfoFilled /></el-icon>
-              </el-tooltip>
+            <el-tooltip
+              class="box-item"
+              effect="dark"
+              content="超预期；换手率>=5%，竞价量比大于10（连板及反包除外）"
+              placement="top"
+            >
+              竞价策略
+            </el-tooltip>
+            <el-tooltip
+              class="box-item"
+              effect="dark"
+              content="竞价符合条件个数"
+              placement="top"
+            >
+              ({{ data.biddingStrategyCheckedNum }})
+            </el-tooltip>
+            &nbsp;
+
+            <el-tooltip
+              class="box-item"
+              effect="dark"
+              :content="`竞价符合条件个股涨停率，涨停数量/符合条件个数=${data.dailyLimitNum}/${data.biddingStrategyCheckedNum}`"
+              placement="top"
+            >
               <span class="red bold">
-                &nbsp;{{
+                {{
                   (data.dailyLimitNum / data.biddingStrategyCheckedNum).toFixed(
                     2,
                   )
                 }}
               </span>
-            </div>
+            </el-tooltip>
           </el-checkbox>
-          <el-checkbox v-model="data.exceededExpect">超预期</el-checkbox>
+          <el-checkbox v-model="data.exceededExpect">
+            超预期
+            <el-tooltip
+              class="box-item"
+              effect="dark"
+              :content="`超预期率，超预期个数/符合条件个数=${data.exceededExpectNum}/${data.biddingStrategyCheckedNum}`"
+              placement="top"
+            >
+              <span class="red bold">
+                &nbsp;{{
+                  (
+                    data.exceededExpectNum / data.biddingStrategyCheckedNum
+                  ).toFixed(2)
+                }}
+              </span>
+            </el-tooltip></el-checkbox
+          >
+
           <el-checkbox v-model="data.conformToExpect">符合预期</el-checkbox>
           <el-checkbox v-model="data.openDailyLimimExclude">
             去一字
@@ -144,6 +175,7 @@
     <TabPaneEvenBoardDailyStockTableHeader
       :showBidding="showBidding"
       :platesLength="stockGroupByPlateByFilter.length"
+      @sortByIncompatibleRateDesc="sortByIncompatibleRateDesc"
     />
 
     <div
@@ -153,8 +185,9 @@
       :key="key"
     >
       <div class="col1">
-        <PlateCol
+        <ColsPlateInfo
           :item="item"
+          :incompatibleRate="item.incompatibleRate"
           :isMobile="isMobile"
           :showBidding="showBidding"
         />
@@ -184,13 +217,14 @@
 import _ from 'lodash-es';
 import ColsBiddingData from './colsBiddingData.vue';
 import ColsStockInfo from './colsStockInfo.vue';
+import ColsPlateInfo from './colsPlateInfo.vue';
 import TabPaneEvenBoardDailyStockTableHeader from './header.vue';
-import PlateCol from './plateCol.vue';
 import { reactive, computed } from 'vue';
 import { openNewIwencaiWindow, isDailyLimit, isMainPlate } from '../../utils';
 import { dailyLimitOptionalStrategy, params } from 'pay-back-core';
 import dayjs from 'dayjs';
 import { DailyLimitStockDto } from '@/typings';
+import { calcIncompatibleRate } from './utils';
 
 const defaultTitle = '今日 - 涨停个股';
 let emit = defineEmits(['refreshBindingData']);
@@ -234,10 +268,12 @@ const data: {
   biddingStrategyCheckedNum: number;
   dailyLimitNum: number;
   exceededExpect: boolean;
+  exceededExpectNum: number;
   conformToExpect: boolean;
   closeDailyLimit: boolean;
   openDailyLimimExclude: boolean;
   isShowContent: boolean;
+  sortPlateByIncompatibleRate: boolean;
   evenBoardHeight: number;
   evenBoardHeightOptions: Array<Option>;
   keyword: string;
@@ -251,11 +287,14 @@ const data: {
   myStrategyCheckedNum: 0,
   // 竞价策略
   biddingStrategyChecked: false,
+  // 竞价满足条件个股数
   biddingStrategyCheckedNum: 0,
   // 涨停数量
   dailyLimitNum: 0,
   // 超预期
   exceededExpect: false,
+  // 超预期数量
+  exceededExpectNum: 0,
   // 符合预期
   conformToExpect: false,
   // 收盘涨停
@@ -264,6 +303,8 @@ const data: {
   openDailyLimimExclude: false,
   // 展开折叠表格
   isShowContent: true,
+  // 按板块不及预期率 降序排序
+  sortPlateByIncompatibleRate: false,
   // 连板高度，-1代表全部
   evenBoardHeight: -1,
   // 连板高度可选项
@@ -323,6 +364,11 @@ const stockGroupByPlate: any = computed(() => {
       key: '',
       value: [],
       closingFundsTotal: stockGroupByPlateTemp[key].closingFundsTotal,
+      // 计算板块 不及预期率
+      incompatibleRate: calcIncompatibleRate(
+        stockGroupByPlateTemp[key],
+        superData.showBidding,
+      ),
     };
     o.key = key;
     // 板块内 个股按 连板高度降序 => 首次涨停时间降序
@@ -358,6 +404,7 @@ const stockGroupByPlateByFilter = computed(() => {
   let myStrategyCheckedNum = 0;
   let biddingStrategyCheckedNum = 0;
   let dailyLimitNum = 0;
+  let exceededExpectNum = 0;
 
   // 遍历 按板块 划分后的数据
   let isAdd = true;
@@ -400,16 +447,20 @@ const stockGroupByPlateByFilter = computed(() => {
         // 超预期
         if ((data.exceededExpect || data.conformToExpect) && isAdd) {
           if (data.exceededExpect && data.conformToExpect) {
+            // 符合预期 + 超预期
             isAdd =
               item.biddingData.expected === 2 ||
               item.biddingData.expected === 1;
           } else {
+            // 符合预期
             isAdd =
               item.biddingData.expected === (data.conformToExpect ? 1 : 2);
           }
         }
+        // 超预期数量 2024-03-08 11:36:00
+        item.biddingData.expected === 2 && exceededExpectNum++;
 
-        // 看多、符合预期、首板量比大于10，只看主板
+        // 超预期；换手率>=5%，竞价量比大于10（连板及反包除外）
         if (data.biddingStrategyChecked && isAdd) {
           // ============ 竞价策略：高标的首板不能按首板考虑 !!!!!!============
           const evenBoardHeight = getRealEvenBoardHeight(item);
@@ -433,7 +484,14 @@ const stockGroupByPlateByFilter = computed(() => {
   });
 
   // 更新 各种数量
-  updateNums(myStrategyCheckedNum, biddingStrategyCheckedNum, dailyLimitNum);
+  updateNums(
+    myStrategyCheckedNum,
+    biddingStrategyCheckedNum,
+    dailyLimitNum,
+    exceededExpectNum,
+  );
+
+  console.log(data.sortPlateByIncompatibleRate, '12312');
 
   return sortPlates(stockGroupByPlateCopy);
 });
@@ -442,10 +500,12 @@ function updateNums(
   myStrategyCheckedNum: number,
   biddingStrategyCheckedNum: number,
   dailyLimitNum: number,
+  exceededExpectNum: number,
 ) {
   data.myStrategyCheckedNum = myStrategyCheckedNum;
   data.biddingStrategyCheckedNum = biddingStrategyCheckedNum;
   data.dailyLimitNum = dailyLimitNum;
+  data.exceededExpectNum = exceededExpectNum;
 }
 
 /**
@@ -461,6 +521,13 @@ function handleFirstBoardChecked(checked: any) {
 function handleNotFirstBoardChecked(checked: any) {
   data.notFirstBoardChecked = checked;
   data.firstBoardChecked = false;
+}
+
+/**
+ * 按板块 不及预期率 降序排序
+ */
+function sortByIncompatibleRateDesc() {
+  data.sortPlateByIncompatibleRate = !data.sortPlateByIncompatibleRate;
 }
 
 /**
@@ -495,7 +562,7 @@ function getRealEvenBoardHeight(item: any, isBiddingMode = true) {
 }
 
 /**
- * 是否符合预期
+ * 是否符合我的竞价策略 - 超预期；换手率>=5%，竞价量比大于10（连板及反包除外）
  */
 function isConformToMyStrategyChecked(stock: any) {
   // 只看主板
@@ -534,7 +601,7 @@ function sortPlates(stockGroupByPlateArr: any) {
   });
   // 2. 按 满足筛选条件 个数数量 降序
   stockGroupByPlateArr.sort((a: any, b: any) => {
-    return b.value.len - a.value.len;
+    return b.len - a.len;
   });
 
   //  3. 连板情况 或 题材过滤时，强制按连板高度排序
@@ -554,7 +621,17 @@ function sortPlates(stockGroupByPlateArr: any) {
     });
   }
 
-  // 4. 超预期过滤时，按板块达标率排序
+  // 4. 按板块超预期率降序，如果相同则 按超预期个数为0 排在后面
+  if (data.sortPlateByIncompatibleRate && superData.showBidding) {
+    stockGroupByPlateArr.sort((a: any, b: any) => {
+      // 精细化排序
+      if (a?.incompatibleRate.rate === 0 && b?.incompatibleRate.rate === 0) {
+        return b.incompatibleRate.exceededNum - a.incompatibleRate.exceededNum;
+        // return a.length - b.length;
+      }
+      return a?.incompatibleRate.rate - b?.incompatibleRate.rate;
+    });
+  }
 
   return stockGroupByPlateArr;
 }

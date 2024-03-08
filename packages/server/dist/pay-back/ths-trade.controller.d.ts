@@ -4,22 +4,23 @@ export declare class ThsTradeController {
     private readonly thsService;
     private readonly shorTermService;
     constructor(thsService: ThsService, shorTermService: ShorTermService);
-    modifyThsSelfStocks(): Promise<{
+    modifyThsSelfStocks(req: any): Promise<{
         code: number;
-        data: any;
     }>;
-    addThsSelfStock(code: string): Promise<{
+    addThsSelfStock(code: string, req: any): Promise<{
         code: number;
-        data: any;
-    } | {
-        code: number;
-        data?: undefined;
+        data: string;
     }>;
-    delThsSelfStock(code: string): Promise<{
+    delThsSelfStock(code: string, req: any): Promise<{
         code: number;
-        data: any;
-    } | {
+        data: string;
+    }>;
+    addThsSelfPlate(code: string, req: any): Promise<{
         code: number;
-        data?: undefined;
+        data: string;
+    }>;
+    delThsSelfPlate(code: string, req: any): Promise<{
+        code: number;
+        data: string;
     }>;
 }

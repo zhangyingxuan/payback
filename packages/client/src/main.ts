@@ -5,6 +5,7 @@ import router from './router';
 import 'element-plus/dist/index.css';
 import './assets/css/icon.css';
 import Stock from './components/stock.vue';
+import PlatePopover from './components/platePopover.vue';
 import StockPopover from './components/stockPopover.vue';
 import StockTooltip from './components/stockTooltip.vue';
 import Plate from './components/plate.vue';
@@ -31,6 +32,7 @@ app.use(router);
 
 // 全局组件注册
 app.component('Stock', Stock);
+app.component('PlatePopover', PlatePopover);
 app.component('StockPopover', StockPopover);
 app.component('StockTooltip', StockTooltip);
 app.component('Plate', Plate);

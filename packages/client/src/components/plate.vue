@@ -1,9 +1,17 @@
 <template>
-  <span class="stock" @click="handleClick" @dblclick="handleDblClick">
+  <span
+    class="stock"
+    @click="handleClick"
+    @dblclick="handleDblClick"
+    @mouseover="(e: Event) => handleShowMoreInfo(e)"
+  >
     {{ superData.name }}
   </span>
 </template>
 <script lang="ts" setup>
+import { inject } from 'vue';
+
+const showPlatePoper: any = inject('showPlatePoper');
 let timer: any = null;
 let superData = defineProps({
   code: {
@@ -13,6 +21,10 @@ let superData = defineProps({
   name: {
     type: String,
     default: '',
+  },
+  showOp: {
+    type: Boolean,
+    default: true,
   },
 });
 
@@ -42,6 +54,10 @@ function handleDblClick() {
     timer = null;
   }
   window.open(iwencaiUrl.replace('${code}', superData.code), '_blank');
+}
+
+function handleShowMoreInfo(e: Event) {
+  superData.showOp && showPlatePoper(e.target, superData);
 }
 </script>
 

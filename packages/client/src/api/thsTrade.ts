@@ -23,3 +23,17 @@ export const addThsSelfStock = (data: any | null) => {
 export const delThsSelfStock = (data: any | null) => {
   return http.request<string | null>("post", `${baseUrl}/delThsSelfStock`, { data });
 }
+/**
+ * 同步自选个股
+ * @returns 
+ */
+export const addThsSelfPlate = (data: any | null) => {
+  return http.request<string | null>("post", `${baseUrl}/addThsSelfPlate`, { data });
+}
+/**
+ * 同步自选个股
+ * @returns 
+ */
+export const delThsSelfPlate = (data: any | null) => {
+  return http.request<string | null>("post", `${baseUrl}/delThsSelfPlate`, { data });
+}

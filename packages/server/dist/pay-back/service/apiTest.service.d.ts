@@ -7,7 +7,6 @@ export declare class ApiTestService {
     fetchExternalData(): Promise<void>;
     fetchHotList(): Promise<void>;
     getThsSelfStocks(): Promise<void>;
-    modifyThsSelfStocks(): Promise<void>;
     datacenterWeb(): Promise<void>;
     otherTest(): Promise<void>;
     findAll(): Promise<hotList[]>;

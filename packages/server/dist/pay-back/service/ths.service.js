@@ -16,24 +16,16 @@ const fetchUtil_1 = require("../core/fetchUtil");
 const pay_back_core_1 = require("pay-back-core");
 const users_service_1 = require("../../users/users.service");
 const systemConfig_service_1 = require("./systemConfig.service");
+const thsUtils_1 = require("../utils/thsUtils");
 let isSuccess = true;
-function atob(a) {
-    return Buffer.from(a, 'base64').toString('binary');
-}
 function prepareSelfStock(i, stocks, app, userid, ticket, user) {
     if (stocks) {
         for (let j = 0; j < stocks.length; j++) {
             (0, pay_back_core_1.dailyLimitOptionalStrategy)(stocks[j], i) &&
                 app.add(async (ctx, next) => {
                     const result = await (0, fetchUtil_1.modifyThsSelfStocksRequest)(stocks[j].code, userid, ticket, user);
-                    console.log(stocks[j].name, result);
-                    if (result.errorMsg === '当前用户未登录') {
-                        ctx.logger.log('当前用户未登录：https://www.10jqka.com.cn/');
-                        isSuccess = false;
-                        ctx.usersService.clearUserInfoCache();
-                        return;
-                    }
-                    next();
+                    isSuccess = (0, thsUtils_1.dealResultIsLogin)(result, ctx);
+                    isSuccess && next();
                 });
         }
     }
@@ -44,36 +36,31 @@ let ThsService = ThsService_1 = class ThsService {
         this.systemConfigService = systemConfigService;
         this.logger = new common_1.Logger(ThsService_1.name);
     }
-    async autoModifyThsSelfStocks(evenBoardData) {
+    async autoModifyThsSelfStocks(evenBoardData, account) {
         const sysTemconfig = await this.systemConfigService.findLatestOne();
         const isAutoAddSelf = sysTemconfig.isAutoAddSelf;
         if (!isAutoAddSelf) {
             return;
         }
-        return await this.modifyThsSelfStocks(evenBoardData, sysTemconfig);
-    }
-    async modifyThsSelfStocks(evenBoardData, sysTemconfig) {
-        const userInfo = await this.usersService.getUserByAccount('admin');
+        const userInfo = await this.usersService.getUserByAccount(account);
         const isAutoAddSelfEvenBoard = sysTemconfig ? sysTemconfig.isAutoAddSelfEvenBoard : true;
         const isAutoAddSelfFirstBoard = sysTemconfig ? sysTemconfig.isAutoAddSelfFirstBoard : true;
-        const userid = atob(userInfo.userid);
+        const userid = (0, thsUtils_1.atob)(userInfo.userid);
         const ticket = userInfo.ticket;
         const user = userInfo.user;
         isSuccess = true;
         try {
             const app = new pay_back_core_1.AsynTaskIterator();
             this.logger.log(`同步自选: [高标] ${evenBoardData['gaobiao'] && evenBoardData['gaobiao'].length}；`);
-            prepareSelfStock(9, evenBoardData['gaobiao'], app, userid, ticket, user);
+            isAutoAddSelfEvenBoard && prepareSelfStock(9, evenBoardData['gaobiao'], app, userid, ticket, user);
             const maxHeight = evenBoardData.maxHeight;
             for (let i = maxHeight; i >= 1; i--) {
                 this.logger.log(`同步自选: [${i}板] ${evenBoardData[i + ''] && evenBoardData[i + ''].length}；`);
                 const stocks = evenBoardData[i + ''];
                 if (i === 1) {
-                    console.log('isAutoAddSelfFirstBoard==', isAutoAddSelfFirstBoard);
                     isAutoAddSelfFirstBoard && prepareSelfStock(i, stocks, app, userid, ticket, user);
                 }
                 else {
-                    console.log('isAutoAddSelfEvenBoard==', isAutoAddSelfEvenBoard);
                     isAutoAddSelfEvenBoard && prepareSelfStock(i, stocks, app, userid, ticket, user);
                 }
             }
@@ -85,56 +72,32 @@ let ThsService = ThsService_1 = class ThsService {
         }
         return {
             code: isSuccess ? 200 : 400,
-            data: evenBoardData,
         };
     }
-    async updateThsSelfStock(code, type) {
-        const userInfo = await this.usersService.getUserByAccount('admin');
-        const userid = atob(userInfo.userid);
-        const ticket = userInfo.ticket;
-        const user = userInfo.user;
-        isSuccess = true;
-        try {
-            const result = await (0, fetchUtil_1.modifyThsSelfStocksRequest)(code, userid, ticket, user, type);
-            if (result.errorCode !== 0) {
-                if (result.errorMsg === '当前用户未登录') {
-                    this.logger.log('[updateThsSelfStock] 当前用户未登录：https://www.10jqka.com.cn/');
-                    this.usersService.clearUserInfoCache();
-                }
-                isSuccess = false;
-                return {
-                    code: 400,
-                    data: result.errorMsg,
-                };
-            }
-        }
-        catch (e) {
-            isSuccess = false;
-            this.logger.log('updateThsSelfStock[' + type + '] 失败了！' + e);
-        }
-        return {
-            code: isSuccess ? 200 : 400,
-        };
-    }
-    async batchUpdateThsSelfStock(stocks = [], type) {
+    async batchUpdateThsSelfStock(stocks = [], type, account) {
+        const sysTemconfig = await this.systemConfigService.findLatestOne();
+        const isBinddingDelEventBoard = sysTemconfig.isBinddingDelEventBoard;
+        const isBinddingDelFirstBoard = sysTemconfig.isBinddingDelFirstBoard;
         const app = new pay_back_core_1.AsynTaskIterator();
-        const userInfo = await this.usersService.getUserByAccount('admin');
-        const userid = atob(userInfo.userid);
+        const userInfo = await this.usersService.getUserByAccount(account);
+        const userid = (0, thsUtils_1.atob)(userInfo.userid);
         const ticket = userInfo.ticket;
         const user = userInfo.user;
         isSuccess = true;
         try {
             stocks.forEach(stock => {
                 app.add(async (ctx, next) => {
-                    const result = await (0, fetchUtil_1.modifyThsSelfStocksRequest)(stock.code, userid, ticket, user, type);
-                    console.log(stock.name, result);
-                    if (result.errorMsg === '当前用户未登录') {
-                        ctx.logger.log('当前用户未登录：https://www.10jqka.com.cn/');
-                        isSuccess = false;
-                        ctx.usersService.clearUserInfoCache();
-                        return;
+                    let result = {};
+                    if (!stock.evenDays) {
+                        isBinddingDelEventBoard &&
+                            (result = await (0, fetchUtil_1.modifyThsSelfStocksRequest)(stock.code, userid, ticket, user, type));
                     }
-                    next();
+                    else {
+                        isBinddingDelFirstBoard &&
+                            (result = await (0, fetchUtil_1.modifyThsSelfStocksRequest)(stock.code, userid, ticket, user, type));
+                    }
+                    isSuccess = (0, thsUtils_1.dealResultIsLogin)(result, ctx);
+                    isSuccess && next();
                 });
             });
             app.run(this);
@@ -147,32 +110,43 @@ let ThsService = ThsService_1 = class ThsService {
             code: isSuccess ? 200 : 400,
         };
     }
-    async updateThsSelfPlate(code, type) {
-        const userInfo = await this.usersService.getUserByAccount('admin');
-        const userid = atob(userInfo.userid);
+    async updateThsSelfStock(code, type, account) {
+        const userInfo = await this.usersService.getUserByAccount(account);
+        const userid = (0, thsUtils_1.atob)(userInfo.userid);
         const ticket = userInfo.ticket;
         const user = userInfo.user;
-        isSuccess = true;
+        let msg = '';
         try {
-            const result = await (0, fetchUtil_1.modifyThsSelfPlatesRequest)(code, userid, ticket, user, type);
-            if (result.errorCode !== 0) {
-                if (result.errorMsg === '当前用户未登录') {
-                    this.logger.log('[updateThsSelfStock] 当前用户未登录：https://www.10jqka.com.cn/');
-                    this.usersService.clearUserInfoCache();
-                }
-                isSuccess = false;
-                return {
-                    code: 400,
-                    data: result.errorMsg,
-                };
-            }
+            const result = await (0, fetchUtil_1.modifyThsSelfStocksRequest)(code, userid, ticket, user, type);
+            msg = (0, thsUtils_1.dealStockResult)(result, this.usersService);
         }
         catch (e) {
-            isSuccess = false;
+            msg = e;
             this.logger.log('updateThsSelfStock[' + type + '] 失败了！' + e);
         }
         return {
-            code: isSuccess ? 200 : 400,
+            code: msg ? 400 : 200,
+            data: msg,
+        };
+    }
+    async updateThsSelfPlate(code, type, account) {
+        const userInfo = await this.usersService.getUserByAccount(account);
+        this.logger.log('[updateThsSelfPlate] 加入自选股' + code);
+        const userid = (0, thsUtils_1.atob)(userInfo.userid);
+        const ticket = userInfo.ticket;
+        const user = userInfo.user;
+        let msg = '';
+        try {
+            const result = await (0, fetchUtil_1.modifyThsSelfRequest)(code, userid, ticket, user, type, true);
+            msg = (0, thsUtils_1.dealPlateResult)(result, type, this.usersService);
+        }
+        catch (e) {
+            msg = e;
+            this.logger.log('updateThsSelfStock[' + type + '] 失败了！' + e);
+        }
+        return {
+            code: msg ? 400 : 200,
+            data: msg,
         };
     }
 };

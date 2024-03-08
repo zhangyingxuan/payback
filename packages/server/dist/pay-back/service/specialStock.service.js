@@ -33,12 +33,12 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
         this.logger = new common_1.Logger(SpecialStockService_1.name);
     }
     async autoCrawlBinddingData() {
-        this.crawlBinddingData();
+        this.crawlBinddingData(0, 'admin');
     }
     async autoCrawlBinddingDataLateSession() {
-        this.crawlBinddingData();
+        this.crawlBinddingData(0, 'admin');
     }
-    async crawlBinddingData(isRemoveIncompatible = 0) {
+    async crawlBinddingData(isRemoveIncompatible = 0, account) {
         this.logger.debug('autoCrawlBinddingData is Begining!');
         const todayDateStr = new Date().toLocaleDateString();
         const specialStockDto = new special_stock_dto_1.SpecialStockDto();
@@ -51,7 +51,7 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
                 chooseStock1Expected,
             });
             specialStockDto.updatedTime = new Date();
-            isRemoveIncompatible && this.dealIncompatibleExpectStocks(dailyLimitYesterdayBidding);
+            isRemoveIncompatible && this.dealIncompatibleExpectStocks(dailyLimitYesterdayBidding, account);
             const todayDataFromDB = await this.getTodayData(todayDateStr);
             if (todayDataFromDB) {
                 this.logger.log('autoCrawlBinddingData 更新数据');
@@ -69,15 +69,15 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
         }
         return specialStockDto;
     }
-    async dealIncompatibleExpectStocks(dailyLimitYesterdayBidding) {
+    async dealIncompatibleExpectStocks(dailyLimitYesterdayBidding, account) {
         this.logger.log('dealIncompatibleExpectStocks 删除不及预期个股');
         const incompatibleExpectStocks = [];
         dailyLimitYesterdayBidding.forEach(stock => {
-            if (!stock.evenDays && stock.expected === transformDataUtil_1.ExpectEnum.incompatible) {
+            if (stock.expected === transformDataUtil_1.ExpectEnum.incompatible) {
                 incompatibleExpectStocks.push(stock);
             }
         });
-        this.thsService.batchUpdateThsSelfStock(incompatibleExpectStocks, fetchUtil_1.ThsOprate.del);
+        this.thsService.batchUpdateThsSelfStock(incompatibleExpectStocks, fetchUtil_1.ThsOprate.del, account);
     }
     getTodayData(todayDateStr) {
         return this.specialStockRp

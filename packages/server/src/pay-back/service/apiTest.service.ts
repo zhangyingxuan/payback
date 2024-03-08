@@ -85,52 +85,6 @@ export class ApiTestService {
       .catch(e => console.error(e));
     // .then(async (response) => await response.text()).then(data => console.log(data)).catch(e => console.error(e));
   }
-
-  async modifyThsSelfStocks() {
-    // # 更改同花顺自选股列表
-    // # method: add 添加, del 删除, exc 排序
-    // # pos: 排序用的序号, 从1开始
-    const code = '000553';
-    const pos = '1';
-    const payload = {
-      add: { stockcode: code, op: 'add' },
-      del: { stockcode: code, op: 'del' },
-      exc: { stockcode: code, op: 'exc', pos: pos, callback: 'callbacknew' },
-    };
-    // https://t.10jqka.com.cn/newcircle/group/modifySelfStock/?op=add&stockcode=000551_33
-    // https://t.10jqka.com.cn/newcircle/group/modifySelfStock/?op=add&stockcode=000980
-    // console.log("http://stock.10jqka.com.cn/self.php?" + stringify(payload.add));
-    console.log('https://t.10jqka.com.cn/newcircle/group/modifySelfStock/?' + stringify(payload.add));
-    const userid = '631410317';
-    const ticket = 'e64f54692d843e69da6dbb579e220e30';
-    const user =
-      'MDptb182MzE0MTAzMTc6Ok5vbmU6NTAwOjY0MTQxMDMxNzo3LDExMTExMTExMTExLDQwOzQ0LDExLDQwOzYsMSw0MDs1LDEsNDA7MSwxMDEsNDA7MiwxLDQwOzMsMSw0MDs1LDEsNDA7OCwwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMSw0MDsxMDIsMSw0MDoyNzo6OjYzMTQxMDMxNzoxNjg5ODIzNzE4Ojo6MTY1MDk4ODUwMDo4NjQwMDowOjE2Y2M0ZWIzOGNhZjUzNjU5MjU2MTNiYzdhM2JlNTAzOTpkZWZhdWx0XzQ6MQ%3D%3D';
-    fetch('https://t.10jqka.com.cn/newcircle/group/modifySelfStock/?' + stringify(payload.add), {
-      headers: {
-        accept: 'application/json, text/javascript, */*; q=0.01',
-        'accept-language': 'zh-CN,zh;q=0.9',
-        'cache-control': 'no-cache',
-        pragma: 'no-cache',
-        'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"macOS"',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'same-origin',
-        'x-requested-with': 'XMLHttpRequest',
-        Cookie: `userid=${userid}; u_name=mo_${userid}; escapename=mo_${userid}; user=${user}; ticket=${ticket};`,
-      },
-      referrer: 'https://t.10jqka.com.cn/newcircle/user/userPersonal/?from=circle',
-      referrerPolicy: 'strict-origin-when-cross-origin',
-      body: null,
-      method: 'GET',
-      mode: 'cors',
-      credentials: 'include',
-    })
-      .then(async response => await response.text())
-      .then(data => console.log(data))
-      .catch(e => console.error(e));
-  }
   async datacenterWeb() {
     const dateTime = new Date().getTime();
     const url = `https://datacenter-web.eastmoney.com/api/data/v1/get?callback=jQuery112304542900785353563_${dateTime}&reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE%2CMUTUAL_TYPE%2CBOARD_TYPE%2CMUTUAL_TYPE_NAME%2CFUNDS_DIRECTION%2CINDEX_CODE%2CINDEX_NAME%2CBOARD_CODE&quoteColumns=status~07~BOARD_CODE%2CdayNetAmtIn~07~BOARD_CODE%2CdayAmtRemain~07~BOARD_CODE%2CdayAmtThreshold~07~BOARD_CODE%2Cf104~07~BOARD_CODE%2Cf105~07~BOARD_CODE%2Cf106~07~BOARD_CODE%2Cf3~03~INDEX_CODE~INDEX_f3%2CnetBuyAmt~07~BOARD_CODE&quoteType=0&pageNumber=1&pageSize=200&sortTypes=1&sortColumns=MUTUAL_TYPE&source=WEB&client=WEB&_=${dateTime}`;

@@ -20,6 +20,12 @@ export class systemConfig {
   @Column({ comment: '竞价相关配置', type: 'varchar', length: 512, nullable: true })
   biddingConfig: string;
 
+  @Column({ comment: '是否竞价删除 连板', type: 'tinyint', width: 1, default: 0 })
+  isBinddingDelEventBoard: boolean;
+
+  @Column({ comment: '是否竞价删除 首板', type: 'tinyint', width: 1, default: 0 })
+  isBinddingDelFirstBoard: boolean;
+
   @Column({ type: 'timestamp', comment: '创建时间', default: () => 'current_timestamp' })
   createTime: Timestamp;
 

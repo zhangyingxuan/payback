@@ -6,6 +6,8 @@ export declare class systemConfig {
     isAutoAddSelfFirstBoard: boolean;
     baseConfig: string;
     biddingConfig: string;
+    isBinddingDelEventBoard: boolean;
+    isBinddingDelFirstBoard: boolean;
     createTime: Timestamp;
     updatedTime: Timestamp;
 }

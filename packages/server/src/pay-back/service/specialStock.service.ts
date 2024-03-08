@@ -23,15 +23,15 @@ export class SpecialStockService {
   // 竞价数据 - 早盘
   @Cron('08 25 9 * * 1-5')
   async autoCrawlBinddingData() {
-    this.crawlBinddingData();
+    this.crawlBinddingData(0, 'admin');
   }
   // 竞价数据 - 尾盘收盘价
   @Cron('00 05 15 * * 1-5')
   async autoCrawlBinddingDataLateSession() {
-    this.crawlBinddingData();
+    this.crawlBinddingData(0, 'admin');
   }
 
-  async crawlBinddingData(isRemoveIncompatible = 0) {
+  async crawlBinddingData(isRemoveIncompatible = 0, account) {
     this.logger.debug('autoCrawlBinddingData is Begining!');
 
     const todayDateStr = new Date().toLocaleDateString();
@@ -52,7 +52,7 @@ export class SpecialStockService {
       specialStockDto.updatedTime = new Date();
 
       // 处理不及预期个股
-      isRemoveIncompatible && this.dealIncompatibleExpectStocks(dailyLimitYesterdayBidding);
+      isRemoveIncompatible && this.dealIncompatibleExpectStocks(dailyLimitYesterdayBidding, account);
 
       // console.log(specialStockDto);
 
@@ -79,19 +79,18 @@ export class SpecialStockService {
    * 处理不及预期个股
    * @returns
    */
-  async dealIncompatibleExpectStocks(dailyLimitYesterdayBidding) {
+  async dealIncompatibleExpectStocks(dailyLimitYesterdayBidding, account) {
     // 删除不及预期个股
     this.logger.log('dealIncompatibleExpectStocks 删除不及预期个股');
     const incompatibleExpectStocks = [];
 
     dailyLimitYesterdayBidding.forEach(stock => {
-      // 将不及预期个股 加入数组 （保留非首板 evenDays 有值则是非首板 2024-01-07 19:47:33 by zyx）
-      if (!stock.evenDays && stock.expected === ExpectEnum.incompatible) {
+      if (stock.expected === ExpectEnum.incompatible) {
         incompatibleExpectStocks.push(stock);
       }
     });
     // 批量 剔除低于预期的昨日涨停个股（首板），集合竞价开盘价低于预期， 且成交量不足，未匹配量；
-    this.thsService.batchUpdateThsSelfStock(incompatibleExpectStocks, ThsOprate.del);
+    this.thsService.batchUpdateThsSelfStock(incompatibleExpectStocks, ThsOprate.del, account);
   }
 
   /**

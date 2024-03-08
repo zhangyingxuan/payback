@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.promiseLimit = exports.modifyThsSelfPlatesRequest = exports.modifyThsSelfStocksRequest = exports.ThsOprate = exports.fetchNorhFunds = exports.fetchMarketPoint = exports.fetchMarketPointFromEastmoney = exports.clearThsSelfStocks = exports.fetchMarketData = exports.fetchStockPagingDataList = exports.fetchIwencai = exports.fetchAllStocksByIwencai = exports.fetchIwencaiApi = void 0;
+exports.promiseLimit = exports.modifyThsSelfRequest = exports.modifyThsSelfStocksRequest = exports.ThsOprate = exports.fetchNorhFunds = exports.fetchMarketPoint = exports.fetchMarketPointFromEastmoney = exports.clearThsSelfStocks = exports.fetchMarketData = exports.fetchStockPagingDataList = exports.fetchIwencai = exports.fetchAllStocksByIwencai = exports.fetchIwencaiApi = void 0;
 const hexin_v_1 = require("./hexin-v");
 const node_fetch_1 = require("node-fetch");
 const commonUtil_1 = require("../utils/commonUtil");
@@ -202,14 +202,14 @@ exports.fetchNorhFunds = fetchNorhFunds;
 var ThsOprate;
 (function (ThsOprate) {
     ThsOprate["add"] = "add";
-    ThsOprate["del"] = "del";
+    ThsOprate["del"] = "remove";
     ThsOprate["exc"] = "exc";
 })(ThsOprate = exports.ThsOprate || (exports.ThsOprate = {}));
 async function modifyThsSelfStocksRequest(code, userid, ticket, user, type = ThsOprate.add) {
     const pos = '1';
     const payload = {
         add: { stockcode: code, op: 'add' },
-        del: { stockcode: code, op: 'del' },
+        remove: { stockcode: code, op: 'del' },
         exc: { stockcode: code, op: 'exc', pos: pos, callback: 'callbacknew' },
     };
     const result = await (0, node_fetch_1.default)('https://t.10jqka.com.cn/newcircle/group/modifySelfStock/?' + (0, qs_1.stringify)(payload[type]), {
@@ -237,39 +237,26 @@ async function modifyThsSelfStocksRequest(code, userid, ticket, user, type = Ths
     return await result.json();
 }
 exports.modifyThsSelfStocksRequest = modifyThsSelfStocksRequest;
-async function modifyThsSelfPlatesRequest(code, userid, ticket, user, type = ThsOprate.add) {
-    const payload = {
-        add: 'add',
-        del: 'remove',
-    };
-    const result = await (0, node_fetch_1.default)('https://www.iwencai.com/iwencai/userinfo/iwc/userinfo/self-stock/index/' + payload[type], {
+async function modifyThsSelfRequest(code, userid, ticket, user, type = ThsOprate.add, isPlate = false) {
+    const codeSuffix = isPlate ? '_48' : '_33';
+    const result = await (0, node_fetch_1.default)('https://www.iwencai.com/iwencai/userinfo/iwc/userinfo/self-stock/index/' + type, {
         headers: {
-            accept: 'application/json, text/javascript, */*; q=0.01',
-            'accept-language': 'zh-CN,zh;q=0.9',
-            'cache-control': 'no-cache',
-            pragma: 'no-cache',
-            'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-            'sec-ch-ua-mobile': '?0',
-            'sec-ch-ua-platform': '"macOS"',
-            'sec-fetch-dest': 'empty',
-            'sec-fetch-mode': 'cors',
-            'sec-fetch-site': 'same-origin',
-            'x-requested-with': 'XMLHttpRequest',
+            Accept: 'application/json, text/plain, */*',
+            'Content-Type': 'application/json',
+            'Hexin-V': 'A0FxrGogwHjAQCxMgvkBCLc5VoZebrX63-JZdKOWPcinim_4677FMG8yaV0w',
             Cookie: `userid=${userid}; u_name=mo_${userid}; escapename=mo_${userid}; user=${user}; ticket=${ticket};`,
         },
-        referrer: `https://www.iwencai.com/unifiedwap/result?w=${code}%20&querytype=zhishu`,
-        referrerPolicy: 'strict-origin-when-cross-origin',
-        body: {
-            codes: code + '_48',
+        body: JSON.stringify({
+            codes: code + codeSuffix,
             type: 2,
-        },
+        }),
         method: 'POST',
         mode: 'cors',
         credentials: 'include',
     });
     return await result.json();
 }
-exports.modifyThsSelfPlatesRequest = modifyThsSelfPlatesRequest;
+exports.modifyThsSelfRequest = modifyThsSelfRequest;
 function promiseLimit(promises, limit) {
     return new Promise(resolve => {
         let resolvedCount = 0;

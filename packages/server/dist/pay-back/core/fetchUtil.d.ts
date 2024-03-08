@@ -14,10 +14,10 @@ export declare function fetchMarketPoint(apiUrl: any, key: any): Promise<number>
 export declare function fetchNorhFunds(): Promise<any>;
 export declare enum ThsOprate {
     add = "add",
-    del = "del",
+    del = "remove",
     exc = "exc"
 }
 export declare function modifyThsSelfStocksRequest(code: any, userid: any, ticket: any, user: any, type?: ThsOprate): Promise<any>;
-export declare function modifyThsSelfPlatesRequest(code: any, userid: any, ticket: any, user: any, type?: ThsOprate): Promise<any>;
+export declare function modifyThsSelfRequest(code: any, userid: any, ticket: any, user: any, type?: ThsOprate, isPlate?: boolean): Promise<any>;
 export declare function promiseLimit(promises: any, limit: any): Promise<unknown>;
 export {};
