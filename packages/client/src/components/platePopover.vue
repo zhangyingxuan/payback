@@ -29,7 +29,6 @@ let superData = defineProps({
 });
 
 async function handleAdd() {
-  console.log('添加自选成功');
   const result = await addThsSelfPlate({
     code: superData.virtualRefData?.code,
   });

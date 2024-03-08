@@ -220,11 +220,16 @@ import ColsStockInfo from './colsStockInfo.vue';
 import ColsPlateInfo from './colsPlateInfo.vue';
 import TabPaneEvenBoardDailyStockTableHeader from './header.vue';
 import { reactive, computed } from 'vue';
-import { openNewIwencaiWindow, isDailyLimit, isMainPlate } from '../../utils';
+import { openNewIwencaiWindow, isDailyLimit } from '../../utils';
 import { dailyLimitOptionalStrategy, params } from 'pay-back-core';
 import dayjs from 'dayjs';
 import { DailyLimitStockDto } from '@/typings';
-import { calcIncompatibleRate } from './utils';
+import {
+  transformObj2Arr,
+  getRealEvenBoardHeight,
+  isConformToMyStrategyChecked,
+  transformAndSortEvenBoardHeightOptions,
+} from './utils';
 
 const defaultTitle = '今日 - 涨停个股';
 let emit = defineEmits(['refreshBindingData']);
@@ -316,6 +321,11 @@ const data: {
  * 按板块分类的个股（高标的首板 竞价策略 也需要过滤）
  */
 const stockGroupByPlate: any = computed(() => {
+  // 空对象直接返回
+  if (_.isEmpty(superData.currentDateData)) {
+    // console.log('superData.currentDateData null');
+    return [];
+  }
   const currentDateData = _.cloneDeep(superData.currentDateData);
   const evenBoardHeightOptions = new Set();
 
@@ -357,49 +367,25 @@ const stockGroupByPlate: any = computed(() => {
       });
   });
 
-  // 将对象转换为数组 便于排序
-  const stockGroupByPlateArr: any[] = [];
-  Object.keys(stockGroupByPlateTemp).forEach(key => {
-    let o = {
-      key: '',
-      value: [],
-      closingFundsTotal: stockGroupByPlateTemp[key].closingFundsTotal,
-      // 计算板块 不及预期率
-      incompatibleRate: calcIncompatibleRate(
-        stockGroupByPlateTemp[key],
-        superData.showBidding,
-      ),
-    };
-    o.key = key;
-    // 板块内 个股按 连板高度降序 => 首次涨停时间降序
-    o.value = sortStocks(stockGroupByPlateTemp[key]);
-    stockGroupByPlateArr.push(o);
-  });
-
   // 连板高度 可选项
   // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-  data.evenBoardHeightOptions = Array.from(evenBoardHeightOptions)
-    .map((item: any) => {
-      return {
-        label: item,
-        value: +item,
-      };
-    })
-    .sort((a: any, b: any) => {
-      return b.value - a.value;
-    });
-  // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-  data.evenBoardHeightOptions.unshift({
-    label: '全部',
-    value: -1,
-  });
-  return stockGroupByPlateArr;
+  data.evenBoardHeightOptions = transformAndSortEvenBoardHeightOptions(
+    evenBoardHeightOptions,
+  );
+
+  // 将对象转换为数组 便于排序
+  return transformObj2Arr(stockGroupByPlateTemp, superData.showBidding);
 });
 
 /**
  * 按条件过滤后的数据，基本策略 或 竞价策略 等
  */
 const stockGroupByPlateByFilter = computed(() => {
+  // 空对象直接返回
+  if (_.isEmpty(stockGroupByPlate.value)) {
+    // console.log('stockGroupByPlate.value null');
+    return [];
+  }
   const stockGroupByPlateCopy: any = _.cloneDeep(stockGroupByPlate.value);
   let myStrategyCheckedNum = 0;
   let biddingStrategyCheckedNum = 0;
@@ -412,6 +398,7 @@ const stockGroupByPlateByFilter = computed(() => {
     let len = 0;
     plateData.value.forEach((item: DailyLimitStockDto) => {
       isAdd = true;
+      // 反包首板 就视为 首板
       const evenBoardHeight = getRealEvenBoardHeight(item, false);
       // 需按照首板/我的策略 进行过滤处理
       if (data.firstBoardChecked) {
@@ -491,8 +478,6 @@ const stockGroupByPlateByFilter = computed(() => {
     exceededExpectNum,
   );
 
-  console.log(data.sortPlateByIncompatibleRate, '12312');
-
   return sortPlates(stockGroupByPlateCopy);
 });
 
@@ -539,49 +524,6 @@ const isShowRefreshBtn = computed(() => {
   // 当日数据 且 展示昨日涨停个股
   return today.isSame(updateTime, 'day');
 });
-
-/**
- * 获取个股真正的 高度
- * 竞价时 反包首板，不能按正常首板考量
- * 其他情况，可按首板考虑
- */
-function getRealEvenBoardHeight(item: any, isBiddingMode = true) {
-  if (!item) {
-    return 0;
-  }
-  // 反包板
-  if (item.evenBoardHeight.indexOf('天') > -1) {
-    // 包含天，但不包含 ， 不为首板
-    if (item.evenBoardHeight.indexOf('，') > -1) {
-      return item.evenBoardHeight.split('，')[0];
-    }
-    // 反包首板
-    return isBiddingMode ? 2 : 1;
-  }
-  return item.evenBoardHeight;
-}
-
-/**
- * 是否符合我的竞价策略 - 超预期；换手率>=5%，竞价量比大于10（连板及反包除外）
- */
-function isConformToMyStrategyChecked(stock: any) {
-  // 只看主板
-  if (!isMainPlate(stock.code)) {
-    return false;
-  }
-
-  const biddingData = stock.biddingData;
-  // 超预期
-  let isConform = biddingData.expected === 2;
-  // 首板 必须竞价量比大于10，换手率>=5%
-  if (stock.evenBoardHeight === '1' && isConform) {
-    isConform =
-      biddingData.bidVolumeRatio >= 10 &&
-      (stock.turnoverRate ? stock.turnoverRate >= 5 : true);
-  }
-
-  return isConform;
-}
 /**
  * 刷新竞价数据
  */
@@ -615,8 +557,8 @@ function sortPlates(stockGroupByPlateArr: any) {
       bStock = b.value.find((stock: any) => {
         return stock.isAdd;
       });
-      aHeight = +getRealEvenBoardHeight(aStock, true);
-      bHeight = +getRealEvenBoardHeight(bStock, true);
+      aHeight = +getRealEvenBoardHeight(aStock);
+      bHeight = +getRealEvenBoardHeight(bStock);
       return bHeight - aHeight;
     });
   }
@@ -634,37 +576,6 @@ function sortPlates(stockGroupByPlateArr: any) {
   }
 
   return stockGroupByPlateArr;
-}
-
-/**
- * 个股排序 板块内 个股按 连板高度降序 => 首次涨停时间降序
- * @param stocks
- */
-function sortStocks(stocks: []) {
-  // 首板按涨停时间排序
-  stocks.sort((a: any, b: any) => {
-    // if (a.evenBoardHeight != '1' || b.evenBoardHeight != '1') {
-    //   return 0;
-    // }
-    const aStart =
-      a.dailyTime.indexOf(',') > -1 ? a.dailyTime.split(',')[0] : a.dailyTime;
-    const bStart =
-      b.dailyTime.indexOf(',') > -1 ? b.dailyTime.split(',')[0] : b.dailyTime;
-
-    return dayjs('2023-09-05' + aStart).isBefore(dayjs('2023-09-05' + bStart))
-      ? -1
-      : 1;
-  });
-
-  let aHeight, bHeight;
-  // 连板高度降序
-  stocks.sort((a: any, b: any) => {
-    aHeight = +getRealEvenBoardHeight(a, true);
-    bHeight = +getRealEvenBoardHeight(b, true);
-
-    return bHeight - aHeight;
-  });
-  return stocks;
 }
 
 function handleTicaiClick(key: string) {
