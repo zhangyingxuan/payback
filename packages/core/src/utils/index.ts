@@ -41,8 +41,8 @@ export const dailyLimitOptionalStrategyStr = '流通市值大于等于20亿，�
  * 策略备注：参考 dailyLimitOptionalStrategyStr
  */
 export function dailyLimitOptionalStrategy(stock: any, currentLevel: number | string) {
-  // 创业板、科创板 30*、688、83* 不自选
-  if (stock.code.startsWith('3') || stock.code.startsWith('688') || stock.code.startsWith('8') || stock.code.startsWith('4')) return false;
+  // 创业板、科创板 30*、68*、83* 不自选
+  if (!isMainPlate(stock.code)) return false;
   // 连板全部加入
   if (currentLevel != 1) return true;
   return stock.price <= 30 && (stock.circulationValue >= 20 && stock.circulationValue <= 120);
@@ -100,4 +100,22 @@ export function getExpected(stock: any) {
   return expectedArr[4];
 }
 
-export default { getCurrentCycle, dailyLimitOptionalStrategy, getExpected };
+
+/**
+ * 是否 主板个股
+ * @param stockCode  个股代码
+ * @param increaseDecline  涨跌幅
+ */
+export function isMainPlate(stockCode: string) {
+  if (
+    stockCode.startsWith('68') ||
+    stockCode.startsWith('30') || stockCode.startsWith('4') ||
+    stockCode.startsWith('8')
+  ) {
+    return false;
+  }
+
+  return true;
+}
+
+export default { getCurrentCycle, dailyLimitOptionalStrategy, getExpected, isMainPlate };
