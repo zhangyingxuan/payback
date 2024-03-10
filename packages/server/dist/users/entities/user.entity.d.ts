@@ -7,6 +7,7 @@ export declare class User {
     user: string;
     ticket: string;
     userid: string;
+    isAdmin: boolean;
     isDelete: boolean;
     createTime: Timestamp;
 }

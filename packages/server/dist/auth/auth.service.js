@@ -44,6 +44,8 @@ let AuthService = class AuthService {
             return {
                 code: 200,
                 data: {
+                    isAdmin: !!result.isAdmin,
+                    name: result.name,
                     token: this.jwtService.sign(user),
                 },
             };

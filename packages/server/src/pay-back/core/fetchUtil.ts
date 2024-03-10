@@ -1,4 +1,4 @@
-import { createV } from './hexin-v';
+import { createV } from 'pay-back-core';
 import fetch from 'node-fetch';
 import { getIwencaiData, getStocksDataByIwencai, getStocksPagingDataByIwencai } from '../utils/commonUtil';
 import { stringify } from 'qs';
@@ -120,7 +120,9 @@ export async function fetchStockPagingDataList(question, pageSize = 5, pageNum =
     source: 'Ths_iwencai_Xuangu',
     perpage: pageSize,
     page: pageNum,
+    // 组件Id 必须
     comp_id: 6836372,
+    // 组件Id 必须
     uuid: 24087,
     condition,
   };

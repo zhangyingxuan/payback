@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.promiseLimit = exports.modifyThsSelfRequest = exports.modifyThsSelfStocksRequest = exports.ThsOprate = exports.fetchNorhFunds = exports.fetchMarketPoint = exports.fetchMarketPointFromEastmoney = exports.clearThsSelfStocks = exports.fetchMarketData = exports.fetchStockPagingDataList = exports.fetchIwencai = exports.fetchAllStocksByIwencai = exports.fetchIwencaiApi = void 0;
-const hexin_v_1 = require("./hexin-v");
+const pay_back_core_1 = require("pay-back-core");
 const node_fetch_1 = require("node-fetch");
 const commonUtil_1 = require("../utils/commonUtil");
 const qs_1 = require("qs");
@@ -49,7 +49,7 @@ async function fetchIwencai(question, pageSize = 5, isPlate = false) {
             'accept-language': 'zh-CN,zh;q=0.9',
             'cache-control': 'no-cache',
             'content-type': 'application/json',
-            'hexin-v': (0, hexin_v_1.createV)(),
+            'hexin-v': (0, pay_back_core_1.createV)(),
             pragma: 'no-cache',
         },
         body: JSON.stringify(body),
@@ -79,7 +79,7 @@ async function fetchStockPagingDataList(question, pageSize = 5, pageNum = 1, con
             'accept-language': 'zh-CN,zh;q=0.9',
             'cache-control': 'no-cache',
             'content-type': 'application/x-www-form-urlencoded',
-            'hexin-v': (0, hexin_v_1.createV)(),
+            'hexin-v': (0, pay_back_core_1.createV)(),
             pragma: 'no-cache',
         },
         body: (0, qs_1.stringify)(body),
@@ -97,7 +97,7 @@ async function fetchMarketData() {
             accept: '*/*',
             'accept-language': 'zh-CN,zh;q=0.9',
             'cache-control': 'no-cache',
-            'hexin-v': (0, hexin_v_1.createV)(),
+            'hexin-v': (0, pay_back_core_1.createV)(),
             pragma: 'no-cache',
             'x-requested-with': 'XMLHttpRequest',
         },

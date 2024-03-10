@@ -42,6 +42,10 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "userid", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ comment: '是否为管理员', type: 'tinyint', width: 1 }),
+    __metadata("design:type", Boolean)
+], User.prototype, "isAdmin", void 0);
+__decorate([
     (0, typeorm_1.Column)({
         default: false,
     }),

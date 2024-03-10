@@ -16,6 +16,8 @@ export class User {
   ticket: string;
   @Column({ comment: 'userid', type: 'varchar', length: 256, default: '' })
   userid: string;
+  @Column({ comment: '是否为管理员', type: 'tinyint', width: 1 })
+  isAdmin: boolean;
   // 软删除
   @Column({
     default: false,

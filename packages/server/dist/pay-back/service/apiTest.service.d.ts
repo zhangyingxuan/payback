@@ -4,7 +4,6 @@ export declare class ApiTestService {
     private readonly hotListRp;
     constructor(hotListRp: Repository<hotList>);
     private readonly logger;
-    fetchExternalData(): Promise<void>;
     fetchHotList(): Promise<void>;
     getThsSelfStocks(): Promise<void>;
     datacenterWeb(): Promise<void>;

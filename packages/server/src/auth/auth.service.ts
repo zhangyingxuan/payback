@@ -5,7 +5,7 @@ import { LoginDTO } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
-  constructor(private usersService: UsersService, private jwtService: JwtService) {}
+  constructor(private usersService: UsersService, private jwtService: JwtService) { }
 
   async validateUser(userInfo: LoginDTO): Promise<any> {
     const user = await this.usersService.findOne(userInfo);
@@ -26,6 +26,8 @@ export class AuthService {
       return {
         code: 200,
         data: {
+          isAdmin: !!result.isAdmin,
+          name: result.name,
           token: this.jwtService.sign(user),
         },
       };

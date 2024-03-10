@@ -9,6 +9,8 @@ export declare class AuthService {
     login(user: LoginDTO, req: any): Promise<{
         code: number;
         data: {
+            isAdmin: boolean;
+            name: any;
             token: string;
             msg?: undefined;
         };
@@ -16,6 +18,8 @@ export declare class AuthService {
         code: number;
         data: {
             msg: string;
+            isAdmin?: undefined;
+            name?: undefined;
             token?: undefined;
         };
     }>;

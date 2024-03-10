@@ -18,15 +18,15 @@ __decorate([
     __metadata("design:type", Number)
 ], systemConfig.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '每日收盘是否自动添加自选个股 0不添加 1添加', type: 'tinyint', width: 1, default: 0 }),
+    (0, typeorm_1.Column)({ comment: '每日收盘是否自动添加自选个股 0不添加 1添加', type: 'tinyint', width: 1 }),
     __metadata("design:type", Boolean)
 ], systemConfig.prototype, "isAutoAddSelf", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '自选连板 0不添加 1添加', type: 'tinyint', width: 1, default: 0 }),
+    (0, typeorm_1.Column)({ comment: '自选连板 0不添加 1添加', type: 'tinyint', width: 1 }),
     __metadata("design:type", Boolean)
 ], systemConfig.prototype, "isAutoAddSelfEvenBoard", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '自选首板 0不添加 1添加', type: 'tinyint', width: 1, default: 0 }),
+    (0, typeorm_1.Column)({ comment: '自选首板 0不添加 1添加', type: 'tinyint', width: 1 }),
     __metadata("design:type", Boolean)
 ], systemConfig.prototype, "isAutoAddSelfFirstBoard", void 0);
 __decorate([
@@ -38,11 +38,11 @@ __decorate([
     __metadata("design:type", String)
 ], systemConfig.prototype, "biddingConfig", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '是否竞价删除 连板', type: 'tinyint', width: 1, default: 0 }),
+    (0, typeorm_1.Column)({ comment: '是否竞价删除 连板', type: 'tinyint', width: 1 }),
     __metadata("design:type", Boolean)
 ], systemConfig.prototype, "isBinddingDelEventBoard", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '是否竞价删除 首板', type: 'tinyint', width: 1, default: 0 }),
+    (0, typeorm_1.Column)({ comment: '是否竞价删除 首板', type: 'tinyint', width: 1 }),
     __metadata("design:type", Boolean)
 ], systemConfig.prototype, "isBinddingDelFirstBoard", void 0);
 __decorate([
