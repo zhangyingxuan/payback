@@ -54,9 +54,9 @@ export declare class PayBackController {
     findByLimit(query: any): Promise<{
         code: number;
         data: {
-            shortTermData: import("./entities/shortTermData.entity").shortTermData[];
-            marketData: import("./entities/marketData.entity").marketData[];
-            fundsData: import("./entities/fundsData.entity").fundsData[];
+            shortTermData: any;
+            marketData: any;
+            fundsData: any;
         };
     }>;
     fetchEvenBoardData(query: any): Promise<{
@@ -65,27 +65,27 @@ export declare class PayBackController {
     }>;
     fetchHostListData(query: any): Promise<{
         code: number;
-        data: import("./entities/hotList.entity").hotList[];
+        data: any;
     }>;
     fetchReveiwDataByDate(query: any): Promise<{
         code: number;
-        data: import("./entities/review.entity").reviewData;
+        data: any;
     }>;
     findConceptPlateWithinNDays(query: any): Promise<{
         code: number;
-        data: import("./entities/latestConceptPlate.entity").latestConceptPlate[];
+        data: any;
     }>;
     findConceptPlateByLimit(query: any): Promise<{
         code: number;
-        data: import("./entities/latestConceptPlate.entity").latestConceptPlate[];
+        data: any;
     }>;
     findPlateByLimit(query: any): Promise<{
         code: number;
-        data: import("./entities/marketData.entity").marketData[];
+        data: any;
     }>;
     fetchPlateOrderByDailyLimit(query: any): Promise<{
         code: number;
-        data: import("./entities/plateData.entity").plateData[];
+        data: any;
     }>;
 }
 export {};

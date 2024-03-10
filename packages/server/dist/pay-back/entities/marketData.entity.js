@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.marketData = void 0;
 const typeorm_1 = require("typeorm");
@@ -75,7 +76,7 @@ __decorate([
 ], marketData.prototype, "hangyeFallFloat", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'timestamp', comment: '创建时间', default: () => 'current_timestamp' }),
-    __metadata("design:type", typeorm_1.Timestamp)
+    __metadata("design:type", typeof (_a = typeof typeorm_1.Timestamp !== "undefined" && typeorm_1.Timestamp) === "function" ? _a : Object)
 ], marketData.prototype, "createTime", void 0);
 marketData = __decorate([
     (0, typeorm_1.Entity)()

@@ -8,6 +8,6 @@ export declare class PlateService {
     autoCrawlPlateDataLateSession(): Promise<void>;
     autoCrawlPlateDataMidday(): Promise<void>;
     crawlPlateData(): Promise<CreatePlateDataDto>;
-    findAll(): Promise<plateData[]>;
-    findByLimit(len?: number): Promise<plateData[]>;
+    findAll(): Promise<any>;
+    findByLimit(len?: number): Promise<any>;
 }

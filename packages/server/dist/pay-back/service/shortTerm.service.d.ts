@@ -14,8 +14,8 @@ export declare class ShorTermService {
     autoCrawlShortTermDataMorning(): Promise<void>;
     crawlShortTermData(): Promise<CreatePayBackDto>;
     crawlShortTermDataByDate(todayDateStr: any): Promise<CreatePayBackDto>;
-    getTodayData(todayDateStr: string): Promise<shortTermData>;
-    findAll(): Promise<shortTermData[]>;
-    findByLimit(len?: number): Promise<shortTermData[]>;
+    getTodayData(todayDateStr: string): any;
+    findAll(): Promise<any>;
+    findByLimit(len?: number): Promise<any>;
     findEvenBoardByLimit(len?: number): Promise<any[]>;
 }

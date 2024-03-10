@@ -7,7 +7,7 @@ export declare class AuthController {
         data: {
             isAdmin: boolean;
             name: any;
-            token: string;
+            token: any;
             msg?: undefined;
         };
     } | {

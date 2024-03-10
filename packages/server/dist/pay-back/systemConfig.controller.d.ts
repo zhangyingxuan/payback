@@ -10,7 +10,7 @@ export declare class SystemConfigController {
     private readonly logger;
     fetchSystemConfig(): Promise<{
         code: number;
-        data: import("./entities/systemConfig.entity").systemConfig;
+        data: any;
     }>;
     updateSystemConfig(body: SystemConfigDto): Promise<{
         code: number;

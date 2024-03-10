@@ -41,9 +41,6 @@ dependencies:
   lodash-es:
     specifier: ^4.17.21
     version: 4.17.21
-  pay-back-core:
-    specifier: ^0.0.8
-    version: 0.0.8
   pinia:
     specifier: ^2.0.20
     version: 2.0.28(typescript@4.9.4)(vue@3.2.45)
@@ -1635,10 +1632,6 @@ packages:
     dependencies:
       graphlib: 2.1.8
       lodash: 4.17.21
-    dev: false
-
-  /dayjs@1.11.10:
-    resolution: {integrity: sha512-vjAczensTgRcqDERK0SR2XMwsF/tSvnvlv6VcF2GIhg6Sx4yOIt/irsr1RDJsKiIyBzJDpCoXiWWq28MqH2cnQ==}
     dev: false
 
   /dayjs@1.11.7:
@@ -3449,12 +3442,6 @@ packages:
   /pathe@1.0.0:
     resolution: {integrity: sha512-nPdMG0Pd09HuSsr7QOKUXO2Jr9eqaDiZvDwdyIhNG5SHYujkQHYKDfGQkulBxvbDHz8oHLsTgKN86LSwYzSHAg==}
     dev: true
-
-  /pay-back-core@0.0.8:
-    resolution: {integrity: sha512-BO3pMwTZoIhoMhswW4lBqZPiVhhf4eiZR2Rw6/Vb7phITt2Ry8/DHYie2cJm55Z9NWc/I7Tf77We/08Ty2cgaw==}
-    dependencies:
-      dayjs: 1.11.10
-    dev: false
 
   /picocolors@1.0.0:
     resolution: {integrity: sha512-1fygroTLlHu66zi26VoTDv8yRgm0Fccecssto+MhsZ0D/DGW2sm8E8AjW7NU5VVTRt5GxbeZ5qBuJr+HyLYkjQ==}

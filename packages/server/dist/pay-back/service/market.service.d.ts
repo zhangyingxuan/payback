@@ -8,7 +8,7 @@ export declare class MarketService {
     autoCrawlMarketDataLateSession(): Promise<void>;
     autoCrawlMarketDataMidday(): Promise<void>;
     crawlMarketData(): Promise<CreateMarketDataDto>;
-    findAll(): Promise<marketData[]>;
-    findByLimit(len?: number): Promise<marketData[]>;
-    findPlateByLimit(len?: number): Promise<marketData[]>;
+    findAll(): Promise<any>;
+    findByLimit(len?: number): Promise<any>;
+    findPlateByLimit(len?: number): Promise<any>;
 }
