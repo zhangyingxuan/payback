@@ -1,7 +1,7 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 // 引入pinia 持久化插件
-// import piniaPersist from 'pinia-plugin-persist' 
+import piniaPersist from 'pinia-plugin-persist'
 import App from './App.vue';
 import router from './router';
 import 'element-plus/dist/index.css';
@@ -21,7 +21,7 @@ import { initAegis } from '@/core/aegisMonitor';
 const app = createApp(App);
 // 初始化 Pinia
 const pinia = createPinia();
-// pinia.use(piniaPersist);
+pinia.use(piniaPersist)
 app.use(pinia);
 
 // 自定义权限指令

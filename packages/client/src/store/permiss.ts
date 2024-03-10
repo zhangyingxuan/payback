@@ -49,13 +49,13 @@ export const usePermissStore = defineStore('permiss', {
     }
   },
   // 3. 配置持久化策略
-  // persist: {
-  //   enabled: true,
-  //   strategies: [
-  //     {
-  //       storage: localStorage, paths: ['key', 'isAdmin', 'name', 'account']
-  //     }, // count,name存储在sessionStorage
-  //     // { storage: sessionStorage, paths: ['token'] }
-  //   ]
-  // }
+  persist: {
+    enabled: true,
+    strategies: [
+      {
+        storage: localStorage, paths: ['key', 'isAdmin', 'name', 'account']
+      }, // count,name存储在sessionStorage
+      // { storage: sessionStorage, paths: ['token'] }
+    ]
+  }
 });

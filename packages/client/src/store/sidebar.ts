@@ -33,11 +33,11 @@ export const useSidebarStore = defineStore('sidebar', {
     }
   },
   // 3. 配置持久化策略
-  // persist: {
-  //   enabled: true,
-  //   strategies: [
-  //     { storage: localStorage, paths: ['collapse'] },
-  //     { storage: sessionStorage, paths: ['isAutoRefresh', 'countDays'] }
-  //   ]
-  // }
+  persist: {
+    enabled: true,
+    strategies: [
+      { storage: localStorage, paths: ['collapse'] },
+      { storage: sessionStorage, paths: ['isAutoRefresh', 'countDays'] }
+    ]
+  }
 });
