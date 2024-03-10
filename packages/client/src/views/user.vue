@@ -15,7 +15,7 @@
                 <i class="el-icon-lx-camerafill"></i>
               </span>
             </div>
-            <div class="info-name">{{ name }}</div>
+            <div class="info-name">{{ permiss.name }}</div>
             <div class="info-desc">不可能！我的代码怎么可能会有bug！</div>
           </div>
         </el-card>
@@ -28,7 +28,7 @@
             </div>
           </template>
           <el-form label-width="90px">
-            <el-form-item label="用户名："> {{ name }} </el-form-item>
+            <el-form-item label="用户名："> {{ permiss.name }} </el-form-item>
             <el-form-item label="旧密码：">
               <el-input type="password" v-model="form.old"></el-input>
             </el-form-item>
@@ -80,11 +80,14 @@ import VueCropper from 'vue-cropperjs';
 import 'cropperjs/dist/cropper.css';
 import avatar from '../assets/img/img.jpg';
 
-const name = localStorage.getItem('ms_username');
+import { usePermissStore } from '../store/permiss';
+
+const permiss = usePermissStore();
+
 const form = reactive({
   old: '',
   new: '',
-  desc: '不可能！我的代码怎么可能会有bug！'
+  desc: '不可能！我的代码怎么可能会有bug！',
 });
 const onSubmit = () => {
   console.log('onSubmit');

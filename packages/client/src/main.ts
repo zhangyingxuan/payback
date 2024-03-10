@@ -1,5 +1,6 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
+import piniaPersist from 'pinia-plugin-persist' // 引入pinia 持久化插件
 import App from './App.vue';
 import router from './router';
 import 'element-plus/dist/index.css';
@@ -14,10 +15,13 @@ import { init as ElementPlusInit } from '@/core/ElementPlus';
 import { init as echartsInit } from '@/core/echarts';
 import { setupDirectives } from '@/core/directives';
 import { usePermissStore } from '@/store/permiss';
+import { initAegis } from '@/core/aegisMonitor';
 
 const app = createApp(App);
 // 初始化 Pinia
-app.use(createPinia());
+const pinia = createPinia();
+pinia.use(piniaPersist)
+app.use(pinia);
 
 // 自定义权限指令
 const permiss = usePermissStore();
@@ -25,6 +29,8 @@ const permiss = usePermissStore();
 VMdEditorInit(app);
 ElementPlusInit(app);
 echartsInit(app);
+// 初始化监控
+initAegis(app);
 //注册指令
 setupDirectives(app, permiss);
 

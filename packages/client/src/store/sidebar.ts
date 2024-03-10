@@ -31,5 +31,13 @@ export const useSidebarStore = defineStore('sidebar', {
     updateIsAutoRefresh(isAutoRefresh: boolean) {
       this.isAutoRefresh = isAutoRefresh && isTradeTime();
     }
+  },
+  // 3. 配置持久化策略
+  persist: {
+    enabled: true,
+    strategies: [
+      { storage: localStorage, paths: ['collapse'] },
+      { storage: sessionStorage, paths: ['isAutoRefresh', 'countDays'] }
+    ]
   }
 });

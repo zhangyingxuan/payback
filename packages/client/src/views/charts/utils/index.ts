@@ -111,12 +111,6 @@ export function getChartStyle(isMobile: boolean) {
   };
 }
 
-export const stockTypes = {
-  kechuang: ['688'],
-  chuangye: ['3'],
-  beijing: ['8', '4'],
-}
-
 /**
  * 判断是否涨停
  * @param stockCode  个股代码
@@ -126,8 +120,8 @@ export function isDailyLimit(stockCode: string, increaseDecline: number) {
   // 涨停判断：主板大于 9.5；其他需大于19；京 29
   let dailyLimitIncrease = 9.5;
   if (
-    stockCode.startsWith('688') ||
-    stockCode.startsWith('3')
+    stockCode.startsWith('68') ||
+    stockCode.startsWith('30')
   ) {
     dailyLimitIncrease = 19.5;
   } else if (stockCode.startsWith('4') ||
@@ -136,20 +130,4 @@ export function isDailyLimit(stockCode: string, increaseDecline: number) {
   }
 
   return increaseDecline > dailyLimitIncrease;
-}
-/**
- * 是否 主板个股
- * @param stockCode  个股代码
- * @param increaseDecline  涨跌幅
- */
-export function isMainPlate(stockCode: string) {
-  if (
-    stockCode.startsWith('688') ||
-    stockCode.startsWith('3') || stockCode.startsWith('4') ||
-    stockCode.startsWith('8')
-  ) {
-    return false;
-  }
-
-  return true;
 }

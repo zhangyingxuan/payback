@@ -5,7 +5,7 @@
     popper-class="plateOp__popperClass"
     virtual-triggering
     :virtual-ref="virtualRef"
-    v-if="isAdmin"
+    v-if="permiss.isAdmin"
   >
     <template #default>
       <el-button-group class="op__btnGroup">
@@ -19,7 +19,9 @@
 import { addThsSelfPlate, delThsSelfPlate } from '../api/thsTrade';
 import { Plus, Minus } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
-import { isAdmin } from '@/store/permiss';
+import { usePermissStore } from '../store/permiss';
+
+const permiss = usePermissStore();
 
 let superData = defineProps({
   virtualRef: {},

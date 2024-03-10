@@ -31,7 +31,11 @@
           >
             <template #prepend> 验证码 </template>
             <template #append>
-              <img :src="data.codeImg" class="captchaImg" @click="refreshCodeImg" />
+              <img
+                :src="data.codeImg"
+                class="captchaImg"
+                @click="refreshCodeImg"
+              />
             </template>
           </el-input>
         </el-form-item>
@@ -52,8 +56,7 @@ import { ElMessage } from 'element-plus';
 import type { FormInstance, FormRules } from 'element-plus';
 import { authLogin, getCode } from '@/api/user';
 import { UserModel } from '@/api/model/UserModel';
-import { setToken, setUserInfo } from '@/router/auth';
-
+import { setToken } from '@/router/auth';
 
 let interval: any = null;
 const router = useRouter();
@@ -63,7 +66,7 @@ const param = reactive<UserModel>({
   code: '',
 });
 const data = reactive({
-  codeImg: ''
+  codeImg: '',
 });
 
 const rules: FormRules = {
@@ -90,17 +93,14 @@ const submitForm = (formEl: FormInstance | undefined) => {
 
       if (result && result.token) {
         ElMessage.success('登录成功');
-        const keys =
-          permiss.defaultList[param.account == 'admin' ? 'admin' : 'user'];
-        permiss.handleSet(keys, param.account);
         // 设置用户信息
-        setUserInfo(param.account, JSON.stringify(keys));
+        permiss.handleSetUserInfo({ ...result, ...param });
         // 7天
         setToken(result.token, 604800);
         router.push('/');
       } else {
         // 登录失败
-        ElMessage.error('登录失败，用户名或密码错误！');
+        ElMessage.error(result.msg || '登录失败，用户名或密码错误！');
       }
     } else {
       ElMessage.error('登录失败');

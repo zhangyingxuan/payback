@@ -64,7 +64,7 @@
             @command="handleCommand"
           >
             <span class="el-dropdown-link">
-              {{ username }}
+              {{ permiss.name }}
               <el-icon class="el-icon--right">
                 <arrow-down />
               </el-icon>
@@ -155,7 +155,9 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import dayjs from 'dayjs';
 import Calendar from './calendar/index.vue';
 import { options } from './config';
-import { username } from '@/store/permiss';
+import { usePermissStore } from '../store/permiss';
+
+const permiss = usePermissStore();
 
 let loadingMessage: any = null;
 

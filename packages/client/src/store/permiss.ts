@@ -1,17 +1,18 @@
 import { defineStore } from 'pinia';
 
-export const username: string | null = localStorage.getItem('ms_username');
-export const isAdmin = username === 'admin';
-
 interface ObjectList {
   [key: string]: string[];
+}
+interface UserInfo {
+  name: string;
+  account: string;
+  isAdmin: boolean;
 }
 
 export const usePermissStore = defineStore('permiss', {
   state: () => {
-    const keys = localStorage.getItem('ms_keys');
     return {
-      key: keys ? JSON.parse(keys) : <string[]>[],
+      key: <any>[],
       defaultList: <ObjectList>{
         admin: [
           '1',
@@ -34,12 +35,27 @@ export const usePermissStore = defineStore('permiss', {
         user: ['1', '2', '3', '11', '13', '14', '15']
       },
       isAdmin: false,
+      name: '',
+      account: ''
     };
   },
   actions: {
-    handleSet(val: string[], userName: string) {
-      this.key = val;
-      this.isAdmin = userName === 'admin';
+    handleSetUserInfo(userInfo: UserInfo) {
+      const keys: Array<string> = this.defaultList[userInfo.isAdmin ? 'admin' : 'user'];
+      this.key = keys;
+      this.name = userInfo.name;
+      this.account = userInfo.account;
+      this.isAdmin = userInfo.isAdmin;
     }
+  },
+  // 3. 配置持久化策略
+  persist: {
+    enabled: true,
+    strategies: [
+      {
+        storage: localStorage, paths: ['key', 'isAdmin', 'name', 'account']
+      }, // count,name存储在sessionStorage
+      // { storage: sessionStorage, paths: ['token'] }
+    ]
   }
 });

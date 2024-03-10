@@ -110,12 +110,6 @@ const items: any = [
     permiss: '1',
   },
   // {
-  //   icon: 'Odometer',
-  //   index: '/dashboard',
-  //   title: '系统首页',
-  //   permiss: '1',
-  // },
-  // {
   //   icon: 'DocumentCopy',
   //   index: '/tabs',
   //   title: 'tab选项卡',

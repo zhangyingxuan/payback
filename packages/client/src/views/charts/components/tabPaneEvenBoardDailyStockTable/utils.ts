@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { isMainPlate } from '../../utils';
+import { isMainPlate } from 'pay-back-core';
 
 /**
  * 获取板块 个股 开票预期情况（超预期 / 符合预期 / 不及预期）

@@ -13,15 +13,6 @@ const routes: RouteRecordRaw[] = [
     component: Home,
     children: [
       {
-        path: '/dashboard',
-        name: 'dashboard',
-        meta: {
-          title: '系统首页',
-          permiss: '1',
-        },
-        component: () => import(/* webpackChunkName: "dashboard" */ '../views/dashboard.vue'),
-      },
-      {
         path: '/article',
         name: 'article',
         meta: {
@@ -173,9 +164,8 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   document.title = `${to.meta.title} | pay-back`;
-  const role = localStorage.getItem('ms_username');
   const permiss = usePermissStore();
-  if (!role && to.path !== '/login') {
+  if (!permiss.name && to.path !== '/login') {
     next('/login');
   } else if (to.meta.permiss && !permiss.key.includes(to.meta.permiss)) {
     // 如果没有权限，则进入403

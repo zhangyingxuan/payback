@@ -1,12 +1,11 @@
 import { App } from 'vue';
-import { isAdmin } from '@/store/permiss';
 
 export function setupDirectives(app: App, permiss: any) {
   // 权限控制指令
   app.directive('isAdmin', {
     mounted(el: HTMLButtonElement, binding) {
       // if (binding.value == undefined) return;
-      if (!isAdmin) {
+      if (!permiss.isAdmin) {
         el.remove();
       }
     },
