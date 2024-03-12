@@ -112,6 +112,7 @@ let ThsService = ThsService_1 = class ThsService {
     }
     async updateThsSelfStock(code, type, account) {
         const userInfo = await this.usersService.getUserByAccount(account);
+        this.logger.log('[updateThsSelfPlate] 加入自选个股' + code);
         const userid = (0, thsUtils_1.atob)(userInfo.userid);
         const ticket = userInfo.ticket;
         const user = userInfo.user;
@@ -131,7 +132,7 @@ let ThsService = ThsService_1 = class ThsService {
     }
     async updateThsSelfPlate(code, type, account) {
         const userInfo = await this.usersService.getUserByAccount(account);
-        this.logger.log('[updateThsSelfPlate] 加入自选股' + code);
+        this.logger.log('[updateThsSelfPlate] 加入自选板块' + code);
         const userid = (0, thsUtils_1.atob)(userInfo.userid);
         const ticket = userInfo.ticket;
         const user = userInfo.user;

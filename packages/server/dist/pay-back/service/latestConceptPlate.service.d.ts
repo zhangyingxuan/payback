@@ -8,8 +8,8 @@ export declare class LatestConceptPlateService {
     autoCrawlLatestConceptPlateDataPm(): Promise<any>;
     autoCrawlLatestConceptPlateDataEvening(): Promise<any>;
     crawlLatestConceptPlateData(): Promise<any>;
-    findAll(): Promise<any>;
-    findByLimit(len?: number): Promise<any>;
-    findWithinNDays(n?: number): Promise<any>;
-    findLatestOne(): Promise<any>;
+    findAll(): Promise<latestConceptPlate[]>;
+    findByLimit(len?: number): Promise<latestConceptPlate[]>;
+    findWithinNDays(n?: number): Promise<latestConceptPlate[]>;
+    findLatestOne(): Promise<latestConceptPlate>;
 }

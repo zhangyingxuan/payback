@@ -9,7 +9,7 @@ export declare function getStocksDataByIwencai(responseJson: any): {
     condition: any;
 };
 export declare function getStocksPagingDataByIwencai(responseJson: any): any[];
-export declare function getLastTradingDay(nowStr: string): any;
+export declare function getLastTradingDay(nowStr: string): string;
 declare const _default: {
     ignoreGainianPlates: string[];
     ignoreGainianPlateStr: string;

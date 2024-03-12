@@ -38,8 +38,8 @@ export class ShorTermService {
     this.crawlShortTermData();
   }
 
-  // 午盘
-  @Cron('02 25 9 * * 1-5')
+  // 早盘
+  // @Cron('02 25 9 * * 1-5')
   async autoCrawlShortTermDataMorning() {
     this.crawlShortTermData();
   }

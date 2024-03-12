@@ -9,7 +9,7 @@ export function atob(a) {
 
 export function dealResultIsLogin(result, userServiceCtx) {
   if (result.errorMsg === '当前用户未登录') {
-    this.logger.log('[updateThsSelfStock] 当前用户未登录：https://www.iwencai.com/unifiedwap/result');
+    console.log('[updateThsSelfStock] 当前用户未登录：https://www.iwencai.com/unifiedwap/result');
     userServiceCtx.clearUserInfoCache();
     return false;
   }
@@ -20,7 +20,7 @@ export function dealStockResult(result, userServiceCtx) {
   let msg = '';
   if (result.errorCode !== 0) {
     if (result.errorMsg === '当前用户未登录') {
-      this.logger.log('[updateThsSelfStock] 当前用户未登录：https://www.iwencai.com/unifiedwap/result');
+      console.log('[updateThsSelfStock] 当前用户未登录：https://www.iwencai.com/unifiedwap/result');
       userServiceCtx.clearUserInfoCache();
     }
     msg = result.errorMsg;
@@ -33,7 +33,7 @@ export function dealPlateResult(result, type = ThsOprate.add, userServiceCtx) {
   let msg = '';
   if (result.status_code !== 0) {
     if (result.status_msg === '用户ID缺失') {
-      this.logger.log('[updateThsSelfStock] 当前用户未登录：https://www.iwencai.com/unifiedwap/result');
+      console.log('[updateThsSelfStock] 当前用户未登录：https://www.iwencai.com/unifiedwap/result');
       userServiceCtx.clearUserInfoCache();
     }
     msg = result.status_msg;

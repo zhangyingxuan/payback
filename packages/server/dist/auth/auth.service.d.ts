@@ -11,7 +11,7 @@ export declare class AuthService {
         data: {
             isAdmin: boolean;
             name: any;
-            token: any;
+            token: string;
             msg?: undefined;
         };
     } | {

@@ -9,6 +9,6 @@ export declare class HotListService {
         code: number;
         data: CreateHotListDto;
     }>;
-    findAll(): Promise<any>;
-    findByLimit(len?: number): Promise<any>;
+    findAll(): Promise<hotList[]>;
+    findByLimit(len?: number): Promise<hotList[]>;
 }

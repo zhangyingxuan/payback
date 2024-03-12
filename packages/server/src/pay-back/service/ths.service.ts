@@ -146,6 +146,7 @@ export class ThsService {
    */
   async updateThsSelfStock(code, type, account) {
     const userInfo = await this.usersService.getUserByAccount(account);
+    this.logger.log('[updateThsSelfPlate] 加入自选个股' + code);
     // 1、获取用户信息
     const userid = atob(userInfo.userid);
     const ticket = userInfo.ticket;
@@ -173,7 +174,7 @@ export class ThsService {
    */
   async updateThsSelfPlate(code, type, account) {
     const userInfo = await this.usersService.getUserByAccount(account);
-    this.logger.log('[updateThsSelfPlate] 加入自选股' + code);
+    this.logger.log('[updateThsSelfPlate] 加入自选板块' + code);
     // 1、获取用户信息
     const userid = atob(userInfo.userid);
     const ticket = userInfo.ticket;

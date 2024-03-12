@@ -12,7 +12,6 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 var PlateService_1;
-var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PlateService = void 0;
 const common_1 = require("@nestjs/common");
@@ -92,7 +91,7 @@ __decorate([
 PlateService = PlateService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_2.InjectRepository)(plateData_entity_1.plateData)),
-    __metadata("design:paramtypes", [typeof (_a = typeof typeorm_1.Repository !== "undefined" && typeorm_1.Repository) === "function" ? _a : Object])
+    __metadata("design:paramtypes", [typeorm_1.Repository])
 ], PlateService);
 exports.PlateService = PlateService;
 //# sourceMappingURL=plate.service.js.map

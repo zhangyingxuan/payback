@@ -11,7 +11,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User) private readonly userRp: Repository<User>,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-  ) {}
+  ) { }
 
   async findOne(user: any): Promise<any | undefined> {
     const result = await this.userRp.find({ where: { account: user.account, password: user.password } });
@@ -24,6 +24,7 @@ export class UsersService {
     // console.log('userInfo1 = ', userInfo)
     if (!userInfo) {
       userInfo = await this.userRp.findOne({ where: { account: user.account } });
+      // 缓存一天
       await this.cacheManager.set(USER_IFNO, userInfo, 1000 * 60 * 60 * 24);
       // console.log('userInfo2 = ', userInfo)
     }

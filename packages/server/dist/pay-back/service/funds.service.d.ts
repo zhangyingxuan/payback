@@ -8,6 +8,6 @@ export declare class FundsService {
     autoCrawlfundsDataLateSession(): Promise<void>;
     autoCrawlfundsDataMidday(): Promise<void>;
     crawlfundsData(): Promise<CreateFundsDataDto>;
-    findAll(): Promise<any>;
-    findByLimit(len?: number): Promise<any>;
+    findAll(): Promise<fundsData[]>;
+    findByLimit(len?: number): Promise<fundsData[]>;
 }

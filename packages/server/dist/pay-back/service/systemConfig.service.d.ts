@@ -4,7 +4,7 @@ export declare class SystemConfigService {
     private readonly sysTemconfigServiceRp;
     constructor(sysTemconfigServiceRp: Repository<systemConfig>);
     private readonly logger;
-    findAll(): Promise<any>;
+    findAll(): Promise<systemConfig[]>;
     updateSystemConfig(systemConfigDto: any): Promise<any>;
-    findLatestOne(): Promise<any>;
+    findLatestOne(): Promise<systemConfig>;
 }

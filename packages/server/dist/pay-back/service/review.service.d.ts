@@ -9,7 +9,7 @@ export declare class ReviewService {
         code: string;
         msg: string;
     }>;
-    findAll(): Promise<any>;
-    findByLimit(len?: number): Promise<any>;
-    findByDate(date: string): Promise<any>;
+    findAll(): Promise<reviewData[]>;
+    findByLimit(len?: number): Promise<reviewData[]>;
+    findByDate(date: string): Promise<reviewData>;
 }

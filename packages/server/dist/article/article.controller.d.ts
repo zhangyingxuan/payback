@@ -5,23 +5,23 @@ export declare class ArticleController {
     constructor(articleService: ArticleService);
     create(createArticleDto: CreateArticleDto): Promise<{
         code: number;
-        data: any;
+        data: import("./entities/article.entity").Article;
     }>;
     remove(id: any): Promise<{
         code: number;
-        data: any;
+        data: import("./entities/article.entity").Article;
     }>;
     update(updateArticleDto: CreateArticleDto): Promise<{
         code: number;
-        data: any;
+        data: import("typeorm").UpdateResult;
     }>;
     findAll(): Promise<{
         code: number;
-        data: any;
+        data: import("./entities/article.entity").Article[];
     }>;
     findOne(id: number): Promise<{
         code: number;
-        data: any;
+        data: import("./entities/article.entity").Article;
     }>;
     findByTitle(title: string): Promise<any | undefined>;
 }
