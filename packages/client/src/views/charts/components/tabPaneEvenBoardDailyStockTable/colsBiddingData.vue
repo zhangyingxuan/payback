@@ -3,6 +3,14 @@
   <div v-if="stock" class="biddingData__row">
     <span class="middle" :class="{ 'red bold': stock.bidIncreaseT >= 7 }">
       {{ stock.bidIncreaseT && +stock.bidIncreaseT.toFixed(2) }}
+      <el-tag
+        v-if="isDailyLimit(stock.code, stock.bidIncreaseT)"
+        size="small"
+        type="warning"
+        effect="dark"
+        round
+        >1
+      </el-tag>
     </span>
     <span class="middle" :class="{ 'red bold': stock.expected === 2 }">
       {{ getExpectedStr(stock.expected) }}
@@ -37,7 +45,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { calcClassByBidRating } from '../../utils';
+import { calcClassByBidRating, isDailyLimit } from '../../utils';
 
 defineProps({
   stock: {

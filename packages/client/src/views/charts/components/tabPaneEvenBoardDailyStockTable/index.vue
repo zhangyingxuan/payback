@@ -416,7 +416,7 @@ const stockGroupByPlateByFilter = computed(() => {
       }
       // 新增 过滤题材的功能，题材梯队整理 2024-03-04 15:50:37
       if (data.keyword && isAdd) {
-        isAdd = item.reason.indexOf(data.keyword) > -1;
+        isAdd = item.reason ? item.reason.indexOf(data.keyword) > -1 : false;
       }
       isAdd && myStrategyCheckedNum++;
 

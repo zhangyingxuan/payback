@@ -35,6 +35,7 @@
         size="small"
         type="danger"
         round
+        effect="dark"
         >1</el-tag
       >
     </span>
