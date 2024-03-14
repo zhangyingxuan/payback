@@ -2,6 +2,7 @@ import { AuthService } from './auth.service';
 export declare class AuthController {
     private authService;
     constructor(authService: AuthService);
+    private readonly logger;
     login(body: any, req: any): Promise<{
         code: number;
         data: {

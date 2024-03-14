@@ -1,4 +1,4 @@
-import { Injectable, CACHE_MANAGER, Inject } from '@nestjs/common';
+import { Injectable, CACHE_MANAGER, Inject, Logger } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,6 +12,7 @@ export class UsersService {
     @InjectRepository(User) private readonly userRp: Repository<User>,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) { }
+  private readonly logger = new Logger(UsersService.name);
 
   async findOne(user: any): Promise<any | undefined> {
     const result = await this.userRp.find({ where: { account: user.account, password: user.password } });

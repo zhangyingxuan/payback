@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var AuthController_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
@@ -18,13 +19,15 @@ const auth_service_1 = require("./auth.service");
 const public_decorator_1 = require("../decorator/public.decorator");
 const svgCaptcha = require("svg-captcha");
 const jwt_auth_guard_1 = require("./jwt-auth.guard");
-let AuthController = class AuthController {
+let AuthController = AuthController_1 = class AuthController {
     constructor(authService) {
         this.authService = authService;
+        this.logger = new common_1.Logger(AuthController_1.name);
     }
     async login(body, req) {
         const { code } = body;
         const storedCaptcha = req.session.captcha;
+        this.logger.log('用户登录 验证码：storedCaptcha：' + storedCaptcha + '==code：' + code);
         if (code && storedCaptcha && code.toLowerCase() === storedCaptcha.toLowerCase()) {
             return await this.authService.login(body, req);
         }
@@ -50,6 +53,7 @@ let AuthController = class AuthController {
             background: '#F5F7FA',
         });
         req.session.captcha = captcha.text;
+        this.logger.log('生产 验证码：' + req.session.captcha);
         res.set('Content-Type', 'image/svg+xml');
         res.send(captcha.data);
     }
@@ -80,7 +84,7 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "getCode", null);
-AuthController = __decorate([
+AuthController = AuthController_1 = __decorate([
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [auth_service_1.AuthService])
 ], AuthController);

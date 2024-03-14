@@ -1,4 +1,4 @@
-import { Controller, Body, Req, Res, Request, Post, Get, UseGuards } from '@nestjs/common';
+import { Controller, Body, Req, Res, Request, Post, Get, UseGuards, Logger } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Public } from '../decorator/public.decorator';
 import * as svgCaptcha from 'svg-captcha';
@@ -7,13 +7,14 @@ import { JwtAuthGuard } from './jwt-auth.guard';
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) { }
+  private readonly logger = new Logger(AuthController.name);
 
   @Public()
   @Post('login')
   async login(@Body() body, @Req() req) {
     const { code } = body;
     const storedCaptcha = req.session.captcha;
-    // console.log(storedCaptcha);
+    this.logger.log('用户登录 验证码：storedCaptcha：' + storedCaptcha + '==code：' + code);
 
     if (code && storedCaptcha && code.toLowerCase() === storedCaptcha.toLowerCase()) {
       // 验证码校验成功
@@ -47,6 +48,8 @@ export class AuthController {
       background: '#F5F7FA',
     });
     req.session.captcha = captcha.text;
+
+    this.logger.log('生产 验证码：' + req.session.captcha);
     res.set('Content-Type', 'image/svg+xml');
     res.send(captcha.data);
   }
