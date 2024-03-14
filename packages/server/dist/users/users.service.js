@@ -29,11 +29,11 @@ let UsersService = UsersService_1 = class UsersService {
         const result = await this.userRp.find({ where: { account: user.account, password: user.password } });
         return result[0];
     }
-    async getUserByAccount(user) {
-        let userInfo = await this.cacheManager.get(USER_IFNO);
+    async getUserByAccount(account) {
+        let userInfo = await this.cacheManager.get(account);
         if (!userInfo) {
-            userInfo = await this.userRp.findOne({ where: { account: user.account } });
-            await this.cacheManager.set(USER_IFNO, userInfo, 1000 * 60 * 60 * 24);
+            userInfo = await this.userRp.findOne({ where: { account: account } });
+            await this.cacheManager.set(account, userInfo, 1000 * 60 * 60 * 24);
         }
         return userInfo;
     }

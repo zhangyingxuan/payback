@@ -19,14 +19,15 @@ export class UsersService {
     return result[0];
   }
 
-  async getUserByAccount(user: any): Promise<any | undefined> {
+  async getUserByAccount(account: string): Promise<any | undefined> {
     // 添加缓存机制，先从缓存中获取用户信息，如果没有再从数据库取 2023-09-26 22:55:19
-    let userInfo = await this.cacheManager.get(USER_IFNO);
-    // console.log('userInfo1 = ', userInfo)
+    // bug修复，多用户登陆，缓存信息需按用户 account 存储，仅支持单节点应用部署 2024-03-14 17:33:42
+    let userInfo = await this.cacheManager.get(account);
+    // console.log('userInfo1 = ', userInfo);
     if (!userInfo) {
-      userInfo = await this.userRp.findOne({ where: { account: user.account } });
+      userInfo = await this.userRp.findOne({ where: { account: account } });
       // 缓存一天
-      await this.cacheManager.set(USER_IFNO, userInfo, 1000 * 60 * 60 * 24);
+      await this.cacheManager.set(account, userInfo, 1000 * 60 * 60 * 24);
       // console.log('userInfo2 = ', userInfo)
     }
     return userInfo;

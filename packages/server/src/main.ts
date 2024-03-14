@@ -9,7 +9,15 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(compression());
   app.setGlobalPrefix('blowsysun'); // 全局路由前缀
-  app.use(session({ secret: 'blowsysun', rolling: true, name: 'Mr.zhang' }));
+  app.use(
+    session({
+      secret: 'blowsysun',
+      rolling: true,
+      name: 'Mr.zhang',
+      saveUninitialized: false, //确保没有初始化的情况下不保存会话
+      cookie: { secure: false },
+    }),
+  );
   // 全局过滤器
   app.useGlobalFilters(new HttpExceptionFilter());
 

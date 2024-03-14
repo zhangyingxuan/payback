@@ -10,7 +10,13 @@ async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.use(compression());
     app.setGlobalPrefix('blowsysun');
-    app.use(session({ secret: 'blowsysun', rolling: true, name: 'Mr.zhang' }));
+    app.use(session({
+        secret: 'blowsysun',
+        rolling: true,
+        name: 'Mr.zhang',
+        saveUninitialized: false,
+        cookie: { secure: false },
+    }));
     app.useGlobalFilters(new HttpExceptionFilter_1.HttpExceptionFilter());
     const port = await (0, portManager_1.getAvailablePort)(3000);
     await app.listen(port);

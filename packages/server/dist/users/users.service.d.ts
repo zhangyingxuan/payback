@@ -7,6 +7,6 @@ export declare class UsersService {
     constructor(userRp: Repository<User>, cacheManager: Cache);
     private readonly logger;
     findOne(user: any): Promise<any | undefined>;
-    getUserByAccount(user: any): Promise<any | undefined>;
+    getUserByAccount(account: string): Promise<any | undefined>;
     clearUserInfoCache(): Promise<any | undefined>;
 }

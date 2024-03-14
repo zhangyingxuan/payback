@@ -43,7 +43,7 @@ export class AuthController {
       size: 4,
       noise: 2,
       color: true,
-      fontSize: 80,
+      fontSize: 60,
       inverse: false,
       background: '#F5F7FA',
     });
