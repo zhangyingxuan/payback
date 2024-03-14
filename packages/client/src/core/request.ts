@@ -17,6 +17,7 @@ import { ElMessage } from 'element-plus'
 const defaultConfig: AxiosRequestConfig = {
   // 请求超时时间
   timeout: 45000,
+  withCredentials: true,
   headers: {
     Accept: "application/json, text/plain, */*",
     "Content-Type": "application/json",
