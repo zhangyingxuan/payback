@@ -1,36 +1,93 @@
 import dayjs from 'dayjs';
 
-export function getCurrentCycle(item: any) {
+const config = {
+  // 启动连板高度 要求
+  startUpHeight: 4,
+  // 连板数量
+  evenBoardNum: 10,
+  dailyLimitNum: 45,
+  downLimitNum: 10,
+}
+
+/**
+ * 需要参考昨日数据 结合两天数据比较 高度变化
+ * 高度下降(退潮、冰点)、高度上升（启动、发酵、高潮）
+ * @param currentTradingDayData 
+ * @returns  调整策略 风险 > 机会 2024-04-07 18:18:08
+ */
+export function getCurrentCycle(currentTradingDayData: any, lastTradingDayData: any) {
   // 1、启动；犹豫中复苏，亏钱效应结束后，开始出现4板，连板小于10，不会出现15%以上大面；做首板
-  // 2、发酵；3、分歧转一致；4、加速；5、分歧转一致；6、加速；7、见顶；8、调整；9、反包；
-  // 高度>=5；连板股数量&gt;=10；没有天地板、炸板大面票，昨日断板票今天会有修复，大长腿也经常出现
+  // 2、发酵；带动板块，赚钱效应启动，并出现涨停潮（情绪发酵期是龙头股选手大展身手、上仓位的最关键阶段），连板股数量>=10；没有天地板、炸板大面票，昨日断板票今天会有修复，大长腿也经常出现
   // 3、高潮 板块出现批量涨停潮，涨停数>=45；连板股数量&gt;=15；（梯队整齐）几乎没有高位炸板、炸板大面、昨日涨停今天跌停、昨日涨停今天闷杀，无-&gt;10%短线大面股
-  // 4、衰退：总龙头见顶，高位连板股出现亏钱效应
-  // 5、冰点：
+  // 4、衰退：总龙头见顶，高位连板股出现亏钱效应，炸板大面票、昨日涨停今天跌停、昨日涨停今天闷杀的票批量出现，尤其高位炸板股增多，极端的出现天地板等大面
+  // 5、冰点：竞价低开，瀑布大面，总龙头继续杀跌，无赚钱效应。连板高度受压制 3/4板高度。虽然还是会有个股走出连板，但连板数量相对于前面的阶段骤然降低，跌停家数比较高，龙头杀跌（回撤20-30%），一些补涨股继续杀跌。打的好板，次日根本没有溢价就直接开始杀跌，短线情绪走到冰点。有的题材周期，情绪冰点后，还有二冰、三冰
+  // 6、混沌
   // 周期定义
-  const cycles = ['启动', '发酵', '高潮', '退潮', '冰点'];
-  // 最大高度 item.evenBoardData
-  const maxHeight: any = item.marketHeight;
+  const cycles = ['启动', '发酵', '高潮', '退潮', '冰点', '混沌'];
+  // 最大高度 currentTradingDayData.evenBoardData
+  const maxHeightCurrent: any = currentTradingDayData.marketHeight;
+  // 昨日高度
+  const maxHeightLast: any = lastTradingDayData.marketHeight;
+
+
+  // 用赚钱效应、亏钱效应判断 还是 高度？高度资金可以硬怼出来
   // 跌幅大于15的个股
-  const hugeFallNum = item.hugeFallData ? item.hugeFallData.length : 0;
-  // 跌停数量
-  if (maxHeight <= 4) {
-    if (item.downLimitQuantity > 10) {
+  const hugeFallNum = currentTradingDayData.hugeFallData ? currentTradingDayData.hugeFallData.length : 0;
+
+  if (!lastTradingDayData) {
+    return compatible(currentTradingDayData, cycles, maxHeightCurrent, hugeFallNum);
+  }
+
+  // A. 主升 高度增加
+  if (maxHeightCurrent >= config.startUpHeight
+    && maxHeightCurrent > maxHeightLast
+    && hugeFallNum == 0) {
+    // 1. 启动 (开始出现4板，连板小于10，不会出现15%以上大面；)
+    if (maxHeightCurrent == config.startUpHeight) {
+      return cycles[0];
+    }
+    // 3. 高潮（前提，不能有连板负反馈）
+    if (currentTradingDayData.evenBoardAmount >= config.evenBoardNum
+      && currentTradingDayData.dailyLimitQuantity >= config.dailyLimitNum) {
+      return cycles[2];
+    }
+    // 2. 发酵
+    return cycles[1];
+  }
+
+  // B. 主跌 龙头倒下 高度降低
+  if (maxHeightCurrent <= maxHeightLast) {
+    // 高度下降(退潮、冰点)
+    if (currentTradingDayData.downLimitQuantity > config.downLimitNum
+      && hugeFallNum > 0) {
+      return cycles[4];
+    }
+    return cycles[3];
+  }
+  // C. 震荡 龙头横盘，等待新周期 或 次高穿越龙
+  return cycles[5]
+}
+
+function compatible(currentTradingDayData, cycles, maxHeightCurrent, hugeFallNum) {
+
+  // 高度低于5板
+  if (maxHeightCurrent <= config.startUpHeight) {
+    if (currentTradingDayData.downLimitQuantity > 10) {
       return cycles[4];
     }
     // 今天的最高板没有昨天高，昨天是高潮
-    if (maxHeight === 4 && hugeFallNum == 0) {
+    if (maxHeightCurrent === config.startUpHeight && hugeFallNum == 0) {
       return cycles[0];
     }
     return cycles[3];
   }
-  if (maxHeight >= 5) {
-    // 高潮前提，不能有连板负反馈
-    if (item.evenBoardAmount >= 10 || item.dailyLimitQuantity >= 45) {
-      return cycles[2];
-    }
-    return cycles[1];
+  // 高潮前提，不能有连板负反馈
+  if (currentTradingDayData.evenBoardAmount >= config.evenBoardNum
+    && currentTradingDayData.dailyLimitQuantity >= config.dailyLimitNum
+    && hugeFallNum == 0) {
+    return cycles[2];
   }
+  return cycles[1];
 }
 
 export const dailyLimitOptionalStrategyStr = '流通市值大于等于20亿，小于等于120亿，主板个股，股价低于30';
