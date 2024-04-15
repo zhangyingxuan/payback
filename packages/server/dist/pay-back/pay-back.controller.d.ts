@@ -38,6 +38,10 @@ export declare class PayBackController {
         code: number;
         data: any;
     }>;
+    deleteData(body: any): Promise<{
+        code: number;
+        message: string;
+    }>;
     crawlHotListData(): Promise<{
         code: number;
         data: import("./dto/create-hot-list.dto").CreateHotListDto;

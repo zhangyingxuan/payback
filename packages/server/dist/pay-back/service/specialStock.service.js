@@ -35,6 +35,9 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
     async autoCrawlBinddingData() {
         this.crawlBinddingData(0, 'admin');
     }
+    async autoCrawlBinddingDataMidday() {
+        this.crawlBinddingData(0, 'admin');
+    }
     async autoCrawlBinddingDataLateSession() {
         this.crawlBinddingData(0, 'admin');
     }
@@ -113,6 +116,13 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
         }
         return lastTradingDay;
     }
+    async delteByCreateTime(date) {
+        return await this.specialStockRp
+            .createQueryBuilder()
+            .delete()
+            .where('createTime like :date', { date: date + '%' })
+            .execute();
+    }
 };
 __decorate([
     (0, schedule_1.Cron)('08 25 9 * * 1-5'),
@@ -120,6 +130,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], SpecialStockService.prototype, "autoCrawlBinddingData", null);
+__decorate([
+    (0, schedule_1.Cron)('00 35 11 * * 1-5'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], SpecialStockService.prototype, "autoCrawlBinddingDataMidday", null);
 __decorate([
     (0, schedule_1.Cron)('00 05 15 * * 1-5'),
     __metadata("design:type", Function),

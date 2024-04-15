@@ -117,3 +117,11 @@ export const fetchSystemConfig = () => {
 export const updateSystemConfig = (data: any | null) => {
   return http.request<Array<any>>("post", `${baseUrlSystemConfig}/updateSystemConfig`, { data });
 }
+
+/**
+ * 删除数据
+ * @returns 
+ */
+export const deleteData = (data: any | null) => {
+  return http.request<Array<any>>("post", `${baseUrl}/deleteData`, { data });
+}

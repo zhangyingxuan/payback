@@ -46,7 +46,8 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
         const todayDateStr = new Date().toLocaleDateString();
         let createPayBackDto;
         try {
-            createPayBackDto = await (0, shortTermUtil_1.getShortTermData)(todayDateStr);
+            const lastTradingDayData = await this.getLastTradingDayData(todayDateStr);
+            createPayBackDto = await (0, shortTermUtil_1.getShortTermData)(todayDateStr, lastTradingDayData);
             const todayDataFromDB = await this.getTodayData(todayDateStr);
             if (todayDataFromDB) {
                 this.logger.log('crawlShortTermData 更新数据');
@@ -67,7 +68,8 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
         this.logger.debug('crawlShortTermDataByDate is Begining!');
         let createPayBackDto;
         try {
-            createPayBackDto = await (0, shortTermUtil_1.getShortTermDataByDate)(todayDateStr);
+            const lastTradingDayData = await this.getLastTradingDayData(todayDateStr);
+            createPayBackDto = await (0, shortTermUtil_1.getShortTermDataByDate)(todayDateStr, lastTradingDayData);
             const dateTime = new Date(todayDateStr);
             dateTime.setHours(15);
             dateTime.setMinutes(55);
@@ -95,6 +97,14 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
             createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%',
         })
             .getOne();
+    }
+    async getLastTradingDayData(todayDateStr) {
+        const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
+        const dataList = await this.findByLimit(2);
+        const lastTradingDayData = dataList.find(item => {
+            return currentDate !== dayjs(item.createTime.toString()).format('YYYYMMDD');
+        });
+        return lastTradingDayData;
     }
     async findAll() {
         return await this.shortTermDataRp.find();
@@ -136,6 +146,13 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
         const specialStocks = await this.specialStockService.findByLimit(len);
         const shortTermDataResult = (0, shortTermUtil_1.mergeExtra2ShortTermData)(shortTermData, specialStocks);
         return shortTermDataResult;
+    }
+    async delteByCreateTime(date) {
+        return await this.shortTermDataRp
+            .createQueryBuilder()
+            .delete()
+            .where('createTime like :date', { date: date + '%' })
+            .execute();
     }
 };
 __decorate([

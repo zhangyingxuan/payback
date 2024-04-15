@@ -25,6 +25,11 @@ export class SpecialStockService {
   async autoCrawlBinddingData() {
     this.crawlBinddingData(0, 'admin');
   }
+  // 竞价数据 - 午盘
+  @Cron('00 35 11 * * 1-5')
+  async autoCrawlBinddingDataMidday() {
+    this.crawlBinddingData(0, 'admin');
+  }
   // 竞价数据 - 尾盘收盘价
   @Cron('00 05 15 * * 1-5')
   async autoCrawlBinddingDataLateSession() {
@@ -140,5 +145,13 @@ export class SpecialStockService {
     }
 
     return lastTradingDay;
+  }
+
+  async delteByCreateTime(date) {
+    return await this.specialStockRp
+      .createQueryBuilder()
+      .delete()
+      .where('createTime like :date', { date: date + '%' })
+      .execute();
   }
 }

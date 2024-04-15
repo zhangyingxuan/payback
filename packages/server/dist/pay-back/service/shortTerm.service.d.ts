@@ -15,7 +15,9 @@ export declare class ShorTermService {
     crawlShortTermData(): Promise<CreatePayBackDto>;
     crawlShortTermDataByDate(todayDateStr: any): Promise<CreatePayBackDto>;
     getTodayData(todayDateStr: string): Promise<shortTermData>;
+    getLastTradingDayData(todayDateStr: string): Promise<shortTermData>;
     findAll(): Promise<shortTermData[]>;
     findByLimit(len?: number): Promise<shortTermData[]>;
     findEvenBoardByLimit(len?: number): Promise<any[]>;
+    delteByCreateTime(date: any): Promise<import("typeorm").DeleteResult>;
 }

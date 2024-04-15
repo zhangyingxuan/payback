@@ -96,6 +96,13 @@ let MarketService = MarketService_1 = class MarketService {
             .orderBy('createTime', 'DESC')
             .getMany();
     }
+    async delteByCreateTime(date) {
+        return await this.marketDataRp
+            .createQueryBuilder()
+            .delete()
+            .where('createTime like :date', { date: date + '%' })
+            .execute();
+    }
 };
 __decorate([
     (0, schedule_1.Cron)('0 10 15 * * 1-5'),

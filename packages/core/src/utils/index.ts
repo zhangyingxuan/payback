@@ -29,7 +29,6 @@ export function getCurrentCycle(currentTradingDayData: any, lastTradingDayData: 
   // 昨日高度
   const maxHeightLast: any = lastTradingDayData.marketHeight;
 
-
   // 用赚钱效应、亏钱效应判断 还是 高度？高度资金可以硬怼出来
   // 跌幅大于15的个股
   const hugeFallNum = currentTradingDayData.hugeFallData ? currentTradingDayData.hugeFallData.length : 0;
@@ -38,7 +37,7 @@ export function getCurrentCycle(currentTradingDayData: any, lastTradingDayData: 
     return compatible(currentTradingDayData, cycles, maxHeightCurrent, hugeFallNum);
   }
 
-  // A. 主升 高度增加
+  // A. 主升 【赚钱效应打开】高度增加，无负反馈 大面，情绪转好
   if (maxHeightCurrent >= config.startUpHeight
     && maxHeightCurrent > maxHeightLast
     && hugeFallNum == 0) {
@@ -46,22 +45,26 @@ export function getCurrentCycle(currentTradingDayData: any, lastTradingDayData: 
     if (maxHeightCurrent == config.startUpHeight) {
       return cycles[0];
     }
-    // 3. 高潮（前提，不能有连板负反馈）
-    if (currentTradingDayData.evenBoardAmount >= config.evenBoardNum
-      && currentTradingDayData.dailyLimitQuantity >= config.dailyLimitNum) {
-      return cycles[2];
+    if (currentTradingDayData.evenBoardAmount >= config.evenBoardNum) {
+      // 3. 高潮（前提，不能有连板负反馈）
+      if (currentTradingDayData.dailyLimitQuantity >= config.dailyLimitNum) {
+        return cycles[2];
+      }
+      // 2. 发酵
+      return cycles[1];
     }
-    // 2. 发酵
-    return cycles[1];
+    // 4. 连板数量不足，甚至降低，退潮
+    return cycles[3];
   }
 
-  // B. 主跌 龙头倒下 高度降低
+  // B. 主跌 【亏钱效应出现】龙头倒下/高度降低，负反馈出现，天地板、大面，高位持续A杀，接力情绪差
   if (maxHeightCurrent <= maxHeightLast) {
     // 高度下降(退潮、冰点)
     if (currentTradingDayData.downLimitQuantity > config.downLimitNum
       && hugeFallNum > 0) {
       return cycles[4];
     }
+    // 退潮
     return cycles[3];
   }
   // C. 震荡 龙头横盘，等待新周期 或 次高穿越龙

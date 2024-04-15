@@ -24,15 +24,22 @@
     <br v-if="isMobile" />
     <div>
       <div>{{ item.closingFundsTotal.toFixed(2) }}</div>
-      <div v-if="item.value.length > 1" class="gray" style="font-weight: 500">
-        {{ item.len }}/{{ item.value.length }}
+      <div v-if="item.value.length > 1" class="gray stock__num">
+        <!-- 符合条件的个股 / 板块总个股数 -->
+        <el-tooltip
+          effect="dark"
+          placement="top"
+          content="符合筛选条件的个股 / 板块总个股数"
+        >
+          {{ item.len }}/{{ item.value.length }}
+        </el-tooltip>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-let props = defineProps({
+defineProps({
   item: {
     type: Object,
     default: () => {},
@@ -70,5 +77,9 @@ let props = defineProps({
   color: @green;
   font-size: 14px;
   font-weight: 500;
+}
+.stock__num {
+  font-weight: 500;
+  cursor: pointer;
 }
 </style>

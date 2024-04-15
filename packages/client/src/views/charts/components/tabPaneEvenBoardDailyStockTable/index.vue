@@ -18,7 +18,7 @@
       </div>
       <div class="col2 red flex__row">
         <!-- 涨停个股 过滤条件 -->
-        <div class="dailyLimit__content flex__row_header">
+        <div class="dailyLimit__content flex__row flex__row_header">
           <div class="stocks_header">
             {{ title || defaultTitle }}
             ({{ currentDateData.dailyLimitQuantity }})
@@ -590,8 +590,7 @@ function handleTicaiClick(key: string) {
 <style scoped lang="less">
 @import '../../styles/tabPaneEvenBoardStockTable.less';
 
-.flex__row,
-.flex__row_header {
+.flex__row {
   display: flex;
   align-items: center;
 }

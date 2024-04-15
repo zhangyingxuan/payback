@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container flex__row">
     <!-- 基础设置 是否自动加入自选 -->
     <!-- 竞价设置 -->
     <el-card class="box-card">
@@ -59,25 +59,66 @@
         </el-form-item>
       </el-form>
     </el-card>
+
+    <el-card class="box-card">
+      <template #header>
+        <div class="card-header">
+          <span>数据管理</span>
+        </div>
+      </template>
+      <el-form
+        ref="dataManageFormRef"
+        :model="dataManageForm"
+        label-width="120px"
+      >
+        <el-divider content-position="left">自选设置</el-divider>
+        <el-form-item label="日期" prop="isAutoAddSelf">
+          <el-date-picker
+            v-model="dataManageForm.date"
+            type="date"
+            format="YYYY-MM-DD"
+            placeholder="Pick a day"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button
+            type="danger"
+            @click="onDataManageSubmit(dataManageFormRef)"
+          >
+            删除
+          </el-button>
+        </el-form-item>
+      </el-form>
+    </el-card>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
-import { fetchSystemConfig, updateSystemConfig } from '@/api/payBack';
+import {
+  fetchSystemConfig,
+  updateSystemConfig,
+  deleteData,
+} from '@/api/payBack';
 import type { FormInstance, FormRules } from 'element-plus';
-import { ElMessage } from 'element-plus';
+import { ElMessage, dayjs, ElMessageBox } from 'element-plus';
 
 const rules: FormRules = {
-  name: [{ required: true, message: '请输入表单名称', trigger: 'blur' }],
+  isAutoAddSelf: [
+    { required: true, message: '是否自动添加个股', trigger: 'blur' },
+  ],
 };
 const formRef = ref<FormInstance>();
+const dataManageFormRef = ref<FormInstance>();
 const form = reactive({
   isAutoAddSelf: false,
   isAutoAddSelfEvenBoard: false,
   isAutoAddSelfFirstBoard: false,
   isBinddingDelEventBoard: false,
   isBinddingDelFirstBoard: false,
+});
+const dataManageForm = reactive({
+  date: dayjs(),
 });
 async function initPage() {
   // 获取配置信息
@@ -104,7 +145,37 @@ const onSubmit = (formEl: FormInstance | undefined) => {
   });
 };
 
+// 数据管理提交
+const onDataManageSubmit = (formEl: FormInstance | undefined) => {
+  // 表单校验
+  if (!formEl) return;
+  formEl.validate(async valid => {
+    if (valid) {
+      const date = dayjs(dataManageForm.date).format('YYYY-MM-DD');
+      ElMessageBox.confirm(`确定要删除【${date}】的数据吗？`)
+        .then(async () => {
+          await deleteData({
+            date,
+          });
+          ElMessage.success('删除成功！');
+        })
+        .catch(() => {
+          // catch error
+        });
+    } else {
+      return false;
+    }
+  });
+};
+
 initPage();
 </script>
 
-<style scoped lang="less"></style>
+<style scoped lang="less">
+.flex__row {
+  > div {
+    width: 50%;
+    margin: 0 5px;
+  }
+}
+</style>

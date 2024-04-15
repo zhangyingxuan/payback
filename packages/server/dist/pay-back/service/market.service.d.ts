@@ -11,4 +11,5 @@ export declare class MarketService {
     findAll(): Promise<marketData[]>;
     findByLimit(len?: number): Promise<marketData[]>;
     findPlateByLimit(len?: number): Promise<marketData[]>;
+    delteByCreateTime(date: any): Promise<import("typeorm").DeleteResult>;
 }

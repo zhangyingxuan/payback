@@ -49,8 +49,8 @@
         <!-- 竞价行 -->
         <span class="stock large">个股名</span>
         [
-        <span class="small">竞价</span>
-        <span class="middle">竞价评级</span>
+        <!-- <span class="small">竞价</span>
+        <span class="middle">竞价评级</span> -->
         <span class="middle lanse">平均成本</span>
         <!-- <span class="middle"> 换手率 </span> -->
         <span class="middle">流通市值</span>
@@ -86,7 +86,8 @@
               :name="stock.name"
               :code="stock.code"
             />
-            [&nbsp;<span
+            [&nbsp;
+            <!-- <span
               class="small"
               :class="calcClassByBidRating(stock.bidRating)"
             >
@@ -99,7 +100,7 @@
                   stock.bidChangeTypeT === '大幅高开',
               }"
               >{{ stock.bidChangeTypeT }}
-            </span>
+            </span> -->
             <span class="lanse middle">{{ stock.price }}</span>
             <!-- 换手率 -->
             <span v-if="stock.turnoverRate" class="middle">
@@ -235,7 +236,7 @@ function sortPlates(stockGroupByPlate: any) {
 @import '../styles/tabPaneEvenBoardStockTable.less';
 
 .col2 {
-  min-width: 780px;
+  min-width: 650px;
   // overflow: auto;
 
   /deep/.stock,

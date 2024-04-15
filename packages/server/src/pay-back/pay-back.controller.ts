@@ -108,9 +108,6 @@ export class PayBackController {
     };
   }
 
-  // 获取竞价数据
-  // @Public()
-  // @Cron('0 25 9 * * 1-5')
   @UseGuards(JwtAuthGuard)
   @Post('/crawlBinddingData')
   async crawlBinddingData(@Body() body: CrawlTodayDataDto, @Request() req) {
@@ -131,6 +128,31 @@ export class PayBackController {
     return {
       code: 200,
       data: result,
+    };
+  }
+
+  @Post('/deleteData')
+  async deleteData(@Body() body: any) {
+    let code = 200,
+      message = 'success';
+    try {
+      // 删除短线数据
+      await this.shorTermService.delteByCreateTime(body.date);
+      // 删除竞价数据
+      await this.specialStockService.delteByCreateTime(body.date);
+      // 删除市场数据
+      await this.marketService.delteByCreateTime(body.date);
+      // 资金数据
+      await this.fundsService.delteByCreateTime(body.date);
+      // 板块数据
+      await this.plateService.delteByCreateTime(body.date);
+    } catch (e) {
+      code = 500;
+      message = e;
+    }
+    return {
+      code,
+      message,
     };
   }
 

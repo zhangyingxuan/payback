@@ -70,4 +70,12 @@ export class FundsService {
       .orderBy('createTime', 'DESC')
       .getMany();
   }
+
+  async delteByCreateTime(date) {
+    return await this.fundsDataRp
+      .createQueryBuilder()
+      .delete()
+      .where('createTime like :date', { date: date + '%' })
+      .execute();
+  }
 }

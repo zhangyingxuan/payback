@@ -1,6 +1,6 @@
 <!-- 集合竞价数据 -->
 <template>
-  <div v-if="stock" class="biddingData__row">
+  <div v-if="!_.isEmpty(stock)" class="biddingData__row">
     <span class="middle" :class="{ 'red bold': stock.bidIncreaseT >= 7 }">
       {{ stock.bidIncreaseT && +stock.bidIncreaseT.toFixed(2) }}
       <el-tag
@@ -46,6 +46,7 @@
 </template>
 <script lang="ts" setup>
 import { calcClassByBidRating, isDailyLimit } from '../../utils';
+import _ from 'lodash-es';
 
 defineProps({
   stock: {

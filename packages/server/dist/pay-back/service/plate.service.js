@@ -75,6 +75,13 @@ let PlateService = PlateService_1 = class PlateService {
             .orderBy('createTime', 'DESC')
             .getMany();
     }
+    async delteByCreateTime(date) {
+        return await this.plateDataRp
+            .createQueryBuilder()
+            .delete()
+            .where('createTime like :date', { date: date + '%' })
+            .execute();
+    }
 };
 __decorate([
     (0, schedule_1.Cron)('0 15 15 * * 1-5'),

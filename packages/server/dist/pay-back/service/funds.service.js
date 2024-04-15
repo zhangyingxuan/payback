@@ -70,6 +70,13 @@ let FundsService = FundsService_1 = class FundsService {
             .orderBy('createTime', 'DESC')
             .getMany();
     }
+    async delteByCreateTime(date) {
+        return await this.fundsDataRp
+            .createQueryBuilder()
+            .delete()
+            .where('createTime like :date', { date: date + '%' })
+            .execute();
+    }
 };
 __decorate([
     (0, schedule_1.Cron)('0 20 16 * * 1-5'),

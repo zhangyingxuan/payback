@@ -98,4 +98,12 @@ export class MarketService {
       .orderBy('createTime', 'DESC')
       .getMany();
   }
+
+  async delteByCreateTime(date) {
+    return await this.marketDataRp
+      .createQueryBuilder()
+      .delete()
+      .where('createTime like :date', { date: date + '%' })
+      .execute();
+  }
 }

@@ -25,14 +25,14 @@
     <el-tab-pane label="图表复盘">
       <TabPaneCharts ref="charts" />
     </el-tab-pane>
-    <el-tab-pane label="热榜">
-      <TabPaneHotList />
+    <el-tab-pane label="短线">
+      <TabPaneEvenBoard ref="evenBoard" />
     </el-tab-pane>
     <el-tab-pane label="板块">
       <TabPanePlates ref="plates" />
     </el-tab-pane>
-    <el-tab-pane label="短线">
-      <TabPaneEvenBoard ref="evenBoard" />
+    <el-tab-pane label="热榜">
+      <TabPaneHotList />
     </el-tab-pane>
     <!-- <el-tab-pane label="我的自选"> </el-tab-pane> -->
   </el-tabs>

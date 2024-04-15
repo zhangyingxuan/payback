@@ -8,6 +8,7 @@ export declare class SpecialStockService {
     constructor(specialStockRp: Repository<specialStock>, thsService: ThsService);
     private readonly logger;
     autoCrawlBinddingData(): Promise<void>;
+    autoCrawlBinddingDataMidday(): Promise<void>;
     autoCrawlBinddingDataLateSession(): Promise<void>;
     crawlBinddingData(isRemoveIncompatible: number, account: any): Promise<SpecialStockDto>;
     dealIncompatibleExpectStocks(dailyLimitYesterdayBidding: any, account: any): Promise<void>;
@@ -15,4 +16,5 @@ export declare class SpecialStockService {
     findAll(): Promise<specialStock[]>;
     findByLimit(len?: number): Promise<specialStock[]>;
     getLastTradingDayByDB(todayDateStr: any): Promise<string>;
+    delteByCreateTime(date: any): Promise<import("typeorm").DeleteResult>;
 }

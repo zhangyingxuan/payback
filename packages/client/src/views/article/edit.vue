@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts" name="baseform">
-import { reactive, ref } from 'vue';
+import { reactive, ref, onMounted, onUnmounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import type { FormInstance, FormRules } from 'element-plus';
 import { useRouter, useRoute } from 'vue-router';
@@ -94,6 +94,22 @@ function initPage() {
     });
   }
 }
+
+onMounted(() => {
+  window.addEventListener('keydown', handleEvent);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleEvent);
+});
+
+const handleEvent = async (e: any) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+    // 检查是否按下了 Ctrl + S
+    e.preventDefault(); // 阻止默认行为（保存网页）
+    onSubmit(formRef.value);
+  }
+};
 
 initPage();
 </script>

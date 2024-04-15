@@ -111,6 +111,24 @@ let PayBackController = PayBackController_1 = class PayBackController {
             data: result,
         };
     }
+    async deleteData(body) {
+        let code = 200, message = 'success';
+        try {
+            await this.shorTermService.delteByCreateTime(body.date);
+            await this.specialStockService.delteByCreateTime(body.date);
+            await this.marketService.delteByCreateTime(body.date);
+            await this.fundsService.delteByCreateTime(body.date);
+            await this.plateService.delteByCreateTime(body.date);
+        }
+        catch (e) {
+            code = 500;
+            message = e;
+        }
+        return {
+            code,
+            message,
+        };
+    }
     crawlHotListData() {
         return this.hotListService.crawlHotListData();
     }
@@ -233,6 +251,13 @@ __decorate([
     __metadata("design:paramtypes", [CrawlTodayDataDto, Object]),
     __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "crawlBinddingData", null);
+__decorate([
+    (0, common_1.Post)('/deleteData'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], PayBackController.prototype, "deleteData", null);
 __decorate([
     (0, common_1.Get)('/crawlHotListData'),
     __metadata("design:type", Function),

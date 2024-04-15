@@ -32,21 +32,21 @@ export const transformFundsData = (fundsData: FundsModel[], key: FundsKey) => {
   };
   const topMaxAmount = 3;
   fundsData.forEach(item => {
-    const hangyeFundsTop: any = JSON.parse(item[key] || '{}');
-    if (_.isEmpty(hangyeFundsTop)) {
+    const fundsTop: any = JSON.parse(item[key] || '{}');
+    if (_.isEmpty(fundsTop)) {
       return
     }
     // 准备某一天的数据
     xAxisData.push(dayjs(item.createTime).format('MM/DD'));
     for (let i = 0; i < topMaxAmount; i++) {
       inData['inTop' + (i + 1)].push({
-        name: hangyeFundsTop.in[i].name,
-        value: hangyeFundsTop.in[i].funds || 0,
+        name: fundsTop.in[i]?.name || '无',
+        value: fundsTop.in[i]?.funds || 0,
       });
 
       outData['outTop' + (i + 1)].push({
-        name: hangyeFundsTop.out[i].name,
-        value: hangyeFundsTop.out[i].funds || 0,
+        name: fundsTop.out[i]?.name || '无',
+        value: fundsTop.out[i]?.funds || 0,
       });
     }
   });

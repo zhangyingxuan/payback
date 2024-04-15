@@ -14,7 +14,7 @@ const otherNum = 50;
  * 通过接口方式获取热门数据
  * @returns
  */
-export async function getShortTermData(todayDateStr): Promise<CreatePayBackDto> {
+export async function getShortTermData(todayDateStr, lastTradingDayData): Promise<CreatePayBackDto> {
   // 准备涨停数据
   const dailyLimitData: any = await fetchAllStocksByIwencai(params.dailyLimitMoreThan1);
   // 跌停数据
@@ -24,10 +24,17 @@ export async function getShortTermData(todayDateStr): Promise<CreatePayBackDto> 
   // 跌幅大于等于15的个股
   const hugeFallData: any = await fetchAllStocksByIwencai(params.hugeFall, otherNum);
 
-  return prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, todayDateStr);
+  return prepareShortTermDto(
+    dailyLimitData,
+    dailyLimitOpenData,
+    downLimitData,
+    hugeFallData,
+    todayDateStr,
+    lastTradingDayData,
+  );
 }
 
-export async function getShortTermDataByDate(todayDateStr): Promise<CreatePayBackDto> {
+export async function getShortTermDataByDate(todayDateStr, lastTradingDayData): Promise<CreatePayBackDto> {
   // 准备涨停数据
   const dailyLimitData: any = await fetchAllStocksByIwencai(
     params.dailyLimitMoreThan1ByDate.replace('${date}', todayDateStr),
@@ -47,7 +54,14 @@ export async function getShortTermDataByDate(todayDateStr): Promise<CreatePayBac
     otherNum,
   );
 
-  return prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, todayDateStr);
+  return prepareShortTermDto(
+    dailyLimitData,
+    dailyLimitOpenData,
+    downLimitData,
+    hugeFallData,
+    todayDateStr,
+    lastTradingDayData,
+  );
 }
 
 /**
@@ -58,7 +72,14 @@ export async function getShortTermDataByDate(todayDateStr): Promise<CreatePayBac
  * @param todayDateStr
  * @returns
  */
-function prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, todayDateStr) {
+function prepareShortTermDto(
+  dailyLimitData,
+  dailyLimitOpenData,
+  downLimitData,
+  hugeFallData,
+  todayDateStr,
+  lastTradingDayData,
+) {
   const createPayBackDto: CreatePayBackDto = new CreatePayBackDto();
   const {
     board1 = 0,
@@ -87,7 +108,7 @@ function prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, 
   createPayBackDto.hugeFallData = JSON.stringify(hugeFallDataArr);
   createPayBackDto.createTime = new Date();
   // 保证hugeFallData 为对象
-  createPayBackDto.cycle = getCurrentCycle({ ...createPayBackDto, hugeFallData: hugeFallDataArr });
+  createPayBackDto.cycle = getCurrentCycle({ ...createPayBackDto, hugeFallData: hugeFallDataArr }, lastTradingDayData);
 
   return createPayBackDto;
 }

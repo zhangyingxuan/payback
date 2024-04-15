@@ -72,4 +72,12 @@ export class PlateService {
       .orderBy('createTime', 'DESC')
       .getMany();
   }
+
+  async delteByCreateTime(date) {
+    return await this.plateDataRp
+      .createQueryBuilder()
+      .delete()
+      .where('createTime like :date', { date: date + '%' })
+      .execute();
+  }
 }

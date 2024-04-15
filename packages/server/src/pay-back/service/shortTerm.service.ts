@@ -54,7 +54,8 @@ export class ShorTermService {
 
     let createPayBackDto: CreatePayBackDto;
     try {
-      createPayBackDto = await getShortTermData(todayDateStr);
+      const lastTradingDayData = await this.getLastTradingDayData(todayDateStr);
+      createPayBackDto = await getShortTermData(todayDateStr, lastTradingDayData);
 
       // console.log(createPayBackDto);
       // 如果存在数据，则返回已有该数据
@@ -84,7 +85,8 @@ export class ShorTermService {
     this.logger.debug('crawlShortTermDataByDate is Begining!');
     let createPayBackDto: CreatePayBackDto;
     try {
-      createPayBackDto = await getShortTermDataByDate(todayDateStr);
+      const lastTradingDayData = await this.getLastTradingDayData(todayDateStr);
+      createPayBackDto = await getShortTermDataByDate(todayDateStr, lastTradingDayData);
       const dateTime = new Date(todayDateStr);
       dateTime.setHours(15);
       dateTime.setMinutes(55);
@@ -120,6 +122,23 @@ export class ShorTermService {
         createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%',
       })
       .getOne();
+  }
+
+  /**
+   * 获取上一个交易日的数据
+   * @param todayDateStr
+   * @returns
+   */
+  async getLastTradingDayData(todayDateStr: string) {
+    const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
+    const dataList = await this.findByLimit(2);
+    // 取出第一个不是今日的数据
+    const lastTradingDayData = dataList.find(item => {
+      return currentDate !== dayjs(item.createTime.toString()).format('YYYYMMDD');
+    });
+
+    // console.log(lastTradingDayData);
+    return lastTradingDayData;
   }
 
   async findAll() {
@@ -173,5 +192,13 @@ export class ShorTermService {
     const shortTermDataResult = mergeExtra2ShortTermData(shortTermData, specialStocks);
 
     return shortTermDataResult;
+  }
+
+  async delteByCreateTime(date) {
+    return await this.shortTermDataRp
+      .createQueryBuilder()
+      .delete()
+      .where('createTime like :date', { date: date + '%' })
+      .execute();
   }
 }

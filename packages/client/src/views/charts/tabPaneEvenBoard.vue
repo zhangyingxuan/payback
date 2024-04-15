@@ -183,20 +183,22 @@
   </div>
 
   <!-- 集合竞价情况 -->
-  <!-- 新股 -->
-  <NewStockTable
-    :propsData="data.currentDateData.newStock"
-    :updateTime="data.currentDateData.biddingDataUpdateTime"
-    :isMobile="isMobile"
-    @refreshBindingData="handleRefreshBindingData"
-  />
-  <!-- 一进2 -->
-  <ChoosedStockTable
-    :propsData="data.currentDateData.chooseStock"
-    :updateTime="data.currentDateData.biddingDataUpdateTime"
-    :isMobile="isMobile"
-    @refreshBindingData="handleRefreshBindingData"
-  />
+  <div class="flex__row">
+    <!-- 新股 -->
+    <NewStockTable
+      :propsData="data.currentDateData.newStock"
+      :updateTime="data.currentDateData.biddingDataUpdateTime"
+      :isMobile="isMobile"
+      @refreshBindingData="handleRefreshBindingData"
+    />
+    <!-- 一进2 -->
+    <ChoosedStockTable
+      :propsData="data.currentDateData.chooseStock"
+      :updateTime="data.currentDateData.biddingDataUpdateTime"
+      :isMobile="isMobile"
+      @refreshBindingData="handleRefreshBindingData"
+    />
+  </div>
   <!-- 昨日涨停竞价情况 -->
   <DailyStockTable
     v-model:currentDateData="data.yesterdayDateData"
