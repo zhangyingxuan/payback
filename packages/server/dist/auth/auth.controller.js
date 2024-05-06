@@ -27,7 +27,6 @@ let AuthController = AuthController_1 = class AuthController {
     async login(body, req) {
         const { code } = body;
         const storedCaptcha = req.session.captcha;
-        this.logger.log('用户登录 验证码：storedCaptcha：' + storedCaptcha + '==code：' + code);
         if (code && storedCaptcha && code.toLowerCase() === storedCaptcha.toLowerCase()) {
             return await this.authService.login(body, req);
         }
@@ -53,7 +52,7 @@ let AuthController = AuthController_1 = class AuthController {
             background: '#F5F7FA',
         });
         req.session.captcha = captcha.text;
-        this.logger.log('生产 验证码：' + req.session.captcha);
+        this.logger.log('生产 验证码：1234');
         res.set('Content-Type', 'image/svg+xml');
         res.send(captcha.data);
     }

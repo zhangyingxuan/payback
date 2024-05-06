@@ -8,5 +8,5 @@ export declare class UsersService {
     private readonly logger;
     findOne(user: any): Promise<any | undefined>;
     getUserByAccount(account: string): Promise<any | undefined>;
-    clearUserInfoCache(): Promise<any | undefined>;
+    clearUserInfoCache(account: string): Promise<any | undefined>;
 }

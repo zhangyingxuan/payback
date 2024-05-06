@@ -3,6 +3,8 @@ export class CreatePayBackDto {
   dailyLimitQuantity: number;
   // 涨停打开数量
   dailyLimitOpenQuantity: number;
+  // 跌幅大于等于15的个股数量
+  hugeFallQuantity: number;
   // 封板率
   sealingRate: number;
   // 涨停回封数量

@@ -94,6 +94,8 @@ function prepareShortTermDto(
   createPayBackDto.dailyLimitQuantity = dailyLimitData.length;
   // 涨停打开数量
   createPayBackDto.dailyLimitOpenQuantity = dailyLimitOpenData.length;
+  // 跌幅大于等于15的个股数量
+  createPayBackDto.hugeFallQuantity = hugeFallData.length;
   // 封板率 = 涨停数 / （涨停数 + 涨停打开数）
   createPayBackDto.sealingRate = Math.round(
     (dailyLimitData.length / (dailyLimitData.length + dailyLimitOpenData.length)) * 100,

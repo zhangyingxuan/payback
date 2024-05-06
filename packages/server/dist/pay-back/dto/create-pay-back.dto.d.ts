@@ -1,6 +1,7 @@
 export declare class CreatePayBackDto {
     dailyLimitQuantity: number;
     dailyLimitOpenQuantity: number;
+    hugeFallQuantity: number;
     sealingRate: number;
     dailyLimitReturnSealQuantity: number;
     downLimitQuantity: number;

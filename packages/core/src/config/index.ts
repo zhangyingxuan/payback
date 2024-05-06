@@ -48,4 +48,15 @@ export const params = {
   hangyePlateOrderByDailyLimitNum: '涨停家数大于1的行业板块；按涨停个数降序；成交额；',
   // 概念板块，按涨停个数排序
   gainianPlateOrderByDailyLimitNum: '涨停家数大于1的概念板块；按涨停个数降序；成交额；',
+  // =============== ===============  个股相关 =============== =============== 
+  // 容量核心
+  rlCoreStock: '按成交额降序',
+  // 资金流入降序
+  fundsInflowStock: '资金流入降序',
+  // 资金流出降序
+  fundsOutflowStock: '资金流出降序',
+  // 区间 涨幅居前
+  increaseCoreStock: '资金流入降序',
+  // 区间 跌幅居前
+  declineCoreStock: '资金流出降序',
 }

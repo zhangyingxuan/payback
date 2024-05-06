@@ -18,13 +18,13 @@ const users_service_1 = require("../../users/users.service");
 const systemConfig_service_1 = require("./systemConfig.service");
 const thsUtils_1 = require("../utils/thsUtils");
 let isSuccess = true;
-function prepareSelfStock(i, stocks, app, userid, ticket, user) {
+function prepareSelfStock(i, stocks, app, userid, ticket, user, account) {
     if (stocks) {
         for (let j = 0; j < stocks.length; j++) {
             (0, pay_back_core_1.dailyLimitOptionalStrategy)(stocks[j], i) &&
                 app.add(async (ctx, next) => {
                     const result = await (0, fetchUtil_1.modifyThsSelfStocksRequest)(stocks[j].code, userid, ticket, user);
-                    isSuccess = (0, thsUtils_1.dealResultIsLogin)(result, ctx);
+                    isSuccess = (0, thsUtils_1.dealResultIsLogin)(result, ctx, account);
                     isSuccess && next();
                 });
         }
@@ -52,16 +52,16 @@ let ThsService = ThsService_1 = class ThsService {
         try {
             const app = new pay_back_core_1.AsynTaskIterator();
             this.logger.log(`同步自选: [高标] ${evenBoardData['gaobiao'] && evenBoardData['gaobiao'].length}；`);
-            isAutoAddSelfEvenBoard && prepareSelfStock(9, evenBoardData['gaobiao'], app, userid, ticket, user);
+            isAutoAddSelfEvenBoard && prepareSelfStock(9, evenBoardData['gaobiao'], app, userid, ticket, user, account);
             const maxHeight = evenBoardData.maxHeight;
             for (let i = maxHeight; i >= 1; i--) {
                 this.logger.log(`同步自选: [${i}板] ${evenBoardData[i + ''] && evenBoardData[i + ''].length}；`);
                 const stocks = evenBoardData[i + ''];
                 if (i === 1) {
-                    isAutoAddSelfFirstBoard && prepareSelfStock(i, stocks, app, userid, ticket, user);
+                    isAutoAddSelfFirstBoard && prepareSelfStock(i, stocks, app, userid, ticket, user, account);
                 }
                 else {
-                    isAutoAddSelfEvenBoard && prepareSelfStock(i, stocks, app, userid, ticket, user);
+                    isAutoAddSelfEvenBoard && prepareSelfStock(i, stocks, app, userid, ticket, user, account);
                 }
             }
             app.run(this);
@@ -96,7 +96,7 @@ let ThsService = ThsService_1 = class ThsService {
                         isBinddingDelFirstBoard &&
                             (result = await (0, fetchUtil_1.modifyThsSelfStocksRequest)(stock.code, userid, ticket, user, type));
                     }
-                    isSuccess = (0, thsUtils_1.dealResultIsLogin)(result, ctx);
+                    isSuccess = (0, thsUtils_1.dealResultIsLogin)(result, ctx, account);
                     isSuccess && next();
                 });
             });
@@ -119,7 +119,7 @@ let ThsService = ThsService_1 = class ThsService {
         let msg = '';
         try {
             const result = await (0, fetchUtil_1.modifyThsSelfStocksRequest)(code, userid, ticket, user, type);
-            msg = (0, thsUtils_1.dealStockResult)(result, this.usersService);
+            msg = (0, thsUtils_1.dealStockResult)(result, this.usersService, account);
         }
         catch (e) {
             msg = e;
@@ -139,7 +139,7 @@ let ThsService = ThsService_1 = class ThsService {
         let msg = '';
         try {
             const result = await (0, fetchUtil_1.modifyThsSelfRequest)(code, userid, ticket, user, type, true);
-            msg = (0, thsUtils_1.dealPlateResult)(result, type, this.usersService);
+            msg = (0, thsUtils_1.dealPlateResult)(result, type, this.usersService, account);
         }
         catch (e) {
             msg = e;

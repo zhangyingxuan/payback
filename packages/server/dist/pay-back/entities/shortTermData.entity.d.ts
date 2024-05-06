@@ -5,6 +5,7 @@ export declare class shortTermData {
     dailyLimitOpenQuantity: number;
     dailyLimitReturnSealQuantity: number;
     downLimitQuantity: number;
+    hugeFallQuantity: number;
     sealingRate: number;
     marketHeight: number;
     evenBoardAmount: number;

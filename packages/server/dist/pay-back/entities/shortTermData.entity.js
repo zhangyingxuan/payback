@@ -34,6 +34,10 @@ __decorate([
     __metadata("design:type", Number)
 ], shortTermData.prototype, "downLimitQuantity", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ comment: '跌幅大于等于15的个股数量', type: 'smallint', default: 0 }),
+    __metadata("design:type", Number)
+], shortTermData.prototype, "hugeFallQuantity", void 0);
+__decorate([
     (0, typeorm_1.Column)({ comment: '涨停封板率', type: 'tinyint', default: 0 }),
     __metadata("design:type", Number)
 ], shortTermData.prototype, "sealingRate", void 0);

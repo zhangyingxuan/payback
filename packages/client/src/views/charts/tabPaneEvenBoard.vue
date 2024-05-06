@@ -115,7 +115,11 @@
         </div>
         <!-- 大面数量 -->
         <div class="table-col height1 green">
-          {{ item.hugeFallData ? item.hugeFallData.length : '' }}
+          {{
+            item.hugeFallQuantity
+              ? item.hugeFallQuantity
+              : item.hugeFallData.length || 0
+          }}
         </div>
         <!-- 反包 -->
         <div class="table-col">

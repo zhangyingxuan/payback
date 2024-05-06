@@ -305,6 +305,8 @@ export async function modifyThsSelfStocksRequest(code, userid, ticket, user, typ
     remove: { stockcode: code, op: 'del' },
     exc: { stockcode: code, op: 'exc', pos: pos, callback: 'callbacknew' },
   };
+
+  // console.log(userid, ticket, user);
   // https://t.10jqka.com.cn/newcircle/group/modifySelfStock/?op=add&stockcode=000551_33
   // https://t.10jqka.com.cn/newcircle/group/modifySelfStock/?op=add&stockcode=000980
   // console.log("http://stock.10jqka.com.cn/self.php?" + stringify(payload.add));
@@ -322,7 +324,7 @@ export async function modifyThsSelfStocksRequest(code, userid, ticket, user, typ
       'sec-fetch-mode': 'cors',
       'sec-fetch-site': 'same-origin',
       'x-requested-with': 'XMLHttpRequest',
-      Cookie: `userid=${userid}; u_name=mo_${userid}; escapename=mo_${userid}; user=${user}; ticket=${ticket};`,
+      Cookie: `user=${user}; userid=${userid}; u_name=mo_${userid}; escapename=mo_${userid}; ticket=${ticket};`,
     },
     referrer: 'https://t.10jqka.com.cn/newcircle/user/userPersonal/?from=circle',
     referrerPolicy: 'strict-origin-when-cross-origin',
@@ -331,6 +333,7 @@ export async function modifyThsSelfStocksRequest(code, userid, ticket, user, typ
     mode: 'cors',
     credentials: 'include',
   });
+  // console.log(await result.json());
   return await result.json();
 }
 

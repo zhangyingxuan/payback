@@ -4,8 +4,6 @@ import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Cache } from 'cache-manager';
 
-const USER_IFNO = 'userInfo';
-
 @Injectable()
 export class UsersService {
   constructor(
@@ -36,8 +34,8 @@ export class UsersService {
    * 清理用户信息缓存
    * @returns
    */
-  async clearUserInfoCache(): Promise<any | undefined> {
+  async clearUserInfoCache(account: string): Promise<any | undefined> {
     console.log('清理用户缓存成功');
-    return await this.cacheManager.del(USER_IFNO);
+    return await this.cacheManager.del(account);
   }
 }

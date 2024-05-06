@@ -225,7 +225,7 @@ async function modifyThsSelfStocksRequest(code, userid, ticket, user, type = Ths
             'sec-fetch-mode': 'cors',
             'sec-fetch-site': 'same-origin',
             'x-requested-with': 'XMLHttpRequest',
-            Cookie: `userid=${userid}; u_name=mo_${userid}; escapename=mo_${userid}; user=${user}; ticket=${ticket};`,
+            Cookie: `user=${user}; userid=${userid}; u_name=mo_${userid}; escapename=mo_${userid}; ticket=${ticket};`,
         },
         referrer: 'https://t.10jqka.com.cn/newcircle/user/userPersonal/?from=circle',
         referrerPolicy: 'strict-origin-when-cross-origin',

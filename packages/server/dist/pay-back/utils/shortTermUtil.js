@@ -31,6 +31,7 @@ function prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, 
     createPayBackDto.downLimitQuantity = downLimitData.length;
     createPayBackDto.dailyLimitQuantity = dailyLimitData.length;
     createPayBackDto.dailyLimitOpenQuantity = dailyLimitOpenData.length;
+    createPayBackDto.hugeFallQuantity = hugeFallData.length;
     createPayBackDto.sealingRate = Math.round((dailyLimitData.length / (dailyLimitData.length + dailyLimitOpenData.length)) * 100);
     createPayBackDto.dailyLimitReturnSealQuantity = dailyLimitReturnSealQuantity;
     createPayBackDto.marketHeight = evenBoardData.maxHeight;

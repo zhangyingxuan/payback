@@ -39,9 +39,9 @@
         >
           <el-option
             v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+            :key="item"
+            :label="item + '日'"
+            :value="item"
           />
         </el-select>
         <template v-if="!isMobile">
@@ -154,9 +154,9 @@ import { isMobile } from '@/core/util';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import dayjs from 'dayjs';
 import Calendar from './calendar/index.vue';
-import { options } from './config';
 import { usePermissStore } from '../store/permiss';
 
+const options = [7, 15, 20, 40, 60, 120, 240];
 const permiss = usePermissStore();
 
 let loadingMessage: any = null;

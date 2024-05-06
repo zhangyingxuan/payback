@@ -7,7 +7,7 @@ import { dealResultIsLogin, dealStockResult, dealPlateResult, atob } from '../ut
 
 let isSuccess = true;
 
-function prepareSelfStock(i, stocks, app, userid, ticket, user) {
+function prepareSelfStock(i, stocks, app, userid, ticket, user, account) {
   if (stocks) {
     for (let j = 0; j < stocks.length; j++) {
       // 仅插入 10cm的个股
@@ -15,7 +15,7 @@ function prepareSelfStock(i, stocks, app, userid, ticket, user) {
         app.add(async (ctx, next) => {
           const result = await modifyThsSelfStocksRequest(stocks[j].code, userid, ticket, user);
           // console.log(stocks[j].name, result);
-          isSuccess = dealResultIsLogin(result, ctx);
+          isSuccess = dealResultIsLogin(result, ctx, account);
           isSuccess && next();
         });
     }
@@ -61,7 +61,7 @@ export class ThsService {
       const app = new AsynTaskIterator();
       this.logger.log(`同步自选: [高标] ${evenBoardData['gaobiao'] && evenBoardData['gaobiao'].length}；`);
       // 3.1 先加入高标；高标看做连板
-      isAutoAddSelfEvenBoard && prepareSelfStock(9, evenBoardData['gaobiao'], app, userid, ticket, user);
+      isAutoAddSelfEvenBoard && prepareSelfStock(9, evenBoardData['gaobiao'], app, userid, ticket, user, account);
       // 3.2 再加入连板股
       const maxHeight = evenBoardData.maxHeight;
       for (let i = maxHeight; i >= 1; i--) {
@@ -70,11 +70,11 @@ export class ThsService {
         if (i === 1) {
           // console.log('isAutoAddSelfFirstBoard==', isAutoAddSelfFirstBoard);
           // 加入首板
-          isAutoAddSelfFirstBoard && prepareSelfStock(i, stocks, app, userid, ticket, user);
+          isAutoAddSelfFirstBoard && prepareSelfStock(i, stocks, app, userid, ticket, user, account);
         } else {
           // console.log('isAutoAddSelfEvenBoard==', isAutoAddSelfEvenBoard);
           // 加入连板
-          isAutoAddSelfEvenBoard && prepareSelfStock(i, stocks, app, userid, ticket, user);
+          isAutoAddSelfEvenBoard && prepareSelfStock(i, stocks, app, userid, ticket, user, account);
         }
       }
       // this.nextRegister(funcs);
@@ -124,7 +124,7 @@ export class ThsService {
 
           // TODO 删除前，先获取自选个股，仅删除存在的个股 2024-03-07 11:57:18
           // console.log(stock.name, result);
-          isSuccess = dealResultIsLogin(result, ctx);
+          isSuccess = dealResultIsLogin(result, ctx, account);
           isSuccess && next();
         });
       });
@@ -156,7 +156,7 @@ export class ThsService {
     try {
       const result = await modifyThsSelfStocksRequest(code, userid, ticket, user, type);
       // this.logger.log(result);
-      msg = dealStockResult(result, this.usersService);
+      msg = dealStockResult(result, this.usersService, account);
     } catch (e) {
       msg = e;
       this.logger.log('updateThsSelfStock[' + type + '] 失败了！' + e);
@@ -184,7 +184,7 @@ export class ThsService {
     try {
       const result = await modifyThsSelfRequest(code, userid, ticket, user, type, true);
       // this.logger.log(result);
-      msg = dealPlateResult(result, type, this.usersService);
+      msg = dealPlateResult(result, type, this.usersService, account);
     } catch (e) {
       msg = e;
       this.logger.log('updateThsSelfStock[' + type + '] 失败了！' + e);

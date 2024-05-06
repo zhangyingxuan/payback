@@ -18,7 +18,6 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("typeorm");
 const user_entity_1 = require("./entities/user.entity");
 const typeorm_2 = require("@nestjs/typeorm");
-const USER_IFNO = 'userInfo';
 let UsersService = UsersService_1 = class UsersService {
     constructor(userRp, cacheManager) {
         this.userRp = userRp;
@@ -37,9 +36,9 @@ let UsersService = UsersService_1 = class UsersService {
         }
         return userInfo;
     }
-    async clearUserInfoCache() {
+    async clearUserInfoCache(account) {
         console.log('清理用户缓存成功');
-        return await this.cacheManager.del(USER_IFNO);
+        return await this.cacheManager.del(account);
     }
 };
 UsersService = UsersService_1 = __decorate([

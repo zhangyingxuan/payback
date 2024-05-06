@@ -7,21 +7,21 @@ export function atob(a) {
   return Buffer.from(a, 'base64').toString('binary');
 }
 
-export function dealResultIsLogin(result, userServiceCtx) {
+export function dealResultIsLogin(result, userServiceCtx, account) {
   if (result.errorMsg === '当前用户未登录') {
     console.log('[updateThsSelfStock] 当前用户未登录：https://www.iwencai.com/unifiedwap/result');
-    userServiceCtx.clearUserInfoCache && userServiceCtx.clearUserInfoCache();
+    userServiceCtx.clearUserInfoCache && userServiceCtx.clearUserInfoCache(account);
     return false;
   }
 
   return true;
 }
-export function dealStockResult(result, userServiceCtx) {
+export function dealStockResult(result, userServiceCtx, account) {
   let msg = '';
   if (result.errorCode !== 0) {
     if (result.errorMsg === '当前用户未登录') {
       console.log('[updateThsSelfStock] 当前用户未登录：https://www.iwencai.com/unifiedwap/result');
-      userServiceCtx.clearUserInfoCache && userServiceCtx.clearUserInfoCache();
+      userServiceCtx.clearUserInfoCache && userServiceCtx.clearUserInfoCache(account);
     }
     msg = result.errorMsg;
   }
@@ -29,12 +29,12 @@ export function dealStockResult(result, userServiceCtx) {
   return msg;
 }
 
-export function dealPlateResult(result, type = ThsOprate.add, userServiceCtx) {
+export function dealPlateResult(result, type = ThsOprate.add, userServiceCtx, account) {
   let msg = '';
   if (result.status_code !== 0) {
     if (result.status_msg === '用户ID缺失') {
       console.log('[updateThsSelfStock] 当前用户未登录：https://www.iwencai.com/unifiedwap/result');
-      userServiceCtx.clearUserInfoCache && userServiceCtx.clearUserInfoCache();
+      userServiceCtx.clearUserInfoCache && userServiceCtx.clearUserInfoCache(account);
     }
     msg = result.status_msg;
   } else {

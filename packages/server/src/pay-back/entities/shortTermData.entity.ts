@@ -17,6 +17,9 @@ export class shortTermData {
   @Column({ comment: '跌停数量', type: 'smallint', default: 0 })
   downLimitQuantity: number;
 
+  @Column({ comment: '跌幅大于等于15的个股数量', type: 'smallint', default: 0 })
+  hugeFallQuantity: number;
+
   @Column({ comment: '涨停封板率', type: 'tinyint', default: 0 })
   sealingRate: number;
 
