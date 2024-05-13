@@ -47,11 +47,11 @@ let HotListService = HotListService_1 = class HotListService {
             if (todayDataFromDB) {
                 this.logger.log('更新数据, id=' + todayDataFromDB.id);
                 delete hotListData4Db.createTime;
-                await this.hotListRp.update(todayDataFromDB.id, hotListData4Db);
+                this.hotListRp.update(todayDataFromDB.id, hotListData4Db);
             }
             else {
                 this.logger.log('新增数据');
-                await this.hotListRp.save(hotListData4Db);
+                this.hotListRp.save(hotListData4Db);
             }
             this.logger.debug('crawlHotListData is success!');
         }

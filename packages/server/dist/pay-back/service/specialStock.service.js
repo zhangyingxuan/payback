@@ -15,7 +15,6 @@ var SpecialStockService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SpecialStockService = void 0;
 const common_1 = require("@nestjs/common");
-const special_stock_dto_1 = require("../dto/special-stock.dto");
 const typeorm_1 = require("typeorm");
 const specialStock_entity_1 = require("../entities/specialStock.entity");
 const typeorm_2 = require("@nestjs/typeorm");
@@ -42,44 +41,91 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
         this.crawlBinddingData(0, 'admin');
     }
     async crawlBinddingData(isRemoveIncompatible = 0, account) {
-        this.logger.debug('autoCrawlBinddingData is Begining!');
+        this.logger.debug('crawlBinddingData is Begining!');
         const todayDateStr = new Date().toLocaleDateString();
-        const specialStockDto = new special_stock_dto_1.SpecialStockDto();
+        let todayDataFromDB = null;
+        const specialStockDto = {
+            biddingData: '',
+            newStock: '',
+            chooseStock: '',
+            fundsLikeStock: '',
+            heightestStock: '',
+            createTime: new Date(),
+            updatedTime: new Date(),
+        };
         try {
             const yesterdayDateStr = await this.getLastTradingDayByDB(todayDateStr);
-            const { dailyLimitYesterdayBidding, newStocks, chooseStock1Expected } = await (0, specialStockUtil_1.getBiddingData)(todayDateStr, yesterdayDateStr);
-            specialStockDto.biddingData = JSON.stringify(dailyLimitYesterdayBidding);
-            specialStockDto.newStock = JSON.stringify(newStocks);
-            specialStockDto.chooseStock = JSON.stringify({
-                chooseStock1Expected,
-            });
-            specialStockDto.updatedTime = new Date();
+            const dailyLimitYesterdayBidding = await (0, specialStockUtil_1.fetchLastdayDailyLimitBinddingData)(todayDateStr, yesterdayDateStr);
             isRemoveIncompatible && this.dealIncompatibleExpectStocks(dailyLimitYesterdayBidding, account);
-            const todayDataFromDB = await this.getTodayData(todayDateStr);
+            todayDataFromDB = await this.getTodayData(todayDateStr);
             if (todayDataFromDB) {
-                this.logger.log('autoCrawlBinddingData 更新数据');
-                await this.specialStockRp.update(todayDataFromDB.id, specialStockDto);
+                todayDataFromDB.biddingData = JSON.stringify(dailyLimitYesterdayBidding);
+                todayDataFromDB.updatedTime = new Date();
+                this.logger.log('crawlBinddingData 更新数据');
+                await this.specialStockRp.update(todayDataFromDB.id, todayDataFromDB);
             }
             else {
+                specialStockDto.biddingData = JSON.stringify(dailyLimitYesterdayBidding);
+                specialStockDto.updatedTime = new Date();
                 specialStockDto.createTime = new Date();
-                this.logger.log('autoCrawlBinddingData 新增数据');
+                this.logger.log('crawlBinddingData 新增数据');
                 await this.specialStockRp.save(specialStockDto);
             }
-            this.logger.debug('autoCrawlBinddingData is success!');
+            this.logger.debug('crawlBinddingData is success!');
         }
         catch (e) {
             this.logger.error('出错啦！！！', e);
         }
-        return specialStockDto;
+        return todayDataFromDB ? todayDataFromDB : specialStockDto;
+    }
+    async crawlSpecialStockData() {
+        this.logger.debug('crawlSpecialStockData is Begining!');
+        let todayDataFromDB = null;
+        const todayDateStr = new Date().toLocaleDateString();
+        const specialStockDto = {
+            biddingData: '',
+            newStock: '',
+            chooseStock: '',
+            fundsLikeStock: '',
+            heightestStock: '',
+            createTime: new Date(),
+            updatedTime: new Date(),
+        };
+        try {
+            const yesterdayDateStr = await this.getLastTradingDayByDB(todayDateStr);
+            const { newStocks, chooseStock1Expected } = await (0, specialStockUtil_1.fetchSpecialStockBinddingData)(todayDateStr, yesterdayDateStr);
+            todayDataFromDB = await this.getTodayData(todayDateStr);
+            if (todayDataFromDB) {
+                todayDataFromDB.newStock = JSON.stringify(newStocks);
+                todayDataFromDB.chooseStock = JSON.stringify({ chooseStock1Expected });
+                todayDataFromDB.updatedTime = new Date();
+                this.logger.log('crawlSpecialStockData 更新数据');
+                await this.specialStockRp.update(todayDataFromDB.id, specialStockDto);
+            }
+            else {
+                specialStockDto.newStock = JSON.stringify(newStocks);
+                specialStockDto.chooseStock = JSON.stringify({ chooseStock1Expected });
+                specialStockDto.updatedTime = new Date();
+                specialStockDto.createTime = new Date();
+                this.logger.log('crawlSpecialStockData 新增数据');
+                await this.specialStockRp.save(specialStockDto);
+            }
+            this.logger.debug('crawlSpecialStockData is success!');
+        }
+        catch (e) {
+            this.logger.error('出错啦！！！', e);
+        }
+        return todayDataFromDB ? todayDataFromDB : specialStockDto;
     }
     async dealIncompatibleExpectStocks(dailyLimitYesterdayBidding, account) {
         this.logger.log('dealIncompatibleExpectStocks 删除不及预期个股');
         const incompatibleExpectStocks = [];
-        dailyLimitYesterdayBidding.forEach(stock => {
-            if (stock.expected === transformDataUtil_1.ExpectEnum.incompatible) {
-                incompatibleExpectStocks.push(stock);
-            }
-        });
+        dailyLimitYesterdayBidding &&
+            dailyLimitYesterdayBidding.forEach(stock => {
+                if (stock.expected === transformDataUtil_1.ExpectEnum.incompatible) {
+                    incompatibleExpectStocks.push(stock);
+                }
+            });
         this.thsService.batchUpdateThsSelfStock(incompatibleExpectStocks, fetchUtil_1.ThsOprate.del, account);
     }
     getTodayData(todayDateStr) {
@@ -98,7 +144,7 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
             .createQueryBuilder('special_stock')
             .offset(0)
             .limit(len)
-            .orderBy('updatedTime', 'DESC')
+            .orderBy('createTime', 'DESC')
             .getMany();
     }
     async getLastTradingDayByDB(todayDateStr) {
@@ -107,7 +153,7 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
             .offset(0)
             .limit(2)
             .select(['special_stock.createTime'])
-            .orderBy('updatedTime', 'DESC')
+            .orderBy('createTime', 'DESC')
             .getMany();
         const currentDate = dayjs(todayDateStr).format(pay_back_core_1.iWencaiDateFormat);
         let lastTradingDay = dayjs(dateArr[0].createTime).format(pay_back_core_1.iWencaiDateFormat);
@@ -124,12 +170,6 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
             .execute();
     }
 };
-__decorate([
-    (0, schedule_1.Cron)('08 25 9 * * 1-5'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], SpecialStockService.prototype, "autoCrawlBinddingData", null);
 __decorate([
     (0, schedule_1.Cron)('00 35 11 * * 1-5'),
     __metadata("design:type", Function),

@@ -38,6 +38,10 @@ export declare class PayBackController {
         code: number;
         data: any;
     }>;
+    crawlSpecialStockData(): Promise<{
+        code: number;
+        data: any;
+    }>;
     deleteData(body: any): Promise<{
         code: number;
         message: string;
@@ -46,15 +50,11 @@ export declare class PayBackController {
         code: number;
         data: import("./dto/create-hot-list.dto").CreateHotListDto;
     }>;
-    crawlShortTerm(): Promise<import("./dto/create-pay-back.dto").CreatePayBackDto>;
     crawlShortTermByDate(query: any): Promise<import("./dto/create-pay-back.dto").CreatePayBackDto>;
-    crawlMarket(): Promise<import("./dto/create-market-data.dto").CreateMarketDataDto>;
     crawlPlateData(): Promise<{
         code: number;
         data: import("./dto/create-Plate-data.dto").CreatePlateDataDto;
     }>;
-    crawlFunds(): Promise<import("./dto/create-funds-data.dto").CreateFundsDataDto>;
-    crawlLatestConceptPlate(): Promise<any>;
     findByLimit(query: any): Promise<{
         code: number;
         data: {
@@ -90,6 +90,9 @@ export declare class PayBackController {
     fetchPlateOrderByDailyLimit(query: any): Promise<{
         code: number;
         data: import("./entities/plateData.entity").plateData[];
+    }>;
+    saveUserInfo(body: any, req: any): Promise<{
+        code: number;
     }>;
 }
 export {};

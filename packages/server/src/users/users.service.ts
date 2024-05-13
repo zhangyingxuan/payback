@@ -38,4 +38,23 @@ export class UsersService {
     console.log('清理用户缓存成功');
     return await this.cacheManager.del(account);
   }
+  /**
+   * 更新用户信息
+   * @returns
+   */
+  async updateUserInfo(account: string, token, user): Promise<any | undefined> {
+    let userInfo = null;
+    try {
+      userInfo = await this.userRp.findOne({ where: { account: account } });
+      if (!userInfo) {
+        return false;
+      }
+      userInfo.ticket = token;
+      userInfo.user = user;
+      this.userRp.update(userInfo.id, userInfo);
+    } catch (e) {
+      return false;
+    }
+    return true;
+  }
 }

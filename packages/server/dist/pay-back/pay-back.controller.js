@@ -82,7 +82,8 @@ let PayBackController = PayBackController_1 = class PayBackController {
                 resultData = await this.fundsService.crawlfundsData();
                 break;
             case 4:
-                resultData = await this.specialStockService.crawlBinddingData(body.isRemoveIncompatible, (_b = req.user) === null || _b === void 0 ? void 0 : _b.account);
+                await this.specialStockService.crawlBinddingData(body.isRemoveIncompatible, (_b = req.user) === null || _b === void 0 ? void 0 : _b.account);
+                resultData = await this.specialStockService.crawlSpecialStockData();
                 break;
             default:
                 break;
@@ -111,6 +112,13 @@ let PayBackController = PayBackController_1 = class PayBackController {
             data: result,
         };
     }
+    async crawlSpecialStockData() {
+        const specialStockData = await this.specialStockService.crawlSpecialStockData();
+        return {
+            code: 200,
+            data: specialStockData,
+        };
+    }
     async deleteData(body) {
         let code = 200, message = 'success';
         try {
@@ -132,15 +140,9 @@ let PayBackController = PayBackController_1 = class PayBackController {
     crawlHotListData() {
         return this.hotListService.crawlHotListData();
     }
-    crawlShortTerm() {
-        return this.shorTermService.crawlShortTermData();
-    }
     crawlShortTermByDate(query) {
         const date = query.date || new Date();
         return this.shorTermService.crawlShortTermDataByDate(date);
-    }
-    crawlMarket() {
-        return this.marketService.crawlMarketData();
     }
     async crawlPlateData() {
         const data = await this.plateService.crawlPlateData();
@@ -148,12 +150,6 @@ let PayBackController = PayBackController_1 = class PayBackController {
             code: 200,
             data,
         };
-    }
-    crawlFunds() {
-        return this.fundsService.crawlfundsData();
-    }
-    crawlLatestConceptPlate() {
-        return this.latestConceptPlateService.crawlLatestConceptPlateData();
     }
     async findByLimit(query) {
         const limit = +(query.limit || 20);
@@ -225,6 +221,14 @@ let PayBackController = PayBackController_1 = class PayBackController {
             data: palateData,
         };
     }
+    async saveUserInfo(body, req) {
+        var _a;
+        const { token, user } = body;
+        const success = await this.usersService.updateUserInfo((_a = req.user) === null || _a === void 0 ? void 0 : _a.account, token, user);
+        return {
+            code: success ? 200 : 500,
+        };
+    }
 };
 __decorate([
     (0, public_decorator_1.Public)(),
@@ -252,6 +256,12 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "crawlBinddingData", null);
 __decorate([
+    (0, common_1.Post)('/crawlSpecialStockData'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], PayBackController.prototype, "crawlSpecialStockData", null);
+__decorate([
     (0, common_1.Post)('/deleteData'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -266,13 +276,6 @@ __decorate([
 ], PayBackController.prototype, "crawlHotListData", null);
 __decorate([
     (0, public_decorator_1.Public)(),
-    (0, common_1.Get)('/crawlShortTerm'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], PayBackController.prototype, "crawlShortTerm", null);
-__decorate([
-    (0, public_decorator_1.Public)(),
     (0, common_1.Get)('/crawlShortTermByDate'),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
@@ -280,30 +283,12 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PayBackController.prototype, "crawlShortTermByDate", null);
 __decorate([
-    (0, common_1.Get)('/crawlMarket'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], PayBackController.prototype, "crawlMarket", null);
-__decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.Get)('/crawlPlateData'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "crawlPlateData", null);
-__decorate([
-    (0, common_1.Get)('/crawlFunds'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], PayBackController.prototype, "crawlFunds", null);
-__decorate([
-    (0, common_1.Get)('/crawlLatestConceptPlate'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], PayBackController.prototype, "crawlLatestConceptPlate", null);
 __decorate([
     (0, common_1.Get)('list'),
     __param(0, (0, common_1.Query)()),
@@ -360,6 +345,15 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "fetchPlateOrderByDailyLimit", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Post)('saveUserInfo'),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], PayBackController.prototype, "saveUserInfo", null);
 PayBackController = PayBackController_1 = __decorate([
     (0, common_1.Controller)('pay-back'),
     __metadata("design:paramtypes", [shortTerm_service_1.ShorTermService,

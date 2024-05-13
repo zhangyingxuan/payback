@@ -40,6 +40,22 @@ let UsersService = UsersService_1 = class UsersService {
         console.log('清理用户缓存成功');
         return await this.cacheManager.del(account);
     }
+    async updateUserInfo(account, token, user) {
+        let userInfo = null;
+        try {
+            userInfo = await this.userRp.findOne({ where: { account: account } });
+            if (!userInfo) {
+                return false;
+            }
+            userInfo.ticket = token;
+            userInfo.user = user;
+            this.userRp.update(userInfo.id, userInfo);
+        }
+        catch (e) {
+            return false;
+        }
+        return true;
+    }
 };
 UsersService = UsersService_1 = __decorate([
     (0, common_1.Injectable)(),

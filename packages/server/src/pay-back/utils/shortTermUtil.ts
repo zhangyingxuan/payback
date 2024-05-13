@@ -11,18 +11,26 @@ const downLimitNum = 50;
 const otherNum = 50;
 
 /**
- * 通过接口方式获取热门数据
+ * 通过接口方式获取短线数据
  * @returns
  */
 export async function getShortTermData(todayDateStr, lastTradingDayData): Promise<CreatePayBackDto> {
+  // const start = performance.now();
+  // console.time();
   // 准备涨停数据
   const dailyLimitData: any = await fetchAllStocksByIwencai(params.dailyLimitMoreThan1);
+  let downLimitData: any = { length: 0 };
+  let dailyLimitOpenData: any = { length: 0 };
+  let hugeFallData: any = { length: 0 };
+  // const end = performance.now();
+  // console.log('cost is', `${end - start}ms`);
+  // console.timeEnd();
   // 跌停数据
-  const downLimitData: any = await fetchAllStocksByIwencai(params.downLimit, downLimitNum);
+  downLimitData = await fetchAllStocksByIwencai(params.downLimit, downLimitNum);
   // 涨停打开个股
-  const dailyLimitOpenData: any = await fetchAllStocksByIwencai(params.dailyLimitOpen);
+  dailyLimitOpenData = await fetchAllStocksByIwencai(params.dailyLimitOpen);
   // 跌幅大于等于15的个股
-  const hugeFallData: any = await fetchAllStocksByIwencai(params.hugeFall, otherNum);
+  hugeFallData = await fetchAllStocksByIwencai(params.hugeFall, otherNum);
 
   return prepareShortTermDto(
     dailyLimitData,

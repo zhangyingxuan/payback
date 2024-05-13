@@ -43,73 +43,80 @@ function transformPlateData(plateList) {
 exports.transformPlateData = transformPlateData;
 function transformHugeFallData(hugeFallData) {
     const hugeFallDataArr = [];
-    hugeFallData.forEach(item => {
-        const downLimitStockDto = new down_limit_stock_dto_1.DownLimitStockDto();
-        loadStockBaseData(downLimitStockDto, item);
-        hugeFallDataArr.push(downLimitStockDto);
-    });
+    hugeFallData &&
+        hugeFallData.forEach(item => {
+            const downLimitStockDto = new down_limit_stock_dto_1.DownLimitStockDto();
+            loadStockBaseData(downLimitStockDto, item);
+            hugeFallDataArr.push(downLimitStockDto);
+        });
     return {
         hugeFallDataArr,
     };
 }
 function transformDownLimitData(dailyLimitData, currentDate) {
     const downLimitDataArr = [];
-    dailyLimitData.forEach(item => {
-        const downLimitStockDto = new down_limit_stock_dto_1.DownLimitStockDto();
-        loadStockBaseData(downLimitStockDto, item);
-        if (item[`跌停原因类型[${currentDate}]`] && item[`跌停原因类型[${currentDate}]`] !== '资金出逃') {
-            downLimitStockDto.reason = item[`跌停原因类型[${currentDate}]`];
-        }
-        downLimitStockDto.closingFunds = (0, commonUtil_1.fundsToFixed)(item[`跌停封单额[${currentDate}]`]);
-        downLimitDataArr.push(downLimitStockDto);
-    });
+    dailyLimitData &&
+        dailyLimitData.forEach(item => {
+            const downLimitStockDto = new down_limit_stock_dto_1.DownLimitStockDto();
+            loadStockBaseData(downLimitStockDto, item);
+            if (item[`跌停原因类型[${currentDate}]`] && item[`跌停原因类型[${currentDate}]`] !== '资金出逃') {
+                downLimitStockDto.reason = item[`跌停原因类型[${currentDate}]`];
+            }
+            downLimitStockDto.closingFunds = (0, commonUtil_1.fundsToFixed)(item[`跌停封单额[${currentDate}]`]);
+            downLimitDataArr.push(downLimitStockDto);
+        });
     return downLimitDataArr;
 }
 function transformDailyLimitData(dailyLimitData, currentDate) {
-    let board1 = 0, maxHeight = 1, currentLevel = 0, dailyLimitReturnSealQuantity = 0;
+    let board1 = 0, maxHeight = 1, currentLevel = 0, jitianjiban = '', dailyLimitReturnSealQuantity = 0;
     const evenBoardData = { maxHeight: 1, gaobiao: [], yizi: 0 };
     const evenBoardLabel = `连续涨停天数[${currentDate}]`;
-    dailyLimitData.forEach(item => {
-        const dailyLimitStockDto = new daily_limit_stock_dto_1.DailyLimitStockDto();
-        currentLevel = item[evenBoardLabel];
-        if (currentLevel > maxHeight) {
-            maxHeight = currentLevel;
-        }
-        if (currentLevel === 1) {
-            board1++;
-        }
-        loadStockBaseData(dailyLimitStockDto, item, currentDate);
-        dailyLimitStockDto.closingFunds = (0, commonUtil_1.fundsToFixed)(item[`涨停封单额[${currentDate}]`]);
-        dailyLimitStockDto.reason = item[`涨停原因类别[${currentDate}]`];
-        dailyLimitStockDto.turnoverRate = (0, commonUtil_1.toFixed)(item[`换手率[${currentDate}]`], 1);
-        if (item[`涨停类型[${currentDate}]`] !== turnoverTypeArr[0]) {
-            dailyLimitStockDto.turnoverType = item[`涨停类型[${currentDate}]`];
-            dailyLimitStockDto.turnoverType &&
-                dailyLimitStockDto.turnoverType.indexOf(turnoverTypeArr[2]) > -1 &&
-                evenBoardData.yizi++;
-        }
-        if (item[`涨停开板次数[${currentDate}]`] != 0) {
-            dailyLimitStockDto.openTimes = item[`涨停开板次数[${currentDate}]`];
-            dailyLimitReturnSealQuantity++;
-        }
-        dailyLimitStockDto.dailyTime = item[`首次涨停时间[${currentDate}]`]
-            ? item[`首次涨停时间[${currentDate}]`].trim()
-            : '-';
-        if (dailyLimitStockDto.openTimes > 0 && item[`最终涨停时间[${currentDate}]`]) {
-            dailyLimitStockDto.dailyTime += ',' + item[`最终涨停时间[${currentDate}]`].trim();
-        }
-        const jitianjiban = item[`几天几板[${currentDate}]`];
-        if (jitianjiban && jitianjiban.indexOf('天') > -1) {
-            const day = jitianjiban.split('天')[0];
-            const even = jitianjiban.split('天')[1].replace('板', '');
-            if (day !== even) {
-                dailyLimitStockDto.evenDays = jitianjiban;
-                evenBoardData.gaobiao.push(dailyLimitStockDto);
+    dailyLimitData &&
+        dailyLimitData.forEach(item => {
+            const dailyLimitStockDto = new daily_limit_stock_dto_1.DailyLimitStockDto();
+            loadStockBaseData(dailyLimitStockDto, item, currentDate);
+            dailyLimitStockDto.closingFunds = (0, commonUtil_1.fundsToFixed)(item[`涨停封单额[${currentDate}]`]);
+            dailyLimitStockDto.reason = item[`涨停原因类别[${currentDate}]`];
+            dailyLimitStockDto.turnoverRate = (0, commonUtil_1.toFixed)(item[`换手率[${currentDate}]`], 1);
+            if (item[`涨停类型[${currentDate}]`] !== turnoverTypeArr[0]) {
+                dailyLimitStockDto.turnoverType = item[`涨停类型[${currentDate}]`];
+                dailyLimitStockDto.turnoverType &&
+                    dailyLimitStockDto.turnoverType.indexOf(turnoverTypeArr[2]) > -1 &&
+                    evenBoardData.yizi++;
             }
-        }
-        !evenBoardData[currentLevel] && (evenBoardData[currentLevel] = []);
-        evenBoardData[currentLevel].push(dailyLimitStockDto);
-    });
+            if (item[`涨停开板次数[${currentDate}]`] != 0) {
+                dailyLimitStockDto.openTimes = item[`涨停开板次数[${currentDate}]`];
+                dailyLimitReturnSealQuantity++;
+            }
+            dailyLimitStockDto.dailyTime = item[`首次涨停时间[${currentDate}]`]
+                ? item[`首次涨停时间[${currentDate}]`].trim()
+                : '-';
+            if (dailyLimitStockDto.openTimes > 0 && item[`最终涨停时间[${currentDate}]`]) {
+                dailyLimitStockDto.dailyTime += ',' + item[`最终涨停时间[${currentDate}]`].trim();
+            }
+            currentLevel = item[evenBoardLabel];
+            jitianjiban = item[`几天几板[${currentDate}]`];
+            if (jitianjiban && jitianjiban.indexOf('天') > -1) {
+                const day = +jitianjiban.split('天')[0];
+                const even = +jitianjiban.split('天')[1].replace('板', '');
+                if (day !== even) {
+                    dailyLimitStockDto.evenDays = jitianjiban;
+                    evenBoardData.gaobiao.push(dailyLimitStockDto);
+                    !currentLevel && (currentLevel = 1);
+                }
+                else {
+                    !currentLevel && (currentLevel = even);
+                }
+            }
+            if (currentLevel > maxHeight) {
+                maxHeight = currentLevel;
+            }
+            if (currentLevel === 1) {
+                board1++;
+            }
+            !evenBoardData[currentLevel] && (evenBoardData[currentLevel] = []);
+            evenBoardData[currentLevel].push(dailyLimitStockDto);
+        });
     evenBoardData.maxHeight = maxHeight;
     evenBoardData.gaobiao.length === 0 && delete evenBoardData.gaobiao;
     return {

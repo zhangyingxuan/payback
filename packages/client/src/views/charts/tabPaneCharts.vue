@@ -115,8 +115,8 @@ import { isMobile } from '@/core/util';
 const { proxy }: any = getCurrentInstance();
 const echarts = proxy.$echarts;
 
-const siderBar = useSidebarStore();
-const { countDays } = storeToRefs(siderBar);
+const sideBar = useSidebarStore();
+const { countDays } = storeToRefs(sideBar);
 const data = reactive<{
   latestConceptPlates: any;
   latestMarketUpdateTime: string;
@@ -218,7 +218,7 @@ async function initPage(pageSize = 15) {
 }
 
 function getChartStyle() {
-  // 计算宽度；屏幕宽度 - 左侧siderBar - 边框 - cardLeft
+  // 计算宽度；屏幕宽度 - 左侧sideBar - 边框 - cardLeft
   const columnsAmount = columnsConfig[countDays.value];
   const screenWidth = screen.width - 64 - 20 - columnsAmount * 15;
   const cardWidth = isMobile ? screen.width - 30 : screenWidth / columnsAmount;

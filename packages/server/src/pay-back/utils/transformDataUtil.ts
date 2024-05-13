@@ -50,11 +50,12 @@ export function transformPlateData(plateList) {
 function transformHugeFallData(hugeFallData) {
   const hugeFallDataArr = [];
 
-  hugeFallData.forEach(item => {
-    const downLimitStockDto = new DownLimitStockDto();
-    loadStockBaseData(downLimitStockDto, item);
-    hugeFallDataArr.push(downLimitStockDto);
-  });
+  hugeFallData &&
+    hugeFallData.forEach(item => {
+      const downLimitStockDto = new DownLimitStockDto();
+      loadStockBaseData(downLimitStockDto, item);
+      hugeFallDataArr.push(downLimitStockDto);
+    });
 
   return {
     hugeFallDataArr,
@@ -69,22 +70,23 @@ function transformHugeFallData(hugeFallData) {
 function transformDownLimitData(dailyLimitData, currentDate) {
   const downLimitDataArr = [];
 
-  dailyLimitData.forEach(item => {
-    const downLimitStockDto = new DownLimitStockDto();
-    // 个股基础信息
-    loadStockBaseData(downLimitStockDto, item);
+  dailyLimitData &&
+    dailyLimitData.forEach(item => {
+      const downLimitStockDto = new DownLimitStockDto();
+      // 个股基础信息
+      loadStockBaseData(downLimitStockDto, item);
 
-    if (item[`跌停原因类型[${currentDate}]`] && item[`跌停原因类型[${currentDate}]`] !== '资金出逃') {
-      downLimitStockDto.reason = item[`跌停原因类型[${currentDate}]`];
-    }
-    // else {
-    //   // 短线跌停 +1
-    //   downLimitQuantity++;
-    // }
-    // 封板资金 单位 亿
-    downLimitStockDto.closingFunds = fundsToFixed(item[`跌停封单额[${currentDate}]`]);
-    downLimitDataArr.push(downLimitStockDto);
-  });
+      if (item[`跌停原因类型[${currentDate}]`] && item[`跌停原因类型[${currentDate}]`] !== '资金出逃') {
+        downLimitStockDto.reason = item[`跌停原因类型[${currentDate}]`];
+      }
+      // else {
+      //   // 短线跌停 +1
+      //   downLimitQuantity++;
+      // }
+      // 封板资金 单位 亿
+      downLimitStockDto.closingFunds = fundsToFixed(item[`跌停封单额[${currentDate}]`]);
+      downLimitDataArr.push(downLimitStockDto);
+    });
 
   return downLimitDataArr;
 }
@@ -99,63 +101,72 @@ function transformDailyLimitData(dailyLimitData, currentDate) {
   let board1 = 0,
     maxHeight = 1,
     currentLevel = 0,
+    jitianjiban = '',
     dailyLimitReturnSealQuantity = 0;
   const evenBoardData = { maxHeight: 1, gaobiao: [], yizi: 0 };
   const evenBoardLabel = `连续涨停天数[${currentDate}]`;
 
-  dailyLimitData.forEach(item => {
-    const dailyLimitStockDto = new DailyLimitStockDto();
-    // 当前股票 连板高度
-    currentLevel = item[evenBoardLabel];
-    if (currentLevel > maxHeight) {
-      maxHeight = currentLevel;
-    }
-    // 累加首板数量，用于计算连板个数
-    if (currentLevel === 1) {
-      board1++;
-    }
+  dailyLimitData &&
+    dailyLimitData.forEach(item => {
+      const dailyLimitStockDto = new DailyLimitStockDto();
 
-    // 个股基础信息
-    loadStockBaseData(dailyLimitStockDto, item, currentDate);
+      // 个股基础信息
+      loadStockBaseData(dailyLimitStockDto, item, currentDate);
 
-    // 封板资金 单位 亿
-    dailyLimitStockDto.closingFunds = fundsToFixed(item[`涨停封单额[${currentDate}]`]);
-    dailyLimitStockDto.reason = item[`涨停原因类别[${currentDate}]`];
-    dailyLimitStockDto.turnoverRate = toFixed(item[`换手率[${currentDate}]`], 1);
+      // 封板资金 单位 亿
+      dailyLimitStockDto.closingFunds = fundsToFixed(item[`涨停封单额[${currentDate}]`]);
+      dailyLimitStockDto.reason = item[`涨停原因类别[${currentDate}]`];
+      dailyLimitStockDto.turnoverRate = toFixed(item[`换手率[${currentDate}]`], 1);
 
-    // 默认都是放量涨停，不记录
-    if (item[`涨停类型[${currentDate}]`] !== turnoverTypeArr[0]) {
-      // 成交量类型
-      dailyLimitStockDto.turnoverType = item[`涨停类型[${currentDate}]`];
-      dailyLimitStockDto.turnoverType &&
-        dailyLimitStockDto.turnoverType.indexOf(turnoverTypeArr[2]) > -1 &&
-        evenBoardData.yizi++;
-    }
-    // 开板次数，如果未开板 则不保存
-    if (item[`涨停开板次数[${currentDate}]`] != 0) {
-      dailyLimitStockDto.openTimes = item[`涨停开板次数[${currentDate}]`];
-      dailyLimitReturnSealQuantity++;
-    }
-    dailyLimitStockDto.dailyTime = item[`首次涨停时间[${currentDate}]`]
-      ? item[`首次涨停时间[${currentDate}]`].trim()
-      : '-';
-    if (dailyLimitStockDto.openTimes > 0 && item[`最终涨停时间[${currentDate}]`]) {
-      dailyLimitStockDto.dailyTime += ',' + item[`最终涨停时间[${currentDate}]`].trim();
-    }
-    // 如果是 断板连板 则统计几天几板
-    const jitianjiban = item[`几天几板[${currentDate}]`];
-    // 取出 两个数字，如果不一致 则存入 evenDays字段
-    if (jitianjiban && jitianjiban.indexOf('天') > -1) {
-      const day = jitianjiban.split('天')[0];
-      const even = jitianjiban.split('天')[1].replace('板', '');
-      if (day !== even) {
-        dailyLimitStockDto.evenDays = jitianjiban;
-        evenBoardData.gaobiao.push(dailyLimitStockDto);
+      // 默认都是放量涨停，不记录
+      if (item[`涨停类型[${currentDate}]`] !== turnoverTypeArr[0]) {
+        // 成交量类型
+        dailyLimitStockDto.turnoverType = item[`涨停类型[${currentDate}]`];
+        dailyLimitStockDto.turnoverType &&
+          dailyLimitStockDto.turnoverType.indexOf(turnoverTypeArr[2]) > -1 &&
+          evenBoardData.yizi++;
       }
-    }
-    !evenBoardData[currentLevel] && (evenBoardData[currentLevel] = []);
-    evenBoardData[currentLevel].push(dailyLimitStockDto);
-  });
+      // 开板次数，如果未开板 则不保存
+      if (item[`涨停开板次数[${currentDate}]`] != 0) {
+        dailyLimitStockDto.openTimes = item[`涨停开板次数[${currentDate}]`];
+        dailyLimitReturnSealQuantity++;
+      }
+      dailyLimitStockDto.dailyTime = item[`首次涨停时间[${currentDate}]`]
+        ? item[`首次涨停时间[${currentDate}]`].trim()
+        : '-';
+      if (dailyLimitStockDto.openTimes > 0 && item[`最终涨停时间[${currentDate}]`]) {
+        dailyLimitStockDto.dailyTime += ',' + item[`最终涨停时间[${currentDate}]`].trim();
+      }
+
+      // 当前股票 连板高度 -- 优化竞价时无法获取当前高度的问题，合并为高标 2024-05-06 15:50:18
+      currentLevel = item[evenBoardLabel];
+      // 如果是 断板连板 则统计几天几板
+      jitianjiban = item[`几天几板[${currentDate}]`];
+
+      if (jitianjiban && jitianjiban.indexOf('天') > -1) {
+        const day = +jitianjiban.split('天')[0];
+        const even = +jitianjiban.split('天')[1].replace('板', '');
+
+        if (day !== even) {
+          dailyLimitStockDto.evenDays = jitianjiban;
+          evenBoardData.gaobiao.push(dailyLimitStockDto);
+          // 如果 竞价 未取出当前高度，则使用几天几板的高度
+          !currentLevel && (currentLevel = 1);
+        } else {
+          // 如果 竞价 未取出当前高度，则使用几天几板的高度
+          !currentLevel && (currentLevel = even);
+        }
+      }
+      if (currentLevel > maxHeight) {
+        maxHeight = currentLevel;
+      }
+      // 累加首板数量，用于计算连板个数
+      if (currentLevel === 1) {
+        board1++;
+      }
+      !evenBoardData[currentLevel] && (evenBoardData[currentLevel] = []);
+      evenBoardData[currentLevel].push(dailyLimitStockDto);
+    });
   evenBoardData.maxHeight = maxHeight;
   evenBoardData.gaobiao.length === 0 && delete evenBoardData.gaobiao;
 

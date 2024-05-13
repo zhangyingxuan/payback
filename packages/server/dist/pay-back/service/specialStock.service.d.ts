@@ -1,4 +1,3 @@
-import { SpecialStockDto } from '../dto/special-stock.dto';
 import { Repository } from 'typeorm';
 import { specialStock } from '../entities/specialStock.entity';
 import { ThsService } from './ths.service';
@@ -10,7 +9,8 @@ export declare class SpecialStockService {
     autoCrawlBinddingData(): Promise<void>;
     autoCrawlBinddingDataMidday(): Promise<void>;
     autoCrawlBinddingDataLateSession(): Promise<void>;
-    crawlBinddingData(isRemoveIncompatible: number, account: any): Promise<SpecialStockDto>;
+    crawlBinddingData(isRemoveIncompatible: number, account: any): Promise<any>;
+    crawlSpecialStockData(): Promise<any>;
     dealIncompatibleExpectStocks(dailyLimitYesterdayBidding: any, account: any): Promise<void>;
     getTodayData(todayDateStr: string): Promise<specialStock>;
     findAll(): Promise<specialStock[]>;

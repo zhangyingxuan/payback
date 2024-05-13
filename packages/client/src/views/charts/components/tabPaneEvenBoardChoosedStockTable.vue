@@ -29,7 +29,7 @@
         </el-tooltip>
         <el-button
           v-if="isShowRefreshBtn"
-          @click="refreshBindingData"
+          @click="refreshData"
           style="margin: 0 5px"
           type="primary"
           plain
@@ -148,8 +148,8 @@ import _ from 'lodash-es';
 import { computed, reactive } from 'vue';
 import dayjs from 'dayjs';
 import { params } from 'pay-back-core';
-import { calcClassByBidRating, openNewIwencaiWindow } from '../utils';
-let emit = defineEmits(['refreshBindingData']);
+import { openNewIwencaiWindow } from '../utils';
+let emit = defineEmits(['refreshData']);
 
 let superData = defineProps({
   propsData: {
@@ -174,8 +174,8 @@ const data = reactive({
 /**
  * 刷新竞价数据
  */
-const refreshBindingData = _.debounce(() => {
-  emit('refreshBindingData');
+const refreshData = _.debounce(() => {
+  emit('refreshData');
 }, 500);
 
 /**

@@ -1,15 +1,19 @@
 <template>
   <div :class="['optButtons', { isMobile }]" v-if="isShowUpdateBtn" v-isAdmin>
-    <template v-for="(item, index) in updateBtns" :key="'updateButton' + index">
+    <el-tooltip
+      effect="dark"
+      content="是否自动删除不及预期个股"
+      placement="bottom"
+    >
       <el-switch
-        v-if="item.type === 4"
-        v-model="isRemoveIncompatible"
+        v-model="sidebar.isRemoveIncompatible"
         inline-prompt
         active-text="是"
         inactive-text="否"
         style="margin: 0 5px"
       />
-
+    </el-tooltip>
+    <template v-for="(item, index) in updateBtns" :key="'updateButton' + index">
       <el-button
         plain
         type="primary"
@@ -47,11 +51,13 @@ import TabPaneEvenBoard from './tabPaneEvenBoard.vue';
 import TabPaneHotList from './tabPaneHotList.vue';
 import TabPanePlates from './tabPanePlates.vue';
 import { crawlTodayData } from '@/api/payBack';
+import { useSidebarStore } from '@/store/sidebar';
 
 const evenBoard = ref<any>(null);
 const charts = ref<any>(null);
 const plates = ref<any>(null);
-const isRemoveIncompatible = ref<boolean>(false);
+const sidebar = useSidebarStore();
+
 // 周末不显示更新数据
 const isShowUpdateBtn = [0, 6].indexOf(new Date().getDay()) == -1;
 
@@ -109,8 +115,7 @@ const updateTodayData = debounce(async (fetchTodayDataType = 0, index) => {
       case 1:
         // 短线
         // 1. 更新短线tab
-        evenBoard.value &&
-          (await evenBoard.value.handleRefreshBindingData(false));
+        evenBoard.value && (await evenBoard.value.handleRefreshData(false));
         // 2. 更新报表tab
         charts.value && charts.value.initPage();
         break;
@@ -125,9 +130,9 @@ const updateTodayData = debounce(async (fetchTodayDataType = 0, index) => {
       case 4:
         // 竞价
         evenBoard.value &&
-          evenBoard.value.handleRefreshBindingData(
+          evenBoard.value.handleRefreshData(
             true,
-            isRemoveIncompatible.value ? 1 : 0,
+            sidebar.isRemoveIncompatible ? 1 : 0,
           );
         break;
       default:

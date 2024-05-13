@@ -27,7 +27,6 @@
 import { ref } from 'vue';
 import { dayjs } from 'element-plus';
 import { findConceptPlateByLimit } from '@/api/payBack';
-import { useRouter } from 'vue-router';
 import { dateTimeFormat } from '@/views/article/config';
 
 const tableData = ref<any[]>([]);

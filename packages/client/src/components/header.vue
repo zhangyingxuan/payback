@@ -190,6 +190,7 @@ const fetchTodayData = debounce(async () => {
   try {
     // 根据更新范围，调用对应接口
     await crawlTodayData({
+      // 更新全部数据
       fetchTodayDataType: data.fetchTodayDataType,
       // isRemoveIncompatible 为true 传1 否则传0
       isRemoveIncompatible: data.isRemoveIncompatible ? 1 : 0,

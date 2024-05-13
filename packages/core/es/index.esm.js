@@ -1,5 +1,5 @@
 /*!
- * index.js v0.0.10
+ * index.js v0.0.11
  * (c) 2018-2024 blowsysun
  * Released under the MIT License.
  */
@@ -1024,8 +1024,8 @@ const params = {
     // 炸板个股；涨停未遂
     dailyLimitOpen: '涨停打开；非ST；成交额；行业',
     dailyLimitOpenByDate: '${date}涨停打开；非ST；成交额；行业',
-    hugeFall: '跌幅大于等于15的个股；行业',
-    hugeFallByDate: '${date}跌幅大于等于15的个股；行业',
+    hugeFall: '跌幅大于等于15的个股；非ST；行业',
+    hugeFallByDate: '${date}跌幅大于等于15的个股；非ST；行业',
     dailyLimitMoreThan1: '涨停；非ST；几天几板；涨停原因；涨停类型；涨停开板次数；封板金额；成交额；换手率；流通市值；行业',
     dailyLimitMoreThan1ByDate: '${date}涨停；非ST；几天几板；涨停原因；涨停类型；涨停开板次数；封板金额；成交额；换手率；流通市值；行业',
     // 获取昨日涨停的数据（客观数据）
@@ -1040,8 +1040,6 @@ const params = {
     // =============== =============== 选股 end  =============== ===============
     // 近三日资金流向
     capitalFlows3: '近三日资金流向降序',
-    // 数据中心地址
-    dataCenterUrl: 'http://data.10jqka.com.cn/',
     // 概念板块 主力资金 流入排序
     gainianFundsInflow: '概念板块主力资金；主力资金流向金额正序',
     // 概念板块 主力资金 流出排序
@@ -1064,6 +1062,17 @@ const params = {
     hangyePlateOrderByDailyLimitNum: '涨停家数大于1的行业板块；按涨停个数降序；成交额；',
     // 概念板块，按涨停个数排序
     gainianPlateOrderByDailyLimitNum: '涨停家数大于1的概念板块；按涨停个数降序；成交额；',
+    // =============== ===============  个股相关 =============== =============== 
+    // 容量核心
+    rlCoreStock: '按成交额降序',
+    // 资金流入降序
+    fundsInflowStock: '资金流入降序',
+    // 资金流出降序
+    fundsOutflowStock: '资金流出降序',
+    // 区间 涨幅居前
+    increaseCoreStock: '资金流入降序',
+    // 区间 跌幅居前
+    declineCoreStock: '资金流出降序',
 };
 
 export { AsynTaskIterator, chooseStockBaseCondition, createV, dailyLimitOptionalStrategy, dailyLimitOptionalStrategyStr, getCurrentCycle, getExpected, iWencaiDateFormat, isMainPlate, nextRegister, params };

@@ -41,6 +41,13 @@ export const crawlBinddingData = (data: any | null) => {
   return http.request<ChartResult>("post", `${baseUrl}/crawlBinddingData`, { data });
 }
 /**
+ * 爬取当日新股、强势股数据并返回
+ * @returns 
+ */
+export const crawlSpecialStockData = (data: any | null) => {
+  return http.request<ChartResult>("post", `${baseUrl}/crawlSpecialStockData`, { data });
+}
+/**
  * 获取连板数据
  * @returns 
  */
@@ -97,7 +104,7 @@ export const findConceptPlateWithinNDays = (params: any | null) => {
   return http.request<Array<any>>("get", `${baseUrl}/findConceptPlateWithinNDays`, { params });
 }
 /**
- * 获取n 天内的概念
+ * 获取n 条概念
  * @returns 
  */
 export const findConceptPlateByLimit = (params: any | null) => {
@@ -124,4 +131,11 @@ export const updateSystemConfig = (data: any | null) => {
  */
 export const deleteData = (data: any | null) => {
   return http.request<Array<any>>("post", `${baseUrl}/deleteData`, { data });
+}
+/**
+ * 删除数据
+ * @returns 
+ */
+export const saveUserInfo = (data: any | null) => {
+  return http.request<Array<any>>("post", `${baseUrl}/saveUserInfo`, { data });
 }

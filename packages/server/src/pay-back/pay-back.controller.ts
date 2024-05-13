@@ -95,8 +95,10 @@ export class PayBackController {
         resultData = await this.fundsService.crawlfundsData();
         break;
       case 4:
+        // 获取竞价数据
         // 是否剔除 不及预期数据；注意接收到的参数 是否为字符串
-        resultData = await this.specialStockService.crawlBinddingData(body.isRemoveIncompatible, req.user?.account);
+        await this.specialStockService.crawlBinddingData(body.isRemoveIncompatible, req.user?.account);
+        resultData = await this.specialStockService.crawlSpecialStockData();
         break;
       default:
         break;
@@ -131,6 +133,16 @@ export class PayBackController {
     };
   }
 
+  @Post('/crawlSpecialStockData')
+  async crawlSpecialStockData() {
+    // 是否剔除 不及预期数据；注意接收到的参数 是否为字符串
+    const specialStockData = await this.specialStockService.crawlSpecialStockData();
+    return {
+      code: 200,
+      data: specialStockData,
+    };
+  }
+
   @Post('/deleteData')
   async deleteData(@Body() body: any) {
     let code = 200,
@@ -162,23 +174,12 @@ export class PayBackController {
     return this.hotListService.crawlHotListData();
   }
 
-  @Public()
-  @Get('/crawlShortTerm')
-  crawlShortTerm() {
-    return this.shorTermService.crawlShortTermData();
-  }
-
   // 示例：http://localhost:3000/blowsysun/pay-back/crawlShortTermByDate?date=2023-06-26
   @Public()
   @Get('/crawlShortTermByDate')
   crawlShortTermByDate(@Query() query) {
     const date = query.date || new Date();
     return this.shorTermService.crawlShortTermDataByDate(date);
-  }
-  // @Public()
-  @Get('/crawlMarket')
-  crawlMarket() {
-    return this.marketService.crawlMarketData();
   }
   /**
    * 爬取最新 涨停家数较多的 板块数据
@@ -192,16 +193,6 @@ export class PayBackController {
       code: 200,
       data,
     };
-  }
-  // @Public()
-  @Get('/crawlFunds')
-  crawlFunds() {
-    return this.fundsService.crawlfundsData();
-  }
-  // @Public()
-  @Get('/crawlLatestConceptPlate')
-  crawlLatestConceptPlate() {
-    return this.latestConceptPlateService.crawlLatestConceptPlateData();
   }
 
   @Get('list')
@@ -290,6 +281,17 @@ export class PayBackController {
     return {
       code: 200,
       data: palateData,
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('saveUserInfo')
+  async saveUserInfo(@Body() body: any, @Request() req) {
+    const { token, user } = body;
+    const success = await this.usersService.updateUserInfo(req.user?.account, token, user);
+
+    return {
+      code: success ? 200 : 500,
     };
   }
 }

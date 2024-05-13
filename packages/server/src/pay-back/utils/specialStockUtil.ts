@@ -3,14 +3,15 @@ import { params } from '../core/config';
 import { fetchAllStocksByIwencai } from '../core/fetchUtil';
 
 /**
- * 自动剔除低于预期的昨日涨停个股（首板），集合竞价开盘价低于预期， 且成交量不足，未匹配量；
+ * 获取昨日涨停 今日竞价数据
  */
-export async function getBiddingData(todayDateStr, yesterdayDateStr) {
-  // 选股
-  // 集中度更集中，20-120，股价低于30
-  // 获取昨日涨停 集合竞价情况，竞价量10倍，评级看多，竞价抢筹
-  // 连板概率 90%，75%
+export async function fetchLastdayDailyLimitBinddingData(todayDateStr, yesterdayDateStr) {
   const dailyLimitYesterdayDataRs: any = await fetchAllStocksByIwencai(params.dailyLimitYesterday);
+  const dailyLimitYesterdayBidding = transformBidData(dailyLimitYesterdayDataRs.data, todayDateStr, yesterdayDateStr);
+  return dailyLimitYesterdayBidding;
+}
+
+export async function fetchSpecialStockBinddingData(todayDateStr, yesterdayDateStr) {
   // 竞价看多数据 1进2
   // const chooseStock1to2: any = await fetchAllStocksByIwencai(params.chooseStock1to2, chooseStock1Expected, false);
   // console.log(params.chooseStock1Expected);
@@ -18,18 +19,10 @@ export async function getBiddingData(todayDateStr, yesterdayDateStr) {
   const chooseStock1ExpectedRs: any = await fetchAllStocksByIwencai(params.chooseStock1Expected);
   // 新股数据
   const newStocksRs: any = await fetchAllStocksByIwencai(params.chooseStockNewStock);
-  // 昨日首板竞价情况
-  const dailyLimitYesterdayBidding = transformBidData(dailyLimitYesterdayDataRs.data, todayDateStr, yesterdayDateStr);
-  // // 一进二竞价，看多标的
-  // const chooseStock1to2Pds = transformBidData(chooseStock1to2, todayDateStr, yesterdayDateStr);
-  // const chooseStock1to2Dtos = chooseStock1to2Pds.filter(stock => {
-  //   // 过滤 量比大于10，超预期及符合预期
-  //   return stock.bidVolumeRatio >= 10 && (stock.expected != 0);
-  // })
   const chooseStock1Expected = transformStrongStockData(chooseStock1ExpectedRs.data, todayDateStr, yesterdayDateStr);
 
   // 新股数据
   const newStocks = transformNewStockData(newStocksRs.data, todayDateStr);
 
-  return { dailyLimitYesterdayBidding, newStocks, chooseStock1Expected };
+  return { newStocks, chooseStock1Expected };
 }

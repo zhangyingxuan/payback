@@ -89,6 +89,33 @@
           </el-button>
         </el-form-item>
       </el-form>
+      <el-form
+        ref="userInfoFormRef"
+        :model="userInfoForm"
+        :rules="userInfoFormRules"
+        label-width="120px"
+      >
+        <el-divider content-position="left">用户设置</el-divider>
+        <el-form-item label="user" prop="user">
+          <el-input
+            v-model="userInfoForm.user"
+            style="width: 240px"
+            placeholder="user"
+          />
+        </el-form-item>
+        <el-form-item label="token" prop="token">
+          <el-input
+            v-model="userInfoForm.token"
+            style="width: 240px"
+            placeholder="token"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="onSaveUserInfo(userInfoFormRef)">
+            保存
+          </el-button>
+        </el-form-item>
+      </el-form>
     </el-card>
   </div>
 </template>
@@ -99,6 +126,7 @@ import {
   fetchSystemConfig,
   updateSystemConfig,
   deleteData,
+  saveUserInfo,
 } from '@/api/payBack';
 import type { FormInstance, FormRules } from 'element-plus';
 import { ElMessage, dayjs, ElMessageBox } from 'element-plus';
@@ -108,8 +136,13 @@ const rules: FormRules = {
     { required: true, message: '是否自动添加个股', trigger: 'blur' },
   ],
 };
+const userInfoFormRules: FormRules = {
+  token: [{ required: true, message: '请输入token', trigger: 'blur' }],
+  user: [{ required: true, message: '请输入user', trigger: 'blur' }],
+};
 const formRef = ref<FormInstance>();
 const dataManageFormRef = ref<FormInstance>();
+const userInfoFormRef = ref<FormInstance>();
 const form = reactive({
   isAutoAddSelf: false,
   isAutoAddSelfEvenBoard: false,
@@ -118,7 +151,11 @@ const form = reactive({
   isBinddingDelFirstBoard: false,
 });
 const dataManageForm = reactive({
-  date: dayjs(),
+  date: new Date(),
+});
+const userInfoForm = reactive({
+  user: '',
+  token: '',
 });
 async function initPage() {
   // 获取配置信息
@@ -136,7 +173,6 @@ const onSubmit = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   formEl.validate(async valid => {
     if (valid) {
-      console.log(form);
       await updateSystemConfig(form);
       ElMessage.success('提交成功！');
     } else {
@@ -161,6 +197,28 @@ const onDataManageSubmit = (formEl: FormInstance | undefined) => {
         })
         .catch(() => {
           // catch error
+        });
+    } else {
+      return false;
+    }
+  });
+};
+// 用户信息提交
+const onSaveUserInfo = (formEl: FormInstance | undefined) => {
+  // 表单校验
+  if (!formEl) return;
+  formEl.validate(async valid => {
+    if (valid) {
+      ElMessageBox.confirm(`确定要更新用户数据吗？`)
+        .then(async () => {
+          await saveUserInfo({
+            user: userInfoForm.user,
+            token: userInfoForm.token,
+          });
+          ElMessage.success('更新成功！');
+        })
+        .catch(() => {
+          // ElMessage.success('更新失败！');
         });
     } else {
       return false;

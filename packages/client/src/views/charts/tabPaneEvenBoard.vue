@@ -191,16 +191,16 @@
     <!-- 新股 -->
     <NewStockTable
       :propsData="data.currentDateData.newStock"
-      :updateTime="data.currentDateData.biddingDataUpdateTime"
+      :updateTime="data.currentDateData.specialDataUpdateTime"
       :isMobile="isMobile"
-      @refreshBindingData="handleRefreshBindingData"
+      @refreshData="handleRefreshData"
     />
     <!-- 一进2 -->
     <ChoosedStockTable
       :propsData="data.currentDateData.chooseStock"
-      :updateTime="data.currentDateData.biddingDataUpdateTime"
+      :updateTime="data.currentDateData.specialDataUpdateTime"
       :isMobile="isMobile"
-      @refreshBindingData="handleRefreshBindingData"
+      @refreshData="handleRefreshData"
     />
   </div>
   <!-- 昨日涨停竞价情况 -->
@@ -210,14 +210,14 @@
     :isMobile="isMobile"
     title="昨日- 涨停竞价"
     :showBidding="true"
-    @refreshBindingData="handleRefreshBindingData"
+    @refreshData="handleRefreshData"
   />
   <!-- 当日涨停分布，按行业板块划分 -->
   <DailyStockTable
     v-model:currentDateData="data.currentDateData"
     :updateTime="dayjs(data.currentDateData.createTime).format('MM/DD HH:mm')"
     :isMobile="isMobile"
-    @refreshBindingData="handleRefreshBindingData"
+    @refreshData="handleRefreshData"
   />
   <div :class="{ flex__row: !isMobile }">
     <DownStockTable
@@ -241,6 +241,7 @@
 import {
   fetchEvenBoardData,
   crawlBinddingData,
+  crawlSpecialStockData,
   crawlTodayData,
 } from '@/api/payBack';
 // import { fetchIndustryData } from '@/api/tonghuashun';
@@ -328,8 +329,8 @@ const data: {
   virtualRefData: null,
 });
 
-const siderBar = useSidebarStore();
-const { countDays, isAutoRefresh } = storeToRefs(siderBar);
+const sideBar = useSidebarStore();
+const { countDays, isAutoRefresh } = storeToRefs(sideBar);
 let interval: any = null;
 
 // 监听变化，重新请求数据
@@ -389,7 +390,7 @@ function initAutoRefresh(val: boolean) {
  * 刷新短线/竞价数据
  * @param isRefreshBidding  是否刷新竞价数据
  */
-async function handleRefreshBindingData(
+async function handleRefreshData(
   isRefreshBidding = true,
   isRemoveIncompatible = 0,
 ) {
@@ -403,54 +404,9 @@ async function handleRefreshBindingData(
   try {
     // 更新 竞价
     if (isRefreshBidding) {
-      // 根据更新范围，调用对应接口
-      const res: any = await crawlBinddingData({
-        isRemoveIncompatible, // 不删除不及预期个股
-      });
-      const eventData = transformEvenBoardData([res]);
-      // 修改父组件传过来的值；
-      data.yesterdayDateData = eventData[0];
-      data.currentDateData.biddingDataUpdateTime = dayjs(
-        res.biddingDataUpdateTime,
-      ).format('MM/DD HH:mm');
-      // 更新新股 和 强势股 2024-01-07 14:40:45
-      data.currentDateData.newStock = data.yesterdayDateData.newStock;
-      data.currentDateData.chooseStock = data.yesterdayDateData.chooseStock;
+      await refreshBinddingData(isRemoveIncompatible);
     } else {
-      // 更新 短线数据
-      const res: any = await crawlTodayData({
-        fetchTodayDataType: 1,
-      });
-
-      const eventData = transformEvenBoardData([res]);
-
-      // - 判断是否为第一次更新,按日期判断
-      if (
-        dayjs(evenBoard.value[0].createDate).isSame(
-          dayjs(eventData[0].createDate),
-        )
-      ) {
-        // 非第一次更新
-        // 备份今日数据
-        const temp = JSON.parse(JSON.stringify(data.currentDateData));
-        // 更新顶部表格
-        evenBoard.value[0] = eventData[0];
-        // 更新展开内容 短线部分
-        data.currentDateData = eventData[0];
-        // 保留 竞价原来的部分
-        data.currentDateData.biddingDataUpdateTime = temp.biddingDataUpdateTime;
-        data.currentDateData.newStock = temp.newStock;
-        data.currentDateData.chooseStock = temp.chooseStock;
-      } else {
-        // 第一次新增
-        // 更新顶部表格
-        evenBoard.value.push(eventData[0]);
-        // 更新展开内容 短线部分
-        data.currentDateData = eventData[0];
-        // 还需获取竞价数据
-        await handleRefreshBindingData(true);
-        initPage(countDays.value);
-      }
+      await refreshShortTermData();
     }
 
     ElMessage.success('更新成功！');
@@ -459,6 +415,70 @@ async function handleRefreshBindingData(
     ElMessage.success('更新失败！');
   } finally {
     loadingMessage.close();
+  }
+}
+
+/**
+ * 刷新竞价数据
+ * @param isRemoveIncompatible
+ */
+async function refreshBinddingData(isRemoveIncompatible = 0) {
+  // 根据更新范围，调用对应接口
+  const res: any = await crawlBinddingData({
+    isRemoveIncompatible, // 不删除不及预期个股
+  });
+  const eventData = transformEvenBoardData([res]);
+  // 修改父组件传过来的值；
+  data.yesterdayDateData = eventData[0];
+  data.currentDateData.biddingDataUpdateTime = dayjs(
+    res.biddingDataUpdateTime,
+  ).format('MM/DD HH:mm');
+
+  crawlSpecialStockData({}).then((specialStockData: any) => {
+    // 调用另外一个接口 2024-05-10
+    // 更新新股 和 强势股 2024-01-07
+    data.currentDateData.newStock = JSON.parse(specialStockData.newStock);
+    data.currentDateData.chooseStock = JSON.parse(specialStockData.chooseStock);
+    data.currentDateData.specialDataUpdateTime = dayjs(res.updateTime).format(
+      'MM/DD HH:mm',
+    );
+  });
+}
+/**
+ * 刷新短线数据
+ */
+async function refreshShortTermData() {
+  // 更新 短线数据
+  const res: any = await crawlTodayData({
+    fetchTodayDataType: 1,
+  });
+
+  const eventData = transformEvenBoardData([res]);
+
+  // - 判断是否为第一次更新,按日期判断
+  if (
+    dayjs(evenBoard.value[0].createDate).isSame(dayjs(eventData[0].createDate))
+  ) {
+    // 非第一次更新
+    // 备份今日数据
+    const temp = JSON.parse(JSON.stringify(data.currentDateData));
+    // 更新顶部表格
+    evenBoard.value[0] = eventData[0];
+    // 更新展开内容 短线部分
+    data.currentDateData = eventData[0];
+    // 保留 竞价原来的部分
+    data.currentDateData.biddingDataUpdateTime = temp.biddingDataUpdateTime;
+    data.currentDateData.newStock = temp.newStock;
+    data.currentDateData.chooseStock = temp.chooseStock;
+  } else {
+    // 第一次新增
+    // 更新顶部表格
+    evenBoard.value.push(eventData[0]);
+    // 更新展开内容 短线部分
+    data.currentDateData = eventData[0];
+    // 还需获取竞价数据
+    await handleRefreshData(true);
+    initPage(countDays.value);
   }
 }
 
@@ -531,7 +551,7 @@ function getClassByHeight(height: any) {
 
 //暴露state和play方法
 defineExpose({
-  handleRefreshBindingData,
+  handleRefreshData,
 });
 </script>
 

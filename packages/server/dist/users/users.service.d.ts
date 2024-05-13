@@ -9,4 +9,5 @@ export declare class UsersService {
     findOne(user: any): Promise<any | undefined>;
     getUserByAccount(account: string): Promise<any | undefined>;
     clearUserInfoCache(account: string): Promise<any | undefined>;
+    updateUserInfo(account: string, token: any, user: any): Promise<any | undefined>;
 }

@@ -40,10 +40,12 @@ export class PlateService {
         .getOne();
       if (todayDataFromDB) {
         this.logger.log('crawlPlateData 更新数据');
-        await this.plateDataRp.update(todayDataFromDB.id, plateData);
+        // 优化 api 响应，去除 await 先返回再存储
+        this.plateDataRp.update(todayDataFromDB.id, plateData);
       } else {
         this.logger.log('crawlPlateData 新增数据');
-        await this.plateDataRp.save(plateData);
+        // 优化 api 响应，去除 await 先返回再存储
+        this.plateDataRp.save(plateData);
       }
 
       this.logger.debug('crawlPlateData is success!');

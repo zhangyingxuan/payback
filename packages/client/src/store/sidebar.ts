@@ -17,6 +17,7 @@ export const useSidebarStore = defineStore('sidebar', {
       collapse: true,
       countDays: 15,
       isAutoRefresh: false,
+      isRemoveIncompatible: false,
       // isAutoRefresh: isTradeTime(),
     };
   },
@@ -36,7 +37,7 @@ export const useSidebarStore = defineStore('sidebar', {
   persist: {
     enabled: true,
     strategies: [
-      { storage: localStorage, paths: ['collapse'] },
+      { storage: localStorage, paths: ['collapse', 'isRemoveIncompatible'] },
       { storage: sessionStorage, paths: ['isAutoRefresh', 'countDays'] }
     ]
   }

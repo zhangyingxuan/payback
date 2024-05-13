@@ -188,7 +188,7 @@ export class ShorTermService {
       .getMany();
     // 获取额外数据（新股、选股、昨日涨停竞价数据）
     const specialStocks = await this.specialStockService.findByLimit(len);
-
+    // 组装竞价数据
     const shortTermDataResult = mergeExtra2ShortTermData(shortTermData, specialStocks);
 
     return shortTermDataResult;

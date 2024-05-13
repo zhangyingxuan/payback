@@ -44,7 +44,7 @@
             </el-tooltip>
             <el-button
               v-if="isShowRefreshBtn"
-              @click="refreshBindingData"
+              @click="refreshData"
               style="margin: 0 5px"
               type="primary"
               plain
@@ -232,7 +232,7 @@ import {
 } from './utils';
 
 const defaultTitle = '今日 - 涨停个股';
-let emit = defineEmits(['refreshBindingData']);
+let emit = defineEmits(['refreshData']);
 let superData = defineProps({
   currentDateData: {
     type: Object,
@@ -527,9 +527,9 @@ const isShowRefreshBtn = computed(() => {
 /**
  * 刷新竞价数据
  */
-const refreshBindingData = _.debounce(() => {
+const refreshData = _.debounce(() => {
   // superData.title有值则 刷新竞价数据，否则刷新短线数据
-  emit('refreshBindingData', superData.title);
+  emit('refreshData', superData.title);
 }, 500);
 
 /**

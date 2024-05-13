@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { specialStock } from '../entities/specialStock.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ExpectEnum } from '../utils/transformDataUtil';
-import { getBiddingData } from '../utils/specialStockUtil';
+import { fetchLastdayDailyLimitBinddingData, fetchSpecialStockBinddingData } from '../utils/specialStockUtil';
 import * as dayjs from 'dayjs';
 import { Cron } from '@nestjs/schedule';
 import { iWencaiDateFormat } from 'pay-back-core';
@@ -21,7 +21,7 @@ export class SpecialStockService {
   private readonly logger = new Logger(SpecialStockService.name);
 
   // 竞价数据 - 早盘
-  @Cron('08 25 9 * * 1-5')
+  // @Cron('08 25 9 * * 1-5')
   async autoCrawlBinddingData() {
     this.crawlBinddingData(0, 'admin');
   }
@@ -36,48 +36,108 @@ export class SpecialStockService {
     this.crawlBinddingData(0, 'admin');
   }
 
+  /**
+   * 爬取当日竞价数据并返回
+   */
   async crawlBinddingData(isRemoveIncompatible = 0, account) {
-    this.logger.debug('autoCrawlBinddingData is Begining!');
+    this.logger.debug('crawlBinddingData is Begining!');
 
     const todayDateStr = new Date().toLocaleDateString();
-    const specialStockDto: SpecialStockDto = new SpecialStockDto();
+    let todayDataFromDB: any = null;
+    const specialStockDto: SpecialStockDto = {
+      biddingData: '',
+      newStock: '',
+      chooseStock: '',
+      fundsLikeStock: '',
+      // 近1个月涨幅最高的个股Top3
+      heightestStock: '',
+      // 创建时间
+      createTime: new Date(),
+      // 更新时间
+      updatedTime: new Date(),
+    };
     try {
+      // 获取最新的交易日期
       const yesterdayDateStr = await this.getLastTradingDayByDB(todayDateStr);
 
       // 获取竞价情况
-      const { dailyLimitYesterdayBidding, newStocks, chooseStock1Expected } = await getBiddingData(
-        todayDateStr,
-        yesterdayDateStr,
-      );
-      specialStockDto.biddingData = JSON.stringify(dailyLimitYesterdayBidding);
-      specialStockDto.newStock = JSON.stringify(newStocks);
-      specialStockDto.chooseStock = JSON.stringify({
-        chooseStock1Expected,
-      });
-      specialStockDto.updatedTime = new Date();
-
+      const dailyLimitYesterdayBidding = await fetchLastdayDailyLimitBinddingData(todayDateStr, yesterdayDateStr);
       // 处理不及预期个股
       isRemoveIncompatible && this.dealIncompatibleExpectStocks(dailyLimitYesterdayBidding, account);
 
-      // console.log(specialStockDto);
-
       // 如果存在数据
-      const todayDataFromDB = await this.getTodayData(todayDateStr);
+      todayDataFromDB = await this.getTodayData(todayDateStr);
       if (todayDataFromDB) {
-        this.logger.log('autoCrawlBinddingData 更新数据');
-        await this.specialStockRp.update(todayDataFromDB.id, specialStockDto);
+        todayDataFromDB.biddingData = JSON.stringify(dailyLimitYesterdayBidding);
+        todayDataFromDB.updatedTime = new Date();
+        this.logger.log('crawlBinddingData 更新数据');
+        await this.specialStockRp.update(todayDataFromDB.id, todayDataFromDB);
       } else {
+        specialStockDto.biddingData = JSON.stringify(dailyLimitYesterdayBidding);
+        specialStockDto.updatedTime = new Date();
         specialStockDto.createTime = new Date();
-        this.logger.log('autoCrawlBinddingData 新增数据');
+        this.logger.log('crawlBinddingData 新增数据');
         await this.specialStockRp.save(specialStockDto);
       }
-
-      this.logger.debug('autoCrawlBinddingData is success!');
+      this.logger.debug('crawlBinddingData is success!');
     } catch (e) {
       this.logger.error('出错啦！！！', e);
     }
 
-    return specialStockDto;
+    return todayDataFromDB ? todayDataFromDB : specialStockDto;
+  }
+
+  /**
+   * 爬取特殊个股数据并返回
+   */
+  async crawlSpecialStockData() {
+    this.logger.debug('crawlSpecialStockData is Begining!');
+
+    let todayDataFromDB: any = null;
+    const todayDateStr = new Date().toLocaleDateString();
+    const specialStockDto: SpecialStockDto = {
+      biddingData: '',
+      newStock: '',
+      chooseStock: '',
+      fundsLikeStock: '',
+      // 近1个月涨幅最高的个股Top3
+      heightestStock: '',
+      // 创建时间
+      createTime: new Date(),
+      // 更新时间
+      updatedTime: new Date(),
+    };
+    try {
+      // 获取最新的交易日期
+      const yesterdayDateStr = await this.getLastTradingDayByDB(todayDateStr);
+
+      // 获取竞价情况
+      const { newStocks, chooseStock1Expected } = await fetchSpecialStockBinddingData(todayDateStr, yesterdayDateStr);
+
+      // 如果存在数据
+      todayDataFromDB = await this.getTodayData(todayDateStr);
+      if (todayDataFromDB) {
+        // 更新
+        todayDataFromDB.newStock = JSON.stringify(newStocks);
+        todayDataFromDB.chooseStock = JSON.stringify({ chooseStock1Expected });
+        todayDataFromDB.updatedTime = new Date();
+        this.logger.log('crawlSpecialStockData 更新数据');
+        await this.specialStockRp.update(todayDataFromDB.id, specialStockDto);
+      } else {
+        // 新增
+        specialStockDto.newStock = JSON.stringify(newStocks);
+        specialStockDto.chooseStock = JSON.stringify({ chooseStock1Expected });
+        specialStockDto.updatedTime = new Date();
+        specialStockDto.createTime = new Date();
+        this.logger.log('crawlSpecialStockData 新增数据');
+        await this.specialStockRp.save(specialStockDto);
+      }
+      this.logger.debug('crawlSpecialStockData is success!');
+    } catch (e) {
+      this.logger.error('出错啦！！！', e);
+    }
+
+    return todayDataFromDB ? todayDataFromDB : specialStockDto;
   }
 
   /**
@@ -89,11 +149,12 @@ export class SpecialStockService {
     this.logger.log('dealIncompatibleExpectStocks 删除不及预期个股');
     const incompatibleExpectStocks = [];
 
-    dailyLimitYesterdayBidding.forEach(stock => {
-      if (stock.expected === ExpectEnum.incompatible) {
-        incompatibleExpectStocks.push(stock);
-      }
-    });
+    dailyLimitYesterdayBidding &&
+      dailyLimitYesterdayBidding.forEach(stock => {
+        if (stock.expected === ExpectEnum.incompatible) {
+          incompatibleExpectStocks.push(stock);
+        }
+      });
     // 批量 剔除低于预期的昨日涨停个股（首板），集合竞价开盘价低于预期， 且成交量不足，未匹配量；
     this.thsService.batchUpdateThsSelfStock(incompatibleExpectStocks, ThsOprate.del, account);
   }
@@ -121,7 +182,7 @@ export class SpecialStockService {
       .createQueryBuilder('special_stock')
       .offset(0)
       .limit(len)
-      .orderBy('updatedTime', 'DESC')
+      .orderBy('createTime', 'DESC')
       .getMany();
   }
 
@@ -135,7 +196,7 @@ export class SpecialStockService {
       .offset(0)
       .limit(2)
       .select(['special_stock.createTime'])
-      .orderBy('updatedTime', 'DESC')
+      .orderBy('createTime', 'DESC')
       .getMany();
 
     const currentDate = dayjs(todayDateStr).format(iWencaiDateFormat);
