@@ -3,7 +3,7 @@
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
       <template #header>
         <CardHeader
-          headerTitle="涨停最多的行业板块"
+          headerTitle="涨停最多的行业板块（包含ST）"
           :url="
             'https://www.iwencai.com/unifiedwap/result?w=' +
             params.hangyePlateOrderByDailyLimitNum +
@@ -32,7 +32,7 @@
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
       <template #header>
         <CardHeader
-          headerTitle="涨停最多的概念板块"
+          headerTitle="涨停最多的概念板块（包含ST）"
           :url="
             'https://www.iwencai.com/unifiedwap/result?w=' +
             params.gainianPlateOrderByDailyLimitNum +

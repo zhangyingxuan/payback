@@ -118,7 +118,9 @@
           {{
             item.hugeFallQuantity
               ? item.hugeFallQuantity
-              : item.hugeFallData.length || 0
+              : item.hugeFallData
+              ? item.hugeFallData.length
+              : 0
           }}
         </div>
         <!-- 反包 -->

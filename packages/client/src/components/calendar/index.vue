@@ -25,7 +25,7 @@ const getResult = (_n: number) => {
   const n = Math.floor((_n - 1514736000000) / 86400000);
   for (let i = 0; i < arr.length; i += 2) {
     if (arr[i] >= n) {
-      const result = new Array();
+      const result = [];
       for (let j = 0; j < 14; j += 2) {
         const m = arr[i + j];
         result.push([arr[i + j + 1], m - n]);
@@ -42,10 +42,11 @@ const text = `${FAVS[latestFestival[0]]}<span class="red bold">${
   latestFestival[1]
 }</span>天`;
 
-time.value = dayjs().format('MM-DD HH:mm:ss');
+const dateFomart = 'MM-DD HH:mm:ss';
+time.value = dayjs().format(dateFomart);
 // 设置时间
 setInterval(() => {
-  time.value = dayjs().format('MM-DD HH:mm:ss');
+  time.value = dayjs().format(dateFomart);
 }, 1000);
 </script>
 

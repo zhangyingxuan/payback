@@ -22,3 +22,15 @@ export declare function transformShortTermSourceData(dailyLimitData: any, downLi
     hugeFallDataArr: any[];
     dailyLimitReturnSealQuantity: number;
 };
+export declare function transformForeignFunds(dataStr: any): {
+    northFundsAmtIn: number;
+    southFundsAmtIn: number;
+    northFundsBuyAmt: number;
+    southFundsBuyAmt: number;
+};
+export declare function transformForeignFundsNew(dataStr: any): {
+    northFundsAmtIn: number;
+    southFundsAmtIn: number;
+    northFundsBuyAmt: number;
+    southFundsBuyAmt: number;
+};

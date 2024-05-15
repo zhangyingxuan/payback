@@ -102,18 +102,28 @@
       </el-descriptions-item>
     </el-descriptions>
 
+    <br />
     <DrawerUl
-      title="爱问财收藏 - 个股（短线）"
+      tagType="success"
+      title="爱问财收藏 - 个股（超跌）- 抄底模式"
+      :urlList="iwencaiCollectChaodieList"
+    />
+    <br />
+    <DrawerUl
+      tagType="error"
+      title="爱问财收藏 - 个股（短线）- 突破形态"
       :urlList="iwencaiCollectShortStockList"
     />
     <br />
     <DrawerUl
+      tagType="success"
       title="爱问财收藏 - 个股（波段）"
       :urlList="iwencaiCollectMiddleStockList"
     />
     <br />
     <DrawerUl
       type="plate"
+      tagType="warning"
       title="爱问财收藏 - 行业板块"
       :urlList="iwencaiCollectPlateList"
     />
@@ -165,6 +175,13 @@
 <script lang="ts" setup>
 import DrawerUl from './drawer-ul.vue';
 import { isMobile } from '@/core/util';
+
+/**
+ * 爱问财 收藏语句，竞价选股
+ */
+const iwencaiCollectChaodieList = [
+  '近5个交易日跌幅降序；流通市值大于20亿；非ST',
+];
 
 /**
  * 爱问财 收藏语句，竞价选股

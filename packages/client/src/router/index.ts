@@ -76,6 +76,15 @@ const routes: RouteRecordRaw[] = [
         component: () => import(/* webpackChunkName: "systemConfig" */ '../views/systemConfig/index.vue'),
       },
       {
+        path: '/stockGroupByGainian',
+        name: 'stockGroupByGainian',
+        meta: {
+          title: '概念分组',
+          permiss: '11',
+        },
+        component: () => import(/* webpackChunkName: "systemConfig" */ '../views/shortTerm/stockGroupByGainian.vue'),
+      },
+      {
         path: '/form',
         name: 'baseform',
         meta: {

@@ -150,8 +150,8 @@ const fundsByGainianChart = ref(); // 资金流向Chart
 const longhuListChart = ref(); // 龙虎榜Chart
 
 // 监听变化，重新请求数据
-watch(countDays, async val => {
-  await initPage(val);
+watch(countDays, val => {
+  initPage(val);
 });
 
 // 获取15天内最新概念

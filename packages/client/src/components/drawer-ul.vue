@@ -2,7 +2,7 @@
   <div>
     <el-tag
       class="ml-2"
-      :type="superData.type === 'stock' ? 'success' : 'warning'"
+      :type="superData.tagType"
       >{{ superData.title }}</el-tag
     >
   </div>
@@ -38,6 +38,10 @@ let superData = defineProps({
   title: {
     type: String,
     default: '',
+  },
+  tagType: {
+    type: String,
+    default: 'warning',
   },
   urlList: {
     type: Array,

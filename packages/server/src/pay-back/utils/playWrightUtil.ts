@@ -9,6 +9,7 @@ import { marketUrl, iwencaiUrl, params } from '../core/config';
 import { Logger } from '@nestjs/common';
 import fetch from 'node-fetch';
 import { fetchIwencaiApi } from '../core/fetchUtil';
+import { transformForeignFunds } from './transformDataUtil';
 
 const logger = new Logger('playWrightUtil');
 
@@ -220,7 +221,7 @@ export default {
     const gaiNianFundsInflow = await fetchIwencaiApi(iwencaiUrl + params.gainianFundsInflow);
     const gaiNianFundsOutflow = await fetchIwencaiApi(iwencaiUrl + params.gainianFundsOutflow);
 
-    const foreignFunds: any = fundsUtil.transformForeignFunds(responseForeignFunds);
+    const foreignFunds: any = transformForeignFunds(responseForeignFunds);
     const marketTurnover: any = fundsUtil.getMarketTurnover(responseMarketTurnover);
     // 获取行业板块流入 Top3
     const hangyeFundsInflowTop3 = fundsUtil.getPlateTop(hangyeFundsInflow, dateStr, 3);

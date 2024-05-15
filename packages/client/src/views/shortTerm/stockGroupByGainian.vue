@@ -1,0 +1,158 @@
+<template>
+  <div class="shortTerm__container table">
+    <!-- 标题区域 -->
+    <div class="table__header table-row">
+      <div class="col1">
+        概念名 ({{
+          data.stockGroupByGainian ? data.stockGroupByGainian.length : 0
+        }})
+      </div>
+      <div class="col2 dailyLimit__row">
+        <!-- <div> -->
+        <!-- 竞价行 -->
+        <span class="stock large">个股名</span>
+        [
+        <span class="middle lanse">股价</span>
+        <span class="middle">连板高度</span>
+        <span class="orange content-large">涨停原因</span>
+        <span class="large">涨停时间</span>]&nbsp;&nbsp;
+        <span class="middle">涨停分类</span>
+        <el-radio-group v-model="autoRefreshInterval" size="small">
+          <el-radio-button
+            v-for="(item, index) in Object.keys(autoRefreshIntervalConfig)"
+            :label="item"
+            :key="index"
+          ></el-radio-button>
+        </el-radio-group>
+        <!-- </div> -->
+      </div>
+    </div>
+    <!-- 内容区域 -->
+    <div class="table__content">
+      <div
+        class="table-row"
+        v-for="(item, key) in data.stockGroupByGainian"
+        :key="key"
+      >
+        <div class="col1">
+          <div class="col1__container">
+            <div class="plate_col">
+              <plate :name="item.name" :code="item.code" />
+              <span class="red">{{ item.high }}</span>
+            </div>
+            <div class="plate_col">
+              <span class="red">{{ item.limit_up_num }}</span>
+              <span>{{ item.days }}</span>
+            </div>
+          </div>
+        </div>
+        <div :class="`col2 ${isMobile ? 'isMobile' : ''}`">
+          <div
+            v-for="(stock, index) in item.stock_list"
+            :key="index"
+            class="dailyLimit__row"
+          >
+            <Stock class="large" :name="stock.name" :code="stock.code" />
+            [
+            <span class="middle lanse">{{ stock.latest }}</span>
+            <span :class="['middle', { red: stock.high !== '首板' }]">
+              {{ stock.high }}
+            </span>
+            <span class="orange content-large">{{ stock.reason_type }}</span>
+            <span class="large">
+              <span class="time">{{
+                dayjs(stock.first_limit_up_time * 1000).format(dayFormat)
+              }}</span>
+              <span class="time">
+                {{
+                  stock.last_limit_up_time !== stock.first_limit_up_time
+                    ? dayjs(stock.last_limit_up_time * 1000).format(dayFormat)
+                    : ''
+                }}
+              </span>
+            </span>
+            ]&nbsp;&nbsp;
+            <span class="reason_info" :title="stock.reason_info">{{
+              stock.reason_info
+            }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script lang="ts" setup>
+import { reactive, watch, ref } from 'vue';
+import { fetchDailyLimitStockGroupByGainian } from '@/api/tonghuashun';
+import dayjs from 'dayjs';
+import { isMobile } from '@/core/util';
+const dayFormat = 'HH:mm';
+const data: {
+  stockGroupByGainian: any[];
+} = reactive({
+  stockGroupByGainian: [],
+});
+const autoRefreshInterval = ref('不刷新');
+const autoRefreshIntervalConfig: any = {
+  不刷新: -1,
+  '5秒': 5,
+  '30秒': 30,
+  '1分钟': 60,
+};
+let interval: any = null;
+
+watch(
+  autoRefreshInterval,
+  val => {
+    const time = autoRefreshIntervalConfig[val];
+    clearInterval(interval);
+    if (time === -1) {
+      return;
+    }
+    interval = setInterval(() => {
+      initPage();
+    }, time * 1000);
+  },
+  { immediate: true },
+);
+
+async function initPage() {
+  data.stockGroupByGainian = await fetchDailyLimitStockGroupByGainian(
+    dayjs().format('YYYYMMDD'),
+  );
+  // 按概念板块分类
+  // 个股展示 reason_info、reason_type、name、code、high、first_limit_up_time（首次涨停）、last_limit_up_time、latest（股价）
+}
+initPage();
+// 定时刷新功能
+</script>
+
+<style scoped lang="less">
+@import '../charts/styles/tabPaneEvenBoardStockTable.less';
+.col2 {
+  overflow: hidden;
+}
+.col1__container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.shortTerm__container {
+  background-color: #fff;
+  padding: 10px 0;
+}
+.reason_info {
+  white-space: nowrap;
+  overflow: hidden;
+}
+.plate_col {
+  display: flex;
+  flex-direction: column;
+}
+
+.time {
+  display: inline-block;
+  min-width: 40px;
+}
+</style>

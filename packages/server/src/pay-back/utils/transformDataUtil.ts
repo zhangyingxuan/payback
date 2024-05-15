@@ -409,3 +409,76 @@ function judgeExpected(item) {
     return ExpectEnum.incompatible;
   }
 }
+
+/**
+ * 获取 北向 南向资金数据
+ * @param response
+ * @returns
+ */
+export function transformForeignFunds(dataStr) {
+  // 单位 万元
+  // 净流入
+  let northFundsAmtIn = 0;
+  let southFundsAmtIn = 0;
+  // 净买入
+  let northFundsBuyAmt = 0;
+  let southFundsBuyAmt = 0;
+  try {
+    dataStr = dataStr.substring(dataStr.indexOf('(') + 1, dataStr.length - 2);
+    const dataJson = JSON.parse(dataStr);
+    const data = dataJson.result.data;
+    // FUNDS_DIRECTION 北向、南向
+    data.forEach(item => {
+      if (item.FUNDS_DIRECTION === '北向') {
+        northFundsAmtIn += item.dayNetAmtIn;
+        northFundsBuyAmt += item.netBuyAmt;
+      } else {
+        southFundsAmtIn += item.dayNetAmtIn;
+        southFundsBuyAmt += item.netBuyAmt;
+      }
+    });
+  } catch (e) {
+    console.log('[error]transformForeignFunds数据转换错误！');
+  }
+
+  return {
+    northFundsAmtIn,
+    southFundsAmtIn,
+    northFundsBuyAmt,
+    southFundsBuyAmt,
+  };
+}
+
+/**
+ * 获取 北向 南向资金数据 新 2024-05-15 21:27:29
+ * @param response
+ * @returns
+ */
+export function transformForeignFundsNew(dataStr) {
+  // 单位 万元
+  // 净流入
+  let northFundsAmtIn = 0;
+  let southFundsAmtIn = 0;
+  // 净买入
+  let northFundsBuyAmt = 0;
+  let southFundsBuyAmt = 0;
+  try {
+    dataStr = dataStr.substring(dataStr.indexOf('(') + 1, dataStr.length - 2);
+    const dataJson = JSON.parse(dataStr);
+    const data = dataJson.data;
+    // FUNDS_DIRECTION 北向、南向
+    northFundsAmtIn = data.hk2sh.dayNetAmtIn + data.hk2sz.dayNetAmtIn;
+    northFundsBuyAmt = data.hk2sh.netBuyAmt + data.hk2sz.netBuyAmt;
+    southFundsAmtIn = data.sh2hk.dayNetAmtIn + data.sz2hk.dayNetAmtIn;
+    southFundsBuyAmt = data.sh2hk.netBuyAmt + data.sz2hk.netBuyAmt;
+  } catch (e) {
+    console.log('[error]transformForeignFunds数据转换错误！');
+  }
+
+  return {
+    northFundsAmtIn,
+    southFundsAmtIn,
+    northFundsBuyAmt,
+    southFundsBuyAmt,
+  };
+}

@@ -1,9 +1,10 @@
 import commonUtil from './commonUtil';
-import { fetchIwencaiApi, fetchNorhFunds } from '../core/fetchUtil';
+import { fetchIwencaiApi, fetchNorhFundsNew } from '../core/fetchUtil';
 import { CreateFundsDataDto } from '../dto/create-funds-data.dto';
 import { params } from '../core/config';
 import fetch from 'node-fetch';
-import { ignoreGainianPlates, ignoreGainianPlateStr } from './commonUtil';
+import { ignoreGainianPlateStr } from './commonUtil';
+import { transformForeignFundsNew } from './transformDataUtil';
 
 export default {
   /**
@@ -11,7 +12,9 @@ export default {
    */
   async getFundsData(dateStr: string) {
     // 北向资金、南向资金 获取
-    const responseForeignFunds = await fetchNorhFunds();
+    // const responseForeignFunds = await fetchNorhFunds();
+    // 更新数据获取接口 2024-05-15 21:26:00
+    const responseForeignFunds = await fetchNorhFundsNew();
     // const responseForeignFunds = await (await fetch("https://datacenter-web.eastmoney.com/api/data/v1/get?callback=jQuery112309386087809528996_1689650979956&reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE%2CMUTUAL_TYPE%2CBOARD_TYPE%2CMUTUAL_TYPE_NAME%2CFUNDS_DIRECTION%2CINDEX_CODE%2CINDEX_NAME%2CBOARD_CODE&quoteColumns=status~07~BOARD_CODE%2CdayNetAmtIn~07~BOARD_CODE%2CdayAmtRemain~07~BOARD_CODE%2CdayAmtThreshold~07~BOARD_CODE%2Cf104~07~BOARD_CODE%2Cf105~07~BOARD_CODE%2Cf106~07~BOARD_CODE%2Cf3~03~INDEX_CODE~INDEX_f3%2CnetBuyAmt~07~BOARD_CODE&quoteType=0&pageNumber=1&pageSize=200&sortTypes=1&sortColumns=MUTUAL_TYPE&source=WEB&client=WEB&_=1689650979958")).text();
     // 成交量
     const responseMarketTurnover = await (
@@ -25,7 +28,9 @@ export default {
     const gaiNianFundsInflow = await fetchIwencaiApi(params.gainianFundsInflow + ignoreGainianPlateStr);
     const gaiNianFundsOutflow = await fetchIwencaiApi(params.gainianFundsOutflow + ignoreGainianPlateStr);
 
-    const foreignFunds: any = this.transformForeignFunds(responseForeignFunds);
+    // const foreignFunds: any = this.transformForeignFunds(responseForeignFunds);
+    // 更新数据获取接口 2024-05-15 21:26:00
+    const foreignFunds: any = transformForeignFundsNew(responseForeignFunds);
     const marketTurnover: any = this.getMarketTurnover(responseMarketTurnover);
     // 获取行业板块流入 Top3
     const hangyeFundsInflowTop3 = this.getPlateTop(hangyeFundsInflow, dateStr, 3);
@@ -45,44 +50,6 @@ export default {
     createFundsDataDto.createTime = new Date();
 
     return createFundsDataDto;
-  },
-  /**
-   * 获取 北向 南向资金数据
-   * @param response
-   * @returns
-   */
-  transformForeignFunds(dataStr) {
-    // 单位 万元
-    // 净流入
-    let northFundsAmtIn = 0;
-    let southFundsAmtIn = 0;
-    // 净买入
-    let northFundsBuyAmt = 0;
-    let southFundsBuyAmt = 0;
-    try {
-      dataStr = dataStr.substring(dataStr.indexOf('(') + 1, dataStr.length - 2);
-      const dataJson = JSON.parse(dataStr);
-      const data = dataJson.result.data;
-      // FUNDS_DIRECTION 北向、南向
-      data.forEach(item => {
-        if (item.FUNDS_DIRECTION === '北向') {
-          northFundsAmtIn += item.dayNetAmtIn;
-          northFundsBuyAmt += item.netBuyAmt;
-        } else {
-          southFundsAmtIn += item.dayNetAmtIn;
-          southFundsBuyAmt += item.netBuyAmt;
-        }
-      });
-    } catch (e) {
-      console.log('[error]transformForeignFunds数据转换错误！');
-    }
-
-    return {
-      northFundsAmtIn,
-      southFundsAmtIn,
-      northFundsBuyAmt,
-      southFundsBuyAmt,
-    };
   },
   /**
    * 获取 市场总成交额

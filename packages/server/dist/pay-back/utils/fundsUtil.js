@@ -6,15 +6,16 @@ const create_funds_data_dto_1 = require("../dto/create-funds-data.dto");
 const config_1 = require("../core/config");
 const node_fetch_1 = require("node-fetch");
 const commonUtil_2 = require("./commonUtil");
+const transformDataUtil_1 = require("./transformDataUtil");
 exports.default = {
     async getFundsData(dateStr) {
-        const responseForeignFunds = await (0, fetchUtil_1.fetchNorhFunds)();
+        const responseForeignFunds = await (0, fetchUtil_1.fetchNorhFundsNew)();
         const responseMarketTurnover = await (await (0, node_fetch_1.default)('https://push2.eastmoney.com/api/qt/ulist.np/get?cb=jQuery112304396074520394937_1688383194361&fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5&_=1688383194362')).text();
         const hangyeFundsInflow = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.hangyeFundsInflow);
         const hangyeFundsOutflow = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.hangyeFundsOutflow);
         const gaiNianFundsInflow = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.gainianFundsInflow + commonUtil_2.ignoreGainianPlateStr);
         const gaiNianFundsOutflow = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.gainianFundsOutflow + commonUtil_2.ignoreGainianPlateStr);
-        const foreignFunds = this.transformForeignFunds(responseForeignFunds);
+        const foreignFunds = (0, transformDataUtil_1.transformForeignFundsNew)(responseForeignFunds);
         const marketTurnover = this.getMarketTurnover(responseMarketTurnover);
         const hangyeFundsInflowTop3 = this.getPlateTop(hangyeFundsInflow, dateStr, 3);
         const hangyeFundsOutflowTop3 = this.getPlateTop(hangyeFundsOutflow, dateStr, 3);
@@ -30,36 +31,6 @@ exports.default = {
         createFundsDataDto.gainianFundsTop = JSON.stringify({ in: gainianFundsInflowTop3, out: gainianFundsOutflowTop3 });
         createFundsDataDto.createTime = new Date();
         return createFundsDataDto;
-    },
-    transformForeignFunds(dataStr) {
-        let northFundsAmtIn = 0;
-        let southFundsAmtIn = 0;
-        let northFundsBuyAmt = 0;
-        let southFundsBuyAmt = 0;
-        try {
-            dataStr = dataStr.substring(dataStr.indexOf('(') + 1, dataStr.length - 2);
-            const dataJson = JSON.parse(dataStr);
-            const data = dataJson.result.data;
-            data.forEach(item => {
-                if (item.FUNDS_DIRECTION === '北向') {
-                    northFundsAmtIn += item.dayNetAmtIn;
-                    northFundsBuyAmt += item.netBuyAmt;
-                }
-                else {
-                    southFundsAmtIn += item.dayNetAmtIn;
-                    southFundsBuyAmt += item.netBuyAmt;
-                }
-            });
-        }
-        catch (e) {
-            console.log('[error]transformForeignFunds数据转换错误！');
-        }
-        return {
-            northFundsAmtIn,
-            southFundsAmtIn,
-            northFundsBuyAmt,
-            southFundsBuyAmt,
-        };
     },
     getMarketTurnover(responseMarketTurnoverStr) {
         const marketTurnoverStr = responseMarketTurnoverStr.substring(responseMarketTurnoverStr.indexOf('(') + 1, responseMarketTurnoverStr.length - 2);

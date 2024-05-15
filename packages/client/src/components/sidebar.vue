@@ -80,6 +80,12 @@ const items: any = [
     permiss: '11',
   },
   {
+    icon: 'Promotion',
+    index: '/stockGroupByGainian',
+    title: '概念分组',
+    permiss: '1',
+  },
+  {
     icon: 'Aim',
     index: '/shortTerm',
     title: '短线',
