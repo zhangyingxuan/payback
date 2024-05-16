@@ -74,15 +74,17 @@ export class PayBackController {
   @Post('/crawlTodayData')
   @UseGuards(JwtAuthGuard)
   async crawlTodayData(@Body() body: CrawlTodayDataDto, @Request() req) {
-    let shortData, fundsData, marketData, binddingData, resultData, plateData;
+    let short, funds, market, bindding, resultData, plate, specialStock;
     switch (body.fetchTodayDataType) {
       case 0:
-        shortData = await this.shorTermService.crawlShortTermData();
-        fundsData = await this.fundsService.crawlfundsData();
-        marketData = await this.marketService.crawlMarketData();
-        binddingData = await this.specialStockService.crawlBinddingData(0, req.user?.account);
-        plateData = await this.plateService.crawlPlateData();
+        short = this.shorTermService.crawlShortTermData();
+        funds = this.fundsService.crawlfundsData();
+        market = this.marketService.crawlMarketData();
+        bindding = this.specialStockService.crawlBinddingData(0, req.user?.account);
+        specialStock = this.specialStockService.crawlSpecialStockData();
+        plate = this.plateService.crawlPlateData();
         resultData = {};
+        await Promise.all([short, funds, market, bindding, specialStock, plate]);
         // resultData = { shortData, fundsData, marketData, binddingData, plateData };
         break;
       case 1:
@@ -97,8 +99,11 @@ export class PayBackController {
       case 4:
         // 获取竞价数据
         // 是否剔除 不及预期数据；注意接收到的参数 是否为字符串
-        await this.specialStockService.crawlBinddingData(body.isRemoveIncompatible, req.user?.account);
-        resultData = await this.specialStockService.crawlSpecialStockData();
+        const crawlBindding = this.specialStockService.crawlBinddingData(body.isRemoveIncompatible, req.user?.account);
+        const crawlSpecialStock = this.specialStockService.crawlSpecialStockData();
+
+        const [crawlBinddingData, crawlSpecialStockData] = await Promise.all([crawlBindding, crawlSpecialStock]);
+        resultData = crawlSpecialStockData;
         break;
       default:
         break;
@@ -149,15 +154,16 @@ export class PayBackController {
       message = 'success';
     try {
       // 删除短线数据
-      await this.shorTermService.delteByCreateTime(body.date);
+      const shorTerm = this.shorTermService.delteByCreateTime(body.date);
       // 删除竞价数据
-      await this.specialStockService.delteByCreateTime(body.date);
+      const specialStock = this.specialStockService.delteByCreateTime(body.date);
       // 删除市场数据
-      await this.marketService.delteByCreateTime(body.date);
+      const market = this.marketService.delteByCreateTime(body.date);
       // 资金数据
-      await this.fundsService.delteByCreateTime(body.date);
+      const funds = this.fundsService.delteByCreateTime(body.date);
       // 板块数据
-      await this.plateService.delteByCreateTime(body.date);
+      const plate = this.plateService.delteByCreateTime(body.date);
+      await Promise.all([shorTerm, specialStock, market, funds, plate]);
     } catch (e) {
       code = 500;
       message = e;
