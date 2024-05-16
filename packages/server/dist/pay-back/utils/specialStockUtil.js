@@ -11,8 +11,9 @@ async function fetchLastdayDailyLimitBinddingData(todayDateStr, yesterdayDateStr
 }
 exports.fetchLastdayDailyLimitBinddingData = fetchLastdayDailyLimitBinddingData;
 async function fetchSpecialStockBinddingData(todayDateStr, yesterdayDateStr) {
-    const chooseStock1ExpectedRs = await (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.chooseStock1Expected);
-    const newStocksRs = await (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.chooseStockNewStock);
+    const chooseStock1ExpectedPromise = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.chooseStock1Expected);
+    const newStocksPromise = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.chooseStockNewStock);
+    const [chooseStock1ExpectedRs, newStocksRs] = await Promise.all([chooseStock1ExpectedPromise, newStocksPromise]);
     const chooseStock1Expected = (0, transformDataUtil_1.transformStrongStockData)(chooseStock1ExpectedRs.data, todayDateStr, yesterdayDateStr);
     const newStocks = (0, transformDataUtil_1.transformNewStockData)(newStocksRs.data, todayDateStr);
     return { newStocks, chooseStock1Expected };

@@ -17,6 +17,8 @@
         <span class="orange content-large">涨停原因</span>
         <span class="large">涨停时间</span>]&nbsp;&nbsp;
         <span class="middle">涨停分类</span>
+        <span class="dateTime__span">{{ data.refreshTime }}</span>
+        &nbsp;
         <el-radio-group v-model="autoRefreshInterval" size="small">
           <el-radio-button
             v-for="(item, index) in Object.keys(autoRefreshIntervalConfig)"
@@ -24,6 +26,16 @@
             :key="index"
           ></el-radio-button>
         </el-radio-group>
+        &nbsp;
+        <el-button
+          type="primary"
+          @click="refreshPage"
+          size="small"
+          plain
+          :loading="data.refreshLoading"
+        >
+          刷新
+        </el-button>
         <!-- </div> -->
       </div>
     </div>
@@ -89,8 +101,12 @@ import { isMobile } from '@/core/util';
 const dayFormat = 'HH:mm';
 const data: {
   stockGroupByGainian: any[];
+  refreshTime: string;
+  refreshLoading: boolean;
 } = reactive({
   stockGroupByGainian: [],
+  refreshTime: '',
+  refreshLoading: false,
 });
 const autoRefreshInterval = ref('不刷新');
 const autoRefreshIntervalConfig: any = {
@@ -116,10 +132,22 @@ watch(
   { immediate: true },
 );
 
+async function refreshPage() {
+  data.refreshLoading = true;
+  try {
+    await initPage();
+  } catch (e) {
+    console.log(e);
+  } finally {
+    data.refreshLoading = false;
+  }
+}
+
 async function initPage() {
   data.stockGroupByGainian = await fetchDailyLimitStockGroupByGainian(
     dayjs().format('YYYYMMDD'),
   );
+  data.refreshTime = dayjs().format('hh:mm:ss');
   // 按概念板块分类
   // 个股展示 reason_info、reason_type、name、code、high、first_limit_up_time（首次涨停）、last_limit_up_time、latest（股价）
 }

@@ -10,13 +10,16 @@ const dayjs = require("dayjs");
 const downLimitNum = 50;
 const otherNum = 50;
 async function getShortTermData(todayDateStr, lastTradingDayData) {
-    const dailyLimitData = await (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.dailyLimitMoreThan1);
-    let downLimitData = { length: 0 };
-    let dailyLimitOpenData = { length: 0 };
-    let hugeFallData = { length: 0 };
-    downLimitData = await (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.downLimit, downLimitNum);
-    dailyLimitOpenData = await (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.dailyLimitOpen);
-    hugeFallData = await (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.hugeFall, otherNum);
+    const dailyLimit = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.dailyLimitMoreThan1);
+    const downLimit = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.downLimit, downLimitNum);
+    const dailyLimitOpen = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.dailyLimitOpen);
+    const hugeFall = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.hugeFall, otherNum);
+    const [dailyLimitData, downLimitData, dailyLimitOpenData, hugeFallData] = await Promise.all([
+        dailyLimit,
+        downLimit,
+        dailyLimitOpen,
+        hugeFall,
+    ]);
     return prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, todayDateStr, lastTradingDayData);
 }
 exports.getShortTermData = getShortTermData;

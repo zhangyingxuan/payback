@@ -36,7 +36,7 @@ async function getHotListData() {
         return createHotListDto;
     }
     catch (e) {
-        console.log('getHotListData error:', e);
+        logger.error('getHotListData error:', e);
         return createHotListDto;
     }
 }
