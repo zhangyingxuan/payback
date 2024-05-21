@@ -18,19 +18,22 @@ export async function getShortTermData(todayDateStr, lastTradingDayData): Promis
   // const start = performance.now();
   // console.time();
   // 准备涨停数据
-  const dailyLimitData: any = await fetchAllStocksByIwencai(params.dailyLimitMoreThan1);
-  let downLimitData: any = { length: 0 };
-  let dailyLimitOpenData: any = { length: 0 };
-  let hugeFallData: any = { length: 0 };
+  const dailyLimit: any = fetchAllStocksByIwencai(params.dailyLimitMoreThan1);
+  // 跌停数据
+  const downLimit: any = fetchAllStocksByIwencai(params.downLimit, downLimitNum);
+  // 涨停打开个股
+  const dailyLimitOpen: any = fetchAllStocksByIwencai(params.dailyLimitOpen);
+  // 跌幅大于等于15的个股
+  const hugeFall: any = fetchAllStocksByIwencai(params.hugeFall, otherNum);
   // const end = performance.now();
   // console.log('cost is', `${end - start}ms`);
   // console.timeEnd();
-  // 跌停数据
-  downLimitData = await fetchAllStocksByIwencai(params.downLimit, downLimitNum);
-  // 涨停打开个股
-  dailyLimitOpenData = await fetchAllStocksByIwencai(params.dailyLimitOpen);
-  // 跌幅大于等于15的个股
-  hugeFallData = await fetchAllStocksByIwencai(params.hugeFall, otherNum);
+  const [dailyLimitData, downLimitData, dailyLimitOpenData, hugeFallData] = await Promise.all([
+    dailyLimit,
+    downLimit,
+    dailyLimitOpen,
+    hugeFall,
+  ]);
 
   return prepareShortTermDto(
     dailyLimitData,
