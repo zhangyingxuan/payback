@@ -279,35 +279,6 @@ export async function fetchNorhFunds() {
   });
   return result.text();
 }
-/**
- * 东方财富 获取北向、南向资金数据
- * @returns
- */
-export async function fetchNorhFundsNew() {
-  const dateTime = new Date().getTime();
-  const url = `https://push2.eastmoney.com/api/qt/kamt/get?fields1=f1,f2,f3,f4&fields2=f51,f52,f53,f54,f56,f60,f62,f63,f65,f66&ut=fa5fd1943c7b386f172d6893dbfba10b&cb=jQuery1123049543730033209155_${dateTime}&_=${dateTime}`;
-  const result = await fetch(url, {
-    headers: {
-      accept: '*/*',
-      'accept-language': 'zh-CN,zh;q=0.9',
-      'cache-control': 'no-cache',
-      pragma: 'no-cache',
-      'sec-ch-ua': '"Not/A)Brand";v="99", "Google Chrome";v="115", "Chromium";v="115"',
-      'sec-ch-ua-mobile': '?0',
-      'sec-ch-ua-platform': '"macOS"',
-      'sec-fetch-dest': 'script',
-      'sec-fetch-mode': 'no-cors',
-      'sec-fetch-site': 'same-site',
-    },
-    referrer: 'https://data.eastmoney.com/hsgt/hsgtV2.html',
-    referrerPolicy: 'unsafe-url',
-    body: null,
-    method: 'GET',
-    mode: 'cors',
-    credentials: 'include',
-  });
-  return result.text();
-}
 
 export enum ThsOprate {
   add = 'add',

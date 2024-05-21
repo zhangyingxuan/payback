@@ -466,11 +466,15 @@ export function transformForeignFundsNew(dataStr) {
     dataStr = dataStr.substring(dataStr.indexOf('(') + 1, dataStr.length - 2);
     const dataJson = JSON.parse(dataStr);
     const data = dataJson.data;
-    // FUNDS_DIRECTION 北向、南向
-    northFundsAmtIn = data.hk2sh.dayNetAmtIn + data.hk2sz.dayNetAmtIn;
-    northFundsBuyAmt = data.hk2sh.netBuyAmt + data.hk2sz.netBuyAmt;
-    southFundsAmtIn = data.sh2hk.dayNetAmtIn + data.sz2hk.dayNetAmtIn;
-    southFundsBuyAmt = data.sh2hk.netBuyAmt + data.sz2hk.netBuyAmt;
+    const currentDate = dayjs().format('YYYYMMDD');
+
+    // 如果不是当天的数据则跳过
+    if (data.hk2sh.buySellAmtDate == currentDate) {
+      northFundsAmtIn = data.hk2sh.dayNetAmtIn + data.hk2sz.dayNetAmtIn;
+      northFundsBuyAmt = data.hk2sh.netBuyAmt + data.hk2sz.netBuyAmt;
+      southFundsAmtIn = data.sh2hk.dayNetAmtIn + data.sz2hk.dayNetAmtIn;
+      southFundsBuyAmt = data.sh2hk.netBuyAmt + data.sz2hk.netBuyAmt;
+    }
   } catch (e) {
     console.log('[error]transformForeignFunds数据转换错误！');
   }

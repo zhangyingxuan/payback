@@ -22,10 +22,11 @@ export default {
   async getPlateData(dateStr): Promise<CreatePlateDataDto> {
     const createPlateDataDto: CreatePlateDataDto = new CreatePlateDataDto();
 
-    const gainianDailyLimitData = await fetchIwencaiApi(
+    const gainianDailyLimit = fetchIwencaiApi(
       params.gainianPlateOrderByDailyLimitNum + commonUtil.ignoreGainianPlateStr,
     );
-    const hangyeDailyLimitData = await fetchIwencaiApi(params.hangyePlateOrderByDailyLimitNum);
+    const hangyeDailyLimit = fetchIwencaiApi(params.hangyePlateOrderByDailyLimitNum);
+    const [gainianDailyLimitData, hangyeDailyLimitData] = await Promise.all([gainianDailyLimit, hangyeDailyLimit]);
 
     const gainianDailyLimitDataTop = getPlateTop(gainianDailyLimitData, dateStr);
     const hangyeDailyLimitDataTop = getPlateTop(hangyeDailyLimitData, dateStr);

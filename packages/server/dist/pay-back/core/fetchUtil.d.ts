@@ -12,7 +12,6 @@ export declare function clearThsSelfStocks(user: any): Promise<any>;
 export declare function fetchMarketPointFromEastmoney(): Promise<any>;
 export declare function fetchMarketPoint(apiUrl: any, key: any): Promise<number>;
 export declare function fetchNorhFunds(): Promise<any>;
-export declare function fetchNorhFundsNew(): Promise<any>;
 export declare enum ThsOprate {
     add = "add",
     del = "remove",

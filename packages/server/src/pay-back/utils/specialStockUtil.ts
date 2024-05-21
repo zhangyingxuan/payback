@@ -16,9 +16,12 @@ export async function fetchSpecialStockBinddingData(todayDateStr, yesterdayDateS
   // const chooseStock1to2: any = await fetchAllStocksByIwencai(params.chooseStock1to2, chooseStock1Expected, false);
   // console.log(params.chooseStock1Expected);
   // 竞价看多数据 首板预期
-  const chooseStock1ExpectedRs: any = await fetchAllStocksByIwencai(params.chooseStock1Expected);
+  const chooseStock1ExpectedPromise: any = fetchAllStocksByIwencai(params.chooseStock1Expected);
   // 新股数据
-  const newStocksRs: any = await fetchAllStocksByIwencai(params.chooseStockNewStock);
+  const newStocksPromise: any = fetchAllStocksByIwencai(params.chooseStockNewStock);
+
+  const [chooseStock1ExpectedRs, newStocksRs] = await Promise.all([chooseStock1ExpectedPromise, newStocksPromise]);
+
   const chooseStock1Expected = transformStrongStockData(chooseStock1ExpectedRs.data, todayDateStr, yesterdayDateStr);
 
   // 新股数据

@@ -39,7 +39,7 @@ export async function getHotListData() {
     createHotListDto.updatedTime = new Date();
     return createHotListDto;
   } catch (e: any) {
-    console.log('getHotListData error:', e);
+    logger.error('getHotListData error:', e);
     return createHotListDto;
   }
 }

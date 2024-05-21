@@ -62,15 +62,17 @@ let PayBackController = PayBackController_1 = class PayBackController {
     }
     async crawlTodayData(body, req) {
         var _a, _b;
-        let shortData, fundsData, marketData, binddingData, resultData, plateData;
+        let short, funds, market, bindding, resultData, plate, specialStock;
         switch (body.fetchTodayDataType) {
             case 0:
-                shortData = await this.shorTermService.crawlShortTermData();
-                fundsData = await this.fundsService.crawlfundsData();
-                marketData = await this.marketService.crawlMarketData();
-                binddingData = await this.specialStockService.crawlBinddingData(0, (_a = req.user) === null || _a === void 0 ? void 0 : _a.account);
-                plateData = await this.plateService.crawlPlateData();
+                short = this.shorTermService.crawlShortTermData();
+                funds = this.fundsService.crawlfundsData();
+                market = this.marketService.crawlMarketData();
+                bindding = this.specialStockService.crawlBinddingData(0, (_a = req.user) === null || _a === void 0 ? void 0 : _a.account);
+                specialStock = this.specialStockService.crawlSpecialStockData();
+                plate = this.plateService.crawlPlateData();
                 resultData = {};
+                await Promise.all([short, funds, market, bindding, specialStock, plate]);
                 break;
             case 1:
                 resultData = await this.shorTermService.crawlShortTermData();
@@ -82,8 +84,10 @@ let PayBackController = PayBackController_1 = class PayBackController {
                 resultData = await this.fundsService.crawlfundsData();
                 break;
             case 4:
-                await this.specialStockService.crawlBinddingData(body.isRemoveIncompatible, (_b = req.user) === null || _b === void 0 ? void 0 : _b.account);
-                resultData = await this.specialStockService.crawlSpecialStockData();
+                const crawlBindding = this.specialStockService.crawlBinddingData(body.isRemoveIncompatible, (_b = req.user) === null || _b === void 0 ? void 0 : _b.account);
+                const crawlSpecialStock = this.specialStockService.crawlSpecialStockData();
+                const [crawlBinddingData, crawlSpecialStockData] = await Promise.all([crawlBindding, crawlSpecialStock]);
+                resultData = crawlSpecialStockData;
                 break;
             default:
                 break;
@@ -122,11 +126,12 @@ let PayBackController = PayBackController_1 = class PayBackController {
     async deleteData(body) {
         let code = 200, message = 'success';
         try {
-            await this.shorTermService.delteByCreateTime(body.date);
-            await this.specialStockService.delteByCreateTime(body.date);
-            await this.marketService.delteByCreateTime(body.date);
-            await this.fundsService.delteByCreateTime(body.date);
-            await this.plateService.delteByCreateTime(body.date);
+            const shorTerm = this.shorTermService.delteByCreateTime(body.date);
+            const specialStock = this.specialStockService.delteByCreateTime(body.date);
+            const market = this.marketService.delteByCreateTime(body.date);
+            const funds = this.fundsService.delteByCreateTime(body.date);
+            const plate = this.plateService.delteByCreateTime(body.date);
+            await Promise.all([shorTerm, specialStock, market, funds, plate]);
         }
         catch (e) {
             code = 500;
