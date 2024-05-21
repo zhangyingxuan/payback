@@ -97,7 +97,7 @@ function transformDownLimitData(dailyLimitData, currentDate) {
  * @param todayDateStr
  * @returns
  */
-function transformDailyLimitData(dailyLimitData, currentDate) {
+function transformDailyLimitData(dailyLimitData, dailyLimitGroupByGainainData, currentDate) {
   let board1 = 0,
     maxHeight = 1,
     currentLevel = 0,
@@ -137,6 +137,8 @@ function transformDailyLimitData(dailyLimitData, currentDate) {
       if (dailyLimitStockDto.openTimes > 0 && item[`最终涨停时间[${currentDate}]`]) {
         dailyLimitStockDto.dailyTime += ',' + item[`最终涨停时间[${currentDate}]`].trim();
       }
+      // 计算 涨停所属概念
+      dailyLimitStockDto.gainian = getGainianByCode(dailyLimitGroupByGainainData, dailyLimitStockDto.code);
 
       // 当前股票 连板高度 -- 优化竞价时无法获取当前高度的问题，合并为高标 2024-05-06 15:50:18
       currentLevel = item[evenBoardLabel];
@@ -175,6 +177,25 @@ function transformDailyLimitData(dailyLimitData, currentDate) {
     evenBoardData,
     dailyLimitReturnSealQuantity,
   };
+}
+
+/**
+ * 获取 当前个股所属 涨停概念
+ * @param dailyLimitGroupByGainainData
+ * @param code
+ * @returns
+ */
+function getGainianByCode(dailyLimitGroupByGainainData, code) {
+  if (!dailyLimitGroupByGainainData || dailyLimitGroupByGainainData.length === 0) return;
+  let gainian = '';
+  dailyLimitGroupByGainainData.forEach(item => {
+    // 概念code概念名 name
+    if (item.stock_list && item.stock_list.some(stock => stock.code === code)) {
+      gainian && (gainian += ',');
+      gainian += `${item.name}:${item.code}`;
+    }
+  });
+  return gainian;
 }
 
 /**
@@ -306,7 +327,13 @@ export function transformStrongStockData(stocks, todayDateStr, yesterdayDate): A
  * @param todayDateStr
  * @returns
  */
-export function transformShortTermSourceData(dailyLimitData, downLimitData, hugeFallData, todayDateStr) {
+export function transformShortTermSourceData(
+  dailyLimitData,
+  downLimitData,
+  hugeFallData,
+  dailyLimitGroupByGainainData,
+  todayDateStr,
+) {
   const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
 
   // 跌停数据
@@ -314,7 +341,11 @@ export function transformShortTermSourceData(dailyLimitData, downLimitData, huge
   // 跌幅大于等于15的个股
   const { hugeFallDataArr } = transformHugeFallData(hugeFallData);
   // 涨停数据
-  const { board1, evenBoardData, dailyLimitReturnSealQuantity } = transformDailyLimitData(dailyLimitData, currentDate);
+  const { board1, evenBoardData, dailyLimitReturnSealQuantity } = transformDailyLimitData(
+    dailyLimitData,
+    dailyLimitGroupByGainainData,
+    currentDate,
+  );
 
   return {
     board1,

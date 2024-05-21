@@ -52,7 +52,8 @@ export function getCurrentDay(date: string) {
   return '周' + week[day];
 }
 
-export function highlightKeyWord(result: string, keyword: string) {
+export function highlightKeyWord(result: string, keyword: string, isGainianSwitch: boolean) {
+  if (isGainianSwitch) return;
   if (keyword && result) {
     /**
      * 使用正则表达式进行全文匹配关键词

@@ -11,7 +11,7 @@ export declare function transformPlateData(plateList: any): any;
 export declare function transformBidData(stocks: any, todayDateStr: any, yesterdayDate: any): Array<DailyLimitYesterdayBiddingDto>;
 export declare function transformNewStockData(stocks: any, todayDateStr: any): Array<NewStockDto>;
 export declare function transformStrongStockData(stocks: any, todayDateStr: any, yesterdayDate: any): Array<StrongStockDto>;
-export declare function transformShortTermSourceData(dailyLimitData: any, downLimitData: any, hugeFallData: any, todayDateStr: any): {
+export declare function transformShortTermSourceData(dailyLimitData: any, downLimitData: any, hugeFallData: any, dailyLimitGroupByGainainData: any, todayDateStr: any): {
     board1: number;
     evenBoardData: {
         maxHeight: number;

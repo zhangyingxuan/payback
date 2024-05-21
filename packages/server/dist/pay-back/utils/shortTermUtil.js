@@ -7,6 +7,7 @@ const config_1 = require("../core/config");
 const fetchUtil_1 = require("../core/fetchUtil");
 const pay_back_core_1 = require("pay-back-core");
 const dayjs = require("dayjs");
+const node_fetch_1 = require("node-fetch");
 const downLimitNum = 50;
 const otherNum = 50;
 async function getShortTermData(todayDateStr, lastTradingDayData) {
@@ -14,26 +15,26 @@ async function getShortTermData(todayDateStr, lastTradingDayData) {
     const downLimit = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.downLimit, downLimitNum);
     const dailyLimitOpen = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.dailyLimitOpen);
     const hugeFall = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.hugeFall, otherNum);
-    const [dailyLimitData, downLimitData, dailyLimitOpenData, hugeFallData] = await Promise.all([
-        dailyLimit,
-        downLimit,
-        dailyLimitOpen,
-        hugeFall,
-    ]);
-    return prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, todayDateStr, lastTradingDayData);
+    const dailyLimitGroupByGainain = (0, node_fetch_1.default)(`https://data.10jqka.com.cn/dataapi/limit_up/block_top?filter=HS,GEM2STAR&date=${dayjs(todayDateStr).format('YYYYMMDD')}`);
+    const [dailyLimitData, downLimitData, dailyLimitOpenData, hugeFallData, dailyLimitGroupByGainainD] = await Promise.all([dailyLimit, downLimit, dailyLimitOpen, hugeFall, dailyLimitGroupByGainain]);
+    const dailyLimitGroupByGainainData = await dailyLimitGroupByGainainD.json();
+    return prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, lastTradingDayData, dailyLimitGroupByGainainData, todayDateStr);
 }
 exports.getShortTermData = getShortTermData;
 async function getShortTermDataByDate(todayDateStr, lastTradingDayData) {
-    const dailyLimitData = await (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.dailyLimitMoreThan1ByDate.replace('${date}', todayDateStr));
-    const downLimitData = await (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.downLimitByDate.replace('${date}', todayDateStr), downLimitNum);
-    const dailyLimitOpenData = await (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.dailyLimitOpenByDate.replace('${date}', todayDateStr));
-    const hugeFallData = await (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.hugeFallByDate.replace('${date}', todayDateStr), otherNum);
-    return prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, todayDateStr, lastTradingDayData);
+    const dailyLimit = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.dailyLimitMoreThan1ByDate.replace('${date}', todayDateStr));
+    const downLimit = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.downLimitByDate.replace('${date}', todayDateStr), downLimitNum);
+    const dailyLimitOpen = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.dailyLimitOpenByDate.replace('${date}', todayDateStr));
+    const hugeFall = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.hugeFallByDate.replace('${date}', todayDateStr), otherNum);
+    const dailyLimitGroupByGainain = (0, node_fetch_1.default)(`https://data.10jqka.com.cn/dataapi/limit_up/block_top?filter=HS,GEM2STAR&date=${dayjs(todayDateStr).format('YYYYMMDD')}`);
+    const [dailyLimitData, downLimitData, dailyLimitOpenData, hugeFallData, dailyLimitGroupByGainainD] = await Promise.all([dailyLimit, downLimit, dailyLimitOpen, hugeFall, dailyLimitGroupByGainain]);
+    const dailyLimitGroupByGainainData = await dailyLimitGroupByGainainD.text();
+    return prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, lastTradingDayData, dailyLimitGroupByGainainData, todayDateStr);
 }
 exports.getShortTermDataByDate = getShortTermDataByDate;
-function prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, todayDateStr, lastTradingDayData) {
+function prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, lastTradingDayData, dailyLimitGroupByGainainData, todayDateStr) {
     const createPayBackDto = new create_pay_back_dto_1.CreatePayBackDto();
-    const { board1 = 0, evenBoardData, downLimitDataArr, hugeFallDataArr, dailyLimitReturnSealQuantity, } = (0, transformDataUtil_1.transformShortTermSourceData)(dailyLimitData.data, downLimitData.data, hugeFallData.data, todayDateStr);
+    const { board1 = 0, evenBoardData, downLimitDataArr, hugeFallDataArr, dailyLimitReturnSealQuantity, } = (0, transformDataUtil_1.transformShortTermSourceData)(dailyLimitData.data, downLimitData.data, hugeFallData.data, dailyLimitGroupByGainainData.data, todayDateStr);
     createPayBackDto.downLimitQuantity = downLimitData.length;
     createPayBackDto.dailyLimitQuantity = dailyLimitData.length;
     createPayBackDto.dailyLimitOpenQuantity = dailyLimitOpenData.length;

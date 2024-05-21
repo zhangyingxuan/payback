@@ -4,6 +4,7 @@ export declare class DailyLimitStockDto {
     plateLevel2: string;
     turnoverRate: number;
     reason: string;
+    gainian: string;
     turnover: number;
     turnoverType: string;
     closingFunds: number;

@@ -67,7 +67,7 @@ function transformDownLimitData(dailyLimitData, currentDate) {
         });
     return downLimitDataArr;
 }
-function transformDailyLimitData(dailyLimitData, currentDate) {
+function transformDailyLimitData(dailyLimitData, dailyLimitGroupByGainainData, currentDate) {
     let board1 = 0, maxHeight = 1, currentLevel = 0, jitianjiban = '', dailyLimitReturnSealQuantity = 0;
     const evenBoardData = { maxHeight: 1, gaobiao: [], yizi: 0 };
     const evenBoardLabel = `连续涨停天数[${currentDate}]`;
@@ -94,6 +94,7 @@ function transformDailyLimitData(dailyLimitData, currentDate) {
             if (dailyLimitStockDto.openTimes > 0 && item[`最终涨停时间[${currentDate}]`]) {
                 dailyLimitStockDto.dailyTime += ',' + item[`最终涨停时间[${currentDate}]`].trim();
             }
+            dailyLimitStockDto.gainian = getGainianByCode(dailyLimitGroupByGainainData, dailyLimitStockDto.code);
             currentLevel = item[evenBoardLabel];
             jitianjiban = item[`几天几板[${currentDate}]`];
             if (jitianjiban && jitianjiban.indexOf('天') > -1) {
@@ -124,6 +125,18 @@ function transformDailyLimitData(dailyLimitData, currentDate) {
         evenBoardData,
         dailyLimitReturnSealQuantity,
     };
+}
+function getGainianByCode(dailyLimitGroupByGainainData, code) {
+    if (!dailyLimitGroupByGainainData || dailyLimitGroupByGainainData.length === 0)
+        return;
+    let gainian = '';
+    dailyLimitGroupByGainainData.forEach(item => {
+        if (item.stock_list && item.stock_list.some(stock => stock.code === code)) {
+            gainian && (gainian += ',');
+            gainian += `${item.name}:${item.code}`;
+        }
+    });
+    return gainian;
 }
 function transformBidData(stocks, todayDateStr, yesterdayDate) {
     const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
@@ -197,11 +210,11 @@ function transformStrongStockData(stocks, todayDateStr, yesterdayDate) {
     return strongStockDtos;
 }
 exports.transformStrongStockData = transformStrongStockData;
-function transformShortTermSourceData(dailyLimitData, downLimitData, hugeFallData, todayDateStr) {
+function transformShortTermSourceData(dailyLimitData, downLimitData, hugeFallData, dailyLimitGroupByGainainData, todayDateStr) {
     const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
     const downLimitDataArr = transformDownLimitData(downLimitData, currentDate);
     const { hugeFallDataArr } = transformHugeFallData(hugeFallData);
-    const { board1, evenBoardData, dailyLimitReturnSealQuantity } = transformDailyLimitData(dailyLimitData, currentDate);
+    const { board1, evenBoardData, dailyLimitReturnSealQuantity } = transformDailyLimitData(dailyLimitData, dailyLimitGroupByGainainData, currentDate);
     return {
         board1,
         evenBoardData,

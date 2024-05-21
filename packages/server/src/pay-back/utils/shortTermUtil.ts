@@ -4,6 +4,7 @@ import { params } from '../core/config';
 import { fetchAllStocksByIwencai } from '../core/fetchUtil';
 import { getCurrentCycle, iWencaiDateFormat } from 'pay-back-core';
 import * as dayjs from 'dayjs';
+import fetch from 'node-fetch';
 
 // 跌停个股只需考虑数量，无需所有个股都存储
 const downLimitNum = 50;
@@ -25,53 +26,60 @@ export async function getShortTermData(todayDateStr, lastTradingDayData): Promis
   const dailyLimitOpen: any = fetchAllStocksByIwencai(params.dailyLimitOpen);
   // 跌幅大于等于15的个股
   const hugeFall: any = fetchAllStocksByIwencai(params.hugeFall, otherNum);
+  // 获取涨停个股 按题材分类
+  const dailyLimitGroupByGainain = fetch(
+    `https://data.10jqka.com.cn/dataapi/limit_up/block_top?filter=HS,GEM2STAR&date=${dayjs(todayDateStr).format(
+      'YYYYMMDD',
+    )}`,
+  );
   // const end = performance.now();
   // console.log('cost is', `${end - start}ms`);
   // console.timeEnd();
-  const [dailyLimitData, downLimitData, dailyLimitOpenData, hugeFallData] = await Promise.all([
-    dailyLimit,
-    downLimit,
-    dailyLimitOpen,
-    hugeFall,
-  ]);
+  const [dailyLimitData, downLimitData, dailyLimitOpenData, hugeFallData, dailyLimitGroupByGainainD] =
+    await Promise.all([dailyLimit, downLimit, dailyLimitOpen, hugeFall, dailyLimitGroupByGainain]);
+
+  const dailyLimitGroupByGainainData = await dailyLimitGroupByGainainD.json();
 
   return prepareShortTermDto(
     dailyLimitData,
     dailyLimitOpenData,
     downLimitData,
     hugeFallData,
-    todayDateStr,
     lastTradingDayData,
+    dailyLimitGroupByGainainData,
+    todayDateStr,
   );
 }
 
 export async function getShortTermDataByDate(todayDateStr, lastTradingDayData): Promise<CreatePayBackDto> {
   // 准备涨停数据
-  const dailyLimitData: any = await fetchAllStocksByIwencai(
-    params.dailyLimitMoreThan1ByDate.replace('${date}', todayDateStr),
-  );
+  const dailyLimit: any = fetchAllStocksByIwencai(params.dailyLimitMoreThan1ByDate.replace('${date}', todayDateStr));
   // 跌停数据
-  const downLimitData: any = await fetchAllStocksByIwencai(
-    params.downLimitByDate.replace('${date}', todayDateStr),
-    downLimitNum,
-  );
+  const downLimit: any = fetchAllStocksByIwencai(params.downLimitByDate.replace('${date}', todayDateStr), downLimitNum);
   // 涨停打开个股
-  const dailyLimitOpenData: any = await fetchAllStocksByIwencai(
-    params.dailyLimitOpenByDate.replace('${date}', todayDateStr),
-  );
+  const dailyLimitOpen: any = fetchAllStocksByIwencai(params.dailyLimitOpenByDate.replace('${date}', todayDateStr));
   // 跌幅大于等于15的个股
-  const hugeFallData: any = await fetchAllStocksByIwencai(
-    params.hugeFallByDate.replace('${date}', todayDateStr),
-    otherNum,
+  const hugeFall: any = fetchAllStocksByIwencai(params.hugeFallByDate.replace('${date}', todayDateStr), otherNum);
+  // 获取涨停个股 按题材分类
+  const dailyLimitGroupByGainain = fetch(
+    `https://data.10jqka.com.cn/dataapi/limit_up/block_top?filter=HS,GEM2STAR&date=${dayjs(todayDateStr).format(
+      'YYYYMMDD',
+    )}`,
   );
+
+  const [dailyLimitData, downLimitData, dailyLimitOpenData, hugeFallData, dailyLimitGroupByGainainD] =
+    await Promise.all([dailyLimit, downLimit, dailyLimitOpen, hugeFall, dailyLimitGroupByGainain]);
+
+  const dailyLimitGroupByGainainData = await dailyLimitGroupByGainainD.text();
 
   return prepareShortTermDto(
     dailyLimitData,
     dailyLimitOpenData,
     downLimitData,
     hugeFallData,
-    todayDateStr,
     lastTradingDayData,
+    dailyLimitGroupByGainainData,
+    todayDateStr,
   );
 }
 
@@ -88,8 +96,9 @@ function prepareShortTermDto(
   dailyLimitOpenData,
   downLimitData,
   hugeFallData,
-  todayDateStr,
   lastTradingDayData,
+  dailyLimitGroupByGainainData,
+  todayDateStr,
 ) {
   const createPayBackDto: CreatePayBackDto = new CreatePayBackDto();
   const {
@@ -98,7 +107,13 @@ function prepareShortTermDto(
     downLimitDataArr,
     hugeFallDataArr,
     dailyLimitReturnSealQuantity,
-  } = transformShortTermSourceData(dailyLimitData.data, downLimitData.data, hugeFallData.data, todayDateStr);
+  } = transformShortTermSourceData(
+    dailyLimitData.data,
+    downLimitData.data,
+    hugeFallData.data,
+    dailyLimitGroupByGainainData.data,
+    todayDateStr,
+  );
 
   // 仅存储短线跌停，即’ 资金出逃‘ 类型
   createPayBackDto.downLimitQuantity = downLimitData.length;

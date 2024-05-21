@@ -9,6 +9,8 @@ export class DailyLimitStockDto {
   turnoverRate: number;
   // 涨停原因
   reason: string;
+  // 涨停概念
+  gainian: string;
   // 成交额，
   turnover: number;
   // 成交量类型，一字涨停

@@ -55,8 +55,26 @@
 
             <span class="dateTime__span">{{ updateTime }}</span>
 
+            <el-switch
+              v-model="data.isGainianSwitch"
+              inline-prompt
+              style="
+                margin-right: 5px;
+                --el-switch-on-color: #409eff;
+                --el-switch-off-color: #ff7f00;
+              "
+              active-text="概念"
+              inactive-text="题材"
+              @change="
+                () => {
+                  data.keyword = '';
+                }
+              "
+            />
             <span
-              v-for="(item, index) in currentDateData.ticaiData"
+              v-for="(item, index) in currentDateData[
+                data.isGainianSwitch ? 'gainianData' : 'ticaiData'
+              ]"
               :key="'span' + index"
               @click.stop="handleTicaiClick(item.key)"
               :class="{
@@ -202,6 +220,7 @@
             :stock="stock"
             v-show="stock.isAdd"
             :keyword="data.keyword"
+            :isGainianSwitch="data.isGainianSwitch"
           />
           <ColsBiddingData
             v-if="showBidding"
@@ -282,6 +301,7 @@ const data: {
   evenBoardHeight: number;
   evenBoardHeightOptions: Array<Option>;
   keyword: string;
+  isGainianSwitch: boolean;
 } = reactive({
   // 连板
   notFirstBoardChecked: false,
@@ -315,6 +335,8 @@ const data: {
   // 连板高度可选项
   evenBoardHeightOptions: [],
   keyword: '',
+  // 是否为概念
+  isGainianSwitch: true,
 });
 
 /**
@@ -416,7 +438,16 @@ const stockGroupByPlateByFilter = computed(() => {
       }
       // 新增 过滤题材的功能，题材梯队整理 2024-03-04 15:50:37
       if (data.keyword && isAdd) {
-        isAdd = item.reason ? item.reason.indexOf(data.keyword) > -1 : false;
+        // 题材 还是概念过滤？
+        if (data.isGainianSwitch) {
+          isAdd = item.gainian
+            ? item.gainian.some((item: any) => {
+                return item.name === data.keyword;
+              })
+            : false;
+        } else {
+          isAdd = item.reason ? item.reason.indexOf(data.keyword) > -1 : false;
+        }
       }
       isAdd && myStrategyCheckedNum++;
 

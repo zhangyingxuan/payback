@@ -8,6 +8,8 @@ export interface DailyLimitStockDto {
   plateLevel2: string;
   // 涨停原因
   reason: string;
+  // 涨停原因
+  gainian: any;
   // 成交额，
   turnover: number;
   // 封板资金

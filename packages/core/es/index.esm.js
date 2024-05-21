@@ -46,7 +46,7 @@ function getCurrentCycle(currentTradingDayData, lastTradingDayData) {
         if (maxHeightCurrent == config.startUpHeight) {
             return cycles[0];
         }
-        if (currentTradingDayData.evenBoardAmount >= config.evenBoardNum) {
+        if (currentTradingDayData.evenBoardAmount >= lastTradingDayData.evenBoardNum) {
             // 3. 高潮（前提，不能有连板负反馈）
             if (currentTradingDayData.dailyLimitQuantity >= config.dailyLimitNum) {
                 return cycles[2];

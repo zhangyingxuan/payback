@@ -9,10 +9,25 @@
     />
     <Stock v-else class="large--fixed" :name="stock.name" :code="stock.code" />
     &nbsp;[&nbsp;
-    <span
-      class="orange content-large"
-      v-html="highlightKeyWord(stock.reason, keyword)"
-    ></span>
+
+    <span class="orange content-large">
+      <span
+        v-show="!isGainianSwitch"
+        v-html="highlightKeyWord(stock.reason, keyword, isGainianSwitch)"
+      ></span>
+      <!-- <span>{{ stock.gainian }}</span> -->
+      <span v-show="isGainianSwitch">
+        <el-tag
+          size="small"
+          type=""
+          style="margin-left: 3px"
+          v-for="(gainian, index) in stock.gainian"
+          :key="index"
+        >
+          <Plate :name="gainian.name" :code="gainian.code" />
+        </el-tag>
+      </span>
+    </span>
     <span class="lanse middle">{{ stock.price }}</span>
     <span
       :class="{
@@ -23,7 +38,7 @@
       {{ stock.closingFunds }} 亿
     </span>
     <!-- 换手率 -->
-    <span v-if="stock.turnoverRate" :class="calcClass(stock)" class="middle">
+    <span :class="calcClass(stock)" class="middle">
       {{ stock.turnoverRate }} %
     </span>
     <span class="zise content-middle"> {{ stock.circulationValue }} 亿 </span>
@@ -61,6 +76,10 @@ defineProps({
   keyword: {
     type: String,
     default: '',
+  },
+  isGainianSwitch: {
+    type: Boolean,
+    default: true,
   },
 });
 

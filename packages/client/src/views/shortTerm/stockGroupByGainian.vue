@@ -42,6 +42,12 @@
     <!-- 内容区域 -->
     <div class="table__content">
       <div
+        v-if="data.stockGroupByGainian && data.stockGroupByGainian.length === 0"
+        class="noData"
+      >
+        暂无数据
+      </div>
+      <div
         class="table-row"
         v-for="(item, key) in data.stockGroupByGainian"
         :key="key"
@@ -144,9 +150,19 @@ async function refreshPage() {
 }
 
 async function initPage() {
-  data.stockGroupByGainian = await fetchDailyLimitStockGroupByGainian(
+  const stockGroupByGainian = await fetchDailyLimitStockGroupByGainian(
     dayjs().format('YYYYMMDD'),
   );
+  stockGroupByGainian &&
+    stockGroupByGainian.forEach((item: any) => {
+      // 按首次涨停时间 升序排序
+      item.stock_list &&
+        item.stock_list.sort((stock1: any, stock2: any) => {
+          return stock1.first_limit_up_time - stock2.first_limit_up_time;
+        });
+    });
+
+  data.stockGroupByGainian = stockGroupByGainian;
   data.refreshTime = dayjs().format('hh:mm:ss');
   // 按概念板块分类
   // 个股展示 reason_info、reason_type、name、code、high、first_limit_up_time（首次涨停）、last_limit_up_time、latest（股价）
@@ -182,5 +198,10 @@ initPage();
 .time {
   display: inline-block;
   min-width: 40px;
+}
+.noData {
+  padding: 50px;
+  text-align: center;
+  columns: #ccc;
 }
 </style>

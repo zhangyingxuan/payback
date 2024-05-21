@@ -113,18 +113,36 @@ export function transformEvenBoardData(shortTermData: ShortTermModel[]): any[] {
       const evenBoardData = JSON.parse(item.evenBoardData);
       // 找出题材共性，按涨停题材 排序
       const ticaiData: any = {};
+      const gainianData: any = {};
       const maxHeight = evenBoardData.maxHeight;
 
       for (let i = 1; i <= maxHeight; i++) {
         evenBoardData[i] && evenBoardData[i].forEach((item: any) => {
-          const resons = item.reason ? item.reason.split('+') : ['其它'];
-          resons.forEach((reson: any) => {
+          const resons = item.reason.split('+');
+          // const resons = item.reason ? item.reason.split('+') : ['其它'];
+          resons && resons.forEach((reson: any) => {
             if (!ticaiData[reson]) {
               ticaiData[reson] = 1;
             } else {
               ticaiData[reson]++;
             }
           });
+          // 转换概念板块 的数据结构
+          if (item.gainian) {
+            item.gainian = item.gainian.split(',').map(((gainian: string) => {
+              const gainianInfo = gainian.split(':');
+              if (!gainianData[gainianInfo[0]]) {
+                gainianData[gainianInfo[0]] = 1;
+              } else {
+                gainianData[gainianInfo[0]]++;
+              }
+
+              return {
+                name: gainianInfo[0],
+                code: gainianInfo[1]
+              }
+            }));
+          }
         });
       }
       // 取出前3 题材并展示
@@ -144,7 +162,8 @@ export function transformEvenBoardData(shortTermData: ShortTermModel[]): any[] {
         evenBoardAmount: item.evenBoardAmount,
         yizi: evenBoardData.yizi,
         biddingDataUpdateTime: dayjs(item.biddingDataUpdateTime).format('MM/DD HH:mm'),
-        ticaiData: sortObj(ticaiData).splice(0, 3)
+        ticaiData: sortObj(ticaiData).splice(0, 3),
+        gainianData: sortObj(gainianData).splice(0, 3)
       };
 
       item.downLimitData && (itemData.downLimitData = JSON.parse(item.downLimitData));
