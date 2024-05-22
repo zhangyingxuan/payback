@@ -39,6 +39,7 @@ export async function getShortTermData(todayDateStr, lastTradingDayData): Promis
     await Promise.all([dailyLimit, downLimit, dailyLimitOpen, hugeFall, dailyLimitGroupByGainain]);
 
   const dailyLimitGroupByGainainData = await dailyLimitGroupByGainainD.json();
+  console.log(dailyLimitGroupByGainainData);
 
   return prepareShortTermDto(
     dailyLimitData,

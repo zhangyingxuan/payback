@@ -118,8 +118,7 @@ export function transformEvenBoardData(shortTermData: ShortTermModel[]): any[] {
 
       for (let i = 1; i <= maxHeight; i++) {
         evenBoardData[i] && evenBoardData[i].forEach((item: any) => {
-          const resons = item.reason.split('+');
-          // const resons = item.reason ? item.reason.split('+') : ['其它'];
+          const resons = item.reason ? item.reason.split('+') : null;
           resons && resons.forEach((reson: any) => {
             if (!ticaiData[reson]) {
               ticaiData[reson] = 1;
