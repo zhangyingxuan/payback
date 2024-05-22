@@ -18,7 +18,6 @@ async function getShortTermData(todayDateStr, lastTradingDayData) {
     const dailyLimitGroupByGainain = (0, node_fetch_1.default)(`https://data.10jqka.com.cn/dataapi/limit_up/block_top?filter=HS,GEM2STAR&date=${dayjs(todayDateStr).format('YYYYMMDD')}`);
     const [dailyLimitData, downLimitData, dailyLimitOpenData, hugeFallData, dailyLimitGroupByGainainD] = await Promise.all([dailyLimit, downLimit, dailyLimitOpen, hugeFall, dailyLimitGroupByGainain]);
     const dailyLimitGroupByGainainData = await dailyLimitGroupByGainainD.json();
-    console.log(dailyLimitGroupByGainainData);
     return prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, lastTradingDayData, dailyLimitGroupByGainainData, todayDateStr);
 }
 exports.getShortTermData = getShortTermData;
