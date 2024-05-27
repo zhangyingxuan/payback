@@ -19,7 +19,13 @@ export class AuthService {
   async login(user: LoginDTO, req: any) {
     // const ipAddress = request.ip;
     const result = await this.validateUser(user);
-    console.log(`用户登录：${result ? result.name : '失败'}` + user.account + ' ip：' + req.ip);
+    console.log(
+      `用户登录：${result ? result.name : '失败'}` +
+      user.account +
+      ' ip：' +
+      req.headers['x-forwarded-for'] +
+      req.socket.remoteAddress,
+    );
     // 验证码
 
     if (result) {
