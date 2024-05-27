@@ -78,7 +78,9 @@ let PayBackController = PayBackController_1 = class PayBackController {
                 resultData = await this.shorTermService.crawlShortTermData();
                 break;
             case 2:
-                resultData = await this.marketService.crawlMarketData();
+                plate = this.plateService.crawlPlateData();
+                market = this.marketService.crawlMarketData();
+                await Promise.all([plate, market]);
                 break;
             case 3:
                 resultData = await this.fundsService.crawlfundsData();

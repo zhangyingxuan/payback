@@ -91,7 +91,10 @@ export class PayBackController {
         resultData = await this.shorTermService.crawlShortTermData();
         break;
       case 2:
-        resultData = await this.marketService.crawlMarketData();
+        // 更新板块数据涨停家数排序 & 市场数据（行业、概念涨跌幅）
+        plate = this.plateService.crawlPlateData();
+        market = this.marketService.crawlMarketData();
+        await Promise.all([plate, market]);
         break;
       case 3:
         resultData = await this.fundsService.crawlfundsData();

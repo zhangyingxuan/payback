@@ -160,7 +160,7 @@ async function initPlateOrderByDailyLimit() {
   data.plateOrderByDailyLimit = plateOrderByDailyLimit;
 }
 
-async function initPageData() {
+async function initPage() {
   initPlateByFunds();
   initPlateOrderByDailyLimit();
 }
@@ -266,7 +266,7 @@ async function updateData() {
   ElMessage.success('更新成功');
 }
 
-initPageData();
+initPage();
 
 //暴露state和play方法
 defineExpose({

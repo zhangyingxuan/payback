@@ -57,6 +57,10 @@
             <div class="plate_col">
               <plate :name="item.name" :code="item.code" />
               <span class="red">{{ item.high }}</span>
+
+              <span :class="item.change > 0 ? 'red' : 'green'">
+                {{ item.change.toFixed(2) }}%
+              </span>
             </div>
             <div class="plate_col">
               <span class="red">{{ item.limit_up_num }}</span>

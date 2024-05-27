@@ -4,9 +4,12 @@ import { AppModule } from './app.module';
 import * as session from 'express-session';
 import { HttpExceptionFilter } from './filters/HttpExceptionFilter';
 import { getAvailablePort } from './portManager';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app: NestExpressApplication = await NestFactory.create<NestExpressApplication>(AppModule);
+  // const app = await NestFactory.create(AppModule);
+  app.set('trust proxy', true); //此接口NestExpressApplication才有
   app.use(compression());
   app.setGlobalPrefix('blowsysun'); // 全局路由前缀
   app.use(

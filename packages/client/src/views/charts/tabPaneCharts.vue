@@ -149,7 +149,7 @@ const fundsByHangyeChart = ref(); // 资金流向Chart
 const fundsByGainianChart = ref(); // 资金流向Chart
 const longhuListChart = ref(); // 龙虎榜Chart
 
-// 监听变化，重新请求数据
+// 监听变化，重新请求数据 暂时去除图表监听 2024-05-27 22:54:18
 watch(countDays, val => {
   initPage(val);
 });
@@ -219,7 +219,7 @@ async function initPage(pageSize = 15) {
 
 function getChartStyle() {
   // 计算宽度；屏幕宽度 - 左侧sideBar - 边框 - cardLeft
-  const columnsAmount = columnsConfig[countDays.value];
+  const columnsAmount = columnsConfig[countDays.value] || 1;
   const screenWidth = screen.width - 64 - 20 - columnsAmount * 15;
   const cardWidth = isMobile ? screen.width - 30 : screenWidth / columnsAmount;
   return {

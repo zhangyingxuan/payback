@@ -1,4 +1,5 @@
-pi<template>
+pi
+<template>
   <div :class="['chartList__container', { isMobile }]">
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
       <template #header>
@@ -14,7 +15,7 @@ pi<template>
           </el-button>
           <el-button
             type="primary"
-            @click="refreshHotListPage"
+            @click="initPage"
             size="small"
             plain
             :loading="data.refreshLoading"
@@ -89,7 +90,7 @@ const data: any = reactive({
   loading: false,
 });
 
-async function refreshHotListPage() {
+async function initPage() {
   data.refreshLoading = true;
   const result = await fetchHostListData({ limit: 10, isMobile });
   // 数据转换
@@ -117,7 +118,7 @@ async function updateHotListData() {
       result.updatedTime = dayjs(result.updatedTime).format('MM/DD HH:mm');
       // 爬取成功
       ElMessage.success('更新成功');
-      // refreshHotListPage();
+      // initPage();
       data.hotListResult.splice(0, 1, result);
     })
     .finally(() => {
@@ -125,7 +126,7 @@ async function updateHotListData() {
     });
 }
 
-refreshHotListPage();
+initPage();
 </script>
 
 <style scoped lang="less">

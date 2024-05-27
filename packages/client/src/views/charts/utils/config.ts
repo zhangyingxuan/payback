@@ -1,11 +1,11 @@
 export const columnsConfig: any = {
-  5: 4,
   7: 4,
-  10: 3,
   15: 2,
   20: 2,
-  30: 1,
-  45: 1,
+  40: 1,
+  60: 1,
+  120: 1,
+  240: 1,
 };
 
 export const iwencaiUrl = 'http://www.iwencai.com/unifiedwap/result?w=';
