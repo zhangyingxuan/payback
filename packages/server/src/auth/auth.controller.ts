@@ -1,4 +1,4 @@
-import { Controller, Body, Req, Res, Request, Post, Get, UseGuards, Logger } from '@nestjs/common';
+import { Controller, Body, Req, Res, Request, Post, Get, UseGuards, Logger, Headers } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Public } from '../decorator/public.decorator';
 import * as svgCaptcha from 'svg-captcha';
@@ -11,7 +11,8 @@ export class AuthController {
 
   @Public()
   @Post('login')
-  async login(@Body() body, @Req() req) {
+  async login(@Body() body, @Req() req, @Headers('x-real-ip') headerRealIP: string) {
+    console.log('x-real-ip' + headerRealIP);
     const { code } = body;
     const storedCaptcha = req.session.captcha;
     // this.logger.log('用户登录 验证码：storedCaptcha：' + storedCaptcha + '==code：' + code);

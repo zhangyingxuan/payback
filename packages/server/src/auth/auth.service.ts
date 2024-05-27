@@ -24,6 +24,9 @@ export class AuthService {
       user.account +
       ' ip：' +
       req.headers['x-forwarded-for'] +
+      '--' +
+      req.headers['x-real-ip'] +
+      '--' +
       req.socket.remoteAddress,
     );
     // 验证码

@@ -3,7 +3,7 @@ export declare class AuthController {
     private authService;
     constructor(authService: AuthService);
     private readonly logger;
-    login(body: any, req: any): Promise<{
+    login(body: any, req: any, headerRealIP: string): Promise<{
         code: number;
         data: {
             isAdmin: boolean;
