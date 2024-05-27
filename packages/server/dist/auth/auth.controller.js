@@ -24,8 +24,7 @@ let AuthController = AuthController_1 = class AuthController {
         this.authService = authService;
         this.logger = new common_1.Logger(AuthController_1.name);
     }
-    async login(body, req, headerRealIP) {
-        console.log('x-real-ip' + headerRealIP);
+    async login(body, req) {
         const { code } = body;
         const storedCaptcha = req.session.captcha;
         if (code && storedCaptcha && code.toLowerCase() === storedCaptcha.toLowerCase()) {
@@ -63,9 +62,8 @@ __decorate([
     (0, common_1.Post)('login'),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Req)()),
-    __param(2, (0, common_1.Headers)('x-real-ip')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object, String]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "login", null);
 __decorate([

@@ -8,7 +8,6 @@ const HttpExceptionFilter_1 = require("./filters/HttpExceptionFilter");
 const portManager_1 = require("./portManager");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
-    app.set('trust proxy', true);
     app.use(compression());
     app.setGlobalPrefix('blowsysun');
     app.use(session({
