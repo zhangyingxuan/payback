@@ -1,5 +1,5 @@
 /*!
- * index.js v0.0.11
+ * index.js v0.0.12
  * (c) 2018-2024 blowsysun
  * Released under the MIT License.
  */
@@ -1059,9 +1059,9 @@ const params = {
     // 概念板块
     gainianPlate: '概念板块',
     // 行业板块，按涨停个数排序
-    hangyePlateOrderByDailyLimitNum: '涨停家数大于1的行业板块；按涨停个数降序；成交额；',
+    hangyePlateOrderByDailyLimitNum: '涨停家数>=1的行业板块；按涨停个数降序；成交额；',
     // 概念板块，按涨停个数排序
-    gainianPlateOrderByDailyLimitNum: '涨停家数大于1的概念板块；按涨停个数降序；成交额；',
+    gainianPlateOrderByDailyLimitNum: '涨停家数>=1的概念板块；按涨停个数降序；成交额；',
     // =============== ===============  个股相关 =============== =============== 
     // 容量核心
     rlCoreStock: '按成交额降序',

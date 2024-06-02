@@ -1,6 +1,6 @@
 {
   "name": "pay-back-core",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "前后端公用代码",
   "main": "./lib/index.cjs",
   "umd": "./lib/index.umd.js",
