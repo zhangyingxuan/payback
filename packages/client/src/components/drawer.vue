@@ -7,7 +7,7 @@
     @close="onDrawerClose"
   >
     <pre>
-      早盘工作：
+      【早盘工作】
       1. 9点前，外围美股昨日涨跌情况 <a href="https://stock.10jqka.com.cn/zaopan/" target="_blank">早盘必读</a>  <a href="http://stock.10jqka.com.cn/fincalendar.shtml" target="_blank">投资日历</a>  <a href="http://stock.10jqka.com.cn/jyts_list/" target="_blank">交易提醒</a> <a href="http://stock.10jqka.com.cn/bktt_list/" target="_blank">四大证券文章精华</a> 
       2. 大盘趋势，保本？进攻？全天策略基调，注意变盘
       3. 看集合竞价
@@ -17,6 +17,8 @@
       4. 选股：留意超预期，筹码，位置，价格，公告业绩，大单；临盘自选低位强势首板，或大资金加持小票
       5. 1进2玩法：高开3%以下，最好打板介入； 3-7%适合低吸，7%以上竞价直接上；一字板不打
       
+      【盘中消息】
+      1. <a href="https://news.10jqka.com.cn/realtimenews.html" target="_blank">同花顺全球财经</a> <a href="https://www.cls.cn/telegraph" target="_blank">财联社电报</a>
     </pre>
     <!-- 连板预期参考（低于预期则弱）<a href="https://zhuanlan.zhihu.com/p/553621420"></a>
     1、昨日一字板或开盘秒板的。第二天正常预期高开5%以上。

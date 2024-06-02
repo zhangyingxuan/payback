@@ -31,7 +31,7 @@ VMdEditorInit(app);
 ElementPlusInit(app);
 echartsInit(app);
 // 初始化监控
-initAegis(app);
+initAegis(app, permiss);
 //注册指令
 setupDirectives(app, permiss);
 

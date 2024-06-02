@@ -118,6 +118,7 @@ export function transformEvenBoardData(shortTermData: ShortTermModel[]): any[] {
 
       for (let i = 1; i <= maxHeight; i++) {
         evenBoardData[i] && evenBoardData[i].forEach((item: any) => {
+          // 转换题材数据，选出前三
           const resons = item.reason ? item.reason.split('+') : null;
           resons && resons.forEach((reson: any) => {
             if (!ticaiData[reson]) {

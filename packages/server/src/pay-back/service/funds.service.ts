@@ -14,7 +14,7 @@ export class FundsService {
   private readonly logger = new Logger(FundsService.name);
 
   // 尾盘
-  @Cron('0 20 16 * * 1-5')
+  @Cron('0 0 17 * * 1-5')
   async autoCrawlfundsDataLateSession() {
     this.crawlfundsData();
   }

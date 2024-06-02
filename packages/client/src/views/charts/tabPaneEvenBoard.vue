@@ -514,7 +514,7 @@ async function handleDateClick(item: any) {
     (evenBoardItem: any) => evenBoardItem.createDate === item.createDate,
   );
   data.currentDateData = evenBoard.value[index];
-  // 昨日涨停数据，只要不是列表数据最有一条，昨日涨停数据 = 当前日期张提数据之后的一条
+  // 昨日涨停数据，只要不是列表数据最后一条，昨日涨停数据 = 当前日期涨停数据之后的一条
   data.yesterdayDateData =
     index + 1 >= evenBoard.value.length ? [] : evenBoard.value[index + 1];
 }

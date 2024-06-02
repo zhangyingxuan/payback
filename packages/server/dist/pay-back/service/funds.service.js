@@ -79,7 +79,7 @@ let FundsService = FundsService_1 = class FundsService {
     }
 };
 __decorate([
-    (0, schedule_1.Cron)('0 20 16 * * 1-5'),
+    (0, schedule_1.Cron)('0 0 17 * * 1-5'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
