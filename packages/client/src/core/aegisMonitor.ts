@@ -8,7 +8,7 @@ export function initAegis(app: App, permiss: any) {
   // 获取当前用户名，如果没有则不上传
   const aegis = new Aegis({
     id: 'p0vobckgDZ10ebknPP', // 上报 id
-    uin: permiss.account || 'user', // 用户唯一 ID（可选）
+    uin: permiss.account || 'Visitors', // 用户唯一 ID（可选）
     reportApiSpeed: true, // 接口测速
     reportAssetSpeed: true, // 静态资源测速
     spa: true, // spa 应用页面跳转的时候开启 pv 计算
