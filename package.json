@@ -20,7 +20,14 @@
     "publish:latest": "lerna publish --force-publish --skip-git",
     "start:wxPusher": "cd packages/wxPusher && pnpm start",
     "start:server": "cd packages/server && pnpm start",
-    "start:client": "cd packages/client && pnpm start"
+    "start:client": "cd packages/client && pnpm start",
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "*/src/**/*.{js,vue}": "eslint --cache --fix",
+    "*/src/**/*.{js,ts,wxml,wxss,html,json,css,less,json}": [
+      "prettier --write"
+    ]
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.0.9",

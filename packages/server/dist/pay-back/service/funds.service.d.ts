@@ -6,6 +6,7 @@ export declare class FundsService {
     constructor(fundsDataRp: Repository<fundsData>);
     private readonly logger;
     autoCrawlfundsDataLateSession(): Promise<void>;
+    autoCrawlnorthDataLateSession(): Promise<void>;
     autoCrawlfundsDataMidday(): Promise<void>;
     crawlfundsData(): Promise<CreateFundsDataDto>;
     findAll(): Promise<fundsData[]>;

@@ -29,6 +29,9 @@ let FundsService = FundsService_1 = class FundsService {
     async autoCrawlfundsDataLateSession() {
         this.crawlfundsData();
     }
+    async autoCrawlnorthDataLateSession() {
+        this.crawlfundsData();
+    }
     async autoCrawlfundsDataMidday() {
         this.crawlfundsData();
     }
@@ -79,11 +82,17 @@ let FundsService = FundsService_1 = class FundsService {
     }
 };
 __decorate([
-    (0, schedule_1.Cron)('0 0 17 * * 1-5'),
+    (0, schedule_1.Cron)('0 0 16 * * 1-5'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], FundsService.prototype, "autoCrawlfundsDataLateSession", null);
+__decorate([
+    (0, schedule_1.Cron)('0 0 18 * * 1-5'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], FundsService.prototype, "autoCrawlnorthDataLateSession", null);
 __decorate([
     (0, schedule_1.Cron)('0 41 11 * * 1-5'),
     __metadata("design:type", Function),
