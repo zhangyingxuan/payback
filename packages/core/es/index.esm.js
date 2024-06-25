@@ -1,5 +1,5 @@
 /*!
- * index.js v0.0.12
+ * index.js v0.0.14
  * (c) 2018-2024 blowsysun
  * Released under the MIT License.
  */
@@ -46,9 +46,11 @@ function getCurrentCycle(currentTradingDayData, lastTradingDayData) {
         if (maxHeightCurrent == config.startUpHeight) {
             return cycles[0];
         }
-        if (currentTradingDayData.evenBoardAmount >= lastTradingDayData.evenBoardNum) {
+        // 比昨天连板数量多
+        if (currentTradingDayData.evenBoardAmount >= lastTradingDayData.evenBoardAmount) {
             // 3. 高潮（前提，不能有连板负反馈）
-            if (currentTradingDayData.dailyLimitQuantity >= config.dailyLimitNum) {
+            if (currentTradingDayData.evenBoardAmount >= config.evenBoardNum
+                && currentTradingDayData.dailyLimitQuantity >= config.dailyLimitNum) {
                 return cycles[2];
             }
             // 2. 发酵
@@ -1017,7 +1019,9 @@ function createV() {
 }
 
 const iWencaiDateFormat = 'YYYYMMDD';
-const chooseStockBaseCondition = '行业；股价低于30元；流通市值<=120亿；流通市值>=20亿；非创业板；非科创板；非ST';
+// export const chooseStockBaseCondition = '行业；股价低于30元；流通市值<=120亿；流通市值>=20亿；非创业板；非科创板；非ST';
+// 2024-06-18 17:36:19 可以做创业板，尝试绩优股
+const chooseStockBaseCondition = '行业；市盈率>0；股价低于50元；流通市值<=500亿；流通市值>=20亿；非科创板；非ST';
 const params = {
     downLimit: '跌停；非st；行业',
     downLimitByDate: '${date}跌停；非st；行业',
@@ -1063,8 +1067,9 @@ const params = {
     // 概念板块，按涨停个数排序
     gainianPlateOrderByDailyLimitNum: '涨停家数>=1的概念板块；按涨停个数降序；成交额；',
     // =============== ===============  个股相关 =============== =============== 
+    // 2024-06-14 22:47:13
     // 容量核心
-    rlCoreStock: '按成交额降序',
+    rlCoreStock: '成交额降序；流通市值；市值；换手率',
     // 资金流入降序
     fundsInflowStock: '资金流入降序',
     // 资金流出降序

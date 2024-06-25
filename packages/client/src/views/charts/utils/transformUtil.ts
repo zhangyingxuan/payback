@@ -14,7 +14,7 @@ import { getCurrentCycle } from 'pay-back-core';
 export const transformFundsData = (fundsData: FundsModel[], key: FundsKey) => {
   const xAxisData: any[] = [];
   // 流入Top5 + 流出Top5 共10条数据
-  const series: Object[] = [];
+  const series: any[] = [];
   const legendData: any = [];
   const inData: any = {
     inTop1: [],

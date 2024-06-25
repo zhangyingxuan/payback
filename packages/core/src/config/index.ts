@@ -1,6 +1,8 @@
 export const iWencaiDateFormat = 'YYYYMMDD';
 
-export const chooseStockBaseCondition = '行业；股价低于30元；流通市值<=120亿；流通市值>=20亿；非创业板；非科创板；非ST';
+// export const chooseStockBaseCondition = '行业；股价低于30元；流通市值<=120亿；流通市值>=20亿；非创业板；非科创板；非ST';
+// 2024-06-18 17:36:19 可以做创业板，尝试绩优股
+export const chooseStockBaseCondition = '行业；市盈率>0；股价低于50元；流通市值<=500亿；流通市值>=20亿；非科创板；非ST';
 
 export const params = {
   downLimit: '跌停；非st；行业',
@@ -47,8 +49,9 @@ export const params = {
   // 概念板块，按涨停个数排序
   gainianPlateOrderByDailyLimitNum: '涨停家数>=1的概念板块；按涨停个数降序；成交额；',
   // =============== ===============  个股相关 =============== =============== 
+  // 2024-06-14 22:47:13
   // 容量核心
-  rlCoreStock: '按成交额降序',
+  rlCoreStock: '成交额降序；流通市值；市值；换手率',
   // 资金流入降序
   fundsInflowStock: '资金流入降序',
   // 资金流出降序

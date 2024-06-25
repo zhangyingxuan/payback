@@ -226,6 +226,7 @@
       :downLimitData="data.currentDateData.downLimitData"
       :num="data.currentDateData.downLimitQuantity"
       :isMobile="isMobile"
+      :updateTime="dayjs(data.currentDateData.createTime).format('MM/DD HH:mm')"
     />
     <DownStockTable
       :downLimitData="data.currentDateData.hugeFallData"
@@ -236,6 +237,7 @@
       "
       :isDownLimitMode="false"
       :isMobile="isMobile"
+      :updateTime="dayjs(data.currentDateData.createTime).format('MM/DD HH:mm')"
     />
   </div>
 </template>

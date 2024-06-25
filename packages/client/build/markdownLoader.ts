@@ -2,11 +2,11 @@
 const fileRegex = /\.(md)$/;
 
 //将md文件解析成vue能识别的组件
-const compileSFC = require('@vue/compiler-sfc');
-const compileDOM = require('@vue/compiler-dom');
+import compileSFC from '@vue/compiler-sfc';
+import compileDOM from '@vue/compiler-dom';
 
 //解析md文件
-const Hyperdown = require('hyperdown');
+import Hyperdown from 'hyperdown';
 
 export default function myPlugin() {
   return {
@@ -18,12 +18,12 @@ export default function myPlugin() {
         // console.log(src)
         // return fs.readFileSync(src).toString()
         //将md文件内容转成html，这个转换的插件也是可以自己写
-        let hyperdown = new Hyperdown();
-        let html = hyperdown.makeHtml(src);
+        const hyperdown = new Hyperdown();
+        const html = hyperdown.makeHtml(src);
 
         //生成vue能解析的格式
         const ret = compileSFC.parse(`<template><div>${html}</div></template>`);
-        const code = compileDOM.compile(ret.descriptor.template.content, {
+        const code = compileDOM.compile(ret.descriptor.template?.content, {
           mode: 'module',
         }).code;
         const render = `${code};

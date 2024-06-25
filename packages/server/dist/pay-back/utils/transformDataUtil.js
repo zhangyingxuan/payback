@@ -251,7 +251,7 @@ function judgeExpected(item) {
     const expected = (0, pay_back_core_1.getExpected)(item);
     if (expected.indexOf(',') === -1) {
         const expectedD = parseInt(expected);
-        if (bidIncreaseT > expectedD) {
+        if (bidIncreaseT > expectedD || expectedD - bidIncreaseT <= 0.1) {
             if (bidIncreaseT - expectedD >= 1) {
                 return ExpectEnum.exceed;
             }

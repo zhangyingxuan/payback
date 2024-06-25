@@ -34,6 +34,7 @@
               /></el-icon> </el-tooltip
           ></template>
           （{{ num }}）
+          <span class="dateTime__span">{{ updateTime }}</span>
         </div>
       </div>
 
@@ -85,6 +86,10 @@ let superData = defineProps({
   isDownLimitMode: {
     type: Boolean,
     default: true,
+  },
+  updateTime: {
+    type: String,
+    default: '',
   },
 });
 

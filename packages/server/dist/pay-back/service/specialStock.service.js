@@ -100,7 +100,7 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
                 todayDataFromDB.chooseStock = JSON.stringify({ chooseStock1Expected });
                 todayDataFromDB.updatedTime = new Date();
                 this.logger.log('crawlSpecialStockData 更新数据');
-                await this.specialStockRp.update(todayDataFromDB.id, specialStockDto);
+                await this.specialStockRp.update(todayDataFromDB.id, todayDataFromDB);
             }
             else {
                 specialStockDto.newStock = JSON.stringify(newStocks);

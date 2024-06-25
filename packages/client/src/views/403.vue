@@ -6,9 +6,17 @@
       <router-link to="/">
         <el-button type="primary" size="large">返回首页</el-button>
       </router-link>
-      <el-button class="error-btn" type="primary" size="large" @click="goBack"
-        >返回上一页</el-button
+      <el-button class="error-btn" type="primary" size="large" @click="goBack">
+        返回上一页
+      </el-button>
+      <el-button
+        class="error-btn"
+        type="primary"
+        size="large"
+        @click="downloadImg"
       >
+        下载图片
+      </el-button>
     </div>
   </div>
 </template>
@@ -19,6 +27,17 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 const goBack = () => {
   router.go(-2);
+};
+
+const downloadImg = () => {
+  let a = document.createElement('a');
+  a.style.display = 'none';
+  a.href = 'https://img-home.csdnimg.cn/images/20240218021830.png';
+  a.setAttribute('download', '我的图片.jpg');
+  document.body.appendChild(a);
+  a.click(); //执行下载
+  window.URL.revokeObjectURL(a.href);
+  document.body.removeChild(a);
 };
 </script>
 

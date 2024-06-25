@@ -415,7 +415,8 @@ function judgeExpected(item) {
   // 在范围内符合预期，超出1个点，则超预期
   if (expected.indexOf(',') === -1) {
     const expectedD = parseInt(expected);
-    if (bidIncreaseT > expectedD) {
+    // 0.1个点误差，符合预期 2024-06-24 19:39:39
+    if (bidIncreaseT > expectedD || expectedD - bidIncreaseT <= 0.1) {
       if (bidIncreaseT - expectedD >= 1) {
         return ExpectEnum.exceed;
       }

@@ -1,7 +1,7 @@
 <template>
   <span
     class="stock"
-    :class="class"
+    :class="superData.class"
     @click="handleClick"
     @dblclick="handleDblClick"
     @mouseover="(e: Event) => handleShowMoreInfo(e)"
@@ -9,7 +9,9 @@
     {{ superData.name }}
     <template v-if="superData.showCode">&nbsp;{{ superData.code }}</template>
     <el-tag v-if="code.startsWith('30')" size="small" round>创</el-tag>
-    <el-tag v-else-if="code.startsWith('68')" size="small" round>科</el-tag>
+    <el-tag v-else-if="code.startsWith('68')" size="small" type="warning" round>
+      科
+    </el-tag>
     <!-- 北交所的股票代码开头一般为4和8。具体来说，以82、83、87和88开头的股票代码分别表示优先股、普通股票、公开发行股票和公开发行以外的股票。 -->
     <!-- 以400开头的股票代码表示从沪深两市退出到三板的A股股票，以420开头的股票代码表示从沪深两市退出到三板的B股股票，以430开头的股票代码表示做市商改革前的股票，相当于老的新三板股票。 -->
     <el-tag
