@@ -1,6 +1,6 @@
 {
   "name": "pay-back-client",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "start": "vite --force",
@@ -25,7 +25,7 @@
     "hyperdown": "^2.4.29",
     "js-cookie": "^3.0.5",
     "lodash-es": "^4.17.21",
-    "pay-back-core": "^0.0.13",
+    "pay-back-core": "^0.0.14",
     "pinia": "^2.0.20",
     "pinia-plugin-persist": "^1.0.0",
     "qs": "^6.11.1",
