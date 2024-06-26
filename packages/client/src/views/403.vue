@@ -17,12 +17,16 @@
       >
         下载图片
       </el-button>
+      <el-button class="error-btn" type="primary" size="large" @click="openApp">
+        打开微信
+      </el-button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts" name="403">
 import { useRouter } from 'vue-router';
+import { jsCallApp } from '../core/util';
 
 const router = useRouter();
 const goBack = () => {
@@ -38,6 +42,10 @@ const downloadImg = () => {
   a.click(); //执行下载
   window.URL.revokeObjectURL(a.href);
   document.body.removeChild(a);
+};
+
+const openApp = () => {
+  jsCallApp();
 };
 </script>
 
