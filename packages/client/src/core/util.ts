@@ -21,7 +21,7 @@ export const jsCallApp = () => {
   };
 
   sys.isWeixinBrowser = /micromessenger/.test(ua) ? true : false;
-  sys.isQQBrowser = ua.match(/QQ/i) == 'qq' ? true : false;
+  sys.isQQBrowser = ua.match(/QQ/i)?.[0]?.toLowerCase() === 'qq';
   sys.isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //android终端或者uc浏览器
   sys.isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
   sys.isMobile = !!u.match(/AppleWebKit.*Mobile.*/);
@@ -73,4 +73,11 @@ export const jsCallApp = () => {
       window.location.href = config.assistant_url;
     }, 500);
   }
+}
+
+export const updateNavThemeColor = (color: string) => {
+  // 获取meta标签
+  const meta: any = document.querySelector('meta[name="theme-color"]');
+  // 修改颜色值
+  meta && meta.setAttribute('content', color);
 }

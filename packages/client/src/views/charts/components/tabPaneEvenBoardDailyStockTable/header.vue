@@ -36,7 +36,7 @@
         <div class="biddingData__row" v-if="showBidding">
           <span class="middle">竞价涨幅</span>
           <span class="middle">竞价预期</span>
-          <span>收盘涨幅</span>
+          <span class="middle">收盘涨幅</span>
           [
           <span class="small">竞价</span>
           <span class="large">竞价评级</span>

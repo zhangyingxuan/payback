@@ -338,6 +338,28 @@ export async function modifyThsSelfStocksRequest(code, userid, ticket, user, typ
 }
 
 /**
+ *
+ * @param code
+ * @param isPlate
+ * @returns
+ */
+function getCodeSuffix(code, isPlate) {
+  if (isPlate) {
+    return '_48';
+  }
+
+  // 深交所 6 688
+  if (code.startsWith('6')) {
+    return '_17';
+    // 上交所 30 0
+  } else if (code.startsWith('3') || code.startsWith('0')) {
+    return '_33';
+  } else {
+    // 北证 4 8
+    return '_151';
+  }
+}
+/**
  * 修改 同花顺 自选板块 2024-02-27
  * @param code
  * @param userid
@@ -347,7 +369,7 @@ export async function modifyThsSelfStocksRequest(code, userid, ticket, user, typ
  * @returns
  */
 export async function modifyThsSelfRequest(code, userid, ticket, user, type = ThsOprate.add, isPlate = false) {
-  const codeSuffix = isPlate ? '_48' : '_33';
+  const codeSuffix = getCodeSuffix(code, isPlate);
 
   const result = await fetch('https://www.iwencai.com/iwencai/userinfo/iwc/userinfo/self-stock/index/' + type, {
     headers: {
@@ -359,7 +381,7 @@ export async function modifyThsSelfRequest(code, userid, ticket, user, type = Th
     // referrer: `https://www.iwencai.com/unifiedwap/result?w=${code}%20&querytype=${isPlate ? 'zhishu' : 'stock'}`,
     // referrerPolicy: 'strict-origin-when-cross-origin',
     body: JSON.stringify({
-      // 个股：6开头 _17；8开头 _151；0开头 _33
+      // 个股：6、688开头 _17；43、8开头 _151；3、0开头 _33
       // 板块_48
       codes: code + codeSuffix,
       type: 2,

@@ -118,8 +118,8 @@ let ThsService = ThsService_1 = class ThsService {
         const user = userInfo.user;
         let msg = '';
         try {
-            const result = await (0, fetchUtil_1.modifyThsSelfStocksRequest)(code, userid, ticket, user, type);
-            msg = (0, thsUtils_1.dealStockResult)(result, this.usersService, account);
+            const result = await (0, fetchUtil_1.modifyThsSelfRequest)(code, userid, ticket, user, type);
+            msg = (0, thsUtils_1.dealPlateResult)(result, type, this.usersService, account);
         }
         catch (e) {
             msg = e;

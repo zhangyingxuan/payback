@@ -15,13 +15,18 @@
     <span class="middle" :class="{ 'red bold': stock.expected === 2 }">
       {{ getExpectedStr(stock.expected) }}
     </span>
+
     <span
       class="middle"
-      :class="{
-        'red bold': stock.closeIncrease >= 5,
-        green: stock.closeIncrease < 0,
-      }"
+      :class="
+        stock.closeIncrease - stock.bidIncreaseT >= 0
+          ? 'red bold'
+          : stock.closeIncrease < 0
+          ? 'green'
+          : ''
+      "
     >
+      <!-- （{{ (stock.closeIncrease - stock.bidIncreaseT).toFixed(2) }}） -->
       {{ stock.closeIncrease }}
     </span>
     [

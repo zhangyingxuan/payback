@@ -25,7 +25,6 @@ const latestConceptPlate_service_1 = require("./service/latestConceptPlate.servi
 const review_service_1 = require("./service/review.service");
 const ths_service_1 = require("./service/ths.service");
 const apiTest_service_1 = require("./service/apiTest.service");
-const public_decorator_1 = require("../decorator/public.decorator");
 const users_service_1 = require("../users/users.service");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const dayjs = require("dayjs");
@@ -238,7 +237,6 @@ let PayBackController = PayBackController_1 = class PayBackController {
     }
 };
 __decorate([
-    (0, public_decorator_1.Public)(),
     (0, common_1.Get)('testApi'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -282,7 +280,6 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PayBackController.prototype, "crawlHotListData", null);
 __decorate([
-    (0, public_decorator_1.Public)(),
     (0, common_1.Get)('/crawlShortTermByDate'),
     __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
@@ -290,7 +287,6 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], PayBackController.prototype, "crawlShortTermByDate", null);
 __decorate([
-    (0, public_decorator_1.Public)(),
     (0, common_1.Get)('/crawlPlateData'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),

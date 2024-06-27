@@ -237,22 +237,8 @@ async function modifyThsSelfStocksRequest(code, userid, ticket, user, type = Ths
     return await result.json();
 }
 exports.modifyThsSelfStocksRequest = modifyThsSelfStocksRequest;
-function getCodeSuffix(code, isPlate) {
-    if (isPlate) {
-        return '_48';
-    }
-    if (code.startsWith('6')) {
-        return '_17';
-    }
-    else if (code.startsWith('3') || code.startsWith('0')) {
-        return '_33';
-    }
-    else {
-        return '_151';
-    }
-}
 async function modifyThsSelfRequest(code, userid, ticket, user, type = ThsOprate.add, isPlate = false) {
-    const codeSuffix = getCodeSuffix(code, isPlate);
+    const codeSuffix = getCodeSuffix(isPlate);
     const result = await (0, node_fetch_1.default)('https://www.iwencai.com/iwencai/userinfo/iwc/userinfo/self-stock/index/' + type, {
         headers: {
             Accept: 'application/json, text/plain, */*',

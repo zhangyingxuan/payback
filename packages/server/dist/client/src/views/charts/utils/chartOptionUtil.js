@@ -1,0 +1,619 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getSubFundsChartOption = exports.getShortTermChartOption = exports.getMarketChartOption = exports.getIndexChartOption = exports.getFundsChartOption = exports.getLonghuListOption = void 0;
+const grid = {
+    right: 60,
+    x2: 20,
+    y2: 30,
+    x: 50,
+    y: 80,
+};
+const gridShortTerm = {
+    x2: 30,
+    y2: 30,
+    x: 30,
+    y: 60,
+};
+const dottedLineItemStyle = {
+    width: 2,
+    type: 'dotted'
+};
+const getLonghuListOption = function (xAxisData, yAxisData, legendData) {
+    const colors = ['#ED7874', '#EFCA52', '#DB2B14', '#DB2B14', '#ADDE8A', '#EFCA52'];
+    return {
+        color: colors,
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'cross',
+            },
+        },
+        grid: {
+            top: '3%',
+            left: '3%',
+            right: '3%',
+            bottom: '3%',
+            containLabel: true
+        },
+        toolbox: {
+            feature: {
+                saveAsImage: { show: true },
+            },
+        },
+        legend: {
+            data: legendData,
+        },
+        xAxis: [
+            {
+                type: 'category',
+                axisTick: {
+                    alignWithLabel: true,
+                },
+                data: xAxisData,
+            },
+        ],
+        yAxis: [
+            {
+                type: 'value',
+                name: legendData[0],
+                position: 'left',
+                alignTicks: true,
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: colors[0],
+                    },
+                },
+            },
+            {
+                type: 'value',
+                name: legendData[3],
+                position: 'right',
+                alignTicks: true,
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: colors[2],
+                    },
+                },
+            },
+        ],
+        series: [
+            {
+                name: legendData[0],
+                type: 'bar',
+                stack: 'Total',
+                yAxisIndex: 1,
+                label: {
+                    show: true,
+                    fontSize: 8,
+                    position: 'inside',
+                },
+                emphasis: {
+                    focus: 'series',
+                },
+                data: yAxisData[0],
+            },
+            {
+                name: legendData[1],
+                type: 'bar',
+                stack: 'Total',
+                yAxisIndex: 1,
+                label: {
+                    show: true,
+                    fontSize: 8,
+                    position: 'inside',
+                },
+                emphasis: {
+                    focus: 'series',
+                },
+                data: yAxisData[1],
+            },
+            {
+                name: legendData[2],
+                type: 'bar',
+                stack: 'Total',
+                yAxisIndex: 1,
+                label: {
+                    show: true,
+                    fontSize: 8,
+                    position: 'inside',
+                },
+                emphasis: {
+                    focus: 'series',
+                },
+                data: yAxisData[2],
+            },
+            {
+                name: legendData[3],
+                type: 'line',
+                yAxisIndex: 0,
+                data: yAxisData[3],
+                label: {
+                    show: true,
+                    color: colors[3],
+                    position: 'top'
+                },
+            },
+            {
+                name: legendData[4],
+                type: 'line',
+                yAxisIndex: 0,
+                data: yAxisData[4],
+            },
+            {
+                name: legendData[5],
+                type: 'line',
+                yAxisIndex: 0,
+                data: yAxisData[5],
+            },
+        ],
+    };
+};
+exports.getLonghuListOption = getLonghuListOption;
+const getFundsChartOption = function (xAxisData, yAxisData) {
+    const colors = ['#ED7874', '#52B3F5', '#EFCA52'];
+    const legendData = ['北向资金', '南向资金', '成交量总额'];
+    return {
+        color: colors,
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'cross',
+            },
+        },
+        grid,
+        toolbox: {
+            feature: {
+                saveAsImage: { show: true },
+            },
+        },
+        legend: {
+            data: legendData,
+        },
+        xAxis: [
+            {
+                type: 'category',
+                axisTick: {
+                    alignWithLabel: true,
+                },
+                data: xAxisData,
+            },
+        ],
+        yAxis: [
+            {
+                type: 'value',
+                name: legendData[0],
+                position: 'left',
+                alignTicks: true,
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: colors[0],
+                    },
+                },
+            },
+            {
+                type: 'value',
+                name: legendData[2],
+                position: 'right',
+                alignTicks: true,
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: colors[2],
+                    },
+                },
+                axisLabel: {
+                    formatter: '{value} 万亿',
+                },
+            },
+        ],
+        series: [
+            {
+                name: legendData[0],
+                type: 'line',
+                yAxisIndex: 0,
+                data: yAxisData[0],
+                label: {
+                    show: true,
+                    color: colors[0],
+                    position: 'top'
+                },
+            },
+            {
+                name: legendData[1],
+                type: 'line',
+                yAxisIndex: 0,
+                data: yAxisData[1],
+                lineStyle: dottedLineItemStyle
+            },
+            {
+                name: legendData[2],
+                type: 'bar',
+                yAxisIndex: 1,
+                data: yAxisData[2],
+                label: {
+                    show: true,
+                    color: '#fff',
+                    position: 'inside'
+                },
+            },
+        ],
+    };
+};
+exports.getFundsChartOption = getFundsChartOption;
+const getIndexChartOption = function (xAxisData, yAxisData) {
+    const colors = ['#ED7874', '#52B3F5', '#ADDE8A', '#EFCA52'];
+    const legendData = ['上证指数', '深圳指数', '创业指数', '北证50'];
+    return {
+        color: colors,
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'cross',
+            },
+        },
+        grid,
+        toolbox: {
+            feature: {
+                saveAsImage: { show: true },
+            },
+        },
+        legend: {
+            data: legendData,
+        },
+        xAxis: [
+            {
+                type: 'category',
+                axisTick: {
+                    alignWithLabel: true,
+                },
+                data: xAxisData,
+            },
+        ],
+        yAxis: [
+            {
+                type: 'value',
+                name: legendData[0],
+                position: 'left',
+                alignTicks: true,
+                min: function (value) {
+                    return +(value.min - 100).toFixed(0);
+                },
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: colors[0],
+                    },
+                },
+            }, {
+                type: 'value',
+                name: legendData[1],
+                position: 'right',
+                alignTicks: true,
+                min: function (value) {
+                    return +(value.min - 1000).toFixed(0);
+                },
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: colors[1],
+                    },
+                },
+            }, {
+                show: false,
+                type: 'value',
+                name: legendData[2],
+                position: 'left',
+                alignTicks: true,
+                min: function (value) {
+                    return +(value.min - 50).toFixed(0);
+                },
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: colors[2],
+                    },
+                },
+            }, {
+                show: false,
+                type: 'value',
+                name: legendData[3],
+                position: 'left',
+                alignTicks: true,
+                min: function (value) {
+                    return +(value.min - 10).toFixed(0);
+                },
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: colors[3],
+                    },
+                },
+            },
+        ],
+        series: [
+            {
+                name: legendData[0],
+                type: 'line',
+                yAxisIndex: 0,
+                data: yAxisData[0],
+                label: {
+                    show: true,
+                    color: colors[0],
+                    position: 'top'
+                },
+            },
+            {
+                name: legendData[1],
+                type: 'line',
+                yAxisIndex: 1,
+                data: yAxisData[1],
+            },
+            {
+                name: legendData[2],
+                type: 'line',
+                yAxisIndex: 2,
+                data: yAxisData[2],
+                lineStyle: dottedLineItemStyle
+            },
+            {
+                name: legendData[3],
+                type: 'line',
+                yAxisIndex: 3,
+                data: yAxisData[3],
+                lineStyle: dottedLineItemStyle
+            },
+        ],
+    };
+};
+exports.getIndexChartOption = getIndexChartOption;
+const getMarketChartOption = function (xAxisData, yAxisData) {
+    const colors = ['#EFCA52', '#52B3F5', '#ED7874', '#ADDE8A'];
+    const legendData = ['评分', '昨涨停今收益', '上涨家数', '下跌家数'];
+    return {
+        color: colors,
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'cross',
+            },
+        },
+        grid: {
+            right: 60,
+            x2: 0,
+            y2: 30,
+            x: 30,
+            y: 50,
+        },
+        toolbox: {
+            feature: {
+                saveAsImage: { show: true },
+            },
+        },
+        legend: {
+            data: legendData,
+        },
+        xAxis: [
+            {
+                type: 'category',
+                axisTick: {
+                    alignWithLabel: true,
+                },
+                data: xAxisData,
+            },
+        ],
+        yAxis: [
+            {
+                type: 'value',
+                name: legendData[0],
+                position: 'left',
+                alignTicks: true,
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: colors[0],
+                    },
+                },
+            },
+            {
+                type: 'value',
+                name: legendData[2],
+                position: 'right',
+                alignTicks: true,
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: colors[2],
+                    },
+                },
+                axisLabel: {
+                    formatter: '{value} 家',
+                },
+            },
+        ],
+        series: [
+            {
+                name: legendData[0],
+                type: 'line',
+                yAxisIndex: 0,
+                data: yAxisData[0],
+                label: {
+                    show: true,
+                    color: colors[0],
+                    position: 'top'
+                },
+            },
+            {
+                name: legendData[1],
+                type: 'line',
+                yAxisIndex: 0,
+                data: yAxisData[1],
+            },
+            {
+                name: legendData[2],
+                type: 'bar',
+                yAxisIndex: 1,
+                data: yAxisData[2],
+                label: {
+                    show: true,
+                    color: '#fff',
+                    position: 'inside'
+                },
+                stack: 'marketAmount',
+            },
+            {
+                name: legendData[3],
+                type: 'bar',
+                yAxisIndex: 1,
+                data: yAxisData[3],
+                label: {
+                    show: true,
+                    color: '#fff',
+                    position: 'inside'
+                },
+                stack: 'marketAmount',
+            },
+        ],
+    };
+};
+exports.getMarketChartOption = getMarketChartOption;
+const getShortTermChartOption = function (xAxisData, yAxisData) {
+    const colors = ['#ED7874', '#ADDE8A', '#EFCA52', '#52B3F5'];
+    const legendData = ['涨停', '跌停', '连板数量', '市场高度'];
+    return {
+        color: colors,
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'cross',
+            },
+        },
+        grid: gridShortTerm,
+        toolbox: {
+            feature: {
+                saveAsImage: { show: true },
+            },
+        },
+        legend: {
+            data: legendData,
+        },
+        xAxis: [
+            {
+                type: 'category',
+                axisTick: {
+                    alignWithLabel: true,
+                },
+                data: xAxisData,
+            },
+        ],
+        yAxis: [
+            {
+                type: 'value',
+                name: legendData[0],
+                position: 'left',
+                alignTicks: true,
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: colors[0],
+                    },
+                },
+            },
+            {
+                type: 'value',
+                name: legendData[2],
+                position: 'right',
+                alignTicks: true,
+                axisLine: {
+                    show: true,
+                    lineStyle: {
+                        color: colors[2],
+                    },
+                },
+            },
+        ],
+        series: [
+            {
+                name: legendData[0],
+                type: 'line',
+                yAxisIndex: 0,
+                data: yAxisData[0],
+                label: {
+                    show: true,
+                    position: 'top',
+                    color: colors[0],
+                },
+            },
+            {
+                name: legendData[1],
+                type: 'line',
+                yAxisIndex: 0,
+                data: yAxisData[1],
+            },
+            {
+                name: legendData[2],
+                type: 'line',
+                yAxisIndex: 0,
+                data: yAxisData[2],
+                label: {
+                    show: true,
+                    position: 'top',
+                    fontSize: 14,
+                    color: colors[2],
+                },
+                lineStyle: dottedLineItemStyle
+            },
+            {
+                name: legendData[3],
+                type: 'bar',
+                yAxisIndex: 1,
+                data: yAxisData[3],
+            },
+        ],
+    };
+};
+exports.getShortTermChartOption = getShortTermChartOption;
+const getSubFundsChartOption = function (xAxisData, series, legendData) {
+    return {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            }
+        },
+        color: [
+            '#9C130B',
+            '#BD2512',
+            '#BD3B1B',
+            '#1B3A10',
+            '#224C15',
+            '#306A1E',
+        ],
+        grid: {
+            top: '3%',
+            left: '3%',
+            right: '3%',
+            bottom: '3%',
+            containLabel: true
+        },
+        yAxis: [
+            {
+                type: 'value'
+            }
+        ],
+        xAxis: [
+            {
+                type: 'category',
+                axisTick: {
+                    show: false
+                },
+                data: xAxisData,
+            }
+        ],
+        series,
+    };
+};
+exports.getSubFundsChartOption = getSubFundsChartOption;
+//# sourceMappingURL=chartOptionUtil.js.map

@@ -3,7 +3,7 @@ import { modifyThsSelfRequest, modifyThsSelfStocksRequest } from '../core/fetchU
 import { AsynTaskIterator, dailyLimitOptionalStrategy } from 'pay-back-core';
 import { UsersService } from '../../users/users.service';
 import { SystemConfigService } from './systemConfig.service';
-import { dealResultIsLogin, dealStockResult, dealPlateResult, atob } from '../utils/thsUtils';
+import { dealResultIsLogin, dealPlateResult, atob } from '../utils/thsUtils';
 
 let isSuccess = true;
 
@@ -154,9 +154,12 @@ export class ThsService {
     let msg = '';
 
     try {
-      const result = await modifyThsSelfStocksRequest(code, userid, ticket, user, type);
+      // const result = await modifyThsSelfStocksRequest(code, userid, ticket, user, type);
+      const result = await modifyThsSelfRequest(code, userid, ticket, user, type);
       // this.logger.log(result);
-      msg = dealStockResult(result, this.usersService, account);
+      // 同花顺自选接口失败，替换为爱问财接口 2024-06-28 00:20:29
+      // msg = dealStockResult(result, this.usersService, account);
+      msg = dealPlateResult(result, type, this.usersService, account);
     } catch (e) {
       msg = e;
       this.logger.log('updateThsSelfStock[' + type + '] 失败了！' + e);

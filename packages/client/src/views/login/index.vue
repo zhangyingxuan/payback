@@ -57,6 +57,9 @@ import type { FormInstance, FormRules } from 'element-plus';
 import { authLogin, getCode } from '@/api/user';
 import { UserModel } from '@/api/model/UserModel';
 import { setToken } from '@/router/auth';
+import { updateNavThemeColor } from '@/core/util';
+
+updateNavThemeColor('#324157');
 
 let interval: any = null;
 const router = useRouter();

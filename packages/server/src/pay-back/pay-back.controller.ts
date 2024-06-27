@@ -38,7 +38,7 @@ export class PayBackController {
 
   private readonly logger = new Logger(PayBackController.name);
 
-  @Public()
+  // @Public()
   @Get('testApi')
   async testApi() {
     // return await this.apiTestService.otherTest();
@@ -184,7 +184,7 @@ export class PayBackController {
   }
 
   // 示例：http://localhost:3000/blowsysun/pay-back/crawlShortTermByDate?date=2023-06-26
-  @Public()
+  // @Public()
   @Get('/crawlShortTermByDate')
   crawlShortTermByDate(@Query() query) {
     const date = query.date || new Date();
@@ -194,7 +194,7 @@ export class PayBackController {
    * 爬取最新 涨停家数较多的 板块数据
    * @returns
    */
-  @Public()
+  // @Public()
   @Get('/crawlPlateData')
   async crawlPlateData() {
     const data = await this.plateService.crawlPlateData();
@@ -220,6 +220,7 @@ export class PayBackController {
     };
   }
 
+  // @Public()
   @Get('fetchEvenBoardData')
   async fetchEvenBoardData(@Query() query) {
     const limit = +(query.limit || 20);

@@ -155,6 +155,12 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import dayjs from 'dayjs';
 import Calendar from './calendar/index.vue';
 import { usePermissStore } from '../store/permiss';
+import { updateNavThemeColor } from '@/core/util';
+
+// 当前日期大于20号，则提示
+const monthEnd = dayjs().date() >= 20;
+
+updateNavThemeColor(monthEnd ? '#224c15' : '#242f42');
 
 const options = [7, 15, 20, 40, 60, 120, 240];
 const permiss = usePermissStore();
@@ -171,8 +177,6 @@ const data = reactive({
 
 // const countDays = ref(20);
 
-// 当前日期大于20号，则提示
-const monthEnd = dayjs().date() >= 20;
 const sidebar = useSidebarStore();
 
 function switchDrawerVisible() {
