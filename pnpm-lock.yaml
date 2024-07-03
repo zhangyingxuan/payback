@@ -128,6 +128,9 @@ dependencies:
   eslint-plugin-vue:
     specifier: ^9.8.0
     version: 9.8.0(eslint@8.0.1)
+  express-rate-limit:
+    specifier: ^7.3.1
+    version: 7.3.1(express@4.18.1)
   fork-ts-checker-webpack-plugin:
     specifier: ^8.0.0
     version: 8.0.0(typescript@4.7.4)(webpack@5.11.0)
@@ -6380,6 +6383,15 @@ packages:
       jest-matcher-utils: 29.6.4
       jest-message-util: 29.6.3
       jest-util: 29.6.3
+    dev: false
+
+  /express-rate-limit@7.3.1(express@4.18.1):
+    resolution: {integrity: sha512-BbaryvkY4wEgDqLgD18/NSy2lDO2jTuT9Y8c1Mpx0X63Yz0sYd5zN6KPe7UvpuSVvV33T6RaE1o1IVZQjHMYgw==}
+    engines: {node: '>= 16'}
+    peerDependencies:
+      express: 4 || 5 || ^5.0.0-beta.1
+    dependencies:
+      express: 4.18.1
     dev: false
 
   /express@4.18.1:

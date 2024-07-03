@@ -124,10 +124,10 @@ async function refreshCodeImg() {
     // 使用 URL.createObjectURL()
     data.codeImg = URL.createObjectURL(res);
   }
-  interval && clearInterval(interval);
-  interval = setInterval(() => {
-    refreshCodeImg();
-  }, 5 * 60 * 1000);
+  // interval && clearInterval(interval);
+  // interval = setInterval(() => {
+  //   refreshCodeImg();
+  // }, 5 * 60 * 1000);
 }
 refreshCodeImg();
 </script>

@@ -71,9 +71,10 @@ class PureHttp {
     instance.interceptors.response.use(
       (response: PureHttpResponse) => {
         const data = response.data;
-        // console.log(response)
+        // console.log(response);
         const url = response.config.url || '';
         if (data.code != 200 && isNotWhiteUrl(url) && response.config.responseType != 'blob') {
+
           ElMessage({
             showClose: true,
             message: data.data,
@@ -83,11 +84,19 @@ class PureHttp {
         return response.data;
       },
       (error: PureHttpError) => {
+        const response = error.response;
         // console.log(error);
-        if (error.response) {
+        if (response) {
+          if (response.status === 429) {
+            ElMessage({
+              showClose: true,
+              message: response.statusText,
+              type: 'error',
+            })
+          }
           // 解析错误码
           // eslint-disable-next-line no-unsafe-optional-chaining
-          const { statusCode }: any = error.response?.data;
+          const { statusCode }: any = response?.data;
           // 如果返回401，则 清空storage 及 cookie，跳转至登录页
           if (statusCode === 401) {
             clearLogin();

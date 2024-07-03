@@ -57,5 +57,5 @@ function atob(a) {
   ],
 })
 export class AppModule {
-  configure(consumer: MiddlewareConsumer) {}
+  configure(consumer: MiddlewareConsumer) { }
 }
