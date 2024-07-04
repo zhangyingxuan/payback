@@ -1,4 +1,4 @@
-import { Controller, Body, Req, Res, Request, Post, Get, UseGuards, Logger } from '@nestjs/common';
+import { Controller, Body, Req, Res, Post, Get, UseGuards, Logger } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Public } from '../decorator/public.decorator';
 import * as svgCaptcha from 'svg-captcha';
@@ -32,7 +32,7 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  getProfile(@Request() req) {
+  getProfile(@Req() req) {
     return req.user;
   }
 
@@ -49,8 +49,10 @@ export class AuthController {
     });
     req.session.captcha = captcha.text;
 
+    const ip = req.ip.split(':').pop();
+    const host = req.headers.host;
     // this.logger.log('生产 验证码：' + req.session.captcha);
-    this.logger.log('生产 验证码：1234');
+    this.logger.log(`生产 验证码：1234; ${ip},${host}`);
     res.set('Content-Type', 'image/svg+xml');
     res.send(captcha.data);
   }

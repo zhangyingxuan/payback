@@ -5,9 +5,13 @@ import * as session from 'express-session';
 import { HttpExceptionFilter } from './filters/HttpExceptionFilter';
 import { getAvailablePort } from './portManager';
 import { rateLimit } from 'express-rate-limit';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  // const app = await NestFactory.create(AppModule);
+  const app: NestExpressApplication = await NestFactory.create<NestExpressApplication>(AppModule);
+  //此接口NestExpressApplication才有
+  app.set('trust proxy', 1);
   // 全局路由前缀
   app.setGlobalPrefix('blowsysun');
   const limiter = rateLimit({
@@ -22,7 +26,7 @@ async function bootstrap() {
         code: 429,
         data: 'Too many requests, please try again later.',
       });
-      console.log(`Request from ${req.ip} exceeded rate limit`);
+      console.log(`Request from ${req.ip}; ${req.headers.host} exceeded rate limit`);
       // next();
     },
   });

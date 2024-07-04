@@ -90,7 +90,7 @@ class PureHttp {
           if (response.status === 429) {
             ElMessage({
               showClose: true,
-              message: response.statusText,
+              message: '服务器繁忙中，请稍后再试',
               type: 'error',
             })
           }

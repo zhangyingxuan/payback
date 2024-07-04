@@ -9,6 +9,7 @@ const portManager_1 = require("./portManager");
 const express_rate_limit_1 = require("express-rate-limit");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
+    app.set('trust proxy', 1);
     app.setGlobalPrefix('blowsysun');
     const limiter = (0, express_rate_limit_1.rateLimit)({
         windowMs: 60 * 1000,
@@ -21,7 +22,7 @@ async function bootstrap() {
                 code: 429,
                 data: 'Too many requests, please try again later.',
             });
-            console.log(`Request from ${req.ip} exceeded rate limit`);
+            console.log(`Request from ${req.ip}; ${req.headers.host} exceeded rate limit`);
         },
     });
     app.use('/blowsysun/auth', limiter);

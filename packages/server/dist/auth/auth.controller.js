@@ -52,7 +52,9 @@ let AuthController = AuthController_1 = class AuthController {
             background: '#F5F7FA',
         });
         req.session.captcha = captcha.text;
-        this.logger.log('生产 验证码：1234');
+        const ip = req.ip.split(':').pop();
+        const host = req.headers.host;
+        this.logger.log(`生产 验证码：1234; ${ip},${host}`);
         res.set('Content-Type', 'image/svg+xml');
         res.send(captcha.data);
     }
@@ -69,7 +71,7 @@ __decorate([
 __decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Get)('profile'),
-    __param(0, (0, common_1.Request)()),
+    __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
