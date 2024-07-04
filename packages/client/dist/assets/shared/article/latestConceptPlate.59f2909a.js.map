@@ -1,0 +1,1 @@
+{"version":3,"file":"latestConceptPlate.59f2909a.js","sources":["../../../../src/views/article/config.ts"],"sourcesContent":["export const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';\n"],"names":["dateTimeFormat"],"mappings":"AAAO,MAAMA,EAAiB"}
