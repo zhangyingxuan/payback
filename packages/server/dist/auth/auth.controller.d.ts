@@ -22,5 +22,5 @@ export declare class AuthController {
         };
     }>;
     getProfile(req: any): any;
-    getCode(res: any, req: any, request: ExpRequest, ip: string, headerRealIP: string, XForwardedFor: string): void;
+    getCode(res: any, req: any, request: ExpRequest, headerRealIP: string, XForwardedFor: string): void;
 }

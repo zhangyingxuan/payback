@@ -19,7 +19,6 @@ const auth_service_1 = require("./auth.service");
 const public_decorator_1 = require("../decorator/public.decorator");
 const svgCaptcha = require("svg-captcha");
 const jwt_auth_guard_1 = require("./jwt-auth.guard");
-const nestjs_real_ip_1 = require("nestjs-real-ip");
 let AuthController = AuthController_1 = class AuthController {
     constructor(authService) {
         this.authService = authService;
@@ -43,7 +42,7 @@ let AuthController = AuthController_1 = class AuthController {
     getProfile(req) {
         return req.user;
     }
-    getCode(res, req, request, ip, headerRealIP, XForwardedFor) {
+    getCode(res, req, request, headerRealIP, XForwardedFor) {
         const captcha = svgCaptcha.create({
             size: 4,
             noise: 2,
@@ -54,8 +53,7 @@ let AuthController = AuthController_1 = class AuthController {
         });
         req.session.captcha = captcha.text;
         const requestIp = request.ip;
-        const host = request.headers.host;
-        this.logger.log(`生产 验证码：1234; ${ip};${requestIp};${host}; - ${headerRealIP}; - ${XForwardedFor}`);
+        this.logger.log(`生产 验证码：1234; ${req.ip} - ${requestIp}; - ${headerRealIP}; - ${XForwardedFor}`);
         res.set('Content-Type', 'image/svg+xml');
         res.send(captcha.data);
     }
@@ -83,11 +81,10 @@ __decorate([
     __param(0, (0, common_1.Res)()),
     __param(1, (0, common_1.Req)()),
     __param(2, (0, common_1.Request)()),
-    __param(3, (0, nestjs_real_ip_1.RealIP)()),
-    __param(4, (0, common_1.Headers)('x-real-ip')),
-    __param(5, (0, common_1.Headers)('X-Forwarded-For')),
+    __param(3, (0, common_1.Headers)('x-real-ip')),
+    __param(4, (0, common_1.Headers)('X-Forwarded-For')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object, Object, String, String, String]),
+    __metadata("design:paramtypes", [Object, Object, Object, String, String]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "getCode", null);
 AuthController = AuthController_1 = __decorate([

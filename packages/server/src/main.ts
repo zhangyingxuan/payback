@@ -12,15 +12,6 @@ async function bootstrap() {
   const app: NestExpressApplication = await NestFactory.create<NestExpressApplication>(AppModule, { cors: true });
   //此接口NestExpressApplication才有
   app.set('trust proxy', true);
-  app.enableCors();
-  // app.enableCors({
-  //   origin: true,
-  //   methods: 'GET,PUT,POST',
-  //   allowedHeaders: 'Content-Type,Authorization',
-  //   exposedHeaders: 'Content-Range,X-Content-Range',
-  //   credentials: true,
-  //   maxAge: 3600,
-  // });
 
   // 全局路由前缀
   app.setGlobalPrefix('blowsysun');
@@ -37,7 +28,7 @@ async function bootstrap() {
         data: 'Too many requests, please try again later.',
       });
       console.log(
-        `Request from ${req.ip}; ${req.headers.host}; ${req.headers['x-forwarded-for']}; ${req.headers['x-real-ip']} exceeded rate limit`,
+        `Request from ${req.ip};-${req.headers['x-real-ip']}-${req.headers['x-forwarded-for']}; exceeded rate limit`,
       );
       // next();
     },
@@ -61,8 +52,6 @@ async function bootstrap() {
 
   // 示例用法
   const port: any = await getAvailablePort(3000);
-  await app.listen(port, '0.0.0.0', () => {
-    console.log(`Application is running on http://0.0.0.0:${3000}`);
-  });
+  await app.listen(port);
 }
 bootstrap();

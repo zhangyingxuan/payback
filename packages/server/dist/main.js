@@ -10,7 +10,6 @@ const express_rate_limit_1 = require("express-rate-limit");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule, { cors: true });
     app.set('trust proxy', true);
-    app.enableCors();
     app.setGlobalPrefix('blowsysun');
     const limiter = (0, express_rate_limit_1.rateLimit)({
         windowMs: 60 * 1000,
@@ -23,7 +22,7 @@ async function bootstrap() {
                 code: 429,
                 data: 'Too many requests, please try again later.',
             });
-            console.log(`Request from ${req.ip}; ${req.headers.host}; ${req.headers['x-forwarded-for']}; ${req.headers['x-real-ip']} exceeded rate limit`);
+            console.log(`Request from ${req.ip};-${req.headers['x-real-ip']}-${req.headers['x-forwarded-for']}; exceeded rate limit`);
         },
     });
     app.use('/blowsysun/auth', limiter);
@@ -37,9 +36,7 @@ async function bootstrap() {
     }));
     app.useGlobalFilters(new HttpExceptionFilter_1.HttpExceptionFilter());
     const port = await (0, portManager_1.getAvailablePort)(3000);
-    await app.listen(port, '0.0.0.0', () => {
-        console.log(`Application is running on http://0.0.0.0:${3000}`);
-    });
+    await app.listen(port);
 }
 bootstrap();
 //# sourceMappingURL=main.js.map
