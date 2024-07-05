@@ -1,9 +1,8 @@
-import { Controller, Body, Req, Res, Request, Post, Get, UseGuards, Logger, Headers } from '@nestjs/common';
+import { Controller, Body, Req, Res, Post, Get, UseGuards, Logger, Headers } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Public } from '../decorator/public.decorator';
 import * as svgCaptcha from 'svg-captcha';
 import { JwtAuthGuard } from './jwt-auth.guard';
-import { Request as ExpRequest } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -42,7 +41,6 @@ export class AuthController {
   getCode(
     @Res() res,
     @Req() req,
-    @Request() request: ExpRequest,
     @Headers('x-real-ip') headerRealIP: string,
     @Headers('X-Forwarded-For') XForwardedFor: string,
   ) {
@@ -56,10 +54,9 @@ export class AuthController {
     });
     req.session.captcha = captcha.text;
 
-    const requestIp = request.ip;
     // const host = request.headers.host;
     // this.logger.log('生产 验证码：' + req.session.captcha);
-    this.logger.log(`生产 验证码：1234; ${req.ip} - ${requestIp}; - ${headerRealIP}; - ${XForwardedFor}`);
+    this.logger.log(`生产 验证码：1234; ${req.ip} - ${headerRealIP}; - ${XForwardedFor}`);
     res.set('Content-Type', 'image/svg+xml');
     res.send(captcha.data);
   }

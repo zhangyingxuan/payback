@@ -9,7 +9,6 @@ const portManager_1 = require("./portManager");
 const express_rate_limit_1 = require("express-rate-limit");
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule, { cors: true });
-    app.set('trust proxy', true);
     app.setGlobalPrefix('blowsysun');
     const limiter = (0, express_rate_limit_1.rateLimit)({
         windowMs: 60 * 1000,
