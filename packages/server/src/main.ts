@@ -11,7 +11,7 @@ async function bootstrap() {
   // const app = await NestFactory.create(AppModule, { cors: true });
   const app: NestExpressApplication = await NestFactory.create<NestExpressApplication>(AppModule);
   //此接口NestExpressApplication才有
-  // app.set('trust proxy', true);
+  app.set('trust proxy', true);
 
   // 全局路由前缀
   app.setGlobalPrefix('blowsysun');
