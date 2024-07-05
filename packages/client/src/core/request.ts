@@ -122,7 +122,7 @@ class PureHttp {
   ): Promise<T> {
     const config = {
       method,
-      // baseURL: 'blowsysun',
+      baseURL: process.env.NODE_ENV === "development" ? '' : 'https://blowsysun.top:3000',
       url,
       ...param,
       ...axiosConfig

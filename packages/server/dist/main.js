@@ -8,8 +8,9 @@ const HttpExceptionFilter_1 = require("./filters/HttpExceptionFilter");
 const portManager_1 = require("./portManager");
 const express_rate_limit_1 = require("express-rate-limit");
 async function bootstrap() {
-    const app = await core_1.NestFactory.create(app_module_1.AppModule);
+    const app = await core_1.NestFactory.create(app_module_1.AppModule, { cors: true });
     app.set('trust proxy', true);
+    app.enableCors();
     app.setGlobalPrefix('blowsysun');
     const limiter = (0, express_rate_limit_1.rateLimit)({
         windowMs: 60 * 1000,
@@ -36,7 +37,9 @@ async function bootstrap() {
     }));
     app.useGlobalFilters(new HttpExceptionFilter_1.HttpExceptionFilter());
     const port = await (0, portManager_1.getAvailablePort)(3000);
-    await app.listen(port);
+    await app.listen(port, '0.0.0.0', () => {
+        console.log(`Application is running on http://0.0.0.0:${3000}`);
+    });
 }
 bootstrap();
 //# sourceMappingURL=main.js.map
