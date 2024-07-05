@@ -5,11 +5,11 @@ import * as session from 'express-session';
 import { HttpExceptionFilter } from './filters/HttpExceptionFilter';
 import { getAvailablePort } from './portManager';
 import { rateLimit } from 'express-rate-limit';
-// import { NestExpressApplication } from '@nestjs/platform-express';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: true });
-  // const app: NestExpressApplication = await NestFactory.create<NestExpressApplication>(AppModule, { cors: true });
+  // const app = await NestFactory.create(AppModule, { cors: true });
+  const app: NestExpressApplication = await NestFactory.create<NestExpressApplication>(AppModule);
   //此接口NestExpressApplication才有
   // app.set('trust proxy', true);
 
