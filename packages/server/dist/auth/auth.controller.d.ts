@@ -1,4 +1,5 @@
 import { AuthService } from './auth.service';
+import { Request as ExpRequest } from 'express';
 export declare class AuthController {
     private authService;
     constructor(authService: AuthService);
@@ -21,5 +22,5 @@ export declare class AuthController {
         };
     }>;
     getProfile(req: any): any;
-    getCode(res: any, req: any, headerRealIP: string, XForwardedFor: string): void;
+    getCode(res: any, req: any, request: ExpRequest, headerRealIP: string, XForwardedFor: string): void;
 }
