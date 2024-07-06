@@ -59,7 +59,7 @@ export class AuthController {
     const requestIp = request.ip;
     const host = request.headers.host;
     // this.logger.log('生产 验证码：' + req.session.captcha);
-    this.logger.log(`生产 验证码：1234; ${requestIp}; - ${host}; - ${headerRealIP}; - ${XForwardedFor}`);
+    this.logger.log(`生产 验证码：1234;${req} - ${requestIp}; - ${host}; - ${headerRealIP}; - ${XForwardedFor}`);
     res.set('Content-Type', 'image/svg+xml');
     res.send(captcha.data);
   }
