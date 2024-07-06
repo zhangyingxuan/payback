@@ -54,7 +54,7 @@ let AuthController = AuthController_1 = class AuthController {
         req.session.captcha = captcha.text;
         const requestIp = request.ip;
         const host = request.headers.host;
-        this.logger.log(`生产 验证码：1234;${req} - ${requestIp}; - ${host}; - ${headerRealIP}; - ${XForwardedFor}`);
+        this.logger.log(`生产 验证码：1234;${req.ip} - ${requestIp}; - ${host}; - ${headerRealIP}; - ${XForwardedFor}`);
         res.set('Content-Type', 'image/svg+xml');
         res.send(captcha.data);
     }
