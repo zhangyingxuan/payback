@@ -42,7 +42,8 @@ let AuthController = AuthController_1 = class AuthController {
     getProfile(req) {
         return req.user;
     }
-    getCode(res, req, request, headerRealIP, XForwardedFor) {
+    getCode(res, req) {
+        var _a;
         const captcha = svgCaptcha.create({
             size: 4,
             noise: 2,
@@ -52,9 +53,11 @@ let AuthController = AuthController_1 = class AuthController {
             background: '#F5F7FA',
         });
         req.session.captcha = captcha.text;
-        const requestIp = request.ip;
-        const host = request.headers.host;
-        this.logger.log(`生产 验证码：1234;${req.ip} - ${requestIp}; - ${host}; - ${headerRealIP}; - ${XForwardedFor}`);
+        const ip = req.ip;
+        const host = (_a = req.headers) === null || _a === void 0 ? void 0 : _a.host;
+        const headerRealIP = req === null || req === void 0 ? void 0 : req.headers['x-real-ip'];
+        const XForwardedFor = req === null || req === void 0 ? void 0 : req.headers['X-Forwarded-For'];
+        this.logger.log(`生产 验证码：1234; ${ip} - ${host}; - ${headerRealIP}; - ${XForwardedFor}`);
         res.set('Content-Type', 'image/svg+xml');
         res.send(captcha.data);
     }
@@ -81,11 +84,8 @@ __decorate([
     (0, common_1.Get)('getCode'),
     __param(0, (0, common_1.Res)()),
     __param(1, (0, common_1.Req)()),
-    __param(2, (0, common_1.Request)()),
-    __param(3, (0, common_1.Headers)('x-real-ip')),
-    __param(4, (0, common_1.Headers)('X-Forwarded-For')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object, Object, String, String]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "getCode", null);
 AuthController = AuthController_1 = __decorate([
