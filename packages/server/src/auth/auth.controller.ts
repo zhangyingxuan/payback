@@ -54,7 +54,7 @@ export class AuthController {
     const ip = req.ip;
     const host = req.headers?.host;
     const headerRealIP: string = req?.headers['x-real-ip'];
-    const XForwardedFor: string = req?.headers['X-Forwarded-For'];
+    const XForwardedFor: string = req?.headers['x-forwarded-for'];
     // this.logger.log('生产 验证码：' + req.session.captcha);
     this.logger.log(`生产 验证码：1234; ${ip} - ${host}; - ${headerRealIP}; - ${XForwardedFor}`);
     res.set('Content-Type', 'image/svg+xml');
