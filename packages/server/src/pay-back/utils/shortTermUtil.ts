@@ -70,7 +70,7 @@ export async function getShortTermDataByDate(todayDateStr, lastTradingDayData): 
   const [dailyLimitData, downLimitData, dailyLimitOpenData, hugeFallData, dailyLimitGroupByGainainD] =
     await Promise.all([dailyLimit, downLimit, dailyLimitOpen, hugeFall, dailyLimitGroupByGainain]);
 
-  const dailyLimitGroupByGainainData = await dailyLimitGroupByGainainD.text();
+  const dailyLimitGroupByGainainData = await dailyLimitGroupByGainainD.json();
 
   return prepareShortTermDto(
     dailyLimitData,
@@ -123,9 +123,10 @@ function prepareShortTermDto(
   // 跌幅大于等于15的个股数量
   createPayBackDto.hugeFallQuantity = hugeFallData.length;
   // 封板率 = 涨停数 / （涨停数 + 涨停打开数）
-  createPayBackDto.sealingRate = Math.round(
-    (dailyLimitData.length / (dailyLimitData.length + dailyLimitOpenData.length)) * 100,
-  );
+  createPayBackDto.sealingRate =
+    dailyLimitData.length === 0
+      ? 100
+      : Math.round((dailyLimitData.length / (dailyLimitData.length + dailyLimitOpenData.length)) * 100);
   // 炸板率 = （涨停打开数 + 涨停未遂数） / 涨停数
   // 炸板率 = 炸板数/<炸板数+涨停数>
   createPayBackDto.dailyLimitReturnSealQuantity = dailyLimitReturnSealQuantity;

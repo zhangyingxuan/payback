@@ -28,7 +28,7 @@ async function bootstrap() {
         data: 'Too many requests, please try again later.',
       });
       console.log(
-        `Request from ${req.ip};-${req.headers['x-real-ip']}-${req.headers['x-forwarded-for']}; exceeded rate limit`,
+        `Request from ${req.ip} - ${req.headers['x-real-ip']} - ${req.headers['x-forwarded-for']}; exceeded rate limit`,
       );
       // next();
     },

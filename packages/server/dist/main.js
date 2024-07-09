@@ -22,7 +22,7 @@ async function bootstrap() {
                 code: 429,
                 data: 'Too many requests, please try again later.',
             });
-            console.log(`Request from ${req.ip};-${req.headers['x-real-ip']}-${req.headers['x-forwarded-for']}; exceeded rate limit`);
+            console.log(`Request from ${req.ip} - ${req.headers['x-real-ip']} - ${req.headers['x-forwarded-for']}; exceeded rate limit`);
         },
     });
     app.use('/blowsysun/auth', limiter);

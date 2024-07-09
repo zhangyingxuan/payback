@@ -28,7 +28,7 @@ async function getShortTermDataByDate(todayDateStr, lastTradingDayData) {
     const hugeFall = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.hugeFallByDate.replace('${date}', todayDateStr), otherNum);
     const dailyLimitGroupByGainain = (0, node_fetch_1.default)(`https://data.10jqka.com.cn/dataapi/limit_up/block_top?filter=HS,GEM2STAR&date=${dayjs(todayDateStr).format('YYYYMMDD')}`);
     const [dailyLimitData, downLimitData, dailyLimitOpenData, hugeFallData, dailyLimitGroupByGainainD] = await Promise.all([dailyLimit, downLimit, dailyLimitOpen, hugeFall, dailyLimitGroupByGainain]);
-    const dailyLimitGroupByGainainData = await dailyLimitGroupByGainainD.text();
+    const dailyLimitGroupByGainainData = await dailyLimitGroupByGainainD.json();
     return prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, lastTradingDayData, dailyLimitGroupByGainainData, todayDateStr);
 }
 exports.getShortTermDataByDate = getShortTermDataByDate;
@@ -39,7 +39,10 @@ function prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, 
     createPayBackDto.dailyLimitQuantity = dailyLimitData.length;
     createPayBackDto.dailyLimitOpenQuantity = dailyLimitOpenData.length;
     createPayBackDto.hugeFallQuantity = hugeFallData.length;
-    createPayBackDto.sealingRate = Math.round((dailyLimitData.length / (dailyLimitData.length + dailyLimitOpenData.length)) * 100);
+    createPayBackDto.sealingRate =
+        dailyLimitData.length === 0
+            ? 100
+            : Math.round((dailyLimitData.length / (dailyLimitData.length + dailyLimitOpenData.length)) * 100);
     createPayBackDto.dailyLimitReturnSealQuantity = dailyLimitReturnSealQuantity;
     createPayBackDto.marketHeight = evenBoardData.maxHeight;
     createPayBackDto.evenBoardAmount = dailyLimitData.length - board1;

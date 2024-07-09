@@ -1,4 +1,4 @@
-import { Controller, Body, Req, Res, Post, Get, UseGuards, Logger, Headers } from '@nestjs/common';
+import { Controller, Body, Req, Res, Post, Get, UseGuards, Logger } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Public } from '../decorator/public.decorator';
 import * as svgCaptcha from 'svg-captcha';

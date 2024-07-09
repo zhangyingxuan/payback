@@ -1,26 +1,27 @@
 export const iWencaiDateFormat = 'YYYYMMDD';
 
-// export const chooseStockBaseCondition = '行业；股价低于30元；流通市值<=120亿；流通市值>=20亿；非创业板；非科创板；非ST';
-// 2024-06-18 17:36:19 可以做创业板，尝试绩优股
-export const chooseStockBaseCondition = '行业；市盈率>0；股价低于50元；流通市值<=500亿；流通市值>=20亿；非科创板；非ST';
+export const stockBaseCondition = '非st；非退市；行业';
+// export const personalPreferenceCondition = '行业；股价低于30元；流通市值<=120亿；流通市值>=20亿；非创业板；非科创板；非ST';
+// 2024-06-18 17:36:19 个人偏好条件 可以做创业板，尝试绩优股
+export const personalPreferenceCondition = '市盈率>0；股价低于50元；流通市值<=500亿；流通市值>=20亿；非科创板；非ST；非退市' + stockBaseCondition;
 
 export const params = {
-  downLimit: '跌停；非st；行业',
-  downLimitByDate: '${date}跌停；非st；行业',
+  downLimit: '跌停；' + stockBaseCondition,
+  downLimitByDate: '${date}跌停；' + stockBaseCondition,
   // 炸板个股；涨停未遂
-  dailyLimitOpen: '涨停打开；非ST；成交额；行业',
-  dailyLimitOpenByDate: '${date}涨停打开；非ST；成交额；行业',
-  hugeFall: '跌幅大于等于15的个股；非ST；行业',
-  hugeFallByDate: '${date}跌幅大于等于15的个股；非ST；行业',
-  dailyLimitMoreThan1: '涨停；非ST；几天几板；涨停原因；涨停类型；涨停开板次数；封板金额；成交额；换手率；流通市值；行业',
-  dailyLimitMoreThan1ByDate: '${date}涨停；非ST；几天几板；涨停原因；涨停类型；涨停开板次数；封板金额；成交额；换手率；流通市值；行业',
+  dailyLimitOpen: '涨停打开；成交额；' + stockBaseCondition,
+  dailyLimitOpenByDate: '${date}涨停打开；成交额；' + stockBaseCondition,
+  hugeFall: '跌幅大于等于15的个股；' + stockBaseCondition,
+  hugeFallByDate: '${date}跌幅大于等于15的个股；' + stockBaseCondition,
+  dailyLimitMoreThan1: '涨停；几天几板；涨停原因；涨停类型；涨停开板次数；封板金额；成交额；换手率；流通市值；' + stockBaseCondition,
+  dailyLimitMoreThan1ByDate: '${date}涨停；几天几板；涨停原因；涨停类型；涨停开板次数；封板金额；成交额；换手率；流通市值；' + stockBaseCondition,
   // 获取昨日涨停的数据（客观数据）
-  dailyLimitYesterday: '昨日涨停；涨停开板次数；首次涨停时间；最终涨停时间；几天几板；昨日竞价量情况；今日竞价量情况；集合竞价评级；竞价涨幅；竞价异动类型；非ST；行业',
+  dailyLimitYesterday: '昨日涨停；涨停开板次数；首次涨停时间；最终涨停时间；几天几板；昨日竞价量情况；今日竞价量情况；集合竞价评级；竞价涨幅；竞价异动类型；' + stockBaseCondition,
   // =============== =============== 选股 start  =============== ===============
   // 获取昨日涨停的数据（主观数据） 昨日涨停换手率>=5%；（去除庄股或利好一字） 防止炸板
-  chooseStock1to2: '昨日首板涨停；涨停开板次数；首次涨停时间；最终涨停时间；昨日竞价量情况；今日竞价量情况；今日竞价看多；昨日涨停换手率>=5%；' + chooseStockBaseCondition,
+  chooseStock1to2: '昨日首板涨停；涨停开板次数；首次涨停时间；最终涨停时间；昨日竞价量情况；今日竞价量情况；今日竞价看多；昨日涨停换手率>=5%；' + personalPreferenceCondition,
   // 首板预期个股，竞价抢筹，小幅高开 性价比高
-  chooseStock1Expected: '竞价看多；竞价抢筹；竞价涨幅>0；10个交易日内有涨停；昨日未涨停；集中度70<=11；昨日收盘获利>=50%；' + chooseStockBaseCondition,
+  chooseStock1Expected: '竞价看多；竞价抢筹；竞价涨幅>0；10个交易日内有涨停；昨日未涨停；集中度70<=11；昨日收盘获利>=50%；' + personalPreferenceCondition,
   // 新股
   chooseStockNewStock: '今日新股上市；行业；竞价涨幅；流通市值；',
   // =============== =============== 选股 end  =============== ===============
