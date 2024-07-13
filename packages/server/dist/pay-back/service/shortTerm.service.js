@@ -48,7 +48,6 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
         try {
             const lastTradingDayData = await this.getLastTradingDayData(todayDateStr);
             createPayBackDto = await (0, shortTermUtil_1.getShortTermData)(todayDateStr, lastTradingDayData);
-            console.log(createPayBackDto);
             const todayDataFromDB = await this.getTodayData(todayDateStr);
             if (todayDataFromDB) {
                 this.logger.log('crawlShortTermData 更新数据');

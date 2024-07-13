@@ -3,7 +3,7 @@ import { fetchIwencaiApi } from '../core/fetchUtil';
 import { CreateFundsDataDto } from '../dto/create-funds-data.dto';
 import { params } from '../core/config';
 import fetch from 'node-fetch';
-import { ignoreGainianPlateStr } from './commonUtil';
+import { ignoreGainianPlateStr, getLastTradingDay } from './commonUtil';
 import { transformForeignFundsNew } from './transformDataUtil';
 
 export default {
@@ -79,15 +79,22 @@ export default {
     const responseMarketTurnoverJson = JSON.parse(marketTurnoverStr).data.diff;
     return responseMarketTurnoverJson[0].f6 + responseMarketTurnoverJson[1].f6;
   },
-  getPlateTop(platesData, dateStr, len = 5) {
+  getPlateTop(platesData, currentDateStr, len = 5) {
     // const platesData = commonUtil.getIwencaiData(responseJson);
+
+    // 如果当前非工作日，取上周五的日期
     return platesData.splice(0, len).map(item => {
+      // 纠错环节，判断昨日日期是否正确
+      if (!item[`指数@涨跌幅:前复权[${currentDateStr}]`]) {
+        currentDateStr = getLastTradingDay(currentDateStr);
+      }
+
       return {
         name: item['指数简称'],
         code: item['code'],
         // code: item['指数代码'],
-        funds: commonUtil.fundsToFixed(item[`指数@主力资金流向[${dateStr}]`]),
-        quoteChange: commonUtil.toFixed(item[`指数@涨跌幅:前复权[${dateStr}]`] || '0.0'),
+        funds: commonUtil.fundsToFixed(item[`指数@主力资金流向[${currentDateStr}]`]),
+        quoteChange: commonUtil.toFixed(item[`指数@涨跌幅:前复权[${currentDateStr}]`] || '0.0'),
       };
     });
   },

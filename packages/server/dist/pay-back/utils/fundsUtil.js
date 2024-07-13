@@ -46,13 +46,16 @@ exports.default = {
         const responseMarketTurnoverJson = JSON.parse(marketTurnoverStr).data.diff;
         return responseMarketTurnoverJson[0].f6 + responseMarketTurnoverJson[1].f6;
     },
-    getPlateTop(platesData, dateStr, len = 5) {
+    getPlateTop(platesData, currentDateStr, len = 5) {
         return platesData.splice(0, len).map(item => {
+            if (!item[`指数@涨跌幅:前复权[${currentDateStr}]`]) {
+                currentDateStr = (0, commonUtil_2.getLastTradingDay)(currentDateStr);
+            }
             return {
                 name: item['指数简称'],
                 code: item['code'],
-                funds: commonUtil_1.default.fundsToFixed(item[`指数@主力资金流向[${dateStr}]`]),
-                quoteChange: commonUtil_1.default.toFixed(item[`指数@涨跌幅:前复权[${dateStr}]`] || '0.0'),
+                funds: commonUtil_1.default.fundsToFixed(item[`指数@主力资金流向[${currentDateStr}]`]),
+                quoteChange: commonUtil_1.default.toFixed(item[`指数@涨跌幅:前复权[${currentDateStr}]`] || '0.0'),
             };
         });
     },
