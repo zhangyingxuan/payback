@@ -57,7 +57,7 @@ export class ShorTermService {
       const lastTradingDayData = await this.getLastTradingDayData(todayDateStr);
       createPayBackDto = await getShortTermData(todayDateStr, lastTradingDayData);
 
-      console.log(createPayBackDto);
+      // console.log(createPayBackDto);
       // 如果存在数据，则返回已有该数据
       const todayDataFromDB = await this.getTodayData(todayDateStr);
       if (todayDataFromDB) {

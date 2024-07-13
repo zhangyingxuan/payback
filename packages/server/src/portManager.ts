@@ -6,7 +6,7 @@ function getAvailablePort(port, isGetNewPort = false) {
   return new Promise((resolve, reject) => {
     // 如果监听成功，表示端口没有被其他服务占用，端口可用，取消监听，返回端口给调用者。
     server.on('listening', () => {
-      console.log('the server is running on port ' + port);
+      // console.log('the server is running on port ' + port);
       server.close();
       resolve(port);
     });

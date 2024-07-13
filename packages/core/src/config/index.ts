@@ -15,6 +15,9 @@ export const params = {
   hugeFallByDate: '${date}跌幅大于等于15的个股；' + stockBaseCondition,
   dailyLimitMoreThan1: '涨停；几天几板；涨停原因；涨停类型；涨停开板次数；封板金额；成交额；换手率；流通市值；' + stockBaseCondition,
   dailyLimitMoreThan1ByDate: '${date}涨停；几天几板；涨停原因；涨停类型；涨停开板次数；封板金额；成交额；换手率；流通市值；' + stockBaseCondition,
+  // 竞价涨停
+  binddingDailyLimitMoreThan1: '涨停；几天几板；涨停原因；涨停类型；封板金额；成交额；换手率；流通市值；' + stockBaseCondition,
+  binddingDailyLimitMoreThan1ByDate: '${date}涨停；几天几板；涨停原因；涨停类型；封板金额；成交额；换手率；流通市值；' + stockBaseCondition,
   // 获取昨日涨停的数据（客观数据）
   dailyLimitYesterday: '昨日涨停；涨停开板次数；首次涨停时间；最终涨停时间；几天几板；昨日竞价量情况；今日竞价量情况；集合竞价评级；竞价涨幅；竞价异动类型；' + stockBaseCondition,
   // =============== =============== 选股 start  =============== ===============

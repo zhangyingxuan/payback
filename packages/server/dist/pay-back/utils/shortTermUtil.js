@@ -10,8 +10,12 @@ const dayjs = require("dayjs");
 const node_fetch_1 = require("node-fetch");
 const downLimitNum = 50;
 const otherNum = 50;
+function isBefore930() {
+    const currentTime = dayjs();
+    return currentTime.hour() < 9 || (currentTime.hour() === 9 && currentTime.minute() < 30);
+}
 async function getShortTermData(todayDateStr, lastTradingDayData) {
-    const dailyLimit = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.dailyLimitMoreThan1);
+    const dailyLimit = (0, fetchUtil_1.fetchAllStocksByIwencai)(isBefore930() ? config_1.params.binddingDailyLimitMoreThan1 : config_1.params.dailyLimitMoreThan1);
     const downLimit = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.downLimit, downLimitNum);
     const dailyLimitOpen = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.dailyLimitOpen);
     const hugeFall = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.hugeFall, otherNum);
@@ -22,7 +26,7 @@ async function getShortTermData(todayDateStr, lastTradingDayData) {
 }
 exports.getShortTermData = getShortTermData;
 async function getShortTermDataByDate(todayDateStr, lastTradingDayData) {
-    const dailyLimit = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.dailyLimitMoreThan1ByDate.replace('${date}', todayDateStr));
+    const dailyLimit = (0, fetchUtil_1.fetchAllStocksByIwencai)((isBefore930() ? config_1.params.binddingDailyLimitMoreThan1ByDate : config_1.params.dailyLimitMoreThan1ByDate).replace('${date}', todayDateStr));
     const downLimit = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.downLimitByDate.replace('${date}', todayDateStr), downLimitNum);
     const dailyLimitOpen = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.dailyLimitOpenByDate.replace('${date}', todayDateStr));
     const hugeFall = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.hugeFallByDate.replace('${date}', todayDateStr), otherNum);

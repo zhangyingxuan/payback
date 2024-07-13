@@ -9,8 +9,7 @@
     "serve": "vite preview",
     "lint": "npm run lint:eslint && npm run lint:prettier",
     "lint:eslint": "eslint . --ext .vue,.js,.ts,.jsx,.tsx --fix",
-    "lint:prettier": "prettier --write  \"src/**/*.{js,ts,json,tsx,css,less,scss,vue,html,md}\"",
-    "prepare": "husky install"
+    "lint:prettier": "prettier --write  \"src/**/*.{js,ts,json,tsx,css,less,scss,vue,html,md}\""
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.0.9",
@@ -25,7 +24,7 @@
     "hyperdown": "^2.4.29",
     "js-cookie": "^3.0.5",
     "lodash-es": "^4.17.21",
-    "pay-back-core": "^0.0.14",
+    "pay-back-core": "^0.0.15",
     "pinia": "^2.0.20",
     "pinia-plugin-persist": "^1.0.0",
     "qs": "^6.11.1",

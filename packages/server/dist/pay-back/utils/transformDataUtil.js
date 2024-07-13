@@ -68,7 +68,7 @@ function transformDownLimitData(dailyLimitData, currentDate) {
     return downLimitDataArr;
 }
 function transformDailyLimitData(dailyLimitData, dailyLimitGroupByGainainData, currentDate) {
-    let board1 = 0, maxHeight = 1, currentLevel = 0, jitianjiban = '', dailyLimitReturnSealQuantity = 0;
+    let board1 = 0, maxHeight = 1, currentLevel = 1, jitianjiban = '', dailyLimitReturnSealQuantity = 0;
     const evenBoardData = { maxHeight: 1, gaobiao: [], yizi: 0 };
     const evenBoardLabel = `连续涨停天数[${currentDate}]`;
     dailyLimitData &&
@@ -95,7 +95,7 @@ function transformDailyLimitData(dailyLimitData, dailyLimitGroupByGainainData, c
                 dailyLimitStockDto.dailyTime += ',' + item[`最终涨停时间[${currentDate}]`].trim();
             }
             dailyLimitStockDto.gainian = getGainianByCode(dailyLimitGroupByGainainData, dailyLimitStockDto.code);
-            currentLevel = item[evenBoardLabel];
+            currentLevel = item[evenBoardLabel] || 1;
             jitianjiban = item[`几天几板[${currentDate}]`];
             if (jitianjiban && jitianjiban.indexOf('天') > -1) {
                 const day = +jitianjiban.split('天')[0];

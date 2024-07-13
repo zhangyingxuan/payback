@@ -43,7 +43,7 @@
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
-    "pay-back-core": "^0.0.14",
+    "pay-back-core": "^0.0.15",
     "playwright": "^1.32.3",
     "qs": "^6.11.2",
     "raw-loader": "^4.0.2",

@@ -10,6 +10,10 @@ import fetch from 'node-fetch';
 const downLimitNum = 50;
 // 跌停个股只需考虑数量，无需所有个股都存储
 const otherNum = 50;
+function isBefore930() {
+  const currentTime = dayjs();
+  return currentTime.hour() < 9 || (currentTime.hour() === 9 && currentTime.minute() < 30);
+}
 
 /**
  * 通过接口方式获取短线数据
@@ -18,8 +22,11 @@ const otherNum = 50;
 export async function getShortTermData(todayDateStr, lastTradingDayData): Promise<CreatePayBackDto> {
   // const start = performance.now();
   // console.time();
+  // 当前时间是9.30之前，则使用 binddingDailyLimitMoreThan1 否则使用 dailyLimitMoreThan1
   // 准备涨停数据
-  const dailyLimit: any = fetchAllStocksByIwencai(params.dailyLimitMoreThan1);
+  const dailyLimit: any = fetchAllStocksByIwencai(
+    isBefore930() ? params.binddingDailyLimitMoreThan1 : params.dailyLimitMoreThan1,
+  );
   // 跌停数据
   const downLimit: any = fetchAllStocksByIwencai(params.downLimit, downLimitNum);
   // 涨停打开个股
@@ -53,7 +60,12 @@ export async function getShortTermData(todayDateStr, lastTradingDayData): Promis
 
 export async function getShortTermDataByDate(todayDateStr, lastTradingDayData): Promise<CreatePayBackDto> {
   // 准备涨停数据
-  const dailyLimit: any = fetchAllStocksByIwencai(params.dailyLimitMoreThan1ByDate.replace('${date}', todayDateStr));
+  const dailyLimit: any = fetchAllStocksByIwencai(
+    (isBefore930() ? params.binddingDailyLimitMoreThan1ByDate : params.dailyLimitMoreThan1ByDate).replace(
+      '${date}',
+      todayDateStr,
+    ),
+  );
   // 跌停数据
   const downLimit: any = fetchAllStocksByIwencai(params.downLimitByDate.replace('${date}', todayDateStr), downLimitNum);
   // 涨停打开个股

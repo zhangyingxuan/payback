@@ -100,7 +100,7 @@ function transformDownLimitData(dailyLimitData, currentDate) {
 function transformDailyLimitData(dailyLimitData, dailyLimitGroupByGainainData, currentDate) {
   let board1 = 0,
     maxHeight = 1,
-    currentLevel = 0,
+    currentLevel = 1,
     jitianjiban = '',
     dailyLimitReturnSealQuantity = 0;
   const evenBoardData = { maxHeight: 1, gaobiao: [], yizi: 0 };
@@ -141,7 +141,7 @@ function transformDailyLimitData(dailyLimitData, dailyLimitGroupByGainainData, c
       dailyLimitStockDto.gainian = getGainianByCode(dailyLimitGroupByGainainData, dailyLimitStockDto.code);
 
       // 当前股票 连板高度 -- 优化竞价时无法获取当前高度的问题，合并为高标 2024-05-06 15:50:18
-      currentLevel = item[evenBoardLabel];
+      currentLevel = item[evenBoardLabel] || 1;
       // 如果是 断板连板 则统计几天几板
       jitianjiban = item[`几天几板[${currentDate}]`];
 
