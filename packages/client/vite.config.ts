@@ -105,7 +105,7 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 					drop_debugger: true,
 				},
 			},
-			sourcemap: true,
+			sourcemap: false,
 		},
 		plugins: [
 			compress({ threshold: 10240 }), // gzip 压缩
