@@ -20,7 +20,7 @@
         <el-tag
           size="small"
           type=""
-          style="margin-left: 3px"
+          style="margin: 0 2px 2px 0; padding: 0 2px"
           v-for="(gainian, index) in stock.gainian"
           :key="index"
         >
