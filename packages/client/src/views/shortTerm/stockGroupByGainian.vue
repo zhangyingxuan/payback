@@ -188,6 +188,7 @@ function handleShowMoreInfo(e: Event, reason_info: string) {
       '</pre>',
     placement: 'bottom',
     maxWidth: '400px',
+    popoverClass: 'tooltip__popper',
   });
 }
 </script>
@@ -224,5 +225,11 @@ function handleShowMoreInfo(e: Event, reason_info: string) {
   padding: 50px;
   text-align: center;
   columns: #ccc;
+}
+</style>
+
+<style lang="less">
+.tooltip__popper {
+  width: 50%;
 }
 </style>
