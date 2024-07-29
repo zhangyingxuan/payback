@@ -94,9 +94,12 @@
               </span>
             </span>
             ]&nbsp;&nbsp;
-            <span class="reason_info" :title="stock.reason_info">{{
-              stock.reason_info
-            }}</span>
+            <span
+              class="reason_info"
+              @mouseover="(e: Event) => handleShowMoreInfo(e, stock.reason_info)"
+            >
+              {{ stock.reason_info }}
+            </span>
           </div>
         </div>
       </div>
@@ -104,10 +107,13 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { reactive, watch, ref } from 'vue';
+import { reactive, watch, ref, inject } from 'vue';
 import { fetchDailyLimitStockGroupByGainian } from '@/api/tonghuashun';
 import dayjs from 'dayjs';
 import { isMobile } from '@/core/util';
+
+const showTooltip: any = inject('showTooltip');
+
 const dayFormat = 'HH:mm';
 const data: {
   stockGroupByGainian: any[];
@@ -172,7 +178,18 @@ async function initPage() {
   // 个股展示 reason_info、reason_type、name、code、high、first_limit_up_time（首次涨停）、last_limit_up_time、latest（股价）
 }
 initPage();
-// 定时刷新功能
+
+// 显示更多
+function handleShowMoreInfo(e: Event, reason_info: string) {
+  showTooltip(e.target, {
+    toolTipContent:
+      '<pre style=" word-wrap: break-word;white-space: pre-wrap">' +
+      reason_info +
+      '</pre>',
+    placement: 'bottom',
+    maxWidth: '400px',
+  });
+}
 </script>
 
 <style scoped lang="less">
