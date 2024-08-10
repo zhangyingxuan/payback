@@ -5,9 +5,9 @@ export const ignoreGainianPlates = ['融资融券', '深股通', '沪股通', '�
 export const ignoreGainianPlateStr = (function prepareConditionStr() {
   return ignoreGainianPlates
     .map(item => {
-      return `指数简称不包含${item};`;
+      return `指数简称不包含${item}；`;
     })
-    .join(',');
+    .join('');
 })();
 
 export function toFixed(num, floatLen = 2) {

@@ -6,9 +6,9 @@ exports.ignoreGainianPlates = ['融资融券', '深股通', '沪股通', '标普
 exports.ignoreGainianPlateStr = (function prepareConditionStr() {
     return exports.ignoreGainianPlates
         .map(item => {
-        return `指数简称不包含${item};`;
+        return `指数简称不包含${item}；`;
     })
-        .join(',');
+        .join('');
 })();
 function toFixed(num, floatLen = 2) {
     if (!num)
