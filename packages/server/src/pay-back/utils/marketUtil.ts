@@ -8,7 +8,7 @@ import { ignoreGainianPlateStr } from './commonUtil';
 
 export default {
   /**
-   * 获取 市场数据
+   * 获取 市场数据，指数数据 + 板块涨跌排行
    */
   async getMarketData(dateStr): Promise<CreateMarketDataDto> {
     const createMarketDataDto: CreateMarketDataDto = new CreateMarketDataDto();
@@ -16,7 +16,7 @@ export default {
     const index = fetchMarketPointFromEastmoney();
     // 获取同花顺分数、涨跌家数
     const market = fetchMarketData();
-
+    // 板块涨跌排行
     const gainianRiseFloat = fetchIwencaiApi(params.gainianRiseFloat + ignoreGainianPlateStr);
     const gainianFallFloat = fetchIwencaiApi(params.gainianFallFloat + ignoreGainianPlateStr);
     const hangyeRiseFloat = fetchIwencaiApi(params.hangyeRiseFloat);

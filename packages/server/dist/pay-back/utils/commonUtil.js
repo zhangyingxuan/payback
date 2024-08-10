@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getLastTradingDay = exports.getStocksPagingDataByIwencai = exports.getStocksDataByIwencai = exports.getIwencaiData = exports.fundsToFixed = exports.toFixed = exports.ignoreGainianPlateStr = exports.ignoreGainianPlates = void 0;
 const dayjs = require("dayjs");
-exports.ignoreGainianPlates = ['融资融券', '深股通', '沪股通', '标普道琼斯A股', 'MSCI概念'];
+exports.ignoreGainianPlates = ['融资融券', '深股通', '沪股通'];
 exports.ignoreGainianPlateStr = (function prepareConditionStr() {
     return exports.ignoreGainianPlates
         .map(item => {
