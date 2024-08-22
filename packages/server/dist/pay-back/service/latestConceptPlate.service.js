@@ -19,20 +19,10 @@ const typeorm_1 = require("typeorm");
 const latestConceptPlate_entity_1 = require("../entities/latestConceptPlate.entity");
 const typeorm_2 = require("@nestjs/typeorm");
 const latestConceptPlateUtil_1 = require("../utils/latestConceptPlateUtil");
-const schedule_1 = require("@nestjs/schedule");
 let LatestConceptPlateService = LatestConceptPlateService_1 = class LatestConceptPlateService {
     constructor(latestConceptPlateRp) {
         this.latestConceptPlateRp = latestConceptPlateRp;
         this.logger = new common_1.Logger(LatestConceptPlateService_1.name);
-    }
-    async autoCrawlLatestConceptPlateDataAm() {
-        return await this.crawlLatestConceptPlateData();
-    }
-    async autoCrawlLatestConceptPlateDataPm() {
-        return await this.crawlLatestConceptPlateData();
-    }
-    async autoCrawlLatestConceptPlateDataEvening() {
-        return await this.crawlLatestConceptPlateData();
     }
     async crawlLatestConceptPlateData() {
         this.logger.debug('crawlLatestConceptPlateData is Begining!');
@@ -81,24 +71,6 @@ let LatestConceptPlateService = LatestConceptPlateService_1 = class LatestConcep
             .getOne();
     }
 };
-__decorate([
-    (0, schedule_1.Cron)('0 05 9 * * 1-5'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], LatestConceptPlateService.prototype, "autoCrawlLatestConceptPlateDataAm", null);
-__decorate([
-    (0, schedule_1.Cron)('0 00 16 * * 1-5'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], LatestConceptPlateService.prototype, "autoCrawlLatestConceptPlateDataPm", null);
-__decorate([
-    (0, schedule_1.Cron)('0 00 23 * * 1-5'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], LatestConceptPlateService.prototype, "autoCrawlLatestConceptPlateDataEvening", null);
 LatestConceptPlateService = LatestConceptPlateService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_2.InjectRepository)(latestConceptPlate_entity_1.latestConceptPlate)),

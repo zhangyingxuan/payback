@@ -17,7 +17,7 @@
   />
 </template>
 
-<script setup lang="ts" name="newsDetail">
+<script setup lang="ts" name="articleDetail">
 import { reactive } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { findOne } from '@/api/article';

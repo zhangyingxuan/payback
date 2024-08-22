@@ -20,7 +20,7 @@
   </div>
 </template>
 
-<script setup lang="ts" name="baseform">
+<script setup lang="ts" name="articleEdit">
 import { reactive, ref, onMounted, onUnmounted } from 'vue';
 import { ElMessage } from 'element-plus';
 import type { FormInstance, FormRules } from 'element-plus';

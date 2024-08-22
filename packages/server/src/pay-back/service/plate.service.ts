@@ -4,7 +4,6 @@ import { plateData } from '../entities/plateData.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import plateUtil from '../utils/plateUtil';
 import * as dayjs from 'dayjs';
-import { Cron } from '@nestjs/schedule';
 import { CreatePlateDataDto } from '../dto/create-plate-data.dto';
 
 @Injectable()
@@ -13,16 +12,16 @@ export class PlateService {
 
   private readonly logger = new Logger(PlateService.name);
 
-  @Cron('0 15 15 * * 1-5')
-  async autoCrawlPlateDataLateSession() {
-    this.crawlPlateData();
-  }
+  // @Cron('0 15 15 * * 1-5')
+  // async autoCrawlPlateDataLatePm() {
+  //   this.crawlPlateData();
+  // }
 
-  // 午盘
-  @Cron('0 33 11 * * 1-5')
-  async autoCrawlPlateDataMidday() {
-    this.crawlPlateData();
-  }
+  // // 午盘
+  // @Cron('0 33 11 * * 1-5')
+  // async autoCrawlPlateDataMidday() {
+  //   this.crawlPlateData();
+  // }
 
   async crawlPlateData() {
     this.logger.debug('crawlPlateData is Begining!');

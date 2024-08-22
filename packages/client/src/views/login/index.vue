@@ -48,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import { ref, reactive, getCurrentInstance } from 'vue';
 import { useTagsStore } from '@/store/tags';
 import { usePermissStore } from '@/store/permiss';
 import { useRouter } from 'vue-router';
@@ -59,9 +59,10 @@ import { UserModel } from '@/api/model/UserModel';
 import { setToken } from '@/router/auth';
 import { updateNavThemeColor } from '@/core/util';
 
+// 更新监控 uin
+const { proxy }: any = getCurrentInstance();
 updateNavThemeColor('#324157');
 
-let interval: any = null;
 const router = useRouter();
 const param = reactive<UserModel>({
   account: '',
@@ -98,6 +99,9 @@ const submitForm = (formEl: FormInstance | undefined) => {
         ElMessage.success('登录成功');
         // 设置用户信息
         permiss.handleSetUserInfo({ ...result, ...param });
+        proxy?.$aegis.setConfig({
+          uin: result.account,
+        });
         // 7天
         setToken(result.token, 604800);
         router.push('/');

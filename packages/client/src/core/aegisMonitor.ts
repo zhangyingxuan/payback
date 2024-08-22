@@ -9,8 +9,8 @@ export function initAegis(app: App, permiss: any) {
   const aegis = new Aegis({
     id: 'p0vobckgDZ10ebknPP', // 上报 id
     uin: permiss.account || 'Visitors', // 用户唯一 ID（可选）
-    reportApiSpeed: true, // 接口测速
-    reportAssetSpeed: true, // 静态资源测速
+    reportApiSpeed: false, // 接口测速
+    reportAssetSpeed: false, // 静态资源测速
     spa: true, // spa 应用页面跳转的时候开启 pv 计算
     // hostUrl: 'https://rumt-zh.com'
     // 测速不抽样，api监控数据的来源，关闭之后才能跟日志数据一致
@@ -25,4 +25,6 @@ export function initAegis(app: App, permiss: any) {
     console.log(`Error: ${err.toString()}\nInfo: ${info}`);
     aegis.error(`Error: ${err.toString()}\nInfo: ${info}`);
   };
+  // 注入全局变量
+  app.config.globalProperties['$aegis'] = aegis;
 }

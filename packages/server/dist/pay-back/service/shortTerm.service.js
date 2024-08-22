@@ -21,7 +21,6 @@ const typeorm_2 = require("@nestjs/typeorm");
 const shortTermUtil_1 = require("../utils/shortTermUtil");
 const ths_service_1 = require("./ths.service");
 const dayjs = require("dayjs");
-const schedule_1 = require("@nestjs/schedule");
 const specialStock_service_1 = require("./specialStock.service");
 let ShorTermService = ShorTermService_1 = class ShorTermService {
     constructor(thsService, specialStockService, shortTermDataRp) {
@@ -29,17 +28,6 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
         this.specialStockService = specialStockService;
         this.shortTermDataRp = shortTermDataRp;
         this.logger = new common_1.Logger(ShorTermService_1.name);
-    }
-    async autoCrawlShortTermDataLateSession() {
-        const result = await this.crawlShortTermData();
-        process.env.NODE_ENV !== 'dev' &&
-            this.thsService.autoModifyThsSelfStocks(JSON.parse(result.evenBoardData), 'admin');
-    }
-    async autoCrawlShortTermDataMidday() {
-        this.crawlShortTermData();
-    }
-    async autoCrawlShortTermDataMorning() {
-        this.crawlShortTermData();
     }
     async crawlShortTermData() {
         this.logger.debug('crawlShortTermData is Begining!');
@@ -155,18 +143,6 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
             .execute();
     }
 };
-__decorate([
-    (0, schedule_1.Cron)('0 20 15 * * 1-5'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ShorTermService.prototype, "autoCrawlShortTermDataLateSession", null);
-__decorate([
-    (0, schedule_1.Cron)('0 36 11 * * 1-5'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], ShorTermService.prototype, "autoCrawlShortTermDataMidday", null);
 ShorTermService = ShorTermService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(2, (0, typeorm_2.InjectRepository)(shortTermData_entity_1.shortTermData)),

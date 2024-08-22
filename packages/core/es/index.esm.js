@@ -1,5 +1,5 @@
 /*!
- * index.js v0.0.15
+ * index.js v0.0.16
  * (c) 2018-2024 blowsysun
  * Released under the MIT License.
  */
@@ -1029,7 +1029,7 @@ const params = {
     // 炸板个股；涨停未遂
     dailyLimitOpen: '涨停打开；成交额；' + stockBaseCondition,
     dailyLimitOpenByDate: '${date}涨停打开；成交额；' + stockBaseCondition,
-    hugeFall: '跌幅大于等于15的个股；' + stockBaseCondition,
+    hugeFall: '跌幅大于等于15的个股；非跌停；' + stockBaseCondition,
     hugeFallByDate: '${date}跌幅大于等于15的个股；' + stockBaseCondition,
     dailyLimitMoreThan1: '涨停；几天几板；涨停原因；涨停类型；涨停开板次数；封板金额；成交额；换手率；流通市值；' + stockBaseCondition,
     dailyLimitMoreThan1ByDate: '${date}涨停；几天几板；涨停原因；涨停类型；涨停开板次数；封板金额；成交额；换手率；流通市值；' + stockBaseCondition,

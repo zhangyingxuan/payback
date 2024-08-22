@@ -54,7 +54,7 @@
   </div>
 </template>
 
-<script setup lang="ts" name="basetable">
+<script setup lang="ts" name="articleIndex">
 import { ref } from 'vue';
 import { dayjs, ElMessage, ElMessageBox } from 'element-plus';
 import { Plus } from '@element-plus/icons-vue';

@@ -8,7 +8,9 @@ import { LatestConceptPlateService } from './service/latestConceptPlate.service'
 import { ReviewService } from './service/review.service';
 import { ThsService } from './service/ths.service';
 import { ApiTestService } from './service/apiTest.service';
+import { SchedulerTaskService } from '@/scheduler-task/scheduler-task.service';
 import { UsersService } from '../users/users.service';
+import { QyWechatNotice } from './service/qyWechatNotice.service';
 declare class CrawlTodayDataDto {
     fetchTodayDataType: number;
     isRemoveIncompatible: number;
@@ -25,9 +27,11 @@ export declare class PayBackController {
     private readonly usersService;
     private readonly marketService;
     private readonly plateService;
-    constructor(shorTermService: ShorTermService, specialStockService: SpecialStockService, fundsService: FundsService, hotListService: HotListService, reviewService: ReviewService, thsService: ThsService, apiTestService: ApiTestService, latestConceptPlateService: LatestConceptPlateService, usersService: UsersService, marketService: MarketService, plateService: PlateService);
+    private readonly schedulerTaskService;
+    private readonly qyWechatNotice;
+    constructor(shorTermService: ShorTermService, specialStockService: SpecialStockService, fundsService: FundsService, hotListService: HotListService, reviewService: ReviewService, thsService: ThsService, apiTestService: ApiTestService, latestConceptPlateService: LatestConceptPlateService, usersService: UsersService, marketService: MarketService, plateService: PlateService, schedulerTaskService: SchedulerTaskService, qyWechatNotice: QyWechatNotice);
     private readonly logger;
-    testApi(): Promise<string>;
+    testApi(): Promise<any>;
     autoCrawlTodayDataAM(): Promise<void>;
     autoCrawlTodayDataPM(): Promise<void>;
     crawlTodayData(body: CrawlTodayDataDto, req: any): Promise<{
@@ -94,5 +98,11 @@ export declare class PayBackController {
     saveUserInfo(body: any, req: any): Promise<{
         code: number;
     }>;
+    initSchedulerTask(): {
+        taskName: string;
+        service: string;
+        func: string;
+        cron: string;
+    }[];
 }
 export {};

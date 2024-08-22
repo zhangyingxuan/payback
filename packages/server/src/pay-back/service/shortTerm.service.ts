@@ -24,25 +24,18 @@ export class ShorTermService {
   // * 10 * * * *：每小时一次，十分钟开始
   // 0 */30 9-17 * * *：上午九时至下午五时，每三十分钟一次
   // 0 30 11 * * 1-5：星期一至星期五上午11:30
-  @Cron('0 20 15 * * 1-5')
-  async autoCrawlShortTermDataLateSession() {
-    const result = await this.crawlShortTermData();
-    // 读取配置中是否加入自选
-    process.env.NODE_ENV !== 'dev' &&
-      this.thsService.autoModifyThsSelfStocks(JSON.parse(result.evenBoardData), 'admin');
-  }
+  // @Cron('0 20 15 * * 1-5')
+  // async autoCrawlShortTermDataLatePm() {
+  //   const result = await this.crawlShortTermData();
+  //   process.env.NODE_ENV !== 'dev' &&
+  //     this.thsService.autoModifyThsSelfStocks(JSON.parse(result.evenBoardData), 'admin');
+  // }
 
   // 午盘
-  @Cron('0 36 11 * * 1-5')
-  async autoCrawlShortTermDataMidday() {
-    this.crawlShortTermData();
-  }
-
-  // 早盘
-  // @Cron('02 25 9 * * 1-5')
-  async autoCrawlShortTermDataMorning() {
-    this.crawlShortTermData();
-  }
+  // @Cron('0 36 11 * * 1-5')
+  // async autoCrawlShortTermDataMidday() {
+  //   this.crawlShortTermData();
+  // }
 
   /**
    * 爬取短线数据，如果已存在则更新

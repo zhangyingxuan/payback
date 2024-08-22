@@ -9,11 +9,13 @@ import { LatestConceptPlateService } from './service/latestConceptPlate.service'
 import { ReviewService } from './service/review.service';
 import { ThsService } from './service/ths.service';
 import { ApiTestService } from './service/apiTest.service';
+import { SchedulerTaskService } from '@/scheduler-task/scheduler-task.service';
 import { Public } from '../decorator/public.decorator';
 // import { Cron } from '@nestjs/schedule';
 import { UsersService } from '../users/users.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import * as dayjs from 'dayjs';
+import { QyWechatNotice } from './service/qyWechatNotice.service';
 
 class CrawlTodayDataDto {
   fetchTodayDataType: number;
@@ -34,18 +36,21 @@ export class PayBackController {
     private readonly usersService: UsersService,
     private readonly marketService: MarketService,
     private readonly plateService: PlateService,
+    private readonly schedulerTaskService: SchedulerTaskService,
+    private readonly qyWechatNotice: QyWechatNotice,
   ) { }
 
   private readonly logger = new Logger(PayBackController.name);
 
-  // @Public()
+  @Public()
   @Get('testApi')
   async testApi() {
     // return await this.apiTestService.otherTest();
     // return await this.usersService.getUserByAccount('admin');
     // return await this.apiTestService.fetchExternalData();
     // return await this.apiTestService.datacenterWeb();
-    return 'testApi';
+    return await this.apiTestService.notice();
+    // return 'testApi';
   }
 
   // @Cron('0 */5 9-12 * * 1-5')
@@ -303,5 +308,120 @@ export class PayBackController {
     return {
       code: success ? 200 : 500,
     };
+  }
+
+  @Get('/initSchedulerTask')
+  initSchedulerTask() {
+    const schedulerTaskList = [
+      // 资金相关 === start
+      {
+        taskName: 'autoCrawlfundsDataLateSession',
+        service: 'fundsService',
+        func: 'crawlfundsData',
+        cron: '0 10 16 * * 1-5',
+      },
+      {
+        // 更新北向资金
+        taskName: 'autoCrawlnorthDataLateSession',
+        service: 'fundsService',
+        func: 'crawlfundsData',
+        cron: '0 10 18 * * 1-5',
+      },
+      {
+        taskName: 'autoCrawlfundsDataMidday',
+        service: 'fundsService',
+        func: 'crawlfundsData',
+        cron: '0 41 11 * * 1-5',
+      },
+      // 资金相关 === end
+      // 热榜相关 === start
+      {
+        // 尾盘 获取资金数据
+        taskName: 'autoCrawlHotListData',
+        service: 'hotListService',
+        func: 'crawlHotListData',
+        cron: '0 */30 7-23 * * *',
+      },
+      // 热榜相关 === end
+      // 最新概念 === start
+      {
+        taskName: 'autoCrawlLatestConceptPlateDataAm',
+        service: 'latestConceptPlateService',
+        func: 'crawlLatestConceptPlateData',
+        cron: '0 05 9 * * 1-5',
+      },
+      {
+        taskName: 'autoCrawlLatestConceptPlateDataPm',
+        service: 'latestConceptPlateService',
+        func: 'crawlLatestConceptPlateData',
+        cron: '0 00 16 * * 1-5',
+      },
+      {
+        taskName: 'autoCrawlLatestConceptPlateDataEvening',
+        service: 'latestConceptPlateService',
+        func: 'crawlLatestConceptPlateData',
+        cron: '0 00 23 * * 1-5',
+      },
+      // 最新概念 === end
+      // 市场数据 === start
+      {
+        taskName: 'autoCrawlMarketDataMidday',
+        service: 'marketService',
+        func: 'crawlMarketData',
+        cron: '0 10 15 * * 1-5',
+      },
+      {
+        taskName: 'autoCrawlMarketDataPm',
+        service: 'marketService',
+        func: 'crawlMarketData',
+        cron: '0 10 15 * * 1-5',
+      },
+      // 市场数据 === end
+      // 板块数据 === start
+      {
+        taskName: 'autoCrawlPlateDataMidday',
+        service: 'plateService',
+        func: 'crawlPlateData',
+        cron: '0 33 11 * * 1-5',
+      },
+      {
+        taskName: 'autoCrawlMarketDataPm',
+        service: 'plateService',
+        func: 'crawlPlateData',
+        cron: '0 15 15 * * 1-5',
+      },
+      // 板块数据 === end
+      // 短线数据 === start
+      {
+        taskName: 'autoCrawlShortTermDataMidday',
+        service: 'shorTermService',
+        func: 'crawlShortTermData',
+        cron: '0 36 11 * * 1-5',
+      },
+      {
+        taskName: 'autoCrawlShortTermDataLatePm',
+        service: 'shorTermService',
+        func: 'crawlShortTermData',
+        cron: '0 20 15 * * 1-5',
+      },
+      // 短线数据 === end
+    ];
+    schedulerTaskList.forEach(task => {
+      this.schedulerTaskService.executeTask(task.taskName, task.cron, async () => {
+        try {
+          if (task.taskName === 'autoCrawlShortTermDataMidday') {
+            const result = await this[task.service][task.func]();
+            process.env.NODE_ENV !== 'dev' &&
+              this.thsService.autoModifyThsSelfStocks(JSON.parse(result.evenBoardData), 'admin');
+            return;
+          }
+          this[task.service][task.func]();
+        } catch (e) {
+          // 报错后 通知企微
+          this.qyWechatNotice.notice(task.service, `[${task.func}]出错了：${JSON.stringify(e)}`);
+        }
+      });
+    });
+    return schedulerTaskList;
   }
 }

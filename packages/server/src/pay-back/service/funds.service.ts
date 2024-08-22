@@ -5,7 +5,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import fundsUtil from '../utils/fundsUtil';
 import { CreateFundsDataDto } from '../dto/create-funds-data.dto';
 import * as dayjs from 'dayjs';
-import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class FundsService {
@@ -13,23 +12,23 @@ export class FundsService {
 
   private readonly logger = new Logger(FundsService.name);
 
-  // 尾盘
-  @Cron('0 10 16 * * 1-5')
-  async autoCrawlfundsDataLateSession() {
-    this.crawlfundsData();
-  }
+  // // 尾盘
+  // @Cron('0 10 16 * * 1-5')
+  // async autoCrawlfundsDataLateSession() {
+  //   this.crawlfundsData();
+  // }
 
-  // 更新北向资金
-  @Cron('0 10 18 * * 1-5')
-  async autoCrawlnorthDataLateSession() {
-    this.crawlfundsData();
-  }
+  // // 更新北向资金
+  // @Cron('0 10 18 * * 1-5')
+  // async autoCrawlnorthDataLateSession() {
+  //   this.crawlfundsData();
+  // }
 
-  // 午盘
-  @Cron('0 41 11 * * 1-5')
-  async autoCrawlfundsDataMidday() {
-    this.crawlfundsData();
-  }
+  // // 午盘
+  // @Cron('0 41 11 * * 1-5')
+  // async autoCrawlfundsDataMidday() {
+  //   this.crawlfundsData();
+  // }
 
   // * * * * * *：每一秒
   // 45 * * * * *：每分钟，在45秒

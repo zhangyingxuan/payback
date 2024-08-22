@@ -20,17 +20,10 @@ const plateData_entity_1 = require("../entities/plateData.entity");
 const typeorm_2 = require("@nestjs/typeorm");
 const plateUtil_1 = require("../utils/plateUtil");
 const dayjs = require("dayjs");
-const schedule_1 = require("@nestjs/schedule");
 let PlateService = PlateService_1 = class PlateService {
     constructor(plateDataRp) {
         this.plateDataRp = plateDataRp;
         this.logger = new common_1.Logger(PlateService_1.name);
-    }
-    async autoCrawlPlateDataLateSession() {
-        this.crawlPlateData();
-    }
-    async autoCrawlPlateDataMidday() {
-        this.crawlPlateData();
     }
     async crawlPlateData() {
         this.logger.debug('crawlPlateData is Begining!');
@@ -83,18 +76,6 @@ let PlateService = PlateService_1 = class PlateService {
             .execute();
     }
 };
-__decorate([
-    (0, schedule_1.Cron)('0 15 15 * * 1-5'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], PlateService.prototype, "autoCrawlPlateDataLateSession", null);
-__decorate([
-    (0, schedule_1.Cron)('0 33 11 * * 1-5'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], PlateService.prototype, "autoCrawlPlateDataMidday", null);
 PlateService = PlateService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_2.InjectRepository)(plateData_entity_1.plateData)),

@@ -20,6 +20,7 @@ const hotList_entity_1 = require("../entities/hotList.entity");
 const typeorm_2 = require("@nestjs/typeorm");
 const node_fetch_1 = require("node-fetch");
 const fetchUtil_1 = require("../core/fetchUtil");
+const qyWechatNotice_service_1 = require("./qyWechatNotice.service");
 const thsUrl = {
     getSelfStockWithMarket: 'https://t.10jqka.com.cn/newcircle/group/getSelfStockWithMarket',
     getAllSelfStock: 'https://www.iwencai.com/unifiedwap/self-stock/plate/list',
@@ -28,9 +29,20 @@ const thsUrl = {
     modifySelfStock: 'https://t.10jqka.com.cn/newcircle/group/modifySelfStock/',
 };
 let ApiTestService = ApiTestService_1 = class ApiTestService {
-    constructor(hotListRp) {
+    constructor(hotListRp, qyWechatNotice) {
         this.hotListRp = hotListRp;
+        this.qyWechatNotice = qyWechatNotice;
         this.logger = new common_1.Logger(ApiTestService_1.name);
+    }
+    async notice() {
+        const body = {
+            msgtype: 'markdown',
+            text: {
+                content: '广州今日天气：29度，大部分多云，降雨概率：60%',
+                mentioned_list: ['yxuanzhang'],
+            },
+        };
+        return await this.qyWechatNotice.notice(ApiTestService_1.name, `[crawlfundsData]出错了：${JSON.stringify(body)}`);
     }
     async fetchHotList() {
         (0, node_fetch_1.default)('https://datacenter-web.eastmoney.com/api/data/v1/get?callback=jQuery112309386087809528996_1689650979956&reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE%2CMUTUAL_TYPE%2CBOARD_TYPE%2CMUTUAL_TYPE_NAME%2CFUNDS_DIRECTION%2CINDEX_CODE%2CINDEX_NAME%2CBOARD_CODE&quoteColumns=status~07~BOARD_CODE%2CdayNetAmtIn~07~BOARD_CODE%2CdayAmtRemain~07~BOARD_CODE%2CdayAmtThreshold~07~BOARD_CODE%2Cf104~07~BOARD_CODE%2Cf105~07~BOARD_CODE%2Cf106~07~BOARD_CODE%2Cf3~03~INDEX_CODE~INDEX_f3%2CnetBuyAmt~07~BOARD_CODE&quoteType=0&pageNumber=1&pageSize=200&sortTypes=1&sortColumns=MUTUAL_TYPE&source=WEB&client=WEB&_=1689650979958')
@@ -99,7 +111,8 @@ let ApiTestService = ApiTestService_1 = class ApiTestService {
 ApiTestService = ApiTestService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_2.InjectRepository)(hotList_entity_1.hotList)),
-    __metadata("design:paramtypes", [typeorm_1.Repository])
+    __metadata("design:paramtypes", [typeorm_1.Repository,
+        qyWechatNotice_service_1.QyWechatNotice])
 ], ApiTestService);
 exports.ApiTestService = ApiTestService;
 //# sourceMappingURL=apiTest.service.js.map

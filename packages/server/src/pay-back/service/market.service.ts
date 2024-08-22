@@ -4,7 +4,6 @@ import { marketData } from '../entities/marketData.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import marketUtil from '../utils/marketUtil';
 import * as dayjs from 'dayjs';
-import { Cron } from '@nestjs/schedule';
 import { CreateMarketDataDto } from '../dto/create-market-data.dto';
 
 @Injectable()
@@ -13,16 +12,16 @@ export class MarketService {
 
   private readonly logger = new Logger(MarketService.name);
 
-  @Cron('0 10 15 * * 1-5')
-  async autoCrawlMarketDataLateSession() {
-    this.crawlMarketData();
-  }
+  // @Cron('0 10 15 * * 1-5')
+  // async autoCrawlMarketDataPm() {
+  //   this.crawlMarketData();
+  // }
 
-  // 午盘
-  @Cron('0 31 11 * * 1-5')
-  async autoCrawlMarketDataMidday() {
-    this.crawlMarketData();
-  }
+  // // 午盘
+  // @Cron('0 31 11 * * 1-5')
+  // async autoCrawlMarketDataMidday() {
+  //   this.crawlMarketData();
+  // }
 
   async crawlMarketData() {
     this.logger.debug('crawlMarketData is Begining!');

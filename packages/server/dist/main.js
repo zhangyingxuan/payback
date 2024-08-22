@@ -7,24 +7,27 @@ const session = require("express-session");
 const HttpExceptionFilter_1 = require("./filters/HttpExceptionFilter");
 const portManager_1 = require("./portManager");
 const express_rate_limit_1 = require("express-rate-limit");
+const pay_back_controller_1 = require("./pay-back/pay-back.controller");
+const limiter = (0, express_rate_limit_1.rateLimit)({
+    windowMs: 60 * 1000,
+    limit: 10,
+    standardHeaders: true,
+    legacyHeaders: false,
+    handler: (req, res, next) => {
+        res.header('Content-Type', 'application/json; charset=utf-8');
+        res.status(429).json({
+            code: 429,
+            data: 'Too many requests, please try again later.',
+        });
+        console.log(`Request from ${req.ip} - ${req.headers['x-real-ip']} - ${req.headers['x-forwarded-for']}; exceeded rate limit`);
+    },
+});
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
+    const payBackController = app.get(pay_back_controller_1.PayBackController);
+    payBackController.initSchedulerTask();
     app.set('trust proxy', true);
     app.setGlobalPrefix('blowsysun');
-    const limiter = (0, express_rate_limit_1.rateLimit)({
-        windowMs: 60 * 1000,
-        limit: 10,
-        standardHeaders: true,
-        legacyHeaders: false,
-        handler: (req, res, next) => {
-            res.header('Content-Type', 'application/json; charset=utf-8');
-            res.status(429).json({
-                code: 429,
-                data: 'Too many requests, please try again later.',
-            });
-            console.log(`Request from ${req.ip} - ${req.headers['x-real-ip']} - ${req.headers['x-forwarded-for']}; exceeded rate limit`);
-        },
-    });
     app.use('/blowsysun/auth', limiter);
     app.use(compression());
     app.use(session({

@@ -20,17 +20,10 @@ const marketData_entity_1 = require("../entities/marketData.entity");
 const typeorm_2 = require("@nestjs/typeorm");
 const marketUtil_1 = require("../utils/marketUtil");
 const dayjs = require("dayjs");
-const schedule_1 = require("@nestjs/schedule");
 let MarketService = MarketService_1 = class MarketService {
     constructor(marketDataRp) {
         this.marketDataRp = marketDataRp;
         this.logger = new common_1.Logger(MarketService_1.name);
-    }
-    async autoCrawlMarketDataLateSession() {
-        this.crawlMarketData();
-    }
-    async autoCrawlMarketDataMidday() {
-        this.crawlMarketData();
     }
     async crawlMarketData() {
         this.logger.debug('crawlMarketData is Begining!');
@@ -104,18 +97,6 @@ let MarketService = MarketService_1 = class MarketService {
             .execute();
     }
 };
-__decorate([
-    (0, schedule_1.Cron)('0 10 15 * * 1-5'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], MarketService.prototype, "autoCrawlMarketDataLateSession", null);
-__decorate([
-    (0, schedule_1.Cron)('0 31 11 * * 1-5'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], MarketService.prototype, "autoCrawlMarketDataMidday", null);
 MarketService = MarketService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_2.InjectRepository)(marketData_entity_1.marketData)),

@@ -20,7 +20,6 @@ const hotList_entity_1 = require("../entities/hotList.entity");
 const typeorm_2 = require("@nestjs/typeorm");
 const hotListUtil_1 = require("../utils/hotListUtil");
 const dayjs = require("dayjs");
-const schedule_1 = require("@nestjs/schedule");
 let HotListService = HotListService_1 = class HotListService {
     constructor(hotListRp) {
         this.hotListRp = hotListRp;
@@ -75,12 +74,6 @@ let HotListService = HotListService_1 = class HotListService {
             .getMany();
     }
 };
-__decorate([
-    (0, schedule_1.Cron)('0 */30 7-23 * * *'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], HotListService.prototype, "crawlHotListData", null);
 HotListService = HotListService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_2.InjectRepository)(hotList_entity_1.hotList)),

@@ -9,9 +9,6 @@ export declare class ShorTermService {
     private readonly shortTermDataRp;
     constructor(thsService: ThsService, specialStockService: SpecialStockService, shortTermDataRp: Repository<shortTermData>);
     private readonly logger;
-    autoCrawlShortTermDataLateSession(): Promise<void>;
-    autoCrawlShortTermDataMidday(): Promise<void>;
-    autoCrawlShortTermDataMorning(): Promise<void>;
     crawlShortTermData(): Promise<CreatePayBackDto>;
     crawlShortTermDataByDate(todayDateStr: any): Promise<CreatePayBackDto>;
     getTodayData(todayDateStr: string): Promise<shortTermData>;

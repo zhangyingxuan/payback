@@ -4,6 +4,7 @@ import { hotList } from '../entities/hotList.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import fetch from 'node-fetch';
 import { fetchAllStocksByIwencai } from '../core/fetchUtil';
+import { QyWechatNotice } from './qyWechatNotice.service';
 
 const thsUrl = {
   getSelfStockWithMarket: 'https://t.10jqka.com.cn/newcircle/group/getSelfStockWithMarket',
@@ -18,9 +19,24 @@ const thsUrl = {
 export class ApiTestService {
   constructor(
     @InjectRepository(hotList) private readonly hotListRp: Repository<hotList>, // private readonly http: HttpService,
+    private readonly qyWechatNotice: QyWechatNotice,
   ) { }
 
   private readonly logger = new Logger(ApiTestService.name);
+
+  async notice() {
+    const body = {
+      msgtype: 'markdown',
+      text: {
+        content: '广州今日天气：29度，大部分多云，降雨概率：60%',
+        mentioned_list: ['yxuanzhang'],
+        // mentioned_list: ['yxuanzhang', '@all'],
+        // mentioned_mobile_list: ['13800001111', '@all'],
+      },
+    };
+
+    return await this.qyWechatNotice.notice(ApiTestService.name, `[crawlfundsData]出错了：${JSON.stringify(body)}`);
+  }
 
   async fetchHotList() {
     fetch(

@@ -1,9 +1,12 @@
 import { Repository } from 'typeorm';
 import { hotList } from '../entities/hotList.entity';
+import { QyWechatNotice } from './qyWechatNotice.service';
 export declare class ApiTestService {
     private readonly hotListRp;
-    constructor(hotListRp: Repository<hotList>);
+    private readonly qyWechatNotice;
+    constructor(hotListRp: Repository<hotList>, qyWechatNotice: QyWechatNotice);
     private readonly logger;
+    notice(): Promise<any>;
     fetchHotList(): Promise<void>;
     getThsSelfStocks(): Promise<void>;
     datacenterWeb(): Promise<void>;

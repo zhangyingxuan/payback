@@ -25,13 +25,16 @@ const latestConceptPlate_service_1 = require("./service/latestConceptPlate.servi
 const review_service_1 = require("./service/review.service");
 const ths_service_1 = require("./service/ths.service");
 const apiTest_service_1 = require("./service/apiTest.service");
+const scheduler_task_service_1 = require("../scheduler-task/scheduler-task.service");
+const public_decorator_1 = require("../decorator/public.decorator");
 const users_service_1 = require("../users/users.service");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const dayjs = require("dayjs");
+const qyWechatNotice_service_1 = require("./service/qyWechatNotice.service");
 class CrawlTodayDataDto {
 }
 let PayBackController = PayBackController_1 = class PayBackController {
-    constructor(shorTermService, specialStockService, fundsService, hotListService, reviewService, thsService, apiTestService, latestConceptPlateService, usersService, marketService, plateService) {
+    constructor(shorTermService, specialStockService, fundsService, hotListService, reviewService, thsService, apiTestService, latestConceptPlateService, usersService, marketService, plateService, schedulerTaskService, qyWechatNotice) {
         this.shorTermService = shorTermService;
         this.specialStockService = specialStockService;
         this.fundsService = fundsService;
@@ -43,10 +46,12 @@ let PayBackController = PayBackController_1 = class PayBackController {
         this.usersService = usersService;
         this.marketService = marketService;
         this.plateService = plateService;
+        this.schedulerTaskService = schedulerTaskService;
+        this.qyWechatNotice = qyWechatNotice;
         this.logger = new common_1.Logger(PayBackController_1.name);
     }
     async testApi() {
-        return 'testApi';
+        return await this.apiTestService.notice();
     }
     async autoCrawlTodayDataAM() {
         this.logger.debug('[必入]定时任务执行了！0 */5 9-12 * * 1-5');
@@ -235,8 +240,108 @@ let PayBackController = PayBackController_1 = class PayBackController {
             code: success ? 200 : 500,
         };
     }
+    initSchedulerTask() {
+        const schedulerTaskList = [
+            {
+                taskName: 'autoCrawlfundsDataLateSession',
+                service: 'fundsService',
+                func: 'crawlfundsData',
+                cron: '0 10 16 * * 1-5',
+            },
+            {
+                taskName: 'autoCrawlnorthDataLateSession',
+                service: 'fundsService',
+                func: 'crawlfundsData',
+                cron: '0 10 18 * * 1-5',
+            },
+            {
+                taskName: 'autoCrawlfundsDataMidday',
+                service: 'fundsService',
+                func: 'crawlfundsData',
+                cron: '0 41 11 * * 1-5',
+            },
+            {
+                taskName: 'autoCrawlHotListData',
+                service: 'hotListService',
+                func: 'crawlHotListData',
+                cron: '0 */30 7-23 * * *',
+            },
+            {
+                taskName: 'autoCrawlLatestConceptPlateDataAm',
+                service: 'latestConceptPlateService',
+                func: 'crawlLatestConceptPlateData',
+                cron: '0 05 9 * * 1-5',
+            },
+            {
+                taskName: 'autoCrawlLatestConceptPlateDataPm',
+                service: 'latestConceptPlateService',
+                func: 'crawlLatestConceptPlateData',
+                cron: '0 00 16 * * 1-5',
+            },
+            {
+                taskName: 'autoCrawlLatestConceptPlateDataEvening',
+                service: 'latestConceptPlateService',
+                func: 'crawlLatestConceptPlateData',
+                cron: '0 00 23 * * 1-5',
+            },
+            {
+                taskName: 'autoCrawlMarketDataMidday',
+                service: 'marketService',
+                func: 'crawlMarketData',
+                cron: '0 10 15 * * 1-5',
+            },
+            {
+                taskName: 'autoCrawlMarketDataPm',
+                service: 'marketService',
+                func: 'crawlMarketData',
+                cron: '0 10 15 * * 1-5',
+            },
+            {
+                taskName: 'autoCrawlPlateDataMidday',
+                service: 'plateService',
+                func: 'crawlPlateData',
+                cron: '0 33 11 * * 1-5',
+            },
+            {
+                taskName: 'autoCrawlMarketDataPm',
+                service: 'plateService',
+                func: 'crawlPlateData',
+                cron: '0 15 15 * * 1-5',
+            },
+            {
+                taskName: 'autoCrawlShortTermDataMidday',
+                service: 'shorTermService',
+                func: 'crawlShortTermData',
+                cron: '0 36 11 * * 1-5',
+            },
+            {
+                taskName: 'autoCrawlShortTermDataLatePm',
+                service: 'shorTermService',
+                func: 'crawlShortTermData',
+                cron: '0 20 15 * * 1-5',
+            },
+        ];
+        schedulerTaskList.forEach(task => {
+            this.schedulerTaskService.executeTask(task.taskName, task.cron, async () => {
+                try {
+                    if (task.taskName === 'autoCrawlShortTermDataMidday') {
+                        const result = await this[task.service][task.func]();
+                        process.env.NODE_ENV !== 'dev' &&
+                            this.thsService.autoModifyThsSelfStocks(JSON.parse(result.evenBoardData), 'admin');
+                        return;
+                    }
+                    this[task.service][task.func]();
+                }
+                catch (e) {
+                    this.qyWechatNotice.notice(task.service, `[${task.func}]出错了：${JSON.stringify(e)}`);
+                }
+            });
+        });
+        return schedulerTaskList;
+    }
 };
 __decorate([
+    (0, public_decorator_1.Public)(),
     (0, common_1.Get)('testApi'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -357,6 +462,12 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "saveUserInfo", null);
+__decorate([
+    (0, common_1.Get)('/initSchedulerTask'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], PayBackController.prototype, "initSchedulerTask", null);
 PayBackController = PayBackController_1 = __decorate([
     (0, common_1.Controller)('pay-back'),
     __metadata("design:paramtypes", [shortTerm_service_1.ShorTermService,
@@ -369,7 +480,9 @@ PayBackController = PayBackController_1 = __decorate([
         latestConceptPlate_service_1.LatestConceptPlateService,
         users_service_1.UsersService,
         market_service_1.MarketService,
-        plate_service_1.PlateService])
+        plate_service_1.PlateService,
+        scheduler_task_service_1.SchedulerTaskService,
+        qyWechatNotice_service_1.QyWechatNotice])
 ], PayBackController);
 exports.PayBackController = PayBackController;
 //# sourceMappingURL=pay-back.controller.js.map

@@ -5,8 +5,6 @@ export declare class PlateService {
     private readonly plateDataRp;
     constructor(plateDataRp: Repository<plateData>);
     private readonly logger;
-    autoCrawlPlateDataLateSession(): Promise<void>;
-    autoCrawlPlateDataMidday(): Promise<void>;
     crawlPlateData(): Promise<CreatePlateDataDto>;
     findAll(): Promise<plateData[]>;
     findByLimit(len?: number): Promise<plateData[]>;

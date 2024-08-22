@@ -19,6 +19,7 @@ const specialStock_service_1 = require("./service/specialStock.service");
 const ths_service_1 = require("./service/ths.service");
 const systemConfig_service_1 = require("./service/systemConfig.service");
 const apiTest_service_1 = require("./service/apiTest.service");
+const qyWechatNotice_service_1 = require("./service/qyWechatNotice.service");
 const ths_trade_controller_1 = require("./ths-trade.controller");
 const pay_back_controller_1 = require("./pay-back.controller");
 const systemConfig_controller_1 = require("./systemConfig.controller");
@@ -33,12 +34,14 @@ const latestConceptPlate_entity_1 = require("./entities/latestConceptPlate.entit
 const review_entity_1 = require("./entities/review.entity");
 const systemConfig_entity_1 = require("./entities/systemConfig.entity");
 const users_module_1 = require("../users/users.module");
+const scheduler_task_module_1 = require("../scheduler-task/scheduler-task.module");
 let PayBackModule = class PayBackModule {
 };
 PayBackModule = __decorate([
     (0, common_1.Module)({
         imports: [
             users_module_1.UsersModule,
+            scheduler_task_module_1.SchedulerTaskModule,
             typeorm_1.TypeOrmModule.forFeature([shortTermData_entity_1.shortTermData]),
             typeorm_1.TypeOrmModule.forFeature([specialStock_entity_1.specialStock]),
             typeorm_1.TypeOrmModule.forFeature([marketData_entity_1.marketData]),
@@ -62,6 +65,7 @@ PayBackModule = __decorate([
             ths_service_1.ThsService,
             systemConfig_service_1.SystemConfigService,
             apiTest_service_1.ApiTestService,
+            qyWechatNotice_service_1.QyWechatNotice,
         ],
     })
 ], PayBackModule);

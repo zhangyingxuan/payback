@@ -20,20 +20,10 @@ const fundsData_entity_1 = require("../entities/fundsData.entity");
 const typeorm_2 = require("@nestjs/typeorm");
 const fundsUtil_1 = require("../utils/fundsUtil");
 const dayjs = require("dayjs");
-const schedule_1 = require("@nestjs/schedule");
 let FundsService = FundsService_1 = class FundsService {
     constructor(fundsDataRp) {
         this.fundsDataRp = fundsDataRp;
         this.logger = new common_1.Logger(FundsService_1.name);
-    }
-    async autoCrawlfundsDataLateSession() {
-        this.crawlfundsData();
-    }
-    async autoCrawlnorthDataLateSession() {
-        this.crawlfundsData();
-    }
-    async autoCrawlfundsDataMidday() {
-        this.crawlfundsData();
     }
     async crawlfundsData() {
         this.logger.debug('crawlfundsData is Begining!');
@@ -81,24 +71,6 @@ let FundsService = FundsService_1 = class FundsService {
             .execute();
     }
 };
-__decorate([
-    (0, schedule_1.Cron)('0 10 16 * * 1-5'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], FundsService.prototype, "autoCrawlfundsDataLateSession", null);
-__decorate([
-    (0, schedule_1.Cron)('0 10 18 * * 1-5'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], FundsService.prototype, "autoCrawlnorthDataLateSession", null);
-__decorate([
-    (0, schedule_1.Cron)('0 41 11 * * 1-5'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], FundsService.prototype, "autoCrawlfundsDataMidday", null);
 FundsService = FundsService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_2.InjectRepository)(fundsData_entity_1.fundsData)),

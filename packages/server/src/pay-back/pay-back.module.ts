@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+// service
 import { ShorTermService } from './service/shortTerm.service';
 import { MarketService } from './service/market.service';
 import { PlateService } from './service/plate.service';
@@ -10,10 +11,13 @@ import { SpecialStockService } from './service/specialStock.service';
 import { ThsService } from './service/ths.service';
 import { SystemConfigService } from './service/systemConfig.service';
 import { ApiTestService } from './service/apiTest.service';
+import { QyWechatNotice } from './service/qyWechatNotice.service';
+// controller
 import { ThsTradeController } from './ths-trade.controller';
 import { PayBackController } from './pay-back.controller';
 import { SystemConfigController } from './systemConfig.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
+// entity
 import { shortTermData } from './entities/shortTermData.entity';
 import { specialStock } from './entities/specialStock.entity';
 import { marketData } from './entities/marketData.entity';
@@ -23,11 +27,14 @@ import { hotList } from './entities/hotList.entity';
 import { latestConceptPlate } from './entities/latestConceptPlate.entity';
 import { reviewData } from './entities/review.entity';
 import { systemConfig } from './entities/systemConfig.entity';
+// module
 import { UsersModule } from '../users/users.module';
+import { SchedulerTaskModule } from '../scheduler-task/scheduler-task.module';
 
 @Module({
   imports: [
     UsersModule,
+    SchedulerTaskModule,
     TypeOrmModule.forFeature([shortTermData]),
     TypeOrmModule.forFeature([specialStock]),
     TypeOrmModule.forFeature([marketData]),
@@ -51,6 +58,7 @@ import { UsersModule } from '../users/users.module';
     ThsService,
     SystemConfigService,
     ApiTestService,
+    QyWechatNotice,
   ],
 })
 export class PayBackModule { }
