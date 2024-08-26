@@ -23,14 +23,14 @@ let ArticleController = class ArticleController {
     async create(createArticleDto) {
         const result = await this.articleService.create(createArticleDto);
         return {
-            code: 200,
+            code: 0,
             data: result,
         };
     }
     async remove(id) {
         const result = await this.articleService.remove(id);
         return {
-            code: 200,
+            code: 0,
             data: result,
         };
     }
@@ -39,21 +39,21 @@ let ArticleController = class ArticleController {
         delete updateArticleDto.id;
         const result = await this.articleService.update(id, updateArticleDto);
         return {
-            code: 200,
+            code: 0,
             data: result,
         };
     }
     async findAll() {
         const result = await this.articleService.findAll();
         return {
-            code: 200,
+            code: 0,
             data: result,
         };
     }
     async findOne(id) {
         const result = await this.articleService.findOne(id);
         return {
-            code: 200,
+            code: 0,
             data: result,
         };
     }

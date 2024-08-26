@@ -22,7 +22,7 @@ export class AuthController {
     } else {
       // 验证码校验失败
       return {
-        code: 200,
+        code: 0,
         data: {
           msg: '验证码错误',
         },

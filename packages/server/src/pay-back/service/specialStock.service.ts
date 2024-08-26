@@ -20,21 +20,16 @@ export class SpecialStockService {
 
   private readonly logger = new Logger(SpecialStockService.name);
 
-  // 竞价数据 - 早盘
-  // @Cron('08 25 9 * * 1-5')
-  async autoCrawlBinddingData() {
-    this.crawlBinddingData(0, 'admin');
-  }
   // 竞价数据 - 午盘
-  @Cron('00 35 11 * * 1-5')
-  async autoCrawlBinddingDataMidday() {
-    this.crawlBinddingData(0, 'admin');
-  }
-  // 竞价数据 - 尾盘收盘价
-  @Cron('00 05 15 * * 1-5')
-  async autoCrawlBinddingDataLateSession() {
-    this.crawlBinddingData(0, 'admin');
-  }
+  // @Cron('00 35 11 * * 1-5')
+  // async autoCrawlBinddingDataMidday() {
+  //   this.crawlBinddingData(0, 'admin');
+  // }
+  // // 竞价数据 - 尾盘收盘价
+  // @Cron('00 05 15 * * 1-5')
+  // async autoCrawlBinddingDataLateSession() {
+  //   this.crawlBinddingData(0, 'admin');
+  // }
 
   /**
    * 爬取当日竞价数据并返回
@@ -82,6 +77,7 @@ export class SpecialStockService {
       this.logger.debug('crawlBinddingData is success!');
     } catch (e) {
       this.logger.error('出错啦！！！', e);
+      throw new Error(e);
     }
 
     return todayDataFromDB ? todayDataFromDB : specialStockDto;

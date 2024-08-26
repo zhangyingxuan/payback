@@ -9,16 +9,16 @@ export function initAegis(app: App, permiss: any) {
   const aegis = new Aegis({
     id: 'p0vobckgDZ10ebknPP', // 上报 id
     uin: permiss.account || 'Visitors', // 用户唯一 ID（可选）
-    reportApiSpeed: false, // 接口测速
-    reportAssetSpeed: false, // 静态资源测速
+    reportApiSpeed: true, // 接口测速
+    reportAssetSpeed: true, // 静态资源测速
     spa: true, // spa 应用页面跳转的时候开启 pv 计算
-    // hostUrl: 'https://rumt-zh.com'
+    hostUrl: 'https://rumt-zh.com'
     // 测速不抽样，api监控数据的来源，关闭之后才能跟日志数据一致
-    speedSample: false,
+    // speedSample: false,
     // 上报接口错误详情
-    api: {
-      apiDetail: true,
-    },
+    // api: {
+    //   apiDetail: true,
+    // },
   });
   // vue错误上报
   app.config.errorHandler = function (err: any, vm: any, info: any) {

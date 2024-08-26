@@ -49,6 +49,7 @@ let FundsService = FundsService_1 = class FundsService {
         }
         catch (e) {
             this.logger.error('出错啦！！！', e);
+            throw new Error(e);
         }
         return fundsData;
     }

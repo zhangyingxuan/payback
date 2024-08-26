@@ -98,11 +98,6 @@ export declare class PayBackController {
     saveUserInfo(body: any, req: any): Promise<{
         code: number;
     }>;
-    initSchedulerTask(): {
-        taskName: string;
-        service: string;
-        func: string;
-        cron: string;
-    }[];
+    initSchedulerTask(): void;
 }
 export {};

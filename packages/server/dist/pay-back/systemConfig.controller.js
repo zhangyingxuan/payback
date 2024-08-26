@@ -26,14 +26,14 @@ let SystemConfigController = SystemConfigController_1 = class SystemConfigContro
     async fetchSystemConfig() {
         const config = await this.systemConfigService.findLatestOne();
         return {
-            code: 200,
+            code: 0,
             data: config,
         };
     }
     async updateSystemConfig(body) {
         const result = await this.systemConfigService.updateSystemConfig(body);
         return {
-            code: 200,
+            code: 0,
             data: result,
         };
     }

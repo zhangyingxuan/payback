@@ -21,7 +21,6 @@ const typeorm_2 = require("@nestjs/typeorm");
 const transformDataUtil_1 = require("../utils/transformDataUtil");
 const specialStockUtil_1 = require("../utils/specialStockUtil");
 const dayjs = require("dayjs");
-const schedule_1 = require("@nestjs/schedule");
 const pay_back_core_1 = require("pay-back-core");
 const ths_service_1 = require("./ths.service");
 const fetchUtil_1 = require("../core/fetchUtil");
@@ -30,15 +29,6 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
         this.specialStockRp = specialStockRp;
         this.thsService = thsService;
         this.logger = new common_1.Logger(SpecialStockService_1.name);
-    }
-    async autoCrawlBinddingData() {
-        this.crawlBinddingData(0, 'admin');
-    }
-    async autoCrawlBinddingDataMidday() {
-        this.crawlBinddingData(0, 'admin');
-    }
-    async autoCrawlBinddingDataLateSession() {
-        this.crawlBinddingData(0, 'admin');
     }
     async crawlBinddingData(isRemoveIncompatible = 0, account) {
         this.logger.debug('crawlBinddingData is Begining!');
@@ -75,6 +65,7 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
         }
         catch (e) {
             this.logger.error('出错啦！！！', e);
+            throw new Error(e);
         }
         return todayDataFromDB ? todayDataFromDB : specialStockDto;
     }
@@ -170,18 +161,6 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
             .execute();
     }
 };
-__decorate([
-    (0, schedule_1.Cron)('00 35 11 * * 1-5'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], SpecialStockService.prototype, "autoCrawlBinddingDataMidday", null);
-__decorate([
-    (0, schedule_1.Cron)('00 05 15 * * 1-5'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], SpecialStockService.prototype, "autoCrawlBinddingDataLateSession", null);
 SpecialStockService = SpecialStockService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_2.InjectRepository)(specialStock_entity_1.specialStock)),

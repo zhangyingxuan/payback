@@ -73,7 +73,7 @@ class PureHttp {
         const data = response.data;
         // console.log(response);
         const url = response.config.url || '';
-        if (data.code != 200 && isNotWhiteUrl(url) && response.config.responseType != 'blob') {
+        if (data.code != 0 && isNotWhiteUrl(url) && response.config.responseType != 'blob') {
 
           ElMessage({
             showClose: true,

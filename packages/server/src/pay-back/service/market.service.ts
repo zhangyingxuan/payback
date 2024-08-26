@@ -49,6 +49,7 @@ export class MarketService {
       this.logger.debug('crawlMarketData is success!');
     } catch (e) {
       this.logger.error('出错啦！！！', e);
+      throw new Error(e);
     }
 
     return marketData;

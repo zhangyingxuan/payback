@@ -39,6 +39,7 @@ let LatestConceptPlateService = LatestConceptPlateService_1 = class LatestConcep
         }
         catch (e) {
             this.logger.error('出错啦！！！', e);
+            throw new Error(e);
         }
         return latestConceptPlates;
     }

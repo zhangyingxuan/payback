@@ -19,7 +19,7 @@ export class SystemConfigController {
   async fetchSystemConfig() {
     const config = await this.systemConfigService.findLatestOne();
     return {
-      code: 200,
+      code: 0,
       data: config,
     };
   }
@@ -29,7 +29,7 @@ export class SystemConfigController {
   async updateSystemConfig(@Body() body: SystemConfigDto) {
     const result = await this.systemConfigService.updateSystemConfig(body);
     return {
-      code: 200,
+      code: 0,
       data: result,
     };
   }

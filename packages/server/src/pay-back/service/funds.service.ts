@@ -59,6 +59,7 @@ export class FundsService {
       this.logger.debug('crawlfundsData is success!');
     } catch (e) {
       this.logger.error('出错啦！！！', e);
+      throw new Error(e);
     }
     // 深圳 还是 上海涨停的多 SZ. SH
     return fundsData;

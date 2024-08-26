@@ -161,7 +161,10 @@ export function transformEvenBoardData(shortTermData: ShortTermModel[]): any[] {
         dailyLimitReturnSealQuantity: item.dailyLimitReturnSealQuantity,
         evenBoardAmount: item.evenBoardAmount,
         yizi: evenBoardData.yizi,
+        // 竞价数据更新时间
         biddingDataUpdateTime: dayjs(item.biddingDataUpdateTime).format('MM/DD HH:mm'),
+        // 新股、强势股 更行时间
+        specialDataUpdateTime: dayjs(item.biddingDataUpdateTime).format('MM/DD HH:mm'),
         ticaiData: sortObj(ticaiData).splice(0, 3),
         gainianData: sortObj(gainianData).splice(0, 3)
       };

@@ -6,7 +6,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { getShortTermData, mergeExtra2ShortTermData, getShortTermDataByDate } from '../utils/shortTermUtil';
 import { ThsService } from './ths.service';
 import * as dayjs from 'dayjs';
-import { Cron } from '@nestjs/schedule';
 import { SpecialStockService } from './specialStock.service';
 
 @Injectable()
@@ -64,6 +63,7 @@ export class ShorTermService {
       this.logger.debug('crawlShortTermData is success!');
     } catch (e) {
       this.logger.error('出错啦！！！', e);
+      throw new Error(e);
     }
 
     return createPayBackDto;

@@ -6,7 +6,7 @@ import { getRobotInstance } from './utils/ding-dong-bot';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService, @Inject('BotInstance') private readonly botInstance: Wechaty) {}
+  constructor(private readonly appService: AppService, @Inject('BotInstance') private readonly botInstance: Wechaty) { }
 
   // 获取竞价数据
   @Public()
@@ -19,7 +19,7 @@ export class AppController {
     if (room) {
       await room.say(msg || '抓到你了');
       return {
-        code: 200,
+        code: 0,
       };
     } else {
       console.log('登录错误');

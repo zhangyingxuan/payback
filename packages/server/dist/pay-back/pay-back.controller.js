@@ -31,6 +31,7 @@ const users_service_1 = require("../users/users.service");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const dayjs = require("dayjs");
 const qyWechatNotice_service_1 = require("./service/qyWechatNotice.service");
+const config_1 = require("../scheduler-task/config");
 class CrawlTodayDataDto {
 }
 let PayBackController = PayBackController_1 = class PayBackController {
@@ -99,7 +100,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
                 break;
         }
         return {
-            code: 200,
+            code: 0,
             data: resultData,
         };
     }
@@ -118,19 +119,19 @@ let PayBackController = PayBackController_1 = class PayBackController {
             this.logger.debug(e);
         }
         return {
-            code: 200,
+            code: 0,
             data: result,
         };
     }
     async crawlSpecialStockData() {
         const specialStockData = await this.specialStockService.crawlSpecialStockData();
         return {
-            code: 200,
+            code: 0,
             data: specialStockData,
         };
     }
     async deleteData(body) {
-        let code = 200, message = 'success';
+        let code = 0, message = 'success';
         try {
             const shorTerm = this.shorTermService.delteByCreateTime(body.date);
             const specialStock = this.specialStockService.delteByCreateTime(body.date);
@@ -148,8 +149,12 @@ let PayBackController = PayBackController_1 = class PayBackController {
             message,
         };
     }
-    crawlHotListData() {
-        return this.hotListService.crawlHotListData();
+    async crawlHotListData() {
+        const data = await this.hotListService.crawlHotListData();
+        return {
+            code: 0,
+            data,
+        };
     }
     crawlShortTermByDate(query) {
         const date = query.date || new Date();
@@ -158,7 +163,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
     async crawlPlateData() {
         const data = await this.plateService.crawlPlateData();
         return {
-            code: 200,
+            code: 0,
             data,
         };
     }
@@ -168,7 +173,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
         const marketData = (await this.marketService.findByLimit(limit)).reverse();
         const fundsData = (await this.fundsService.findByLimit(limit)).reverse();
         return {
-            code: 200,
+            code: 0,
             data: {
                 shortTermData,
                 marketData,
@@ -180,7 +185,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
         const limit = +(query.limit || 20);
         const shortTermData = await this.shorTermService.findEvenBoardByLimit(limit);
         return {
-            code: 200,
+            code: 0,
             data: shortTermData,
         };
     }
@@ -188,7 +193,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
         const limit = +(query.limit || 20);
         const hotListData = await this.hotListService.findByLimit(limit);
         return {
-            code: 200,
+            code: 0,
             data: hotListData,
         };
     }
@@ -196,7 +201,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
         const date = query.date || new Date();
         const reviewData = await this.reviewService.findByDate(date);
         return {
-            code: 200,
+            code: 0,
             data: reviewData,
         };
     }
@@ -204,7 +209,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
         const nDays = +(query.nDays || 15);
         const palateData = await this.latestConceptPlateService.findWithinNDays(nDays);
         return {
-            code: 200,
+            code: 0,
             data: palateData,
         };
     }
@@ -212,7 +217,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
         const nDays = +(query.nDays || 15);
         const palateData = await this.latestConceptPlateService.findByLimit(nDays);
         return {
-            code: 200,
+            code: 0,
             data: palateData,
         };
     }
@@ -220,7 +225,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
         const limit = +(query.limit || 20);
         const palateData = await this.marketService.findPlateByLimit(limit);
         return {
-            code: 200,
+            code: 0,
             data: palateData,
         };
     }
@@ -228,7 +233,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
         const limit = +(query.limit || 20);
         const palateData = await this.plateService.findByLimit(limit);
         return {
-            code: 200,
+            code: 0,
             data: palateData,
         };
     }
@@ -237,91 +242,11 @@ let PayBackController = PayBackController_1 = class PayBackController {
         const { token, user } = body;
         const success = await this.usersService.updateUserInfo((_a = req.user) === null || _a === void 0 ? void 0 : _a.account, token, user);
         return {
-            code: success ? 200 : 500,
+            code: success ? 0 : 500,
         };
     }
     initSchedulerTask() {
-        const schedulerTaskList = [
-            {
-                taskName: 'autoCrawlfundsDataLateSession',
-                service: 'fundsService',
-                func: 'crawlfundsData',
-                cron: '0 10 16 * * 1-5',
-            },
-            {
-                taskName: 'autoCrawlnorthDataLateSession',
-                service: 'fundsService',
-                func: 'crawlfundsData',
-                cron: '0 10 18 * * 1-5',
-            },
-            {
-                taskName: 'autoCrawlfundsDataMidday',
-                service: 'fundsService',
-                func: 'crawlfundsData',
-                cron: '0 41 11 * * 1-5',
-            },
-            {
-                taskName: 'autoCrawlHotListData',
-                service: 'hotListService',
-                func: 'crawlHotListData',
-                cron: '0 */30 7-23 * * *',
-            },
-            {
-                taskName: 'autoCrawlLatestConceptPlateDataAm',
-                service: 'latestConceptPlateService',
-                func: 'crawlLatestConceptPlateData',
-                cron: '0 05 9 * * 1-5',
-            },
-            {
-                taskName: 'autoCrawlLatestConceptPlateDataPm',
-                service: 'latestConceptPlateService',
-                func: 'crawlLatestConceptPlateData',
-                cron: '0 00 16 * * 1-5',
-            },
-            {
-                taskName: 'autoCrawlLatestConceptPlateDataEvening',
-                service: 'latestConceptPlateService',
-                func: 'crawlLatestConceptPlateData',
-                cron: '0 00 23 * * 1-5',
-            },
-            {
-                taskName: 'autoCrawlMarketDataMidday',
-                service: 'marketService',
-                func: 'crawlMarketData',
-                cron: '0 10 15 * * 1-5',
-            },
-            {
-                taskName: 'autoCrawlMarketDataPm',
-                service: 'marketService',
-                func: 'crawlMarketData',
-                cron: '0 10 15 * * 1-5',
-            },
-            {
-                taskName: 'autoCrawlPlateDataMidday',
-                service: 'plateService',
-                func: 'crawlPlateData',
-                cron: '0 33 11 * * 1-5',
-            },
-            {
-                taskName: 'autoCrawlMarketDataPm',
-                service: 'plateService',
-                func: 'crawlPlateData',
-                cron: '0 15 15 * * 1-5',
-            },
-            {
-                taskName: 'autoCrawlShortTermDataMidday',
-                service: 'shorTermService',
-                func: 'crawlShortTermData',
-                cron: '0 36 11 * * 1-5',
-            },
-            {
-                taskName: 'autoCrawlShortTermDataLatePm',
-                service: 'shorTermService',
-                func: 'crawlShortTermData',
-                cron: '0 20 15 * * 1-5',
-            },
-        ];
-        schedulerTaskList.forEach(task => {
+        config_1.schedulerTaskList.forEach(task => {
             this.schedulerTaskService.executeTask(task.taskName, task.cron, async () => {
                 try {
                     if (task.taskName === 'autoCrawlShortTermDataMidday') {
@@ -337,7 +262,6 @@ let PayBackController = PayBackController_1 = class PayBackController {
                 }
             });
         });
-        return schedulerTaskList;
     }
 };
 __decorate([
@@ -382,7 +306,7 @@ __decorate([
     (0, common_1.Get)('/crawlHotListData'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "crawlHotListData", null);
 __decorate([
     (0, common_1.Get)('/crawlShortTermByDate'),

@@ -84,7 +84,7 @@ export class ThsService {
       this.logger.log('同步自选 失败了！' + e);
     }
     return {
-      code: isSuccess ? 200 : 400,
+      code: isSuccess ? 0 : 400,
     };
   }
 
@@ -135,7 +135,7 @@ export class ThsService {
       this.logger.log('updateThsSelfStock[' + type + '] 失败了！' + e);
     }
     return {
-      code: isSuccess ? 200 : 400,
+      code: isSuccess ? 0 : 400,
     };
   }
 
@@ -165,7 +165,7 @@ export class ThsService {
       this.logger.log('updateThsSelfStock[' + type + '] 失败了！' + e);
     }
     return {
-      code: msg ? 400 : 200,
+      code: msg ? 400 : 0,
       data: msg,
     };
   }
@@ -193,7 +193,7 @@ export class ThsService {
       this.logger.log('updateThsSelfStock[' + type + '] 失败了！' + e);
     }
     return {
-      code: msg ? 400 : 200,
+      code: msg ? 400 : 0,
       data: msg,
     };
   }

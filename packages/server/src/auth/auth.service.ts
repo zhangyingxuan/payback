@@ -33,7 +33,7 @@ export class AuthService {
 
     if (result) {
       return {
-        code: 200,
+        code: 0,
         data: {
           isAdmin: !!result.isAdmin,
           name: result.name,
@@ -42,7 +42,7 @@ export class AuthService {
       };
     } else {
       return {
-        code: 200,
+        code: 0,
         data: {
           msg: '用户名或密码错误',
         },

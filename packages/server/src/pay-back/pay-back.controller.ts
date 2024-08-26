@@ -16,6 +16,7 @@ import { UsersService } from '../users/users.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import * as dayjs from 'dayjs';
 import { QyWechatNotice } from './service/qyWechatNotice.service';
+import { schedulerTaskList } from '../scheduler-task/config';
 
 class CrawlTodayDataDto {
   fetchTodayDataType: number;
@@ -118,7 +119,7 @@ export class PayBackController {
     }
 
     return {
-      code: 200,
+      code: 0,
       data: resultData,
     };
   }
@@ -141,7 +142,7 @@ export class PayBackController {
       this.logger.debug(e);
     }
     return {
-      code: 200,
+      code: 0,
       data: result,
     };
   }
@@ -151,14 +152,14 @@ export class PayBackController {
     // 是否剔除 不及预期数据；注意接收到的参数 是否为字符串
     const specialStockData = await this.specialStockService.crawlSpecialStockData();
     return {
-      code: 200,
+      code: 0,
       data: specialStockData,
     };
   }
 
   @Post('/deleteData')
   async deleteData(@Body() body: any) {
-    let code = 200,
+    let code = 0,
       message = 'success';
     try {
       // 删除短线数据
@@ -184,8 +185,12 @@ export class PayBackController {
 
   // @Public()
   @Get('/crawlHotListData')
-  crawlHotListData() {
-    return this.hotListService.crawlHotListData();
+  async crawlHotListData() {
+    const data = await this.hotListService.crawlHotListData();
+    return {
+      code: 0,
+      data,
+    };
   }
 
   // 示例：http://localhost:3000/blowsysun/pay-back/crawlShortTermByDate?date=2023-06-26
@@ -204,7 +209,7 @@ export class PayBackController {
   async crawlPlateData() {
     const data = await this.plateService.crawlPlateData();
     return {
-      code: 200,
+      code: 0,
       data,
     };
   }
@@ -216,7 +221,7 @@ export class PayBackController {
     const marketData = (await this.marketService.findByLimit(limit)).reverse();
     const fundsData = (await this.fundsService.findByLimit(limit)).reverse();
     return {
-      code: 200,
+      code: 0,
       data: {
         shortTermData,
         marketData,
@@ -237,7 +242,7 @@ export class PayBackController {
     //   shortTermData = shortTermData.reverse();
     // }
     return {
-      code: 200,
+      code: 0,
       data: shortTermData,
     };
   }
@@ -247,7 +252,7 @@ export class PayBackController {
     const limit = +(query.limit || 20);
     const hotListData = await this.hotListService.findByLimit(limit);
     return {
-      code: 200,
+      code: 0,
       data: hotListData,
     };
   }
@@ -257,7 +262,7 @@ export class PayBackController {
     const date = query.date || new Date();
     const reviewData = await this.reviewService.findByDate(date);
     return {
-      code: 200,
+      code: 0,
       data: reviewData,
     };
   }
@@ -267,7 +272,7 @@ export class PayBackController {
     const nDays = +(query.nDays || 15);
     const palateData = await this.latestConceptPlateService.findWithinNDays(nDays);
     return {
-      code: 200,
+      code: 0,
       data: palateData,
     };
   }
@@ -276,7 +281,7 @@ export class PayBackController {
     const nDays = +(query.nDays || 15);
     const palateData = await this.latestConceptPlateService.findByLimit(nDays);
     return {
-      code: 200,
+      code: 0,
       data: palateData,
     };
   }
@@ -285,7 +290,7 @@ export class PayBackController {
     const limit = +(query.limit || 20);
     const palateData = await this.marketService.findPlateByLimit(limit);
     return {
-      code: 200,
+      code: 0,
       data: palateData,
     };
   }
@@ -294,7 +299,7 @@ export class PayBackController {
     const limit = +(query.limit || 20);
     const palateData = await this.plateService.findByLimit(limit);
     return {
-      code: 200,
+      code: 0,
       data: palateData,
     };
   }
@@ -306,106 +311,12 @@ export class PayBackController {
     const success = await this.usersService.updateUserInfo(req.user?.account, token, user);
 
     return {
-      code: success ? 200 : 500,
+      code: success ? 0 : 500,
     };
   }
 
   @Get('/initSchedulerTask')
   initSchedulerTask() {
-    const schedulerTaskList = [
-      // 资金相关 === start
-      {
-        taskName: 'autoCrawlfundsDataLateSession',
-        service: 'fundsService',
-        func: 'crawlfundsData',
-        cron: '0 10 16 * * 1-5',
-      },
-      {
-        // 更新北向资金
-        taskName: 'autoCrawlnorthDataLateSession',
-        service: 'fundsService',
-        func: 'crawlfundsData',
-        cron: '0 10 18 * * 1-5',
-      },
-      {
-        taskName: 'autoCrawlfundsDataMidday',
-        service: 'fundsService',
-        func: 'crawlfundsData',
-        cron: '0 41 11 * * 1-5',
-      },
-      // 资金相关 === end
-      // 热榜相关 === start
-      {
-        // 尾盘 获取资金数据
-        taskName: 'autoCrawlHotListData',
-        service: 'hotListService',
-        func: 'crawlHotListData',
-        cron: '0 */30 7-23 * * *',
-      },
-      // 热榜相关 === end
-      // 最新概念 === start
-      {
-        taskName: 'autoCrawlLatestConceptPlateDataAm',
-        service: 'latestConceptPlateService',
-        func: 'crawlLatestConceptPlateData',
-        cron: '0 05 9 * * 1-5',
-      },
-      {
-        taskName: 'autoCrawlLatestConceptPlateDataPm',
-        service: 'latestConceptPlateService',
-        func: 'crawlLatestConceptPlateData',
-        cron: '0 00 16 * * 1-5',
-      },
-      {
-        taskName: 'autoCrawlLatestConceptPlateDataEvening',
-        service: 'latestConceptPlateService',
-        func: 'crawlLatestConceptPlateData',
-        cron: '0 00 23 * * 1-5',
-      },
-      // 最新概念 === end
-      // 市场数据 === start
-      {
-        taskName: 'autoCrawlMarketDataMidday',
-        service: 'marketService',
-        func: 'crawlMarketData',
-        cron: '0 10 15 * * 1-5',
-      },
-      {
-        taskName: 'autoCrawlMarketDataPm',
-        service: 'marketService',
-        func: 'crawlMarketData',
-        cron: '0 10 15 * * 1-5',
-      },
-      // 市场数据 === end
-      // 板块数据 === start
-      {
-        taskName: 'autoCrawlPlateDataMidday',
-        service: 'plateService',
-        func: 'crawlPlateData',
-        cron: '0 33 11 * * 1-5',
-      },
-      {
-        taskName: 'autoCrawlMarketDataPm',
-        service: 'plateService',
-        func: 'crawlPlateData',
-        cron: '0 15 15 * * 1-5',
-      },
-      // 板块数据 === end
-      // 短线数据 === start
-      {
-        taskName: 'autoCrawlShortTermDataMidday',
-        service: 'shorTermService',
-        func: 'crawlShortTermData',
-        cron: '0 36 11 * * 1-5',
-      },
-      {
-        taskName: 'autoCrawlShortTermDataLatePm',
-        service: 'shorTermService',
-        func: 'crawlShortTermData',
-        cron: '0 20 15 * * 1-5',
-      },
-      // 短线数据 === end
-    ];
     schedulerTaskList.forEach(task => {
       this.schedulerTaskService.executeTask(task.taskName, task.cron, async () => {
         try {
@@ -422,6 +333,5 @@ export class PayBackController {
         }
       });
     });
-    return schedulerTaskList;
   }
 }

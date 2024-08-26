@@ -5,10 +5,7 @@ export declare class HotListService {
     private readonly hotListRp;
     constructor(hotListRp: Repository<hotList>);
     private readonly logger;
-    crawlHotListData(): Promise<{
-        code: number;
-        data: CreateHotListDto;
-    }>;
+    crawlHotListData(): Promise<CreateHotListDto>;
     findAll(): Promise<hotList[]>;
     findByLimit(len?: number): Promise<hotList[]>;
 }

@@ -5,13 +5,13 @@ import { CreateArticleDto } from './dto/create-article.dto';
 
 @Controller('article')
 export class ArticleController {
-  constructor(private articleService: ArticleService) {}
+  constructor(private articleService: ArticleService) { }
 
   @Post('create')
   async create(@Body() createArticleDto: CreateArticleDto) {
     const result = await this.articleService.create(createArticleDto);
     return {
-      code: 200,
+      code: 0,
       data: result,
     };
   }
@@ -20,7 +20,7 @@ export class ArticleController {
   async remove(@Body('id') id: any) {
     const result = await this.articleService.remove(id);
     return {
-      code: 200,
+      code: 0,
       data: result,
     };
   }
@@ -31,7 +31,7 @@ export class ArticleController {
     delete updateArticleDto.id;
     const result = await this.articleService.update(id, updateArticleDto);
     return {
-      code: 200,
+      code: 0,
       data: result,
     };
   }
@@ -41,7 +41,7 @@ export class ArticleController {
   async findAll() {
     const result = await this.articleService.findAll();
     return {
-      code: 200,
+      code: 0,
       data: result,
     };
   }
@@ -49,7 +49,7 @@ export class ArticleController {
   async findOne(@Query('id') id: number) {
     const result = await this.articleService.findOne(id);
     return {
-      code: 200,
+      code: 0,
       data: result,
     };
   }

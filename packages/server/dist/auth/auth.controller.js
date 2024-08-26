@@ -32,7 +32,7 @@ let AuthController = AuthController_1 = class AuthController {
         }
         else {
             return {
-                code: 200,
+                code: 0,
                 data: {
                     msg: '验证码错误',
                 },
