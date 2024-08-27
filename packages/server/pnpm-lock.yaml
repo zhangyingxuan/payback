@@ -77,6 +77,9 @@ dependencies:
   passport-local:
     specifier: ^1.0.0
     version: 1.0.0
+  pay-back-core:
+    specifier: ^0.0.16
+    version: 0.0.16
   playwright:
     specifier: ^1.32.3
     version: 1.32.3
@@ -2482,6 +2485,10 @@ packages:
       shebang-command: 2.0.0
       which: 2.0.2
 
+  /dayjs@1.11.13:
+    resolution: {integrity: sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==}
+    dev: false
+
   /dayjs@1.11.7:
     resolution: {integrity: sha512-+Yw9U6YO5TQohxLcIkrXBeY73WP3ejHWVvx8XCk3gxvQDCTEmS48ZrSZCKciI7Bhl/uCMyxYtE9UqRILmFphkQ==}
     dev: false
@@ -4585,6 +4592,12 @@ packages:
 
   /pause@0.0.1:
     resolution: {integrity: sha512-KG8UEiEVkR3wGEb4m5yZkVCzigAD+cVEJck2CzYZO37ZGJfctvVptVO192MwrtPhzONn6go8ylnOdMhKqi4nfg==}
+    dev: false
+
+  /pay-back-core@0.0.16:
+    resolution: {integrity: sha512-rY3BSlUd2NNJoNQoT/umvfviW2YYHvJ0b6/Nzfi40r2upemX+UG5hkHuxGgxoQ8wj2h8evG1h8NIecH+i37QkQ==}
+    dependencies:
+      dayjs: 1.11.13
     dev: false
 
   /picocolors@1.0.0:

@@ -252,13 +252,13 @@ let PayBackController = PayBackController_1 = class PayBackController {
                     if (task.taskName === 'autoCrawlShortTermDataMidday') {
                         const result = await this[task.service][task.func]();
                         process.env.NODE_ENV !== 'dev' &&
-                            this.thsService.autoModifyThsSelfStocks(JSON.parse(result.evenBoardData), 'admin');
+                            await this.thsService.autoModifyThsSelfStocks(JSON.parse(result.evenBoardData), 'admin');
                         return;
                     }
-                    this[task.service][task.func]();
+                    await this[task.service][task.func]();
                 }
                 catch (e) {
-                    this.qyWechatNotice.notice(task.service, `[${task.func}]出错了：${JSON.stringify(e)}`);
+                    this.qyWechatNotice.notice(task.service, `[${task.func}]出错了：${e}`);
                 }
             });
         });
