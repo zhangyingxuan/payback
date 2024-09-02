@@ -54,7 +54,7 @@ const schedulerTaskList = [
     taskName: 'autoCrawlMarketDataMidday',
     service: 'marketService',
     func: 'crawlMarketData',
-    cron: '0 10 15 * * 1-5',
+    cron: '0 31 11 * * 1-5',
   },
   {
     taskName: 'autoCrawlMarketDataPm',
@@ -96,7 +96,7 @@ const schedulerTaskList = [
     taskName: 'autoCrawlBinddingDataMidday',
     service: 'specialStockService',
     func: 'crawlBinddingData',
-    cron: '00 35 11 * * 1-5',
+    cron: '00 38 11 * * 1-5',
   },
   {
     taskName: 'autoCrawlBinddingDataLatePm',
