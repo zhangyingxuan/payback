@@ -99,9 +99,10 @@ const submitForm = (formEl: FormInstance | undefined) => {
         ElMessage.success('登录成功');
         // 设置用户信息
         permiss.handleSetUserInfo({ ...result, ...param });
-        proxy?.$aegis.setConfig({
-          uin: result.account,
-        });
+        proxy?.$aegis &&
+          proxy?.$aegis?.setConfig({
+            uin: result.account,
+          });
         // 7天
         setToken(result.token, 604800);
         router.push('/');
