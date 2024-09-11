@@ -4,7 +4,6 @@ import { MarketModel } from './model/MarketModel';
 import { FundsModel } from './model/FundsModel';
 
 const baseUrl = 'blowsysun/pay-back';
-const baseUrlSystemConfig = 'blowsysun/system-config';
 
 export interface ChartResult {
   shortTermData: ShortTermModel[],
@@ -109,20 +108,6 @@ export const findConceptPlateWithinNDays = (params: any | null) => {
  */
 export const findConceptPlateByLimit = (params: any | null) => {
   return http.request<Array<any>>("get", `${baseUrl}/findConceptPlateByLimit`, { params });
-}
-/**
- * 获取系统配置
- * @returns 
- */
-export const fetchSystemConfig = () => {
-  return http.request<Array<any>>("get", `${baseUrlSystemConfig}/fetchSystemConfig`);
-}
-/**
- * 修改系统配置
- * @returns 
- */
-export const updateSystemConfig = (data: any | null) => {
-  return http.request<Array<any>>("post", `${baseUrlSystemConfig}/updateSystemConfig`, { data });
 }
 
 /**

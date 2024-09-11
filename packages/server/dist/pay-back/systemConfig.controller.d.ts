@@ -1,12 +1,19 @@
 import { SystemConfigService } from './service/systemConfig.service';
+import { SchedulerTaskService } from '@/scheduler-task/scheduler-task.service';
+import { ThsService } from './service/ths.service';
 declare class SystemConfigDto {
     isAutoAddSelf: number;
     isAutoAddSelfEvenBoard: number;
     isAutoAddSelfFirstBoard: number;
+    isBinddingDelEventBoard: number;
+    isBinddingDelFirstBoard: number;
+    isAutoPushNews: number;
 }
 export declare class SystemConfigController {
     private readonly systemConfigService;
-    constructor(systemConfigService: SystemConfigService);
+    private readonly schedulerTaskService;
+    private readonly thsService;
+    constructor(systemConfigService: SystemConfigService, schedulerTaskService: SchedulerTaskService, thsService: ThsService);
     private readonly logger;
     fetchSystemConfig(): Promise<{
         code: number;
@@ -15,6 +22,15 @@ export declare class SystemConfigController {
     updateSystemConfig(body: SystemConfigDto): Promise<{
         code: number;
         data: any;
+    }>;
+    toggleNewsPushEnable(body: SystemConfigDto): Promise<{
+        code: number;
+        message: any;
+        data?: undefined;
+    } | {
+        code: number;
+        data: any;
+        message?: undefined;
     }>;
 }
 export {};

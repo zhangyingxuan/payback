@@ -26,6 +26,9 @@ export class systemConfig {
   @Column({ comment: '是否竞价删除 首板', type: 'tinyint', width: 1 })
   isBinddingDelFirstBoard: boolean;
 
+  @Column({ comment: '是否自动推送新闻到企微机器人', type: 'tinyint', width: 1 })
+  isAutoPushNews: boolean;
+
   @Column({ type: 'timestamp', comment: '创建时间', default: () => 'current_timestamp' })
   createTime: Timestamp;
 

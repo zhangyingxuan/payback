@@ -97,11 +97,13 @@ async function initPage() {
   data.hotListResult = result.map(item => {
     return {
       createTime: item.createTime,
-      updatedTime: dayjs(item.updatedTime).format('MM/DD HH:mm'),
-      plateIndustry: JSON.parse(item.plateIndustry),
-      stockNormal: JSON.parse(item.stockNormal),
-      stockValue: JSON.parse(item.stockValue),
-      plateConcept: JSON.parse(item.plateConcept),
+      updatedTime: item.updatedTime
+        ? dayjs(item.updatedTime).format('MM/DD HH:mm')
+        : '-',
+      plateIndustry: JSON.parse(item.plateIndustry || '[]'),
+      stockNormal: JSON.parse(item.stockNormal || '[]'),
+      stockValue: JSON.parse(item.stockValue || '[]'),
+      plateConcept: JSON.parse(item.plateConcept || '[]'),
       // hotEtfs: JSON.parse(item.hotEtfs),
     };
   });
@@ -119,7 +121,7 @@ async function updateHotListData() {
       // 爬取成功
       ElMessage.success('更新成功');
       // initPage();
-      data.hotListResult.splice(0, 1, result);
+      data?.hotListResult.splice(0, 1, result);
     })
     .finally(() => {
       data.loading = false;

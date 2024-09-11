@@ -11,6 +11,7 @@ import { ApiTestService } from './service/apiTest.service';
 import { SchedulerTaskService } from '@/scheduler-task/scheduler-task.service';
 import { UsersService } from '../users/users.service';
 import { QyWechatNotice } from './service/qyWechatNotice.service';
+import { SystemConfigService } from './service/systemConfig.service';
 declare class CrawlTodayDataDto {
     fetchTodayDataType: number;
     isRemoveIncompatible: number;
@@ -29,9 +30,10 @@ export declare class PayBackController {
     private readonly plateService;
     private readonly schedulerTaskService;
     private readonly qyWechatNotice;
-    constructor(shorTermService: ShorTermService, specialStockService: SpecialStockService, fundsService: FundsService, hotListService: HotListService, reviewService: ReviewService, thsService: ThsService, apiTestService: ApiTestService, latestConceptPlateService: LatestConceptPlateService, usersService: UsersService, marketService: MarketService, plateService: PlateService, schedulerTaskService: SchedulerTaskService, qyWechatNotice: QyWechatNotice);
+    private readonly systemConfigService;
+    constructor(shorTermService: ShorTermService, specialStockService: SpecialStockService, fundsService: FundsService, hotListService: HotListService, reviewService: ReviewService, thsService: ThsService, apiTestService: ApiTestService, latestConceptPlateService: LatestConceptPlateService, usersService: UsersService, marketService: MarketService, plateService: PlateService, schedulerTaskService: SchedulerTaskService, qyWechatNotice: QyWechatNotice, systemConfigService: SystemConfigService);
     private readonly logger;
-    testApi(): Promise<any>;
+    testApi(query: any): Promise<void>;
     autoCrawlTodayDataAM(): Promise<void>;
     autoCrawlTodayDataPM(): Promise<void>;
     crawlTodayData(body: CrawlTodayDataDto, req: any): Promise<{
@@ -98,6 +100,6 @@ export declare class PayBackController {
     saveUserInfo(body: any, req: any): Promise<{
         code: number;
     }>;
-    initSchedulerTask(): void;
+    initSchedulerTask(): Promise<void>;
 }
 export {};

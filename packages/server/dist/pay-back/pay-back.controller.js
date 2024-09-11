@@ -32,10 +32,11 @@ const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const dayjs = require("dayjs");
 const qyWechatNotice_service_1 = require("./service/qyWechatNotice.service");
 const config_1 = require("../scheduler-task/config");
+const systemConfig_service_1 = require("./service/systemConfig.service");
 class CrawlTodayDataDto {
 }
 let PayBackController = PayBackController_1 = class PayBackController {
-    constructor(shorTermService, specialStockService, fundsService, hotListService, reviewService, thsService, apiTestService, latestConceptPlateService, usersService, marketService, plateService, schedulerTaskService, qyWechatNotice) {
+    constructor(shorTermService, specialStockService, fundsService, hotListService, reviewService, thsService, apiTestService, latestConceptPlateService, usersService, marketService, plateService, schedulerTaskService, qyWechatNotice, systemConfigService) {
         this.shorTermService = shorTermService;
         this.specialStockService = specialStockService;
         this.fundsService = fundsService;
@@ -49,10 +50,30 @@ let PayBackController = PayBackController_1 = class PayBackController {
         this.plateService = plateService;
         this.schedulerTaskService = schedulerTaskService;
         this.qyWechatNotice = qyWechatNotice;
+        this.systemConfigService = systemConfigService;
         this.logger = new common_1.Logger(PayBackController_1.name);
     }
-    async testApi() {
-        return await this.apiTestService.notice();
+    async testApi(query) {
+        this.qyWechatNotice.noticeNews('又招了两个新人，都是类似应届毕业生', '又招了两个新人，都是类似应届毕业生又招了两个新人，都是类似应届毕业生', 'news.url', {
+            tag: '港股,A股',
+            field: [
+                {
+                    name: '景点及旅游',
+                    stockCode: '881160',
+                    stockMarket: '48',
+                },
+                {
+                    name: '景点及旅游',
+                    stockCode: '881160',
+                    stockMarket: '48',
+                },
+                {
+                    name: '景点及旅游',
+                    stockCode: '881160',
+                    stockMarket: '48',
+                },
+            ],
+        });
     }
     async autoCrawlTodayDataAM() {
         this.logger.debug('[必入]定时任务执行了！0 */5 9-12 * * 1-5');
@@ -245,14 +266,14 @@ let PayBackController = PayBackController_1 = class PayBackController {
             code: success ? 0 : 500,
         };
     }
-    initSchedulerTask() {
+    async initSchedulerTask() {
         config_1.schedulerTaskList.forEach(task => {
             this.schedulerTaskService.executeTask(task.taskName, task.cron, async () => {
                 try {
                     if (task.taskName === 'autoCrawlShortTermDataMidday') {
                         const result = await this[task.service][task.func]();
                         process.env.NODE_ENV !== 'dev' &&
-                            await this.thsService.autoModifyThsSelfStocks(JSON.parse(result.evenBoardData), 'admin');
+                            (await this.thsService.autoModifyThsSelfStocks(JSON.parse(result.evenBoardData), 'admin'));
                         return;
                     }
                     await this[task.service][task.func]();
@@ -262,13 +283,21 @@ let PayBackController = PayBackController_1 = class PayBackController {
                 }
             });
         });
+        const config = await this.systemConfigService.findLatestOne();
+        const { isAutoPushNews } = config;
+        if (isAutoPushNews && process.env.NODE_ENV !== 'dev') {
+            this.schedulerTaskService.executeTask(config_1.newsPushSchedulerTask.taskName, config_1.newsPushSchedulerTask.cron, () => {
+                this[config_1.newsPushSchedulerTask.service][config_1.newsPushSchedulerTask.func]();
+            });
+        }
     }
 };
 __decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.Get)('testApi'),
+    __param(0, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "testApi", null);
 __decorate([
@@ -390,7 +419,7 @@ __decorate([
     (0, common_1.Get)('/initSchedulerTask'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "initSchedulerTask", null);
 PayBackController = PayBackController_1 = __decorate([
     (0, common_1.Controller)('pay-back'),
@@ -406,7 +435,8 @@ PayBackController = PayBackController_1 = __decorate([
         market_service_1.MarketService,
         plate_service_1.PlateService,
         scheduler_task_service_1.SchedulerTaskService,
-        qyWechatNotice_service_1.QyWechatNotice])
+        qyWechatNotice_service_1.QyWechatNotice,
+        systemConfig_service_1.SystemConfigService])
 ], PayBackController);
 exports.PayBackController = PayBackController;
 //# sourceMappingURL=pay-back.controller.js.map

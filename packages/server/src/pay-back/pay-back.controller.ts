@@ -16,7 +16,8 @@ import { UsersService } from '../users/users.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import * as dayjs from 'dayjs';
 import { QyWechatNotice } from './service/qyWechatNotice.service';
-import { schedulerTaskList } from '../scheduler-task/config';
+import { schedulerTaskList, newsPushSchedulerTask } from '../scheduler-task/config';
+import { SystemConfigService } from './service/systemConfig.service';
 
 class CrawlTodayDataDto {
   fetchTodayDataType: number;
@@ -39,18 +40,49 @@ export class PayBackController {
     private readonly plateService: PlateService,
     private readonly schedulerTaskService: SchedulerTaskService,
     private readonly qyWechatNotice: QyWechatNotice,
+    private readonly systemConfigService: SystemConfigService,
   ) { }
 
   private readonly logger = new Logger(PayBackController.name);
 
   @Public()
   @Get('testApi')
-  async testApi() {
+  async testApi(@Query() query) {
     // return await this.apiTestService.otherTest();
     // return await this.usersService.getUserByAccount('admin');
     // return await this.apiTestService.fetchExternalData();
     // return await this.apiTestService.datacenterWeb();
-    return await this.apiTestService.notice();
+    // return await this.apiTestService.notice();
+    // return await this.thsService.fetchNewsTask();
+    // this.qyWechatNotice.notice(
+    //   '又招了两个新人，都是类似应届毕业生',
+    //   '又招了两个新人，都是类似应届毕业生又招了两个新人，都是类似应届毕业生',
+    // );
+    this.qyWechatNotice.noticeNews(
+      '又招了两个新人，都是类似应届毕业生',
+      '又招了两个新人，都是类似应届毕业生又招了两个新人，都是类似应届毕业生',
+      'news.url',
+      {
+        tag: '港股,A股',
+        field: [
+          {
+            name: '景点及旅游',
+            stockCode: '881160',
+            stockMarket: '48',
+          },
+          {
+            name: '景点及旅游',
+            stockCode: '881160',
+            stockMarket: '48',
+          },
+          {
+            name: '景点及旅游',
+            stockCode: '881160',
+            stockMarket: '48',
+          },
+        ],
+      },
+    );
     // return 'testApi';
   }
 
@@ -315,15 +347,18 @@ export class PayBackController {
     };
   }
 
+  /**
+   * 初始化定时任务
+   */
   @Get('/initSchedulerTask')
-  initSchedulerTask() {
+  async initSchedulerTask() {
     schedulerTaskList.forEach(task => {
       this.schedulerTaskService.executeTask(task.taskName, task.cron, async () => {
         try {
           if (task.taskName === 'autoCrawlShortTermDataMidday') {
             const result = await this[task.service][task.func]();
             process.env.NODE_ENV !== 'dev' &&
-              await this.thsService.autoModifyThsSelfStocks(JSON.parse(result.evenBoardData), 'admin');
+              (await this.thsService.autoModifyThsSelfStocks(JSON.parse(result.evenBoardData), 'admin'));
             return;
           }
           await this[task.service][task.func]();
@@ -333,5 +368,13 @@ export class PayBackController {
         }
       });
     });
+    // 判断是否开启 新闻推送 定时任务列表
+    const config = await this.systemConfigService.findLatestOne();
+    const { isAutoPushNews } = config;
+    if (isAutoPushNews && process.env.NODE_ENV !== 'dev') {
+      this.schedulerTaskService.executeTask(newsPushSchedulerTask.taskName, newsPushSchedulerTask.cron, () => {
+        this[newsPushSchedulerTask.service][newsPushSchedulerTask.func]();
+      });
+    }
   }
 }

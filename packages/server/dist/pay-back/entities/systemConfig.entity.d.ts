@@ -8,6 +8,7 @@ export declare class systemConfig {
     biddingConfig: string;
     isBinddingDelEventBoard: boolean;
     isBinddingDelFirstBoard: boolean;
+    isAutoPushNews: boolean;
     createTime: Timestamp;
     updatedTime: Timestamp;
 }

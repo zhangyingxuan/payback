@@ -1,6 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.schedulerTaskList = void 0;
+exports.newsPushSchedulerTask = exports.schedulerTaskList = void 0;
+const newsPushSchedulerTask = {
+    taskName: 'autoCrawlNewsTask',
+    service: 'thsService',
+    func: 'fetchNewsTask',
+    cron: '*/10 * 7-23 * * *',
+};
+exports.newsPushSchedulerTask = newsPushSchedulerTask;
 const schedulerTaskList = [
     {
         taskName: 'autoCrawlfundsDataLateSession',

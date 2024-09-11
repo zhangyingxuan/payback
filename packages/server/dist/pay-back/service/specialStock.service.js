@@ -117,7 +117,8 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
                     incompatibleExpectStocks.push(stock);
                 }
             });
-        this.thsService.batchUpdateThsSelfStock(incompatibleExpectStocks, fetchUtil_1.ThsOprate.del, account);
+        incompatibleExpectStocks.length > 0 &&
+            this.thsService.batchUpdateThsSelfStock(incompatibleExpectStocks, fetchUtil_1.ThsOprate.del, account);
     }
     getTodayData(todayDateStr) {
         return this.specialStockRp

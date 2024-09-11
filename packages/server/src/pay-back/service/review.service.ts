@@ -4,14 +4,13 @@ import { reviewData } from '../entities/review.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import playWrightUtil from '../utils/playWrightUtil';
 import * as dayjs from 'dayjs';
-import { Cron } from '@nestjs/schedule';
 import { CreateMarketDataDto } from '../dto/create-market-data.dto';
 
 // 复盘梳理总结
 
 @Injectable()
 export class ReviewService {
-  constructor(@InjectRepository(reviewData) private readonly reviewDataRp: Repository<reviewData>) {}
+  constructor(@InjectRepository(reviewData) private readonly reviewDataRp: Repository<reviewData>) { }
 
   private readonly logger = new Logger(ReviewService.name);
 

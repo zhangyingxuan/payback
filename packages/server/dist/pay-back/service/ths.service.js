@@ -17,6 +17,7 @@ const pay_back_core_1 = require("pay-back-core");
 const users_service_1 = require("../../users/users.service");
 const systemConfig_service_1 = require("./systemConfig.service");
 const thsUtils_1 = require("../utils/thsUtils");
+const qyWechatNotice_service_1 = require("./qyWechatNotice.service");
 let isSuccess = true;
 function prepareSelfStock(i, stocks, app, userid, ticket, user, account) {
     if (stocks) {
@@ -31,10 +32,12 @@ function prepareSelfStock(i, stocks, app, userid, ticket, user, account) {
     }
 }
 let ThsService = ThsService_1 = class ThsService {
-    constructor(usersService, systemConfigService) {
+    constructor(usersService, systemConfigService, qyWechatNotice) {
         this.usersService = usersService;
         this.systemConfigService = systemConfigService;
+        this.qyWechatNotice = qyWechatNotice;
         this.logger = new common_1.Logger(ThsService_1.name);
+        this.latestTime = Math.round(new Date().getTime() / 1000).toString();
     }
     async autoModifyThsSelfStocks(evenBoardData, account) {
         const sysTemconfig = await this.systemConfigService.findLatestOne();
@@ -150,10 +153,34 @@ let ThsService = ThsService_1 = class ThsService {
             data: msg,
         };
     }
+    async fetchNewsTask() {
+        var _a;
+        const result = await (0, fetchUtil_1.fetchNewsRequest)(this.latestTime);
+        const list = (_a = result === null || result === void 0 ? void 0 : result.data) === null || _a === void 0 ? void 0 : _a.list;
+        this.logger.log('[fetchNewsTask] 获取新闻数据: ' + this.latestTime + '，条数：' + (list === null || list === void 0 ? void 0 : list.length));
+        const oldTime = this.latestTime;
+        list &&
+            list.forEach((news, i) => {
+                if (i === 0) {
+                    this.latestTime = news.ctime;
+                }
+                if (news.color === '2') {
+                    try {
+                        this.qyWechatNotice.noticeNews(news.title, news.digest, news.url, news);
+                    }
+                    catch (e) {
+                        this.logger.log('[fetchNewsTask] 推送消息失败：' + e);
+                        this.latestTime = oldTime;
+                    }
+                }
+            });
+    }
 };
 ThsService = ThsService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [users_service_1.UsersService, systemConfig_service_1.SystemConfigService])
+    __metadata("design:paramtypes", [users_service_1.UsersService,
+        systemConfig_service_1.SystemConfigService,
+        qyWechatNotice_service_1.QyWechatNotice])
 ], ThsService);
 exports.ThsService = ThsService;
 //# sourceMappingURL=ths.service.js.map

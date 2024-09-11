@@ -6,7 +6,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ExpectEnum } from '../utils/transformDataUtil';
 import { fetchLastdayDailyLimitBinddingData, fetchSpecialStockBinddingData } from '../utils/specialStockUtil';
 import * as dayjs from 'dayjs';
-import { Cron } from '@nestjs/schedule';
 import { iWencaiDateFormat } from 'pay-back-core';
 import { ThsService } from './ths.service';
 import { ThsOprate } from '../core/fetchUtil';
@@ -152,7 +151,8 @@ export class SpecialStockService {
         }
       });
     // 批量 剔除低于预期的昨日涨停个股（首板），集合竞价开盘价低于预期， 且成交量不足，未匹配量；
-    this.thsService.batchUpdateThsSelfStock(incompatibleExpectStocks, ThsOprate.del, account);
+    incompatibleExpectStocks.length > 0 &&
+      this.thsService.batchUpdateThsSelfStock(incompatibleExpectStocks, ThsOprate.del, account);
   }
 
   /**

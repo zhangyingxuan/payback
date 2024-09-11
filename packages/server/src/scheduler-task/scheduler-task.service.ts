@@ -26,9 +26,9 @@ export class SchedulerTaskService {
       const job: CronJob = new CronJob(cronExpression, () => {
         if (callback) {
           callback();
-          // 删除定时任务
-          needDel && this.deleteCron(name);
         }
+        // 删除定时任务
+        needDel && this.deleteCron(name);
       });
       // 添加定时任务
       this.schedulerRegistry.addCronJob(name, job);
@@ -39,7 +39,12 @@ export class SchedulerTaskService {
     }
   }
   // 删除任务
-  private deleteCron(name: string) {
+  public deleteCron(name: string) {
     this.schedulerRegistry.deleteCronJob(name);
+  }
+
+  // 判断是否存在任务
+  public doesExist(type: 'cron' | 'timeout' | 'interval', name: string) {
+    return this.schedulerRegistry.doesExist(type, name);
   }
 }

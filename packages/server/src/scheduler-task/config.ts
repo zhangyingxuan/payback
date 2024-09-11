@@ -1,3 +1,12 @@
+// 新闻推送定时任务
+const newsPushSchedulerTask = {
+  taskName: 'autoCrawlNewsTask',
+  service: 'thsService',
+  func: 'fetchNewsTask',
+  cron: '*/10 * 7-23 * * *',
+};
+
+// 定时任务列表
 const schedulerTaskList = [
   // 资金相关 === start
   {
@@ -106,5 +115,4 @@ const schedulerTaskList = [
   },
   // 竞价数据&新股&强势股 === end
 ];
-
-export { schedulerTaskList };
+export { schedulerTaskList, newsPushSchedulerTask };

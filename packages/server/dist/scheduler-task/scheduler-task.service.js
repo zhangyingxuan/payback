@@ -22,8 +22,8 @@ let SchedulerTaskService = class SchedulerTaskService {
             const job = new cron_1.CronJob(cronExpression, () => {
                 if (callback) {
                     callback();
-                    needDel && this.deleteCron(name);
                 }
+                needDel && this.deleteCron(name);
             });
             this.schedulerRegistry.addCronJob(name, job);
             job.start();
@@ -34,6 +34,9 @@ let SchedulerTaskService = class SchedulerTaskService {
     }
     deleteCron(name) {
         this.schedulerRegistry.deleteCronJob(name);
+    }
+    doesExist(type, name) {
+        return this.schedulerRegistry.doesExist(type, name);
     }
 };
 SchedulerTaskService = __decorate([

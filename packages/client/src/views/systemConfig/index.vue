@@ -8,7 +8,7 @@
           <span>基本配置</span>
         </div>
       </template>
-      <el-form ref="formRef" :rules="rules" :model="form" label-width="120px">
+      <el-form ref="formRef" :rules="rules" :model="form" label-width="180px">
         <el-divider content-position="left">自选设置</el-divider>
         <el-form-item label="自动加入自选" prop="isAutoAddSelf">
           <el-switch
@@ -36,7 +36,7 @@
         </el-form-item>
 
         <el-divider content-position="left">竞价设置</el-divider>
-        <el-form-item label="竞价删除连板" prop="isBinddingDelEventBoard">
+        <el-form-item label="删除不及预期连板" prop="isBinddingDelEventBoard">
           <el-switch
             v-model="form.isBinddingDelEventBoard"
             inline-prompt
@@ -44,7 +44,7 @@
             inactive-text="否"
           ></el-switch>
         </el-form-item>
-        <el-form-item label="竞价删除首板" prop="isBinddingDelFirstBoard">
+        <el-form-item label="删除不及预期首板" prop="isBinddingDelFirstBoard">
           <el-switch
             v-model="form.isBinddingDelFirstBoard"
             inline-prompt
@@ -56,6 +56,16 @@
           <el-button type="primary" @click="onSubmit(formRef)">
             保存
           </el-button>
+        </el-form-item>
+        <el-divider content-position="left">新闻推送</el-divider>
+        <el-form-item label="自动推送" prop="isAutoPushNews">
+          <el-switch
+            v-model="newsConfigForm.isAutoPushNews"
+            inline-prompt
+            active-text="是"
+            inactive-text="否"
+            @change="handleAutoPushNewsChange"
+          ></el-switch>
         </el-form-item>
       </el-form>
     </el-card>
@@ -71,7 +81,7 @@
         :model="dataManageForm"
         label-width="120px"
       >
-        <el-divider content-position="left">自选设置</el-divider>
+        <el-divider content-position="left">删除数据</el-divider>
         <el-form-item label="日期" prop="isAutoAddSelf">
           <el-date-picker
             v-model="dataManageForm.date"
@@ -122,12 +132,12 @@
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
+import { deleteData, saveUserInfo } from '@/api/payBack';
 import {
   fetchSystemConfig,
   updateSystemConfig,
-  deleteData,
-  saveUserInfo,
-} from '@/api/payBack';
+  toggleNewsPushEnable,
+} from '@/api/systemConfig';
 import type { FormInstance, FormRules } from 'element-plus';
 import { ElMessage, dayjs, ElMessageBox } from 'element-plus';
 
@@ -150,6 +160,10 @@ const form = reactive({
   isBinddingDelEventBoard: false,
   isBinddingDelFirstBoard: false,
 });
+const newsConfigForm = reactive({
+  // 是否自动推送新闻
+  isAutoPushNews: false,
+});
 const dataManageForm = reactive({
   date: new Date(),
 });
@@ -165,7 +179,22 @@ async function initPage() {
   form.isAutoAddSelfFirstBoard = !!configInfo.isAutoAddSelfFirstBoard;
   form.isBinddingDelEventBoard = !!configInfo.isBinddingDelEventBoard;
   form.isBinddingDelFirstBoard = !!configInfo.isBinddingDelFirstBoard;
+  newsConfigForm.isAutoPushNews = !!configInfo.isAutoPushNews;
 }
+
+/**
+ * 开启/关闭 自动推送新闻成功
+ */
+const handleAutoPushNewsChange = (isCheck: any) => {
+  toggleNewsPushEnable({ isAutoPushNews: isCheck })
+    .then(async () => {
+      ElMessage.success(`${isCheck ? '开启' : '关闭'}自动推送新闻成功`);
+    })
+    .catch(() => {
+      newsConfigForm.isAutoPushNews = !isCheck;
+      ElMessage.error('操作失败，请稍后再试');
+    });
+};
 
 // 提交
 const onSubmit = (formEl: FormInstance | undefined) => {
