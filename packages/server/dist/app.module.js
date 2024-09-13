@@ -21,6 +21,9 @@ const core_1 = require("@nestjs/core");
 const jwt_auth_guard_1 = require("./auth/jwt-auth.guard");
 const envFilePath = `.env.${process.env.NODE_ENV || 'prod'}`;
 function atob(a) {
+    console.log(a);
+    if (!a)
+        return;
     return Buffer.from(a, 'base64').toString('binary');
 }
 let AppModule = class AppModule {
