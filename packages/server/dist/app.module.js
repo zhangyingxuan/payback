@@ -20,8 +20,8 @@ const article_module_1 = require("./article/article.module");
 const core_1 = require("@nestjs/core");
 const jwt_auth_guard_1 = require("./auth/jwt-auth.guard");
 const envFilePath = `.env.${process.env.NODE_ENV || 'prod'}`;
-function atob(a) {
-    console.log(a);
+function atob(a, config) {
+    console.log(config.get('DDD_HOST'), config.get('DDD_NAME'));
     if (!a)
         return;
     return Buffer.from(a, 'base64').toString('binary');
@@ -45,7 +45,7 @@ AppModule = __decorate([
                         host: config.get('DDD_HOST'),
                         port: config.get('DDD_PORT'),
                         username: config.get('DDD_USER'),
-                        password: atob(config.get('DDD_PD')),
+                        password: atob(config.get('DDD_PD'), config),
                         database: config.get('DDD_NAME'),
                         entities: [__dirname + '/**/*.entity{.ts,.js}'],
                         synchronize: true,
