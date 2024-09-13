@@ -27,7 +27,7 @@ export class QyWechatNotice {
     const content = [];
     content.push(`**【服务告警】**`);
     content.push(` <font color=\"red\">**${serviceName}**</font>`);
-    content.push(` <font color=\"warning\">${this.NODE_ENV}</font>`);
+    content.push(` <font color=\"warning\">${process.env.NODE_ENV}</font>`);
     content.push(` <font color=\"comment\">${dayjs(todayDateStr).format('HH:mm:ss')}</font>\n`);
     content.push(`> <font color=\"comment\">${msgContent}</font>`);
     const body = {
@@ -49,7 +49,7 @@ export class QyWechatNotice {
   prepareTagContent(tags, baseUrl) {
     const tagContent = [];
     tags.forEach(tag => {
-      tagContent.push(`[${tag.name}](${baseUrl + tag.stockCode}) `);
+      tagContent.push(`[${tag.name}(${tag.stockCode})](${baseUrl + tag.stockCode}) `);
     });
     return tagContent.join('');
   }
@@ -67,7 +67,7 @@ export class QyWechatNotice {
     content.push(` [<font color=\"#3858e6\">**${newsTitle}**</font>](${newsUrl})`);
     content.push(` <font color=\"comment\">${dayjs(todayDateStr).format('HH:mm:ss')}</font>\n`);
     content.push(`> <font color=\"comment\">${msgContent}</font>\n\n`);
-    if (news.tag && news.tag.includes('A股')) {
+    if (news.tag && (news.tag.includes('A股') || news.tag.includes('异动'))) {
       // field 板块 name、stockCode、stockMarket
       if (news?.field?.length > 0) {
         content.push(this.prepareTagContent(news?.field, thsPlateBaseUrl));
