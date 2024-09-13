@@ -20,8 +20,7 @@ const article_module_1 = require("./article/article.module");
 const core_1 = require("@nestjs/core");
 const jwt_auth_guard_1 = require("./auth/jwt-auth.guard");
 const envFilePath = `.env.${process.env.NODE_ENV || 'prod'}`;
-function atob(a, config) {
-    console.log(config.get('DDD_HOST'), config.get('DDD_NAME'));
+function atob(a) {
     if (!a)
         return;
     return Buffer.from(a, 'base64').toString('binary');
@@ -40,13 +39,19 @@ AppModule = __decorate([
                 imports: [config_1.ConfigModule],
                 inject: [config_1.ConfigService],
                 useFactory: (config) => {
+                    console.log(config.get('DDD_HOST'), config.get('DDD_NAME'), process.env.NODE_ENV);
+                    const host = config.get('DDD_HOST') || '127.0.0.1';
+                    const port = config.get('DDD_PORT') || 3306;
+                    const username = config.get('DDD_USER') || 'root';
+                    const password = atob(config.get('DDD_PD') || 'anVlZHVpYW5xdWFuOTk2');
+                    const database = config.get('DDD_NAME') || 'blowsysun';
                     return {
                         type: 'mysql',
-                        host: config.get('DDD_HOST'),
-                        port: config.get('DDD_PORT'),
-                        username: config.get('DDD_USER'),
-                        password: atob(config.get('DDD_PD'), config),
-                        database: config.get('DDD_NAME'),
+                        host,
+                        port,
+                        username,
+                        password,
+                        database,
                         entities: [__dirname + '/**/*.entity{.ts,.js}'],
                         synchronize: true,
                     };
