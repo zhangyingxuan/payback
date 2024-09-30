@@ -27,7 +27,7 @@
           <el-input
             placeholder="code"
             v-model="param.code"
-            @keyup.enter="submitForm(login)"
+            @keyup.enter="submitForm"
           >
             <template #prepend> 验证码 </template>
             <template #append>
@@ -40,7 +40,7 @@
           </el-input>
         </el-form-item>
         <div class="login-btn">
-          <el-button type="primary" @click="submitForm(login)">登录</el-button>
+          <el-button type="primary" @click="submitForm">登录</el-button>
         </div>
       </el-form>
     </div>
@@ -85,9 +85,10 @@ const rules: FormRules = {
 };
 const permiss = usePermissStore();
 const login = ref<FormInstance>();
-const submitForm = (formEl: FormInstance | undefined) => {
-  if (!formEl) return;
-  formEl.validate(async (valid: boolean) => {
+const submitForm = (event: MouseEvent) => {
+  event.preventDefault();
+  if (!login.value) return;
+  login.value.validate(async (valid: boolean) => {
     if (valid) {
       // 调用登录接口
       const result: any = await authLogin({

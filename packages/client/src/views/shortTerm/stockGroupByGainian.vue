@@ -107,7 +107,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { reactive, watch, ref, inject } from 'vue';
+import { reactive, watch, ref, inject, onBeforeUnmount } from 'vue';
 import { fetchDailyLimitStockGroupByGainian } from '@/api/tonghuashun';
 import dayjs from 'dayjs';
 import { isMobile } from '@/core/util';
@@ -158,6 +158,13 @@ async function refreshPage() {
     data.refreshLoading = false;
   }
 }
+
+/**
+ * 销毁时清理定时任务
+ */
+onBeforeUnmount(() => {
+  clearInterval(interval);
+});
 
 async function initPage() {
   const stockGroupByGainian = await fetchDailyLimitStockGroupByGainian(

@@ -362,6 +362,9 @@ function getType(cycle: string) {
     return 'success';
   }
   if (cycle.indexOf('启动') > -1) {
+    return 'primary';
+  }
+  if (cycle.indexOf('发酵') > -1) {
     return 'warning';
   }
   return 'info';
