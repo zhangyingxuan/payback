@@ -26,7 +26,7 @@ __decorate([
     __metadata("design:type", String)
 ], specialStock.prototype, "newStock", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '策略选股', type: 'varchar', length: 3072, nullable: true }),
+    (0, typeorm_1.Column)({ comment: '策略选股', type: 'varchar', length: 4096, nullable: true }),
     __metadata("design:type", String)
 ], specialStock.prototype, "chooseStock", void 0);
 __decorate([

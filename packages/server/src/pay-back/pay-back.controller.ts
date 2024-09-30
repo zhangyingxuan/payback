@@ -372,6 +372,7 @@ export class PayBackController {
     const config = await this.systemConfigService.findLatestOne();
     const { isAutoPushNews } = config;
     if (isAutoPushNews && process.env.NODE_ENV !== 'dev') {
+      this.logger.debug('新闻推送定时任务执行了：' + newsPushSchedulerTask.cron);
       this.schedulerTaskService.executeTask(newsPushSchedulerTask.taskName, newsPushSchedulerTask.cron, () => {
         this[newsPushSchedulerTask.service][newsPushSchedulerTask.func]();
       });

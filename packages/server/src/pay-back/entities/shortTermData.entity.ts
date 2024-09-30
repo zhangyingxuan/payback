@@ -29,7 +29,7 @@ export class shortTermData {
   @Column({ comment: '连板数量', type: 'smallint', default: 0 })
   evenBoardAmount: number;
 
-  @Column({ comment: '连板原始数据', type: 'text', nullable: true })
+  @Column({ comment: '连板原始数据', type: 'mediumtext', nullable: true })
   evenBoardData: string;
 
   @Column({ comment: '跌停数据', type: 'varchar', length: 8192, default: '' })

@@ -50,7 +50,7 @@ __decorate([
     __metadata("design:type", Number)
 ], shortTermData.prototype, "evenBoardAmount", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '连板原始数据', type: 'text', nullable: true }),
+    (0, typeorm_1.Column)({ comment: '连板原始数据', type: 'mediumtext', nullable: true }),
     __metadata("design:type", String)
 ], shortTermData.prototype, "evenBoardData", void 0);
 __decorate([

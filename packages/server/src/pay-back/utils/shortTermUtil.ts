@@ -25,7 +25,7 @@ export async function getShortTermData(todayDateStr, lastTradingDayData): Promis
   // 当前时间是9.30之前，则使用 binddingDailyLimitMoreThan1 否则使用 dailyLimitMoreThan1
   // 准备涨停数据
   const dailyLimit: any = fetchAllStocksByIwencai(
-    isBefore930() ? params.binddingDailyLimitMoreThan1 : params.dailyLimitMoreThan1,
+    isBefore930() ? '今日涨停；非st；非退市；行业' : params.dailyLimitMoreThan1,
   );
   // 跌停数据
   const downLimit: any = fetchAllStocksByIwencai(params.downLimit, downLimitNum);

@@ -11,7 +11,7 @@ export class specialStock {
   @Column({ comment: '新股数据', type: 'varchar', length: 512, nullable: true })
   newStock: string;
 
-  @Column({ comment: '策略选股', type: 'varchar', length: 3072, nullable: true })
+  @Column({ comment: '策略选股', type: 'varchar', length: 4096, nullable: true })
   chooseStock: string;
 
   @Column({ comment: '主力净流入TOP3个股', type: 'varchar', nullable: true })

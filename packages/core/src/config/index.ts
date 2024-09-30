@@ -16,6 +16,7 @@ export const params = {
   dailyLimitMoreThan1: '涨停；几天几板；涨停原因；涨停类型；涨停开板次数；封板金额；成交额；换手率；流通市值；' + stockBaseCondition,
   dailyLimitMoreThan1ByDate: '${date}涨停；几天几板；涨停原因；涨停类型；涨停开板次数；封板金额；成交额；换手率；流通市值；' + stockBaseCondition,
   // 竞价涨停
+  binddingDailyLimit: '今日涨停；' + stockBaseCondition,
   binddingDailyLimitMoreThan1: '涨停；几天几板；涨停原因；涨停类型；封板金额；成交额；换手率；流通市值；' + stockBaseCondition,
   binddingDailyLimitMoreThan1ByDate: '${date}涨停；几天几板；涨停原因；涨停类型；封板金额；成交额；换手率；流通市值；' + stockBaseCondition,
   // 获取昨日涨停的数据（客观数据）

@@ -54,6 +54,17 @@ export class QyWechatNotice {
     return tagContent.join('');
   }
   /**
+   * 准备消息内容，涨跌 关键字颜色标注
+   * @param tags
+   * @param baseUrl
+   * @returns
+   */
+  prepareMsgContent(msgContent) {
+    msgContent = msgContent.replace(/跌/g, `<font color=\"green\">跌</font>`);
+    msgContent = msgContent.replace(/涨/g, `<font color=\"red\">涨</font>`);
+    return msgContent;
+  }
+  /**
    * 新闻通知
    * @param newsTitle
    * @param msgContent

@@ -46,6 +46,11 @@ let QyWechatNotice = QyWechatNotice_1 = class QyWechatNotice {
         });
         return tagContent.join('');
     }
+    prepareMsgContent(msgContent) {
+        msgContent = msgContent.replace(/跌/g, `<font color=\"green\">跌</font>`);
+        msgContent = msgContent.replace(/涨/g, `<font color=\"red\">涨</font>`);
+        return msgContent;
+    }
     async noticeNews(newsTitle, msgContent = '哎哟，不错哦', newsUrl, news) {
         var _a, _b;
         const todayDateStr = new Date();
