@@ -56,7 +56,13 @@ export class HotListService {
 
     return hotListData;
   }
-
+  async delteByCreateTime(date) {
+    return await this.hotListRp
+      .createQueryBuilder()
+      .delete()
+      .where('createTime like :date', { date: date + '%' })
+      .execute();
+  }
   async findAll() {
     return await this.hotListRp.find();
   }

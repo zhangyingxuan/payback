@@ -159,7 +159,8 @@ let PayBackController = PayBackController_1 = class PayBackController {
             const market = this.marketService.delteByCreateTime(body.date);
             const funds = this.fundsService.delteByCreateTime(body.date);
             const plate = this.plateService.delteByCreateTime(body.date);
-            await Promise.all([shorTerm, specialStock, market, funds, plate]);
+            const hostList = this.hotListService.delteByCreateTime(body.date);
+            await Promise.all([shorTerm, specialStock, market, funds, plate, hostList]);
         }
         catch (e) {
             code = 500;

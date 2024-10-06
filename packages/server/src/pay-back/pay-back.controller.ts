@@ -204,7 +204,9 @@ export class PayBackController {
       const funds = this.fundsService.delteByCreateTime(body.date);
       // 板块数据
       const plate = this.plateService.delteByCreateTime(body.date);
-      await Promise.all([shorTerm, specialStock, market, funds, plate]);
+      // 热榜
+      const hostList = this.hotListService.delteByCreateTime(body.date);
+      await Promise.all([shorTerm, specialStock, market, funds, plate, hostList]);
     } catch (e) {
       code = 500;
       message = e;
