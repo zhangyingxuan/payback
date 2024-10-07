@@ -18,7 +18,7 @@ __decorate([
     __metadata("design:type", Number)
 ], specialStock.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ comment: '昨日涨停今日集合竞价情况', type: 'text', nullable: true }),
+    (0, typeorm_1.Column)({ comment: '昨日涨停今日集合竞价情况', type: 'mediumtext', nullable: true }),
     __metadata("design:type", String)
 ], specialStock.prototype, "biddingData", void 0);
 __decorate([

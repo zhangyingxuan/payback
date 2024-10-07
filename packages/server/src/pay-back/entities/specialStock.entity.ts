@@ -5,7 +5,7 @@ export class specialStock {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ comment: '昨日涨停今日集合竞价情况', type: 'text', nullable: true })
+  @Column({ comment: '昨日涨停今日集合竞价情况', type: 'mediumtext', nullable: true })
   biddingData: string;
 
   @Column({ comment: '新股数据', type: 'varchar', length: 512, nullable: true })
