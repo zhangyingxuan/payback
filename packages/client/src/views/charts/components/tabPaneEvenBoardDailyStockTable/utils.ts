@@ -127,8 +127,9 @@ export function getRealEvenBoardHeight(item: any, isBiddingMode = true) {
  * 是否符合我的竞价策略 - 超预期；换手率>=5%，竞价量比大于10（连板及反包除外）
  */
 export function isConformToMyStrategyChecked(stock: any) {
-  // 只看主板
-  if (!isMainPlate(stock.code)) {
+  // 只看主板 
+  // 新增 创业板 add by yxuanzhang 2024 - 10 -08 14: 30: 56
+  if (!isMainPlate(stock.code) && !stock.code.startsWith('30')) {
     return false;
   }
 

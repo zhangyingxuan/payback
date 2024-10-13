@@ -36,20 +36,43 @@
         >
           刷新
         </el-button>
+        <el-divider
+          direction="vertical"
+          border-style="dashed"
+          style="color: #000; background-color: #000"
+        />
         <!-- </div> -->
+        <div class="filter__container">
+          <el-select
+            class="select"
+            v-model="filter.stockType"
+            placeholder="连板高度"
+            size="small"
+          >
+            <el-option
+              v-for="(item, index) in filter.stockTypeOptions"
+              :key="index"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </div>
       </div>
     </div>
     <!-- 内容区域 -->
     <div class="table__content">
       <div
-        v-if="data.stockGroupByGainian && data.stockGroupByGainian.length === 0"
+        v-if="
+          stockGroupByGainianFiltered &&
+          stockGroupByGainianFiltered.length === 0
+        "
         class="noData"
       >
         暂无数据
       </div>
       <div
         class="table-row"
-        v-for="(item, key) in data.stockGroupByGainian"
+        v-for="(item, key) in stockGroupByGainianFiltered"
         :key="key"
       >
         <div class="col1">
@@ -63,8 +86,12 @@
               </span>
             </div>
             <div class="plate_col">
-              <span class="red">{{ item.limit_up_num }}</span>
-              <span>{{ item.days }}</span>
+              <span>
+                {{ item?.stock_list.length }}/<span class="red">
+                  {{ item.limit_up_num }}
+                </span>
+              </span>
+              <span>{{ item.days }}天</span>
             </div>
           </div>
         </div>
@@ -107,7 +134,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { reactive, watch, ref, inject, onBeforeUnmount } from 'vue';
+import { reactive, watch, ref, inject, onBeforeUnmount, computed } from 'vue';
 import { fetchDailyLimitStockGroupByGainian } from '@/api/tonghuashun';
 import dayjs from 'dayjs';
 import { isMobile } from '@/core/util';
@@ -123,6 +150,19 @@ const data: {
   stockGroupByGainian: [],
   refreshTime: '',
   refreshLoading: false,
+});
+
+const stockTypeOptions: any = [
+  { value: 'all', label: '全部' },
+  { value: 'chuangye', label: '创业板', code: ['30'] },
+  { value: 'kechuang', label: '科创板', code: ['68'] },
+  { value: 'zhuban', label: '主板', code: ['60', '0'] },
+  { value: 'beijing', label: '京股', code: ['8', '4', '92'] },
+];
+
+const filter = reactive({
+  stockType: 'all',
+  stockTypeOptions,
 });
 const autoRefreshInterval = ref('不刷新');
 const autoRefreshIntervalConfig: any = {
@@ -166,12 +206,34 @@ onBeforeUnmount(() => {
   clearInterval(interval);
 });
 
+/**
+ * 处理过滤数据
+ */
+const dealFilter = (stockGroupByGainian: any) => {
+  if (filter.stockType === 'all') {
+    return stockGroupByGainian;
+  }
+  // 取出筛选条件 codes
+  const codes = stockTypeOptions.find(
+    (item: { value: string }) => item.value === filter.stockType,
+  ).code;
+
+  // 过滤
+  stockGroupByGainian.forEach((itemGroup: any) => {
+    itemGroup.stock_list = itemGroup?.stock_list.filter((stock: any) => {
+      return codes.some((code: string) => stock.code.startsWith(code));
+    });
+  });
+  return stockGroupByGainian;
+};
+
 async function initPage() {
-  const stockGroupByGainian = await fetchDailyLimitStockGroupByGainian(
+  const stockGroupByGainianOriginal = await fetchDailyLimitStockGroupByGainian(
     dayjs().format('YYYYMMDD'),
   );
-  stockGroupByGainian &&
-    stockGroupByGainian.forEach((item: any) => {
+  // 排序，只需要排一次
+  stockGroupByGainianOriginal &&
+    stockGroupByGainianOriginal.forEach((item: any) => {
       // 按首次涨停时间 升序排序
       item.stock_list &&
         item.stock_list.sort((stock1: any, stock2: any) => {
@@ -179,12 +241,18 @@ async function initPage() {
         });
     });
 
-  data.stockGroupByGainian = stockGroupByGainian;
-  data.refreshTime = dayjs().format('hh:mm:ss');
   // 按概念板块分类
   // 个股展示 reason_info、reason_type、name、code、high、first_limit_up_time（首次涨停）、last_limit_up_time、latest（股价）
+  data.stockGroupByGainian = stockGroupByGainianOriginal;
+  data.refreshTime = dayjs(new Date()).format('HH:mm:ss');
 }
+
 initPage();
+
+const stockGroupByGainianFiltered: any = computed(() => {
+  // 过滤
+  return dealFilter(JSON.parse(JSON.stringify(data.stockGroupByGainian)));
+});
 
 // 显示更多
 function handleShowMoreInfo(e: Event, reason_info: string) {
@@ -204,6 +272,9 @@ function handleShowMoreInfo(e: Event, reason_info: string) {
 @import '../charts/styles/tabPaneEvenBoardStockTable.less';
 .col2 {
   overflow: hidden;
+}
+.dateTime__span {
+  width: 45px;
 }
 .col1__container {
   width: 100%;
@@ -232,6 +303,14 @@ function handleShowMoreInfo(e: Event, reason_info: string) {
   padding: 50px;
   text-align: center;
   columns: #ccc;
+}
+.filter__container {
+  .el-checkbox {
+    margin-right: 10px;
+  }
+  .el-select {
+    width: 80px;
+  }
 }
 </style>
 
