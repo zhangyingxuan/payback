@@ -12,6 +12,7 @@ import { SchedulerTaskService } from '@/scheduler-task/scheduler-task.service';
 import { UsersService } from '../users/users.service';
 import { QyWechatNotice } from './service/qyWechatNotice.service';
 import { SystemConfigService } from './service/systemConfig.service';
+import { ClientProxy } from '@nestjs/microservices';
 declare class CrawlTodayDataDto {
     fetchTodayDataType: number;
     isRemoveIncompatible: number;
@@ -31,7 +32,8 @@ export declare class PayBackController {
     private readonly schedulerTaskService;
     private readonly qyWechatNotice;
     private readonly systemConfigService;
-    constructor(shorTermService: ShorTermService, specialStockService: SpecialStockService, fundsService: FundsService, hotListService: HotListService, reviewService: ReviewService, thsService: ThsService, apiTestService: ApiTestService, latestConceptPlateService: LatestConceptPlateService, usersService: UsersService, marketService: MarketService, plateService: PlateService, schedulerTaskService: SchedulerTaskService, qyWechatNotice: QyWechatNotice, systemConfigService: SystemConfigService);
+    private pushServer;
+    constructor(shorTermService: ShorTermService, specialStockService: SpecialStockService, fundsService: FundsService, hotListService: HotListService, reviewService: ReviewService, thsService: ThsService, apiTestService: ApiTestService, latestConceptPlateService: LatestConceptPlateService, usersService: UsersService, marketService: MarketService, plateService: PlateService, schedulerTaskService: SchedulerTaskService, qyWechatNotice: QyWechatNotice, systemConfigService: SystemConfigService, pushServer: ClientProxy);
     private readonly logger;
     testApi(query: any): Promise<void>;
     autoCrawlTodayDataAM(): Promise<void>;

@@ -14,7 +14,7 @@ function getAvailablePort(port, isGetNewPort = false) {
     server.on('error', async (err: any) => {
       if (err.code === 'EADDRINUSE') {
         if (isGetNewPort) {
-          resolve(getAvailablePort(port + 1));
+          resolve(getAvailablePort(port + 1, true));
         } else {
           await killProcessOnPort(port);
           resolve(port);

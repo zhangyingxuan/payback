@@ -19,8 +19,5 @@ export declare enum ThsOprate {
 }
 export declare function modifyThsSelfStocksRequest(code: any, userid: any, ticket: any, user: any, type?: ThsOprate): Promise<any>;
 export declare function modifyThsSelfRequest(code: any, userid: any, ticket: any, user: any, type?: ThsOprate, isPlate?: boolean): Promise<any>;
-export declare function fetchNewsRequest(time?: string): Promise<any>;
-export declare function fetchNewsRequestByCls(): Promise<any>;
-export declare function fetchNewsRequestByXueqiu(): Promise<any>;
 export declare function promiseLimit(promises: any, limit: any): Promise<unknown>;
 export {};

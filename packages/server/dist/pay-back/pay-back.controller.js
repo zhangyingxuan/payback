@@ -33,10 +33,11 @@ const dayjs = require("dayjs");
 const qyWechatNotice_service_1 = require("./service/qyWechatNotice.service");
 const config_1 = require("../scheduler-task/config");
 const systemConfig_service_1 = require("./service/systemConfig.service");
+const microservices_1 = require("@nestjs/microservices");
 class CrawlTodayDataDto {
 }
 let PayBackController = PayBackController_1 = class PayBackController {
-    constructor(shorTermService, specialStockService, fundsService, hotListService, reviewService, thsService, apiTestService, latestConceptPlateService, usersService, marketService, plateService, schedulerTaskService, qyWechatNotice, systemConfigService) {
+    constructor(shorTermService, specialStockService, fundsService, hotListService, reviewService, thsService, apiTestService, latestConceptPlateService, usersService, marketService, plateService, schedulerTaskService, qyWechatNotice, systemConfigService, pushServer) {
         this.shorTermService = shorTermService;
         this.specialStockService = specialStockService;
         this.fundsService = fundsService;
@@ -51,29 +52,11 @@ let PayBackController = PayBackController_1 = class PayBackController {
         this.schedulerTaskService = schedulerTaskService;
         this.qyWechatNotice = qyWechatNotice;
         this.systemConfigService = systemConfigService;
+        this.pushServer = pushServer;
         this.logger = new common_1.Logger(PayBackController_1.name);
     }
     async testApi(query) {
-        this.qyWechatNotice.noticeNews('又招了两个新人，都是类似应届毕业生', '又招了两个新人，都是类似应届毕业生又招了两个新人，都是类似应届毕业生', 'news.url', {
-            tag: '港股,A股',
-            field: [
-                {
-                    name: '景点及旅游',
-                    stockCode: '881160',
-                    stockMarket: '48',
-                },
-                {
-                    name: '景点及旅游',
-                    stockCode: '881160',
-                    stockMarket: '48',
-                },
-                {
-                    name: '景点及旅游',
-                    stockCode: '881160',
-                    stockMarket: '48',
-                },
-            ],
-        });
+        this.pushServer.emit('fetchNewsTask', {});
     }
     async autoCrawlTodayDataAM() {
         this.logger.debug('[必入]定时任务执行了！0 */5 9-12 * * 1-5');
@@ -289,7 +272,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
         if (isAutoPushNews && process.env.NODE_ENV !== 'dev') {
             this.logger.debug('新闻推送定时任务执行了：' + config_1.newsPushSchedulerTask.cron);
             this.schedulerTaskService.executeTask(config_1.newsPushSchedulerTask.taskName, config_1.newsPushSchedulerTask.cron, () => {
-                this[config_1.newsPushSchedulerTask.service][config_1.newsPushSchedulerTask.func]();
+                this[config_1.newsPushSchedulerTask.service].emit(config_1.newsPushSchedulerTask.func, {});
             });
         }
     }
@@ -425,6 +408,7 @@ __decorate([
 ], PayBackController.prototype, "initSchedulerTask", null);
 PayBackController = PayBackController_1 = __decorate([
     (0, common_1.Controller)('pay-back'),
+    __param(14, (0, common_1.Inject)('PUSH_SERVER')),
     __metadata("design:paramtypes", [shortTerm_service_1.ShorTermService,
         specialStock_service_1.SpecialStockService,
         funds_service_1.FundsService,
@@ -438,7 +422,8 @@ PayBackController = PayBackController_1 = __decorate([
         plate_service_1.PlateService,
         scheduler_task_service_1.SchedulerTaskService,
         qyWechatNotice_service_1.QyWechatNotice,
-        systemConfig_service_1.SystemConfigService])
+        systemConfig_service_1.SystemConfigService,
+        microservices_1.ClientProxy])
 ], PayBackController);
 exports.PayBackController = PayBackController;
 //# sourceMappingURL=pay-back.controller.js.map

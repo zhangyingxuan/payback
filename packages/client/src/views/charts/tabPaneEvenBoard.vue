@@ -693,7 +693,6 @@ defineExpose({
       height: 30px;
       // color: rgb(96, 3, 3);
       color: rgb(216, 26, 61);
-      justify-content: center;
 
       > span {
         line-height: 22px;
@@ -704,6 +703,10 @@ defineExpose({
       &.gray {
         color: @gray;
       }
+    }
+
+    &.height1 {
+      justify-content: center;
     }
   }
   .table-col > span {

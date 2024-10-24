@@ -1,4 +1,4 @@
-import { Controller, Get, Logger, Query, Post, Body, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Logger, Query, Post, Body, UseGuards, Request, Inject } from '@nestjs/common';
 import { ShorTermService } from './service/shortTerm.service';
 import { SpecialStockService } from './service/specialStock.service';
 import { MarketService } from './service/market.service';
@@ -18,6 +18,7 @@ import * as dayjs from 'dayjs';
 import { QyWechatNotice } from './service/qyWechatNotice.service';
 import { schedulerTaskList, newsPushSchedulerTask } from '../scheduler-task/config';
 import { SystemConfigService } from './service/systemConfig.service';
+import { ClientProxy } from '@nestjs/microservices';
 
 class CrawlTodayDataDto {
   fetchTodayDataType: number;
@@ -41,6 +42,7 @@ export class PayBackController {
     private readonly schedulerTaskService: SchedulerTaskService,
     private readonly qyWechatNotice: QyWechatNotice,
     private readonly systemConfigService: SystemConfigService,
+    @Inject('PUSH_SERVER') private pushServer: ClientProxy,
   ) { }
 
   private readonly logger = new Logger(PayBackController.name);
@@ -58,31 +60,32 @@ export class PayBackController {
     //   '又招了两个新人，都是类似应届毕业生',
     //   '又招了两个新人，都是类似应届毕业生又招了两个新人，都是类似应届毕业生',
     // );
-    this.qyWechatNotice.noticeNews(
-      '又招了两个新人，都是类似应届毕业生',
-      '又招了两个新人，都是类似应届毕业生又招了两个新人，都是类似应届毕业生',
-      'news.url',
-      {
-        tag: '港股,A股',
-        field: [
-          {
-            name: '景点及旅游',
-            stockCode: '881160',
-            stockMarket: '48',
-          },
-          {
-            name: '景点及旅游',
-            stockCode: '881160',
-            stockMarket: '48',
-          },
-          {
-            name: '景点及旅游',
-            stockCode: '881160',
-            stockMarket: '48',
-          },
-        ],
-      },
-    );
+    // this.qyWechatNotice.noticeNews(
+    //   '又招了两个新人，都是类似应届毕业生',
+    //   '又招了两个新人，都是类似应届毕业生又招了两个新人，都是类似应届毕业生',
+    //   'news.url',
+    //   {
+    //     tag: '港股,A股',
+    //     field: [
+    //       {
+    //         name: '景点及旅游',
+    //         stockCode: '881160',
+    //         stockMarket: '48',
+    //       },
+    //       {
+    //         name: '景点及旅游',
+    //         stockCode: '881160',
+    //         stockMarket: '48',
+    //       },
+    //       {
+    //         name: '景点及旅游',
+    //         stockCode: '881160',
+    //         stockMarket: '48',
+    //       },
+    //     ],
+    //   },
+    // );
+    this.pushServer.emit('fetchNewsTask', {});
     // return 'testApi';
   }
 
@@ -376,7 +379,7 @@ export class PayBackController {
     if (isAutoPushNews && process.env.NODE_ENV !== 'dev') {
       this.logger.debug('新闻推送定时任务执行了：' + newsPushSchedulerTask.cron);
       this.schedulerTaskService.executeTask(newsPushSchedulerTask.taskName, newsPushSchedulerTask.cron, () => {
-        this[newsPushSchedulerTask.service][newsPushSchedulerTask.func]();
+        this[newsPushSchedulerTask.service].emit(newsPushSchedulerTask.func, {});
       });
     }
   }

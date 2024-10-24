@@ -1,10 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { modifyThsSelfRequest, modifyThsSelfStocksRequest, fetchNewsRequest } from '../core/fetchUtil';
+import { modifyThsSelfRequest, modifyThsSelfStocksRequest } from '../core/fetchUtil';
 import { AsynTaskIterator, dailyLimitOptionalStrategy } from 'pay-back-core';
 import { UsersService } from '../../users/users.service';
 import { SystemConfigService } from './systemConfig.service';
 import { dealResultIsLogin, dealPlateResult, atob } from '../utils/thsUtils';
-import { QyWechatNotice } from './qyWechatNotice.service';
 
 let isSuccess = true;
 
@@ -24,14 +23,9 @@ function prepareSelfStock(i, stocks, app, userid, ticket, user, account) {
 }
 @Injectable()
 export class ThsService {
-  constructor(
-    private readonly usersService: UsersService,
-    private readonly systemConfigService: SystemConfigService,
-    private readonly qyWechatNotice: QyWechatNotice,
-  ) { }
+  constructor(private readonly usersService: UsersService, private readonly systemConfigService: SystemConfigService) { }
 
   private readonly logger = new Logger(ThsService.name);
-  private latestTime: string = Math.round(new Date().getTime() / 1000).toString();
 
   /**
    * 自动添加 同花顺 自选个股
@@ -202,35 +196,5 @@ export class ThsService {
       code: msg ? 400 : 0,
       data: msg,
     };
-  }
-
-  /**
-   * 获取同花顺新闻
-   * @returns {Promise<any>}
-   */
-  async fetchNewsTask() {
-    const result = await fetchNewsRequest(this.latestTime);
-    const list = result?.data?.list;
-    this.logger.log('[fetchNewsTask] 获取新闻数据: ' + this.latestTime + '，条数：' + list?.length);
-    const oldTime = this.latestTime;
-    // this.logger.log('[fetchNewsTask] 获取新闻数据 list', list);
-    // 取出重要消息进行推送
-    list &&
-      list.forEach((news, i) => {
-        if (i === 0) {
-          this.latestTime = news.ctime;
-        }
-        // color 为 '2'
-        if (news.color === '2') {
-          try {
-            // 推送消息
-            this.qyWechatNotice.noticeNews(news.title, news.digest, news.url, news);
-          } catch (e) {
-            this.logger.log('[fetchNewsTask] 推送消息失败：' + e);
-            // 推送失败，还原查询时间
-            this.latestTime = oldTime;
-          }
-        }
-      });
   }
 }

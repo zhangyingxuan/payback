@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PayBackModule = void 0;
 const common_1 = require("@nestjs/common");
+const microservices_1 = require("@nestjs/microservices");
 const shortTerm_service_1 = require("./service/shortTerm.service");
 const market_service_1 = require("./service/market.service");
 const plate_service_1 = require("./service/plate.service");
@@ -51,6 +52,15 @@ PayBackModule = __decorate([
             typeorm_1.TypeOrmModule.forFeature([review_entity_1.reviewData]),
             typeorm_1.TypeOrmModule.forFeature([systemConfig_entity_1.systemConfig]),
             typeorm_1.TypeOrmModule.forFeature([latestConceptPlate_entity_1.latestConceptPlate]),
+            microservices_1.ClientsModule.register([
+                {
+                    name: 'PUSH_SERVER',
+                    transport: microservices_1.Transport.TCP,
+                    options: {
+                        port: 3001,
+                    },
+                },
+            ]),
         ],
         controllers: [pay_back_controller_1.PayBackController, ths_trade_controller_1.ThsTradeController, systemConfig_controller_1.SystemConfigController],
         providers: [

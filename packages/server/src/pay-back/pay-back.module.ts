@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 // service
 import { ShorTermService } from './service/shortTerm.service';
 import { MarketService } from './service/market.service';
@@ -44,6 +45,16 @@ import { SchedulerTaskModule } from '../scheduler-task/scheduler-task.module';
     TypeOrmModule.forFeature([reviewData]),
     TypeOrmModule.forFeature([systemConfig]),
     TypeOrmModule.forFeature([latestConceptPlate]),
+    // microservice 微服务
+    ClientsModule.register([
+      {
+        name: 'PUSH_SERVER',
+        transport: Transport.TCP,
+        options: {
+          port: 3001,
+        },
+      },
+    ]),
   ],
   controllers: [PayBackController, ThsTradeController, SystemConfigController],
   providers: [

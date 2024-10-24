@@ -1,7 +1,13 @@
 // 新闻推送定时任务
+// const newsPushSchedulerTask = {
+//   taskName: 'autoCrawlNewsTask',
+//   service: 'thsService',
+//   func: 'fetchNewsTask',
+//   cron: '*/10 * 7-23 * * *',
+// };
 const newsPushSchedulerTask = {
   taskName: 'autoCrawlNewsTask',
-  service: 'thsService',
+  service: 'pushServer',
   func: 'fetchNewsTask',
   cron: '*/10 * 7-23 * * *',
 };
