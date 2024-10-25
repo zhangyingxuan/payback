@@ -11,11 +11,12 @@ function getAvailablePort(port) {
             .on('listening', () => resolve(port))
             .on('error', () => {
             console.log('error2', port);
-            server.close();
-            if (port === port + 10) {
-                reject(new Error('No available ports found'));
-            }
-            resolve(getAvailablePort(port + 1));
+            server.close(() => {
+                if (port === port + 10) {
+                    reject(new Error('No available ports found'));
+                }
+                resolve(getAvailablePort(port + 1));
+            });
         });
     });
 }
