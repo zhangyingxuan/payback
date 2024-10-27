@@ -33,6 +33,8 @@ import { UsersModule } from '../users/users.module';
 import { SchedulerTaskModule } from '../scheduler-task/scheduler-task.module';
 import { microserviceConfig } from '@/config';
 
+console.log('microserviceConfig', microserviceConfig);
+
 @Module({
   imports: [
     UsersModule,
