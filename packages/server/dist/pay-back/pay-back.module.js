@@ -59,8 +59,8 @@ PayBackModule = __decorate([
                     name: 'PUSH_SERVER',
                     transport: microservices_1.Transport.TCP,
                     options: {
-                        host: config_1.microserviceConfig.pushServer.host,
-                        port: config_1.microserviceConfig.pushServer.port,
+                        host: 'localhost',
+                        port: 3001,
                     },
                 },
             ]),

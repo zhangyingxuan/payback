@@ -54,8 +54,9 @@ console.log('microserviceConfig', microserviceConfig);
         name: 'PUSH_SERVER',
         transport: Transport.TCP,
         options: {
-          host: microserviceConfig.pushServer.host,
-          port: microserviceConfig.pushServer.port,
+          host: 'localhost',
+          // host: microserviceConfig.pushServer.host,
+          port: 3001,
         },
       },
     ]),
