@@ -1,6 +1,6 @@
 import { SystemConfigService } from './service/systemConfig.service';
 import { SchedulerTaskService } from '@/scheduler-task/scheduler-task.service';
-import { ThsService } from './service/ths.service';
+import { ClientProxy } from '@nestjs/microservices';
 declare class SystemConfigDto {
     isAutoAddSelf: number;
     isAutoAddSelfEvenBoard: number;
@@ -12,8 +12,8 @@ declare class SystemConfigDto {
 export declare class SystemConfigController {
     private readonly systemConfigService;
     private readonly schedulerTaskService;
-    private readonly thsService;
-    constructor(systemConfigService: SystemConfigService, schedulerTaskService: SchedulerTaskService, thsService: ThsService);
+    private pushServer;
+    constructor(systemConfigService: SystemConfigService, schedulerTaskService: SchedulerTaskService, pushServer: ClientProxy);
     private readonly logger;
     fetchSystemConfig(): Promise<{
         code: number;

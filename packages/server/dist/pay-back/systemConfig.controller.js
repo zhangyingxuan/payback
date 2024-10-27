@@ -18,14 +18,14 @@ const common_1 = require("@nestjs/common");
 const systemConfig_service_1 = require("./service/systemConfig.service");
 const config_1 = require("../scheduler-task/config");
 const scheduler_task_service_1 = require("../scheduler-task/scheduler-task.service");
-const ths_service_1 = require("./service/ths.service");
+const microservices_1 = require("@nestjs/microservices");
 class SystemConfigDto {
 }
 let SystemConfigController = SystemConfigController_1 = class SystemConfigController {
-    constructor(systemConfigService, schedulerTaskService, thsService) {
+    constructor(systemConfigService, schedulerTaskService, pushServer) {
         this.systemConfigService = systemConfigService;
         this.schedulerTaskService = schedulerTaskService;
-        this.thsService = thsService;
+        this.pushServer = pushServer;
         this.logger = new common_1.Logger(SystemConfigController_1.name);
     }
     async fetchSystemConfig() {
@@ -45,15 +45,16 @@ let SystemConfigController = SystemConfigController_1 = class SystemConfigContro
     }
     async toggleNewsPushEnable(body) {
         try {
+            const doesExist = this.schedulerTaskService.doesExist('cron', config_1.newsPushSchedulerTask.taskName);
             if (body.isAutoPushNews) {
-                const doesExist = this.schedulerTaskService.doesExist('cron', config_1.newsPushSchedulerTask.taskName);
                 !doesExist &&
                     this.schedulerTaskService.executeTask(config_1.newsPushSchedulerTask.taskName, config_1.newsPushSchedulerTask.cron, () => {
-                        this[config_1.newsPushSchedulerTask.service][config_1.newsPushSchedulerTask.func]();
+                        console.log('执行定时任务 - ', config_1.newsPushSchedulerTask.service, config_1.newsPushSchedulerTask.func);
+                        this[config_1.newsPushSchedulerTask.service].emit(config_1.newsPushSchedulerTask.func, {});
                     });
             }
             else {
-                this.schedulerTaskService.deleteCron(config_1.newsPushSchedulerTask.taskName);
+                doesExist && this.schedulerTaskService.deleteCron(config_1.newsPushSchedulerTask.taskName);
             }
             await this.systemConfigService.updateSystemConfig(body);
         }
@@ -92,9 +93,10 @@ __decorate([
 ], SystemConfigController.prototype, "toggleNewsPushEnable", null);
 SystemConfigController = SystemConfigController_1 = __decorate([
     (0, common_1.Controller)('system-config'),
+    __param(2, (0, common_1.Inject)('PUSH_SERVER')),
     __metadata("design:paramtypes", [systemConfig_service_1.SystemConfigService,
         scheduler_task_service_1.SchedulerTaskService,
-        ths_service_1.ThsService])
+        microservices_1.ClientProxy])
 ], SystemConfigController);
 exports.SystemConfigController = SystemConfigController;
 //# sourceMappingURL=systemConfig.controller.js.map

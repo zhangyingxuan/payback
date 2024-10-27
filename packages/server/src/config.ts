@@ -1,12 +1,24 @@
-export const microserviceConfig = {
-  env: {
-    pushServerUrl: 'http://localhost:3000/push',
-    newsServerUrl: 'http://localhost:4000/pay',
+export const microserviceConfigs = {
+  dev: {
+    pushServer: {
+      host: '43.154.139.108',
+      // host: 'localhost',
+      port: 3001,
+    },
   },
   prod: {
-    pushServerUrl: 'http://localhost:3000/push',
-    newsServerUrl: 'http://localhost:4000/pay',
+    pushServer: {
+      host: '43.154.139.108',
+      port: 3001,
+    },
   },
 };
 
-export const config = microserviceConfig[process.env.NODE_ENV];
+interface ServerConfig {
+  host: string;
+  port: number;
+}
+interface MicroserviceConfig {
+  pushServer: ServerConfig;
+}
+export const microserviceConfig: MicroserviceConfig = microserviceConfigs[process.env.NODE_ENV];

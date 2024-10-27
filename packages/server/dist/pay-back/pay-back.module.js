@@ -36,6 +36,7 @@ const review_entity_1 = require("./entities/review.entity");
 const systemConfig_entity_1 = require("./entities/systemConfig.entity");
 const users_module_1 = require("../users/users.module");
 const scheduler_task_module_1 = require("../scheduler-task/scheduler-task.module");
+const config_1 = require("../config");
 let PayBackModule = class PayBackModule {
 };
 PayBackModule = __decorate([
@@ -57,7 +58,8 @@ PayBackModule = __decorate([
                     name: 'PUSH_SERVER',
                     transport: microservices_1.Transport.TCP,
                     options: {
-                        port: 3001,
+                        host: config_1.microserviceConfig.pushServer.host,
+                        port: config_1.microserviceConfig.pushServer.port,
                     },
                 },
             ]),

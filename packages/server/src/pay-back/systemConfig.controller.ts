@@ -1,8 +1,8 @@
-import { Controller, Get, Logger, Post, Body } from '@nestjs/common';
+import { Controller, Get, Logger, Post, Body, Inject } from '@nestjs/common';
 import { SystemConfigService } from './service/systemConfig.service';
 import { newsPushSchedulerTask } from '../scheduler-task/config';
 import { SchedulerTaskService } from '@/scheduler-task/scheduler-task.service';
-import { ThsService } from './service/ths.service';
+import { ClientProxy } from '@nestjs/microservices';
 // import { Public } from '../decorator/public.decorator';
 
 class SystemConfigDto {
@@ -21,7 +21,7 @@ export class SystemConfigController {
   constructor(
     private readonly systemConfigService: SystemConfigService,
     private readonly schedulerTaskService: SchedulerTaskService,
-    private readonly thsService: ThsService,
+    @Inject('PUSH_SERVER') private pushServer: ClientProxy,
   ) { }
 
   private readonly logger = new Logger(SystemConfigController.name);
@@ -52,16 +52,18 @@ export class SystemConfigController {
   @Post('/toggleNewsPushEnable')
   async toggleNewsPushEnable(@Body() body: SystemConfigDto) {
     try {
+      // 先判断是否存在，存在则不添加
+      const doesExist = this.schedulerTaskService.doesExist('cron', newsPushSchedulerTask.taskName);
       // 加入定时任务
       if (body.isAutoPushNews) {
-        // 先判断是否存在，存在则不添加
-        const doesExist = this.schedulerTaskService.doesExist('cron', newsPushSchedulerTask.taskName);
         !doesExist &&
           this.schedulerTaskService.executeTask(newsPushSchedulerTask.taskName, newsPushSchedulerTask.cron, () => {
-            this[newsPushSchedulerTask.service][newsPushSchedulerTask.func]();
+            console.log('执行定时任务 - ', newsPushSchedulerTask.service, newsPushSchedulerTask.func);
+            // this[newsPushSchedulerTask.service][newsPushSchedulerTask.func]();
+            this[newsPushSchedulerTask.service].emit(newsPushSchedulerTask.func, {});
           });
       } else {
-        this.schedulerTaskService.deleteCron(newsPushSchedulerTask.taskName);
+        doesExist && this.schedulerTaskService.deleteCron(newsPushSchedulerTask.taskName);
       }
       await this.systemConfigService.updateSystemConfig(body);
     } catch (e) {

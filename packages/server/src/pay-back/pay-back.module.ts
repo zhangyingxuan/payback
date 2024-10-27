@@ -31,6 +31,7 @@ import { systemConfig } from './entities/systemConfig.entity';
 // module
 import { UsersModule } from '../users/users.module';
 import { SchedulerTaskModule } from '../scheduler-task/scheduler-task.module';
+import { microserviceConfig } from '@/config';
 
 @Module({
   imports: [
@@ -51,7 +52,8 @@ import { SchedulerTaskModule } from '../scheduler-task/scheduler-task.module';
         name: 'PUSH_SERVER',
         transport: Transport.TCP,
         options: {
-          port: 3001,
+          host: microserviceConfig.pushServer.host,
+          port: microserviceConfig.pushServer.port,
         },
       },
     ]),

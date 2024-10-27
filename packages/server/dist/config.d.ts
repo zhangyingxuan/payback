@@ -1,11 +1,23 @@
-export declare const microserviceConfig: {
-    env: {
-        pushServerUrl: string;
-        newsServerUrl: string;
+export declare const microserviceConfigs: {
+    dev: {
+        pushServer: {
+            host: string;
+            port: number;
+        };
     };
     prod: {
-        pushServerUrl: string;
-        newsServerUrl: string;
+        pushServer: {
+            host: string;
+            port: number;
+        };
     };
 };
-export declare const config: any;
+interface ServerConfig {
+    host: string;
+    port: number;
+}
+interface MicroserviceConfig {
+    pushServer: ServerConfig;
+}
+export declare const microserviceConfig: MicroserviceConfig;
+export {};
