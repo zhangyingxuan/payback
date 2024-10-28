@@ -24,7 +24,7 @@ let AppModule = class AppModule {
     async onModuleInit() {
         await this.consulService.register({
             name: 'PUSH_SERVER',
-            address: '127.0.0.1',
+            address: '43.154.139.108',
             port: 3001,
         });
     }
