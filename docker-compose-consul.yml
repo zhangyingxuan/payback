@@ -1,0 +1,10 @@
+version: "3"
+
+services:
+  consul:
+    image: consul:1.10.1
+    container_name: consul_dev
+    command: agent -server -node=consul_dev -bootstrap-expect=1 -bind=127.0.0.1 -client=0.0.0.0 -datacenter=dc1 -ui
+    ports:
+      - "18500:8500"
+    network_mode: bridge

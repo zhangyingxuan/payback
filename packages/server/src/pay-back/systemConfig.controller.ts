@@ -54,7 +54,7 @@ export class SystemConfigController {
     try {
       // 先判断是否存在，存在则不添加
       const doesExist = this.schedulerTaskService.doesExist('cron', newsPushSchedulerTask.taskName);
-      // 加入定时任务
+      // 加入定时任务  && process.env.NODE_ENV !== 'dev'
       if (body.isAutoPushNews) {
         !doesExist &&
           this.schedulerTaskService.executeTask(newsPushSchedulerTask.taskName, newsPushSchedulerTask.cron, () => {

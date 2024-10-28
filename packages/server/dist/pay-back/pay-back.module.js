@@ -5,6 +5,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PayBackModule = void 0;
 const common_1 = require("@nestjs/common");
@@ -37,8 +40,20 @@ const systemConfig_entity_1 = require("./entities/systemConfig.entity");
 const users_module_1 = require("../users/users.module");
 const scheduler_task_module_1 = require("../scheduler-task/scheduler-task.module");
 const config_1 = require("../config");
+const consul_module_1 = require("../consul/consul.module");
+const consul_service_1 = require("../consul/consul.service");
 console.log('microserviceConfig', config_1.microserviceConfig, process.env.NODE_ENV);
 let PayBackModule = class PayBackModule {
+    constructor(consulService) {
+        this.consulService = consulService;
+    }
+    async onModuleInit() {
+        await this.consulService.register({
+            name: 'gateway',
+            address: '127.0.0.1',
+            port: 3000,
+        });
+    }
 };
 PayBackModule = __decorate([
     (0, common_1.Module)({
@@ -54,14 +69,21 @@ PayBackModule = __decorate([
             typeorm_1.TypeOrmModule.forFeature([review_entity_1.reviewData]),
             typeorm_1.TypeOrmModule.forFeature([systemConfig_entity_1.systemConfig]),
             typeorm_1.TypeOrmModule.forFeature([latestConceptPlate_entity_1.latestConceptPlate]),
-            microservices_1.ClientsModule.register([
+            consul_module_1.ConsulModule.forRoot(),
+            microservices_1.ClientsModule.registerAsync([
                 {
                     name: 'PUSH_SERVER',
-                    transport: microservices_1.Transport.TCP,
-                    options: {
-                        host: 'localhost',
-                        port: 3001,
+                    useFactory: async (consulService) => {
+                        const { host, port } = await consulService.findService('PUSH_SERVER');
+                        return {
+                            transport: microservices_1.Transport.TCP,
+                            options: {
+                                host,
+                                port,
+                            },
+                        };
                     },
+                    inject: [consul_service_1.ConsulService],
                 },
             ]),
         ],
@@ -80,7 +102,8 @@ PayBackModule = __decorate([
             apiTest_service_1.ApiTestService,
             qyWechatNotice_service_1.QyWechatNotice,
         ],
-    })
+    }),
+    __metadata("design:paramtypes", [consul_service_1.ConsulService])
 ], PayBackModule);
 exports.PayBackModule = PayBackModule;
 //# sourceMappingURL=pay-back.module.js.map
