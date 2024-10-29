@@ -1,4 +1,4 @@
-import { Module, MiddlewareConsumer } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
@@ -10,6 +10,9 @@ import { AuthModule } from './auth/auth.module';
 import { ArticleModule } from './article/article.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
+// consul配置
+import { ConsulModule } from './consul/consul.module';
+import { ConsulService } from './consul/consul.service';
 
 const envFilePath = `.env.${process.env.NODE_ENV || 'prod'}`;
 
@@ -29,12 +32,11 @@ function atob(a) {
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
-        console.log(config.get('DDD_HOST'), config.get('DDD_NAME'), process.env.NODE_ENV);
-        const host = config.get('DDD_HOST') || '127.0.0.1';
-        const port = config.get('DDD_PORT') || 3306;
-        const username = config.get('DDD_USER') || 'root';
-        const password = atob(config.get('DDD_PD') || 'anVlZHVpYW5xdWFuOTk2');
-        const database = config.get('DDD_NAME') || 'blowsysun';
+        const host = config.get('DDD_HOST');
+        const port = config.get('DDD_PORT');
+        const username = config.get('DDD_USER');
+        const password = atob(config.get('DDD_PD'));
+        const database = config.get('DDD_NAME');
 
         return {
           type: 'mysql',
@@ -49,6 +51,8 @@ function atob(a) {
         } as TypeOrmModuleOptions;
       },
     }),
+    // microservice 微服务
+    ConsulModule.forRoot(),
     ScheduleModule.forRoot(),
     PayBackModule,
     AuthModule,
@@ -64,6 +68,17 @@ function atob(a) {
     },
   ],
 })
-export class AppModule {
-  configure(consumer: MiddlewareConsumer) { }
+export class AppModule implements OnModuleInit {
+  constructor(private readonly consulService: ConsulService, private readonly config: ConfigService) { }
+
+  async onModuleInit() {
+    const config = this.config;
+    console.log(config.get('APP_NAME'), config.get('APP_HOST'), config.get('APP_PORT'));
+
+    await this.consulService.register({
+      name: config.get('APP_NAME'),
+      address: config.get('APP_HOST'),
+      port: Number(config.get('APP_PORT') || 3000),
+    });
+  }
 }

@@ -17,25 +17,39 @@ const news_module_1 = require("./news/news.module");
 const push_module_1 = require("./push/push.module");
 const consul_module_1 = require("./consul/consul.module");
 const consul_service_1 = require("./consul/consul.service");
+const config_1 = require("@nestjs/config");
+const envFilePath = `.env.${process.env.NODE_ENV || 'prod'}`;
 let AppModule = class AppModule {
-    constructor(consulService) {
+    constructor(consulService, config) {
         this.consulService = consulService;
+        this.config = config;
     }
     async onModuleInit() {
+        const config = this.config;
+        console.log(config.get('APP_NAME'), config.get('APP_HOST'), config.get('APP_PORT'));
         await this.consulService.register({
-            name: 'PUSH_SERVER',
-            address: '43.154.139.108',
-            port: 3001,
+            name: config.get('APP_NAME'),
+            address: config.get('APP_HOST'),
+            port: Number(config.get('APP_PORT') || 3001),
         });
     }
 };
 AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [news_module_1.NewsModule, push_module_1.PushModule, consul_module_1.ConsulModule.forRoot()],
+        imports: [
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+                envFilePath,
+            }),
+            news_module_1.NewsModule,
+            push_module_1.PushModule,
+            consul_module_1.ConsulModule.forRoot(),
+        ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     }),
-    __metadata("design:paramtypes", [consul_service_1.ConsulService])
+    __metadata("design:paramtypes", [consul_service_1.ConsulService,
+        config_1.ConfigService])
 ], AppModule);
 exports.AppModule = AppModule;
 //# sourceMappingURL=app.module.js.map

@@ -1,5 +1,4 @@
-import { Module, OnModuleInit } from '@nestjs/common';
-import { ClientsModule, Transport } from '@nestjs/microservices';
+import { Module } from '@nestjs/common';
 // service
 import { ShorTermService } from './service/shortTerm.service';
 import { MarketService } from './service/market.service';
@@ -31,12 +30,6 @@ import { systemConfig } from './entities/systemConfig.entity';
 // module
 import { UsersModule } from '../users/users.module';
 import { SchedulerTaskModule } from '../scheduler-task/scheduler-task.module';
-import { microserviceConfig } from '@/config';
-// consul配置
-import { ConsulModule } from '../consul/consul.module';
-import { ConsulService } from '../consul/consul.service';
-
-console.log('microserviceConfig', microserviceConfig, process.env.NODE_ENV);
 
 @Module({
   imports: [
@@ -51,36 +44,6 @@ console.log('microserviceConfig', microserviceConfig, process.env.NODE_ENV);
     TypeOrmModule.forFeature([reviewData]),
     TypeOrmModule.forFeature([systemConfig]),
     TypeOrmModule.forFeature([latestConceptPlate]),
-    // microservice 微服务
-    // ClientsModule.register([
-    //   {
-    //     name: 'PUSH_SERVER',
-    //     transport: Transport.TCP,
-    //     options: {
-    //       // host: '43.154.139.108',
-    //       host: 'localhost',
-    //       // host: microserviceConfig.pushServer.host,
-    //       port: 3001,
-    //     },
-    //   },
-    // ]),
-    ConsulModule.forRoot(),
-    ClientsModule.registerAsync([
-      {
-        name: 'PUSH_SERVER',
-        useFactory: async (consulService: ConsulService) => {
-          const { host, port } = await consulService.findService('PUSH_SERVER');
-          return {
-            transport: Transport.TCP,
-            options: {
-              host,
-              port,
-            },
-          };
-        },
-        inject: [ConsulService],
-      },
-    ]),
   ],
   controllers: [PayBackController, ThsTradeController, SystemConfigController],
   providers: [
@@ -98,14 +61,4 @@ console.log('microserviceConfig', microserviceConfig, process.env.NODE_ENV);
     QyWechatNotice,
   ],
 })
-export class PayBackModule implements OnModuleInit {
-  constructor(private readonly consulService: ConsulService) { }
-
-  async onModuleInit() {
-    await this.consulService.register({
-      name: 'gateway',
-      address: '127.0.0.1',
-      port: 3000,
-    });
-  }
-}
+export class PayBackModule { }

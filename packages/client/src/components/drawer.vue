@@ -11,7 +11,7 @@
       1. 9点前，外围美股昨日涨跌情况 <a href="https://stock.10jqka.com.cn/zaopan/" target="_blank">早盘必读</a>  <a href="http://stock.10jqka.com.cn/fincalendar.shtml" target="_blank">投资日历</a>  <a href="http://stock.10jqka.com.cn/jyts_list/" target="_blank">交易提醒</a> <a href="http://stock.10jqka.com.cn/bktt_list/" target="_blank">四大证券文章精华</a> 
       2. 大盘趋势，保本？进攻？全天策略基调，注意变盘
       3. 看集合竞价
-          2.1 9.20-9.25，<span style="color: red">一字板方向</span>，为资金追随方向，对应 <span style="color: red">板块分支</span>加关注
+          2.1 9.20-9.25，<span style="color: red">一字板方向</span>与前日对比封单多少变化，为资金追随方向，对应 <span style="color: red">板块分支</span>加关注
           2.2 9.24 - 9.25一分钟看匹配量，可暴露主力意图（看价格走势，判断出货还是抢筹）
           2.3 9.25之后，开盘比对昨日功课中，预期差；<span style="color: red">去弱留强</span>，直接删除低开2个点以上的自选股，快速反应！！！
       4. 选股：留意超预期，筹码，位置，价格，公告业绩，大单；临盘自选低位强势首板，或大资金加持小票

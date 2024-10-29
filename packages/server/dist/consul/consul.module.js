@@ -11,14 +11,17 @@ exports.ConsulModule = void 0;
 const common_1 = require("@nestjs/common");
 const consul_service_1 = require("./consul.service");
 const Consul = require("consul");
+const config_1 = require("@nestjs/config");
+const microservices_1 = require("@nestjs/microservices");
 let ConsulModule = ConsulModule_1 = class ConsulModule {
     static forRoot() {
         const provider = {
             provide: 'CONSUL',
-            useFactory: () => {
+            inject: [config_1.ConfigService],
+            useFactory: (config) => {
                 return new Consul({
-                    host: '43.154.139.108',
-                    port: '18500',
+                    host: config.get('CONSUL_HOST'),
+                    port: config.get('CONSUL_PORT'),
                     promisify: true,
                 });
             },
@@ -26,13 +29,34 @@ let ConsulModule = ConsulModule_1 = class ConsulModule {
         return {
             module: ConsulModule_1,
             providers: [provider, consul_service_1.ConsulService],
-            exports: [provider, consul_service_1.ConsulService],
+            exports: [provider, consul_service_1.ConsulService, microservices_1.ClientsModule],
         };
     }
 };
 ConsulModule = ConsulModule_1 = __decorate([
     (0, common_1.Global)(),
-    (0, common_1.Module)({})
+    (0, common_1.Module)({
+        imports: [
+            microservices_1.ClientsModule.registerAsync([
+                {
+                    name: 'PUSH_SERVER',
+                    useFactory: async (consulService) => {
+                        const serverName = 'payBack_pushServer_' + process.env.NODE_ENV || 'prod';
+                        const { host, port } = await consulService.findService(serverName);
+                        console.log(serverName, host, port);
+                        return {
+                            transport: microservices_1.Transport.TCP,
+                            options: {
+                                host,
+                                port,
+                            },
+                        };
+                    },
+                    inject: [consul_service_1.ConsulService],
+                },
+            ]),
+        ],
+    })
 ], ConsulModule);
 exports.ConsulModule = ConsulModule;
 //# sourceMappingURL=consul.module.js.map

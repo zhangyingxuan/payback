@@ -1,14 +1,17 @@
 import { ConsulService } from './consul.service';
+import { ConfigService } from '@nestjs/config';
 export declare class ConsulModule {
     static forRoot(): {
         module: typeof ConsulModule;
-        providers: (typeof ConsulService | {
+        providers: ({
             provide: string;
-            useFactory: () => any;
-        })[];
-        exports: (typeof ConsulService | {
+            inject: (typeof ConfigService)[];
+            useFactory: (config: ConfigService) => any;
+        } | typeof ConsulService)[];
+        exports: ({
             provide: string;
-            useFactory: () => any;
-        })[];
+            inject: (typeof ConfigService)[];
+            useFactory: (config: ConfigService) => any;
+        } | typeof ConsulService)[];
     };
 }

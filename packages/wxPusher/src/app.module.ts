@@ -1,4 +1,4 @@
-import { Module, MiddlewareConsumer } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { getRobotInstance } from './utils/ding-dong-bot';
@@ -7,6 +7,4 @@ import { getRobotInstance } from './utils/ding-dong-bot';
   controllers: [AppController],
   providers: [AppService, { provide: 'BotInstance', useValue: getRobotInstance() }],
 })
-export class AppModule {
-  configure(consumer: MiddlewareConsumer) {}
-}
+export class AppModule { }

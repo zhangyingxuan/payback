@@ -18,6 +18,11 @@ export class ConsulService {
     return await this.consul.agent.service.maintenance(options);
   }
 
+  /**
+   * 查找微服务
+   * @param serviceName
+   * @returns
+   */
   async findService(serviceName: string): Promise<{ host: string; port: number }> {
     const services = await this.consul.catalog.service.nodes<ConsulServiceNode[]>(serviceName);
     if (!services.length) {
