@@ -12,7 +12,6 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         name: 'PUSH_SERVER',
         useFactory: async (consulService: ConsulService) => {
           const serverName = 'payBack_pushServer_' + process.env.NODE_ENV || 'prod';
-
           const { host, port } = await consulService.findService(serverName);
           console.log(serverName, host, port);
           return {
