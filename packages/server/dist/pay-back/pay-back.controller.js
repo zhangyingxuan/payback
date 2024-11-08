@@ -245,6 +245,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
     }
     async fetchLatestNews(query) {
         const latestTime = query.latestTime || new Date().getTime();
+        this.logger.debug('获取最新新闻fetchLatestNews');
         return await this.pushServer.send('fetchLatestNews', latestTime);
     }
     async saveUserInfo(body, req) {
