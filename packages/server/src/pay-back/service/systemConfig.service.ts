@@ -13,7 +13,7 @@ export class SystemConfigService {
     return await this.sysTemconfigServiceRp.find();
   }
   /**
-   * 查找最新的一条
+   * 更新配置
    * @returns
    */
   async updateSystemConfig(systemConfigDto) {
