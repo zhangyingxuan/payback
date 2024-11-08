@@ -1,4 +1,4 @@
-import { CreatePlateDataDto } from './create-plate-data.dto';
+import { CreatePlateDataDto } from '../dto/create-plate-data.dto';
 import { fetchIwencaiApi } from '../core/fetchUtil';
 import { params } from '../core/config';
 import commonUtil from './commonUtil';
