@@ -1,4 +1,4 @@
-import { CreatePlateDataDto } from './create-plate-data.dto';
+import { CreatePlateDataDto } from '../dto/create-plate-data.dto';
 declare const _default: {
     getPlateData(dateStr: any): Promise<CreatePlateDataDto>;
 };
