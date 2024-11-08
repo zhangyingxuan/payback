@@ -4,4 +4,4 @@ exports.CreatePlateDataDto = void 0;
 class CreatePlateDataDto {
 }
 exports.CreatePlateDataDto = CreatePlateDataDto;
-//# sourceMappingURL=create-Plate-data.dto.js.map
+//# sourceMappingURL=create-plate-data.dto.js.map

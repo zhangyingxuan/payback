@@ -202,7 +202,7 @@ const fetchTodayData = debounce(async () => {
     ElMessage.success('更新成功！');
     location.reload();
   } catch (e: any) {
-    console.log(e);
+    console.error(e);
     ElMessage.success('更新失败！');
   } finally {
     loadingMessage.close();

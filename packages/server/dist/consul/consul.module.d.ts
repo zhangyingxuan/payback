@@ -9,7 +9,7 @@ export declare class ConsulModule {
             inject: (typeof ConfigService)[];
             useFactory: (config: ConfigService) => any;
         })[];
-        exports: (typeof ClientsModule | typeof ConsulService | {
+        exports: (typeof ConsulService | typeof ClientsModule | {
             provide: string;
             inject: (typeof ConfigService)[];
             useFactory: (config: ConfigService) => any;

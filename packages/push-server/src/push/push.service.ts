@@ -68,10 +68,10 @@ export class PushService {
    * @param baseUrl
    * @returns
    */
-  prepareMsgContent(msgContent) {
-    msgContent = msgContent.replace(/跌/g, `<font color=\"green\">跌</font>`);
-    msgContent = msgContent.replace(/涨/g, `<font color=\"red\">涨</font>`);
-    return msgContent;
+  prepareMsgWord(newsTitle) {
+    newsTitle = newsTitle.replace('涨', '<font color="#ff0000">涨</font>');
+    newsTitle = newsTitle.replace('跌', '<font color="#2db688">跌</font>');
+    return newsTitle;
   }
   /**
    * 新闻通知
@@ -86,14 +86,16 @@ export class PushService {
     newsUrl,
     news?: any,
   ) {
-    const todayDateStr = new Date();
     const content = [];
+
     content.push(`**【${news?.tag}】**`);
     content.push(
-      ` [<font color=\"#3858e6\">**${newsTitle}**</font>](${newsUrl})`,
+      ` [<font color=\"#3858e6\">**${this.prepareMsgWord(
+        newsTitle,
+      )}**</font>](${newsUrl})`,
     );
     content.push(
-      ` <font color=\"comment\">${dayjs(todayDateStr).format(
+      ` <font color=\"comment\">${dayjs(new Date(+news.ctime * 1000)).format(
         'HH:mm:ss',
       )}</font>\n`,
     );

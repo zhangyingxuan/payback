@@ -150,6 +150,7 @@ const data: {
   stockGroupByGainian: [],
   refreshTime: '',
   refreshLoading: false,
+  initLoading: true,
 });
 
 const stockTypeOptions: any = [
@@ -191,9 +192,9 @@ watch(
 async function refreshPage() {
   data.refreshLoading = true;
   try {
-    await initPage();
+    initPage();
   } catch (e) {
-    console.log(e);
+    console.error(e);
   } finally {
     data.refreshLoading = false;
   }

@@ -9,7 +9,7 @@ const newsPushSchedulerTask = {
   taskName: 'autoCrawlNewsTask',
   service: 'pushServer',
   func: 'fetchNewsTask',
-  cron: '*/10 * 7-23 * * *',
+  cron: '*/5 * 7-23 * * *',
 };
 
 // 定时任务列表

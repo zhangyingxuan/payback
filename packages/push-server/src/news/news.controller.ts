@@ -1,5 +1,5 @@
 import { Controller } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
+import { MessagePattern, EventPattern, Payload } from '@nestjs/microservices';
 import { Logger } from '@nestjs/common';
 import { NewsService } from './news.service';
 import { PushService } from '../push/push.service';
@@ -12,10 +12,10 @@ export class NewsController {
   ) { }
   private readonly logger = new Logger(NewsController.name);
 
-  @MessagePattern('fetchNewsTask')
+  @EventPattern('fetchNewsTask')
   async fetchNewsTask() {
-    const newsArr: Array<any> = await this.newsService.fetchNews();
-    newsArr.forEach((news) => {
+    const newsList: any = await this.newsService.fetchNewsTask();
+    newsList.forEach((news) => {
       try {
         // 推送消息
         this.pushService.noticeNews(news.title, news.digest, news.url, news);
@@ -25,5 +25,14 @@ export class NewsController {
         this.newsService.reductionLatestTime();
       }
     });
+  }
+
+  @MessagePattern('fetchLatestNews')
+  async fetchLatestNews(@Payload() payload: any) {
+    const newsData: any = await this.newsService.fetchLatestNews(payload);
+    return {
+      code: 0,
+      data: newsData,
+    };
   }
 }

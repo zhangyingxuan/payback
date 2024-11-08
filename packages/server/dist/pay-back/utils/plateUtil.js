@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const create_Plate_data_dto_1 = require("../dto/create-Plate-data.dto");
+const create_plate_data_dto_1 = require("../dto/create-plate-data.dto");
 const fetchUtil_1 = require("../core/fetchUtil");
 const config_1 = require("../core/config");
 const commonUtil_1 = require("./commonUtil");
@@ -17,7 +17,7 @@ function getPlateTop(platesData, dateStr, len = 5) {
 }
 exports.default = {
     async getPlateData(dateStr) {
-        const createPlateDataDto = new create_Plate_data_dto_1.CreatePlateDataDto();
+        const createPlateDataDto = new create_plate_data_dto_1.CreatePlateDataDto();
         const gainianDailyLimit = (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.gainianPlateOrderByDailyLimitNum + commonUtil_1.default.ignoreGainianPlateStr);
         const hangyeDailyLimit = (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.hangyePlateOrderByDailyLimitNum);
         const [gainianDailyLimitData, hangyeDailyLimitData] = await Promise.all([gainianDailyLimit, hangyeDailyLimit]);

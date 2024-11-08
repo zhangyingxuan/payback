@@ -54,11 +54,11 @@ export class SystemConfigController {
     try {
       // 先判断是否存在，存在则不添加
       const doesExist = this.schedulerTaskService.doesExist('cron', newsPushSchedulerTask.taskName);
-      // 加入定时任务 && process.env.NODE_ENV !== 'dev';
-      if (body.isAutoPushNews) {
+      // 加入定时任务
+      if (body.isAutoPushNews && process.env.NODE_ENV !== 'dev') {
         !doesExist &&
           this.schedulerTaskService.executeTask(newsPushSchedulerTask.taskName, newsPushSchedulerTask.cron, () => {
-            console.log('执行定时任务 - ', newsPushSchedulerTask.service, newsPushSchedulerTask.func);
+            this.logger.debug('执行定时任务 fetchNewsTask');
             // this[newsPushSchedulerTask.service][newsPushSchedulerTask.func]();
             this[newsPushSchedulerTask.service].emit(newsPushSchedulerTask.func, {});
           });

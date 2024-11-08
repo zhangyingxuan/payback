@@ -213,7 +213,7 @@ async function initPage(pageSize = 15) {
       });
     }, 0);
   } catch (e) {
-    // console.log(e);
+    console.error(e);
   }
 }
 

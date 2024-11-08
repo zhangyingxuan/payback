@@ -64,4 +64,7 @@ declare module '@vue/runtime-core' {
     StockTooltip: typeof import('./src/components/stockTooltip.vue')['default']
     Tags: typeof import('./src/components/tags.vue')['default']
   }
+  export interface ComponentCustomProperties {
+    vLoading: typeof import('element-plus/es')['ElLoadingDirective']
+  }
 }

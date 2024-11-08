@@ -18,6 +18,7 @@
     "build": "lerna run build",
     "publish:beta": "lerna publish --force-publish --dist-tag=beta --skip-git",
     "publish:latest": "lerna publish --force-publish --skip-git",
+    "start:pushServer": "cd packages/push-server && pnpm start",
     "start:wxPusher": "cd packages/wxPusher && pnpm start",
     "start:server": "cd packages/server && pnpm start",
     "start:client": "cd packages/client && pnpm start",

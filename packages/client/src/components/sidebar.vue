@@ -82,7 +82,13 @@ const items: any = [
   {
     icon: 'Promotion',
     index: '/stockGroupByGainian',
-    title: '概念分组',
+    title: '最强风口',
+    permiss: '1',
+  },
+  {
+    icon: 'Notification',
+    index: '/latestNews',
+    title: '今日资讯',
     permiss: '1',
   },
   {

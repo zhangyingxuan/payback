@@ -293,7 +293,7 @@ function transformForeignFunds(dataStr) {
         });
     }
     catch (e) {
-        console.log('[error]transformForeignFunds数据转换错误！');
+        console.error('[error]transformForeignFunds数据转换错误！');
     }
     return {
         northFundsAmtIn,
@@ -321,7 +321,7 @@ function transformForeignFundsNew(dataStr) {
         }
     }
     catch (e) {
-        console.log('[error]transformForeignFunds数据转换错误！');
+        console.error('[error]transformForeignFunds数据转换错误！');
     }
     return {
         northFundsAmtIn,

@@ -28,8 +28,6 @@ const limiter = rateLimit({
 });
 
 async function bootstrap() {
-  console.log(process.env.NODE_ENV);
-  // const app = await NestFactory.create(AppModule, { cors: true });
   const app: NestExpressApplication = await NestFactory.create<NestExpressApplication>(AppModule);
 
   // 通过依赖注入获取控制器实例

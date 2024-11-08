@@ -23,7 +23,6 @@ const limiter = (0, express_rate_limit_1.rateLimit)({
     },
 });
 async function bootstrap() {
-    console.log(process.env.NODE_ENV);
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     const payBackController = app.get(pay_back_controller_1.PayBackController);
     payBackController.initSchedulerTask();

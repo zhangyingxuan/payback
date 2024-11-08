@@ -470,7 +470,7 @@ export function transformForeignFunds(dataStr) {
       }
     });
   } catch (e) {
-    console.log('[error]transformForeignFunds数据转换错误！');
+    console.error('[error]transformForeignFunds数据转换错误！');
   }
 
   return {
@@ -508,7 +508,7 @@ export function transformForeignFundsNew(dataStr) {
       southFundsBuyAmt = data.sh2hk.netBuyAmt + data.sz2hk.netBuyAmt;
     }
   } catch (e) {
-    console.log('[error]transformForeignFunds数据转换错误！');
+    console.error('[error]transformForeignFunds数据转换错误！');
   }
 
   return {

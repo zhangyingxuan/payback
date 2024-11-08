@@ -8,6 +8,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 var NewsController_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NewsController = void 0;
@@ -23,8 +26,8 @@ let NewsController = NewsController_1 = class NewsController {
         this.logger = new common_2.Logger(NewsController_1.name);
     }
     async fetchNewsTask() {
-        const newsArr = await this.newsService.fetchNews();
-        newsArr.forEach((news) => {
+        const newsList = await this.newsService.fetchNewsTask();
+        newsList.forEach((news) => {
             try {
                 this.pushService.noticeNews(news.title, news.digest, news.url, news);
             }
@@ -34,13 +37,27 @@ let NewsController = NewsController_1 = class NewsController {
             }
         });
     }
+    async fetchLatestNews(payload) {
+        const newsData = await this.newsService.fetchLatestNews(payload);
+        return {
+            code: 0,
+            data: newsData,
+        };
+    }
 };
 __decorate([
-    (0, microservices_1.MessagePattern)('fetchNewsTask'),
+    (0, microservices_1.EventPattern)('fetchNewsTask'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], NewsController.prototype, "fetchNewsTask", null);
+__decorate([
+    (0, microservices_1.MessagePattern)('fetchLatestNews'),
+    __param(0, (0, microservices_1.Payload)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], NewsController.prototype, "fetchLatestNews", null);
 NewsController = NewsController_1 = __decorate([
     (0, common_1.Controller)('news'),
     __metadata("design:paramtypes", [news_service_1.NewsService,

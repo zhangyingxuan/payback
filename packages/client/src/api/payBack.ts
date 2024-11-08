@@ -111,16 +111,23 @@ export const findConceptPlateByLimit = (params: any | null) => {
 }
 
 /**
- * 删除数据
+ * 删除 数据库数据 - 用于无用数据清理（节假日）
  * @returns 
  */
 export const deleteData = (data: any | null) => {
   return http.request<Array<any>>("post", `${baseUrl}/deleteData`, { data });
 }
 /**
- * 删除数据
+ * 保存用户信息
  * @returns 
  */
 export const saveUserInfo = (data: any | null) => {
   return http.request<Array<any>>("post", `${baseUrl}/saveUserInfo`, { data });
+}
+/**
+ * 获取最新 新闻消息 - 同花顺重要消息
+ * @returns 
+ */
+export const fetchLatestNews = (params: any | null) => {
+  return http.request<any>("get", `${baseUrl}/fetchLatestNews`, { params });
 }

@@ -10,6 +10,7 @@ import { ReviewService } from './service/review.service';
 import { ThsService } from './service/ths.service';
 import { ApiTestService } from './service/apiTest.service';
 import { SchedulerTaskService } from '@/scheduler-task/scheduler-task.service';
+import { ConsulService } from '@/consul/consul.service';
 import { Public } from '../decorator/public.decorator';
 // import { Cron } from '@nestjs/schedule';
 import { UsersService } from '../users/users.service';
@@ -42,6 +43,7 @@ export class PayBackController {
     private readonly schedulerTaskService: SchedulerTaskService,
     private readonly qyWechatNotice: QyWechatNotice,
     private readonly systemConfigService: SystemConfigService,
+    private readonly consulService: ConsulService,
     @Inject('PUSH_SERVER') private pushServer: ClientProxy,
   ) { }
 
@@ -61,8 +63,8 @@ export class PayBackController {
     //   '又招了两个新人，都是类似应届毕业生又招了两个新人，都是类似应届毕业生',
     // );
     // this.qyWechatNotice.noticeNews(
-    //   '又招了两个新人，都是类似应届毕业生',
-    //   '又招了两个新人，都是类似应届毕业生又招了两个新人，都是类似应届毕业生',
+    //   '【港股,异动】 港股上海电气尾盘跌幅扩大至25% ',
+    //   '【港股,异动】 港股上海电气尾盘涨幅扩大至25% ',
     //   'news.url',
     //   {
     //     tag: '港股,A股',
@@ -85,8 +87,11 @@ export class PayBackController {
     //     ],
     //   },
     // );
-    this.pushServer.emit('fetchNewsTask', {});
+    // this.pushServer.emit('fetchNewsTask', {});
+    // console.log('query', query.id);
+    // this.consulService.deregister(query.id);
     // return 'testApi';
+    // return await this.pushServer.send('fetchLatestNews', '');
   }
 
   // @Cron('0 */5 9-12 * * 1-5')
@@ -304,6 +309,11 @@ export class PayBackController {
     };
   }
 
+  /**
+   * 查找N天内 最新概念板块
+   * @param query
+   * @returns
+   */
   @Get('findConceptPlateWithinNDays')
   async findConceptPlateWithinNDays(@Query() query) {
     const nDays = +(query.nDays || 15);
@@ -313,10 +323,15 @@ export class PayBackController {
       data: palateData,
     };
   }
+  /**
+   * 分页查找 最新概念板块
+   * @param query
+   * @returns
+   */
   @Get('findConceptPlateByLimit')
   async findConceptPlateByLimit(@Query() query) {
-    const nDays = +(query.nDays || 15);
-    const palateData = await this.latestConceptPlateService.findByLimit(nDays);
+    const limit = +(query.limit || 15);
+    const palateData = await this.latestConceptPlateService.findByLimit(limit);
     return {
       code: 0,
       data: palateData,
@@ -339,6 +354,12 @@ export class PayBackController {
       code: 0,
       data: palateData,
     };
+  }
+
+  @Get('fetchLatestNews')
+  async fetchLatestNews(@Query() query) {
+    const latestTime = query.latestTime || new Date().getTime();
+    return await this.pushServer.send('fetchLatestNews', latestTime);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -380,6 +401,7 @@ export class PayBackController {
       this.logger.debug('新闻推送定时任务执行了：' + newsPushSchedulerTask.cron);
       this.schedulerTaskService.executeTask(newsPushSchedulerTask.taskName, newsPushSchedulerTask.cron, () => {
         // this[newsPushSchedulerTask.service][newsPushSchedulerTask.func]();
+        this.logger.debug('执行定时任务 fetchNewsTask');
         this[newsPushSchedulerTask.service].emit(newsPushSchedulerTask.func, {});
       });
     }

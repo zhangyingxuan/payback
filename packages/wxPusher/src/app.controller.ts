@@ -8,7 +8,6 @@ import { getRobotInstance } from './utils/ding-dong-bot';
 export class AppController {
   constructor(private readonly appService: AppService, @Inject('BotInstance') private readonly botInstance: Wechaty) { }
 
-  // 获取竞价数据
   @Public()
   @Get('/pushMessage')
   // async pushMessage(@Body() body: CrawlTodayDataDto) {

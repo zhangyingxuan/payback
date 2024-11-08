@@ -46,10 +46,10 @@ let SystemConfigController = SystemConfigController_1 = class SystemConfigContro
     async toggleNewsPushEnable(body) {
         try {
             const doesExist = this.schedulerTaskService.doesExist('cron', config_1.newsPushSchedulerTask.taskName);
-            if (body.isAutoPushNews) {
+            if (body.isAutoPushNews && process.env.NODE_ENV !== 'dev') {
                 !doesExist &&
                     this.schedulerTaskService.executeTask(config_1.newsPushSchedulerTask.taskName, config_1.newsPushSchedulerTask.cron, () => {
-                        console.log('执行定时任务 - ', config_1.newsPushSchedulerTask.service, config_1.newsPushSchedulerTask.func);
+                        this.logger.debug('执行定时任务 fetchNewsTask');
                         this[config_1.newsPushSchedulerTask.service].emit(config_1.newsPushSchedulerTask.func, {});
                     });
             }

@@ -22,7 +22,7 @@ export function initAegis(app: App, permiss: any) {
   });
   // vue错误上报
   app.config.errorHandler = function (err: any, vm: any, info: any) {
-    console.log(`Error: ${err.toString()}\nInfo: ${info}`);
+    console.error(`Error: ${err.toString()}\nInfo: ${info}`);
     aegis.error(`Error: ${err.toString()}\nInfo: ${info}`);
   };
   // 注入全局变量

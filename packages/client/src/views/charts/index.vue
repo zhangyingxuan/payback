@@ -140,7 +140,7 @@ const updateTodayData = debounce(async (fetchTodayDataType = 0, index) => {
         break;
     }
   } catch (e: any) {
-    console.log(e);
+    console.error(e);
     ElMessage.success('更新失败！');
   } finally {
     loadingMessage && loadingMessage.close();

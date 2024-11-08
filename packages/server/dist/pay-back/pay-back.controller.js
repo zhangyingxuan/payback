@@ -26,6 +26,7 @@ const review_service_1 = require("./service/review.service");
 const ths_service_1 = require("./service/ths.service");
 const apiTest_service_1 = require("./service/apiTest.service");
 const scheduler_task_service_1 = require("../scheduler-task/scheduler-task.service");
+const consul_service_1 = require("../consul/consul.service");
 const public_decorator_1 = require("../decorator/public.decorator");
 const users_service_1 = require("../users/users.service");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
@@ -37,7 +38,7 @@ const microservices_1 = require("@nestjs/microservices");
 class CrawlTodayDataDto {
 }
 let PayBackController = PayBackController_1 = class PayBackController {
-    constructor(shorTermService, specialStockService, fundsService, hotListService, reviewService, thsService, apiTestService, latestConceptPlateService, usersService, marketService, plateService, schedulerTaskService, qyWechatNotice, systemConfigService, pushServer) {
+    constructor(shorTermService, specialStockService, fundsService, hotListService, reviewService, thsService, apiTestService, latestConceptPlateService, usersService, marketService, plateService, schedulerTaskService, qyWechatNotice, systemConfigService, consulService, pushServer) {
         this.shorTermService = shorTermService;
         this.specialStockService = specialStockService;
         this.fundsService = fundsService;
@@ -52,11 +53,11 @@ let PayBackController = PayBackController_1 = class PayBackController {
         this.schedulerTaskService = schedulerTaskService;
         this.qyWechatNotice = qyWechatNotice;
         this.systemConfigService = systemConfigService;
+        this.consulService = consulService;
         this.pushServer = pushServer;
         this.logger = new common_1.Logger(PayBackController_1.name);
     }
     async testApi(query) {
-        this.pushServer.emit('fetchNewsTask', {});
     }
     async autoCrawlTodayDataAM() {
         this.logger.debug('[必入]定时任务执行了！0 */5 9-12 * * 1-5');
@@ -219,8 +220,8 @@ let PayBackController = PayBackController_1 = class PayBackController {
         };
     }
     async findConceptPlateByLimit(query) {
-        const nDays = +(query.nDays || 15);
-        const palateData = await this.latestConceptPlateService.findByLimit(nDays);
+        const limit = +(query.limit || 15);
+        const palateData = await this.latestConceptPlateService.findByLimit(limit);
         return {
             code: 0,
             data: palateData,
@@ -241,6 +242,10 @@ let PayBackController = PayBackController_1 = class PayBackController {
             code: 0,
             data: palateData,
         };
+    }
+    async fetchLatestNews(query) {
+        const latestTime = query.latestTime || new Date().getTime();
+        return await this.pushServer.send('fetchLatestNews', latestTime);
     }
     async saveUserInfo(body, req) {
         var _a;
@@ -272,6 +277,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
         if (isAutoPushNews && process.env.NODE_ENV !== 'dev') {
             this.logger.debug('新闻推送定时任务执行了：' + config_1.newsPushSchedulerTask.cron);
             this.schedulerTaskService.executeTask(config_1.newsPushSchedulerTask.taskName, config_1.newsPushSchedulerTask.cron, () => {
+                this.logger.debug('执行定时任务 fetchNewsTask');
                 this[config_1.newsPushSchedulerTask.service].emit(config_1.newsPushSchedulerTask.func, {});
             });
         }
@@ -392,6 +398,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "fetchPlateOrderByDailyLimit", null);
 __decorate([
+    (0, common_1.Get)('fetchLatestNews'),
+    __param(0, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], PayBackController.prototype, "fetchLatestNews", null);
+__decorate([
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     (0, common_1.Post)('saveUserInfo'),
     __param(0, (0, common_1.Body)()),
@@ -408,7 +421,7 @@ __decorate([
 ], PayBackController.prototype, "initSchedulerTask", null);
 PayBackController = PayBackController_1 = __decorate([
     (0, common_1.Controller)('pay-back'),
-    __param(14, (0, common_1.Inject)('PUSH_SERVER')),
+    __param(15, (0, common_1.Inject)('PUSH_SERVER')),
     __metadata("design:paramtypes", [shortTerm_service_1.ShorTermService,
         specialStock_service_1.SpecialStockService,
         funds_service_1.FundsService,
@@ -423,6 +436,7 @@ PayBackController = PayBackController_1 = __decorate([
         scheduler_task_service_1.SchedulerTaskService,
         qyWechatNotice_service_1.QyWechatNotice,
         systemConfig_service_1.SystemConfigService,
+        consul_service_1.ConsulService,
         microservices_1.ClientProxy])
 ], PayBackController);
 exports.PayBackController = PayBackController;

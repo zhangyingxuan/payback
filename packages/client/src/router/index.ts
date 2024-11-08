@@ -67,6 +67,15 @@ const routes: RouteRecordRaw[] = [
         component: () => import(/* webpackChunkName: "latestConceptPlate" */ '../views/latestConceptPlate/index.vue'),
       },
       {
+        path: '/latestNews',
+        name: 'latestNews',
+        meta: {
+          title: '最新资讯',
+          permiss: '11',
+        },
+        component: () => import(/* webpackChunkName: "latestNews" */ '../views/news/index.vue'),
+      },
+      {
         path: '/systemConfig',
         name: 'systemConfig',
         meta: {
@@ -82,7 +91,7 @@ const routes: RouteRecordRaw[] = [
           title: '概念分组',
           permiss: '11',
         },
-        component: () => import(/* webpackChunkName: "systemConfig" */ '../views/shortTerm/stockGroupByGainian.vue'),
+        component: () => import(/* webpackChunkName: "stockGroupByGainian" */ '../views/shortTerm/stockGroupByGainian.vue'),
       },
       {
         path: '/form',

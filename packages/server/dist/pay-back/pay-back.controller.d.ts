@@ -9,6 +9,7 @@ import { ReviewService } from './service/review.service';
 import { ThsService } from './service/ths.service';
 import { ApiTestService } from './service/apiTest.service';
 import { SchedulerTaskService } from '@/scheduler-task/scheduler-task.service';
+import { ConsulService } from '@/consul/consul.service';
 import { UsersService } from '../users/users.service';
 import { QyWechatNotice } from './service/qyWechatNotice.service';
 import { SystemConfigService } from './service/systemConfig.service';
@@ -32,8 +33,9 @@ export declare class PayBackController {
     private readonly schedulerTaskService;
     private readonly qyWechatNotice;
     private readonly systemConfigService;
+    private readonly consulService;
     private pushServer;
-    constructor(shorTermService: ShorTermService, specialStockService: SpecialStockService, fundsService: FundsService, hotListService: HotListService, reviewService: ReviewService, thsService: ThsService, apiTestService: ApiTestService, latestConceptPlateService: LatestConceptPlateService, usersService: UsersService, marketService: MarketService, plateService: PlateService, schedulerTaskService: SchedulerTaskService, qyWechatNotice: QyWechatNotice, systemConfigService: SystemConfigService, pushServer: ClientProxy);
+    constructor(shorTermService: ShorTermService, specialStockService: SpecialStockService, fundsService: FundsService, hotListService: HotListService, reviewService: ReviewService, thsService: ThsService, apiTestService: ApiTestService, latestConceptPlateService: LatestConceptPlateService, usersService: UsersService, marketService: MarketService, plateService: PlateService, schedulerTaskService: SchedulerTaskService, qyWechatNotice: QyWechatNotice, systemConfigService: SystemConfigService, consulService: ConsulService, pushServer: ClientProxy);
     private readonly logger;
     testApi(query: any): Promise<void>;
     autoCrawlTodayDataAM(): Promise<void>;
@@ -61,7 +63,7 @@ export declare class PayBackController {
     crawlShortTermByDate(query: any): Promise<import("./dto/create-pay-back.dto").CreatePayBackDto>;
     crawlPlateData(): Promise<{
         code: number;
-        data: import("./dto/create-Plate-data.dto").CreatePlateDataDto;
+        data: import("./dto/create-plate-data.dto").CreatePlateDataDto;
     }>;
     findByLimit(query: any): Promise<{
         code: number;
@@ -99,6 +101,7 @@ export declare class PayBackController {
         code: number;
         data: import("./entities/plateData.entity").plateData[];
     }>;
+    fetchLatestNews(query: any): Promise<import("rxjs").Observable<any>>;
     saveUserInfo(body: any, req: any): Promise<{
         code: number;
     }>;
