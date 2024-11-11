@@ -42,8 +42,8 @@ dependencies:
     specifier: ^4.17.21
     version: 4.17.21
   pay-back-core:
-    specifier: ^0.0.15
-    version: 0.0.15
+    specifier: ^0.0.16
+    version: 0.0.16
   pinia:
     specifier: ^2.0.20
     version: 2.0.28(typescript@4.9.4)(vue@3.2.45)
@@ -2459,7 +2459,7 @@ packages:
     dev: false
 
   /graceful-fs@4.2.11:
-    resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==, tarball: https://registry.npmmirror.com/graceful-fs/-/graceful-fs-4.2.11.tgz}
+    resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
     requiresBuild: true
 
   /grapheme-splitter@1.0.4:
@@ -3450,8 +3450,8 @@ packages:
     resolution: {integrity: sha512-nPdMG0Pd09HuSsr7QOKUXO2Jr9eqaDiZvDwdyIhNG5SHYujkQHYKDfGQkulBxvbDHz8oHLsTgKN86LSwYzSHAg==}
     dev: true
 
-  /pay-back-core@0.0.15:
-    resolution: {integrity: sha512-K7b2fStBbiQYyQLEKLCUQ0U3jyMbeU8AXNvCR7TqmvjsPtl2Ckz7lm0AbAc80Ido8NgSIAhcgUvBn4NRWOp4Cg==}
+  /pay-back-core@0.0.16:
+    resolution: {integrity: sha512-rY3BSlUd2NNJoNQoT/umvfviW2YYHvJ0b6/Nzfi40r2upemX+UG5hkHuxGgxoQ8wj2h8evG1h8NIecH+i37QkQ==}
     dependencies:
       dayjs: 1.11.10
     dev: false
