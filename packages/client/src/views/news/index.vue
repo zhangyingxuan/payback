@@ -246,7 +246,7 @@ initPage();
     }
 
     .news_item_time {
-      font-size: 12px;
+      font-size: 14px;
       min-width: 120px;
       color: #999;
     }

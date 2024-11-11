@@ -1,15 +1,9 @@
 // 新闻推送定时任务
-// const newsPushSchedulerTask = {
-//   taskName: 'autoCrawlNewsTask',
-//   service: 'thsService',
-//   func: 'fetchNewsTask',
-//   cron: '*/10 * 7-23 * * *',
-// };
 const newsPushSchedulerTask = {
   taskName: 'autoCrawlNewsTask',
   service: 'pushServer',
   func: 'fetchNewsTask',
-  cron: '*/10 * 7-23 * * *',
+  cron: '*/6 * 7-23 * * *',
 };
 
 // 定时任务列表
@@ -21,13 +15,13 @@ const schedulerTaskList = [
     func: 'crawlfundsData',
     cron: '0 10 16 * * 1-5',
   },
-  {
-    // 更新北向资金
-    taskName: 'autoCrawlnorthDataLateSession',
-    service: 'fundsService',
-    func: 'crawlfundsData',
-    cron: '0 10 18 * * 1-5',
-  },
+  // {
+  //   // 更新北向资金 - 北向已不出具体流入金额，暂时不启用 2024-11-11
+  //   taskName: 'autoCrawlnorthDataLateSession',
+  //   service: 'fundsService',
+  //   func: 'crawlfundsData',
+  //   cron: '0 10 18 * * 1-5',
+  // },
   {
     taskName: 'autoCrawlfundsDataMidday',
     service: 'fundsService',
@@ -37,7 +31,7 @@ const schedulerTaskList = [
   // 资金相关 === end
   // 热榜相关 === start
   {
-    // 尾盘 获取资金数据
+    // 热榜相关
     taskName: 'autoCrawlHotListData',
     service: 'hotListService',
     func: 'crawlHotListData',
@@ -89,7 +83,7 @@ const schedulerTaskList = [
     taskName: 'autoCrawlPlateDataLatePm',
     service: 'plateService',
     func: 'crawlPlateData',
-    cron: '0 15 15 * * 1-5',
+    cron: '0 40 15 * * 1-5',
   },
   // 板块数据 === end
   // 短线数据 === start
@@ -103,7 +97,7 @@ const schedulerTaskList = [
     taskName: 'autoCrawlShortTermDataLatePm',
     service: 'shorTermService',
     func: 'crawlShortTermData',
-    cron: '0 20 15 * * 1-5',
+    cron: '0 35 15 * * 1-5',
   },
   // 短线数据 === end
   // 竞价数据&新股&强势股 === start
@@ -117,7 +111,7 @@ const schedulerTaskList = [
     taskName: 'autoCrawlBinddingDataLatePm',
     service: 'specialStockService',
     func: 'crawlBinddingData',
-    cron: '00 05 15 * * 1-5',
+    cron: '00 33 15 * * 1-5',
   },
   // 竞价数据&新股&强势股 === end
 ];

@@ -115,6 +115,8 @@ function transformDailyLimitData(dailyLimitData, dailyLimitGroupByGainainData, c
 
       // 封板资金 单位 亿
       dailyLimitStockDto.closingFunds = fundsToFixed(item[`涨停封单额[${currentDate}]`]);
+      // 封板量比 - 封单量/总成交量；量化存在的时代，已经不靠谱，且仅涨停瞬间才有参考价值 2024-11-11
+      // dailyLimitStockDto.closingRatio = toFixed(item[`涨停封单量[${currentDate}]`] / item[`成交量[${currentDate}]`], 1);
       dailyLimitStockDto.reason = item[`涨停原因类别[${currentDate}]`];
       dailyLimitStockDto.turnoverRate = toFixed(item[`换手率[${currentDate}]`], 1);
 

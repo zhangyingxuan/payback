@@ -17,6 +17,8 @@ export class DailyLimitStockDto {
   turnoverType: string;
   // 封板资金
   closingFunds: number;
+  // 封板量比 - 封单量/总成交量 * 100
+  // closingRatio: number;
   // 几天几板
   evenDays: string;
   // 股价

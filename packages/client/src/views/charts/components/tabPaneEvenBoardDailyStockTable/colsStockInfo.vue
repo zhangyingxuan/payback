@@ -10,7 +10,7 @@
     <Stock v-else class="large--fixed" :name="stock.name" :code="stock.code" />
     &nbsp;[&nbsp;
 
-    <span class="orange content-large">
+    <span class="orange content-large content__gainian">
       <span
         v-show="!isGainianSwitch"
         v-html="highlightKeyWord(stock.reason, keyword, isGainianSwitch)"
@@ -20,7 +20,7 @@
         <el-tag
           size="small"
           type=""
-          style="margin: 0 2px 2px 0; padding: 0 2px"
+          style="margin: 0 2px 1px 0; padding: 0 2px; height: 14px"
           v-for="(gainian, index) in stock.gainian"
           :key="index"
         >
@@ -136,6 +136,19 @@ function calcClass(stock: any) {
   min-width: 990px;
   overflow: auto;
 
+  .content__gainian {
+    white-space: nowrap; /* 防止文本换行 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: max-width 0.5s ease; /* 平滑过渡效果 */
+  }
+  &:hover {
+    .content__gainian {
+      overflow: auto;
+      white-space: wrap;
+      text-overflow: clip;
+    }
+  }
   /deep/.stock,
   > span {
     display: inline-block;

@@ -23,7 +23,7 @@
           &nbsp;[&nbsp;
           <span class="content-large">涨停原因</span>
           <span class="lanse middle">股价</span>
-          <span class="middle">封单量</span>
+          <span class="middle">封单额</span>
           <span class="middle">换手率</span>
           <span class="zise content-middle">流通市值</span>
           <span class="large">涨停时间</span>

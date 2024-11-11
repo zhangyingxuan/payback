@@ -5,7 +5,7 @@ const newsPushSchedulerTask = {
     taskName: 'autoCrawlNewsTask',
     service: 'pushServer',
     func: 'fetchNewsTask',
-    cron: '*/10 * 7-23 * * *',
+    cron: '*/6 * 7-23 * * *',
 };
 exports.newsPushSchedulerTask = newsPushSchedulerTask;
 const schedulerTaskList = [
@@ -14,12 +14,6 @@ const schedulerTaskList = [
         service: 'fundsService',
         func: 'crawlfundsData',
         cron: '0 10 16 * * 1-5',
-    },
-    {
-        taskName: 'autoCrawlnorthDataLateSession',
-        service: 'fundsService',
-        func: 'crawlfundsData',
-        cron: '0 10 18 * * 1-5',
     },
     {
         taskName: 'autoCrawlfundsDataMidday',
@@ -73,7 +67,7 @@ const schedulerTaskList = [
         taskName: 'autoCrawlPlateDataLatePm',
         service: 'plateService',
         func: 'crawlPlateData',
-        cron: '0 15 15 * * 1-5',
+        cron: '0 40 15 * * 1-5',
     },
     {
         taskName: 'autoCrawlShortTermDataMidday',
@@ -85,7 +79,7 @@ const schedulerTaskList = [
         taskName: 'autoCrawlShortTermDataLatePm',
         service: 'shorTermService',
         func: 'crawlShortTermData',
-        cron: '0 20 15 * * 1-5',
+        cron: '0 35 15 * * 1-5',
     },
     {
         taskName: 'autoCrawlBinddingDataMidday',
@@ -97,7 +91,7 @@ const schedulerTaskList = [
         taskName: 'autoCrawlBinddingDataLatePm',
         service: 'specialStockService',
         func: 'crawlBinddingData',
-        cron: '00 05 15 * * 1-5',
+        cron: '00 33 15 * * 1-5',
     },
 ];
 exports.schedulerTaskList = schedulerTaskList;

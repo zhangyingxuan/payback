@@ -30,7 +30,7 @@ let SystemConfigService = SystemConfigService_1 = class SystemConfigService {
         const currentConfig = await this.findLatestOne();
         let result;
         try {
-            this.logger.log('updateSystemConfig 更新数据');
+            this.logger.debug('updateSystemConfig 更新数据 start');
             await this.sysTemconfigServiceRp.update(currentConfig.id, systemConfigDto);
             this.logger.debug('updateSystemConfig is success!');
             result = '更新成功';
