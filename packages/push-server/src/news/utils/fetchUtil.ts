@@ -56,7 +56,7 @@ export async function fetchNewsRequest(time = '1725962009', signal) {
         // This is set by the promise which resolved first
         // and caused the fetch to abort
         const { reason } = signal;
-        console.log(`Fetch aborted with reason: ${reason}`);
+        console.log(`${time}: ${reason}`);
       }
     });
     ;

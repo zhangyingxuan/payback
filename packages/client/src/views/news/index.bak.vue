@@ -60,7 +60,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, watch, onBeforeUnmount } from 'vue';
-import { fetchThsNews, fetchThsAllNews } from '@/api/tonghuashun';
+import { fetchLatestNews } from '@/api/payBack';
 import dayjs from 'dayjs';
 import { ElMessage } from 'element-plus';
 import Axios from 'axios';
@@ -96,28 +96,6 @@ let interval: any = null;
 let source: any = CancelToken.source();
 
 /**
- * 过滤重要消息，并返回最新时间
- * @param list
- * @returns
- */
-const importantNewsFilter = (list: any[], latestTime: string) => {
-  const needPushNews: any[] = [];
-
-  // 取出重要消息进行推送
-  list &&
-    list.forEach((news, i) => {
-      if (i === 0) {
-        latestTime = news.ctime;
-      }
-      // color 为 '2'，重要消息
-      if (news.color === '2') {
-        needPushNews.push(news);
-      }
-    });
-
-  return { newsList: needPushNews, latestTime };
-};
-/**
  * 刷新新闻列表
  */
 const refreshNews = async () => {
@@ -128,10 +106,12 @@ const refreshNews = async () => {
   // 获取新闻列表
   // 这里可以用接口请求数据，也可以用本地数据
   try {
-    const newsData = await fetchThsNews(data.latestTime, source);
-    const result = importantNewsFilter(newsData.list, data.latestTime);
-    data.newsList = result?.newsList.concat(data.newsList);
-    data.latestTime = result.latestTime;
+    const newsData = await fetchLatestNews(
+      { latestTime: data.latestTime },
+      source,
+    );
+    data.newsList = newsData?.newsList.concat(data.newsList);
+    data.latestTime = newsData.latestTime;
     // 更新缓存数据
     localStorage.setItem(localstorageKey_newsInfo, JSON.stringify(data));
   } catch (err) {
@@ -208,24 +188,14 @@ const judgeIsToday = (timestamp: string) => {
 /**
  * 初始化页面
  */
-const initPage = async () => {
+const initPage = () => {
   // 获取缓存数据
   const newsInfo: NewsInfo = JSON.parse(
     localStorage.getItem(localstorageKey_newsInfo) || '{}',
   );
 
   data.latestTime = newsInfo.latestTime;
-  // 如果没有当日数据，则获取最新20条
-  if (!newsInfo.newsList || newsInfo.newsList.length === 0) {
-    const newsData = await fetchThsAllNews();
-    const result = importantNewsFilter(newsData.list, data.latestTime);
-    data.newsList = result?.newsList;
-    data.latestTime = result.latestTime;
-    // 更新缓存数据
-    localStorage.setItem(localstorageKey_newsInfo, JSON.stringify(data));
-  } else {
-    data.newsList = newsInfo.newsList || [];
-  }
+  data.newsList = newsInfo.newsList || [];
 };
 
 initPage();

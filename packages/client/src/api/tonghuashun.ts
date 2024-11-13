@@ -1,7 +1,7 @@
 import { http } from '@/core/request';
 
 const baseUrl = 'tonghuashun';
-const baseUrlNews = 'tonghuashunNews';
+const baseUrlNews = 'thsNews';
 
 export const fetchLonghuHistoryData = () => {
   return http.request<any>("get", `${baseUrl}/dataapi/transaction/market/v1/history_count`);
@@ -17,6 +17,20 @@ export const fetchDailyLimitStockGroupByGainian = (date: string) => {
   return http.request<any>("get", `${baseUrl}/dataapi/limit_up/block_top?filter=HS,GEM2STAR&date=${date}`);
 }
 
-export const fetchThsNews = (time = '1725962009') => {
-  return http.request<any>("get", `${baseUrlNews}/tapp/news/push/stock/?page=1&tag=&track=website&ctime=${time}`,);
+/**
+ * 获取最新新闻
+ * @param time 
+ * @param source 
+ * @returns 
+ */
+export const fetchThsNews = (time = '1725962009', source: any) => {
+  return http.request<any>("get", `${baseUrlNews}/tapp/news/push/stock/?page=1&tag=&track=website&ctime=${time}`, { cancelToken: source.token });
+}
+
+/**
+ * 
+ * @returns 所有新闻，20条
+ */
+export const fetchThsAllNews = () => {
+  return http.request<any>("get", `${baseUrlNews}/tapp/news/push/stock/?page=1&tag=&track=website&pagesize=400`,);
 }

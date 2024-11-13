@@ -30,7 +30,7 @@ const defaultConfig: AxiosRequestConfig = {
 };
 
 
-const whiteUrls = ['tonghuashun'];
+const whiteUrls = ['tonghuashun', 'thsNews'];
 
 function isNotWhiteUrl(currentApiUrl: string) {
   return !whiteUrls.some(url => {

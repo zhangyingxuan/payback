@@ -38,7 +38,7 @@ async function fetchNewsRequest(time = '1725962009', signal) {
         }).catch(ex => {
             if (signal && signal.aborted) {
                 const { reason } = signal;
-                console.log(`Fetch aborted with reason: ${reason}`);
+                console.log(`${time}: ${reason}`);
             }
         });
         ;
