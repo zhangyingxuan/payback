@@ -248,7 +248,6 @@ import {
   crawlSpecialStockData,
   crawlTodayData,
 } from '@/api/payBack';
-// import { fetchIndustryData } from '@/api/tonghuashun';
 import { judgeMonday } from './utils';
 import { ElMessage } from 'element-plus';
 import { transformEvenBoardData } from './utils/transformUtil';
@@ -377,7 +376,6 @@ async function initPage(pageSize: number) {
     limit: pageSize,
     isMobile,
   });
-  // const rs: any = await fetchIndustryData();
   evenBoard.value = transformEvenBoardData(result);
   // 将当日涨停个股，按连板高度、行业 做成表格
   handleDateClick(evenBoard.value[0]);

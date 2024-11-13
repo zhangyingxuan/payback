@@ -16,13 +16,13 @@ export class NewsService {
    * @param latestTime
    * @returns
    */
-  async fetchNews(latestTime) {
-    let result = { data: { list: [] } };
+  async fetchNews(latestTime, signal) {
+    let result: any = { data: { list: [] } };
     latestTime = latestTime
       ? latestTime
       : Math.round(new Date().getTime() / 1000).toString();
     try {
-      result = await fetchNewsRequest(latestTime);
+      result = await fetchNewsRequest(latestTime, signal);
     } catch (error) {
       this.logger.error('[fetchNews] 获取新闻数据失败：' + error);
       return [];
@@ -57,9 +57,9 @@ export class NewsService {
    * 获取同花顺新闻 - 定时任务需要
    * @returns {Promise<any>}
    */
-  async fetchNewsTask() {
+  async fetchNewsTask(signal) {
     this.tempLatestTime = this.latestTime;
-    const list: any = await this.fetchNews(this.latestTime);
+    const list: any = await this.fetchNews(this.latestTime, signal);
     this.logger.log(
       '[fetchNewsTask] 获取所有新闻: ' +
       this.latestTime +
@@ -77,7 +77,7 @@ export class NewsService {
    * @returns {Promise<any>}
    */
   async fetchLatestNews(latestTime) {
-    const list: any = await this.fetchNews(latestTime);
+    const list: any = await this.fetchNews(latestTime, null);
     this.logger.log(
       '[fetchLatestNews] 获取所有新闻: ' +
       latestTime +

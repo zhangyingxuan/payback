@@ -12,7 +12,6 @@ const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const ding_dong_bot_1 = require("./utils/ding-dong-bot");
 let AppModule = class AppModule {
-    configure(consumer) { }
 };
 AppModule = __decorate([
     (0, common_1.Module)({

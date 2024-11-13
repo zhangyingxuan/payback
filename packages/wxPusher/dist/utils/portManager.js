@@ -7,7 +7,6 @@ function getAvailablePort(port, isGetNewPort = false) {
     const server = net.createServer().listen(port);
     return new Promise((resolve, reject) => {
         server.on('listening', () => {
-            console.log('the server is running on port ' + port);
             server.close();
             resolve(port);
         });

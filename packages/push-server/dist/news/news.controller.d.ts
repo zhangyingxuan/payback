@@ -5,6 +5,7 @@ export declare class NewsController {
     private readonly pushService;
     constructor(newsService: NewsService, pushService: PushService);
     private readonly logger;
+    private controller;
     fetchNewsTask(): Promise<void>;
     fetchLatestNews(payload: any): Promise<{
         code: number;

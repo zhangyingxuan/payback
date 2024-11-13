@@ -128,6 +128,6 @@ export const saveUserInfo = (data: any | null) => {
  * 获取最新 新闻消息 - 同花顺重要消息
  * @returns 
  */
-export const fetchLatestNews = (params: any | null) => {
-  return http.request<any>("get", `${baseUrl}/fetchLatestNews`, { params });
+export const fetchLatestNews = (params: any | null, source: any) => {
+  return http.request<any>("get", `${baseUrl}/fetchLatestNews`, { params }, { cancelToken: source.token });
 }

@@ -5,7 +5,7 @@ const newsPushSchedulerTask = {
     taskName: 'autoCrawlNewsTask',
     service: 'pushServer',
     func: 'fetchNewsTask',
-    cron: '*/6 * 7-23 * * *',
+    cron: '*/2 * 7-23 * * *',
 };
 exports.newsPushSchedulerTask = newsPushSchedulerTask;
 const schedulerTaskList = [

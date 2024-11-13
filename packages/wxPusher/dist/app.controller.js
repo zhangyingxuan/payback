@@ -29,7 +29,7 @@ let AppController = class AppController {
         if (room) {
             await room.say(msg || '抓到你了');
             return {
-                code: 200,
+                code: 0,
             };
         }
         else {

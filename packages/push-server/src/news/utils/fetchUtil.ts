@@ -1,15 +1,15 @@
 import fetch from 'node-fetch';
 
 /**
- * 获取新闻消息（财联社 电报）
+ * 获取新闻消息（同花顺 电报）
  * 通过接口返回的 list 数据取出 rtime 作为下次请求的参数
+ * 为了保证时效性，5秒终端请求，相当于5秒超时，提升服务器性能&稳定性
  * @param time
  * @returns
  */
-export async function fetchNewsRequest(time = '1725962009') {
-  const result = await fetch(
-    `https://news.10jqka.com.cn/tapp/news/push/stock/?page=1&tag=&track=website&ctime=${time}`,
-    {
+export async function fetchNewsRequest(time = '1725962009', signal) {
+  return new Promise(async (resolve, reject) => {
+    const params: any = {
       headers: {
         accept: '*/*',
         'accept-language': 'zh-CN,zh;q=0.9',
@@ -32,9 +32,35 @@ export async function fetchNewsRequest(time = '1725962009') {
       method: 'GET',
       mode: 'cors',
       credentials: 'include',
-    },
-  );
-  return await result.json();
+    };
+    if (signal) {
+      params.signal = signal;
+      // 监听中止信号
+      // signal.addEventListener('abort', () => {
+      //   console.log('signal.addEventListener === Operation aborted');
+      // });
+    }
+
+    fetch(
+      `https://news.10jqka.com.cn/tapp/news/push/stock/?page=1&tag=&track=website&ctime=${time}`,
+      params,
+    ).then(async (result) => {
+      if (signal && signal.aborted) {
+        reject('AbortError');
+      } else {
+        resolve(await result.json());
+      }
+    }).catch(ex => {
+      // This is how you can determine if the exception was due to abortion
+      if (signal && signal.aborted) {
+        // This is set by the promise which resolved first
+        // and caused the fetch to abort
+        const { reason } = signal;
+        console.log(`Fetch aborted with reason: ${reason}`);
+      }
+    });
+    ;
+  });
 }
 
 /**

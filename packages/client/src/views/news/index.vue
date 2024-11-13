@@ -61,9 +61,12 @@
 <script setup lang="ts">
 import { ref, reactive, watch, onBeforeUnmount } from 'vue';
 import { fetchLatestNews } from '@/api/payBack';
+import { fetchThsNews } from '@/api/tonghuashun';
 import dayjs from 'dayjs';
 import { ElMessage } from 'element-plus';
+import Axios from 'axios';
 
+const { CancelToken } = Axios;
 const localstorageKey_newsInfo = 'newsInfo';
 
 interface NewsItem {
@@ -91,16 +94,23 @@ const data: NewsInfo = reactive({
 
 const autoRefreshInterval = ref(true);
 let interval: any = null;
+let source: any = CancelToken.source();
 
 /**
  * 刷新新闻列表
  */
 const refreshNews = async () => {
+  // 取消请求机制，应对重复请求 2024-11-12
+  source.cancel('Request canceled due to timeout');
+  source = CancelToken.source();
   data.loading = true;
   // 获取新闻列表
   // 这里可以用接口请求数据，也可以用本地数据
   try {
-    const newsData = await fetchLatestNews({ latestTime: data.latestTime });
+    const newsData = await fetchLatestNews(
+      { latestTime: data.latestTime },
+      source,
+    );
     data.newsList = newsData?.newsList.concat(data.newsList);
     data.latestTime = newsData.latestTime;
     // 更新缓存数据
@@ -111,14 +121,16 @@ const refreshNews = async () => {
     data.loading = false;
   }
 };
-
 watch(
   autoRefreshInterval,
-  val => {
+  async val => {
     clearInterval(interval);
     if (val) {
       refreshNews();
-      interval = setInterval(() => {
+      console.log(await fetchThsNews());
+      // 避免接口阻塞一直调用，等待收到结果后再刷新
+      interval = setInterval(async () => {
+        console.log(await fetchThsNews());
         refreshNews();
       }, 5000);
     }

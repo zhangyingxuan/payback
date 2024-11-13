@@ -24,9 +24,12 @@ let NewsController = NewsController_1 = class NewsController {
         this.newsService = newsService;
         this.pushService = pushService;
         this.logger = new common_2.Logger(NewsController_1.name);
+        this.controller = new AbortController();
     }
     async fetchNewsTask() {
-        const newsList = await this.newsService.fetchNewsTask();
+        this.controller.abort();
+        this.controller = new AbortController();
+        const newsList = await this.newsService.fetchNewsTask(this.controller.signal);
         newsList.forEach((news) => {
             try {
                 this.pushService.noticeNews(news.title, news.digest, news.url, news);

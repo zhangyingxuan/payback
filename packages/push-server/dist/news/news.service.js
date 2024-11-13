@@ -17,14 +17,14 @@ let NewsService = NewsService_1 = class NewsService {
         this.tempLatestTime = '';
         this.logger = new common_2.Logger(NewsService_1.name);
     }
-    async fetchNews(latestTime) {
+    async fetchNews(latestTime, signal) {
         var _a;
         let result = { data: { list: [] } };
         latestTime = latestTime
             ? latestTime
             : Math.round(new Date().getTime() / 1000).toString();
         try {
-            result = await (0, fetchUtil_1.fetchNewsRequest)(latestTime);
+            result = await (0, fetchUtil_1.fetchNewsRequest)(latestTime, signal);
         }
         catch (error) {
             this.logger.error('[fetchNews] 获取新闻数据失败：' + error);
@@ -45,9 +45,9 @@ let NewsService = NewsService_1 = class NewsService {
             });
         return { newsList: needPushNews, latestTime };
     }
-    async fetchNewsTask() {
+    async fetchNewsTask(signal) {
         this.tempLatestTime = this.latestTime;
-        const list = await this.fetchNews(this.latestTime);
+        const list = await this.fetchNews(this.latestTime, signal);
         this.logger.log('[fetchNewsTask] 获取所有新闻: ' +
             this.latestTime +
             '，条数：' +
@@ -57,7 +57,7 @@ let NewsService = NewsService_1 = class NewsService {
         return newsData.newsList;
     }
     async fetchLatestNews(latestTime) {
-        const list = await this.fetchNews(latestTime);
+        const list = await this.fetchNews(latestTime, null);
         this.logger.log('[fetchLatestNews] 获取所有新闻: ' +
             latestTime +
             '，条数：' +

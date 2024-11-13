@@ -9,12 +9,20 @@ export class NewsController {
   constructor(
     private readonly newsService: NewsService,
     private readonly pushService: PushService,
-  ) { }
+  ) {
+    this.controller = new AbortController();
+  }
   private readonly logger = new Logger(NewsController.name);
+  private controller;
 
+  /**
+   * 网关定时任务执行请求
+   */
   @EventPattern('fetchNewsTask')
   async fetchNewsTask() {
-    const newsList: any = await this.newsService.fetchNewsTask();
+    this.controller.abort();
+    this.controller = new AbortController();
+    const newsList: any = await this.newsService.fetchNewsTask(this.controller.signal);
     newsList.forEach((news) => {
       try {
         // 推送消息

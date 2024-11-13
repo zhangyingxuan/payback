@@ -1,3 +1,3 @@
-export declare function fetchNewsRequest(time?: string): Promise<any>;
+export declare function fetchNewsRequest(time: string, signal: any): Promise<unknown>;
 export declare function fetchNewsRequestByCls(): Promise<any>;
 export declare function fetchNewsRequestByXueqiu(): Promise<any>;

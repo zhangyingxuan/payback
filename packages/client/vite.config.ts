@@ -26,8 +26,9 @@ const alias: Record<string, string> = {
 };
 
 export default ({ command, mode }: ConfigEnv): UserConfigExport => {
-	const { VITE_CDN, VITE_PORT, VITE_COMPRESSION, VITE_BASE_API_THS, VITE_BASE_API } =
+	const { VITE_CDN, VITE_PORT, VITE_BASE_API_THS_NEWS, VITE_BASE_API_THS, VITE_BASE_API } =
 		warpperEnv(loadEnv(mode, process.cwd()));
+	console.log("mode", VITE_BASE_API_THS_NEWS);
 	return {
 		base: './',
 		resolve: {
@@ -50,6 +51,11 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 					target: VITE_BASE_API_THS,
 					changeOrigin: true,
 					rewrite: (path) => path.replace(/^\/tonghuashun/, ''),
+				},
+				'/tonghuashunNews': {
+					target: VITE_BASE_API_THS_NEWS,
+					changeOrigin: false,
+					// rewrite: (path) => path.replace(/^\/tonghuashunNews/, ''),
 				},
 			}
 		},
