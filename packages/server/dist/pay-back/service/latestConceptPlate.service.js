@@ -68,7 +68,7 @@ let LatestConceptPlateService = LatestConceptPlateService_1 = class LatestConcep
             .createQueryBuilder('latest_concept_plate')
             .offset(0)
             .limit(1)
-            .orderBy('createTime', 'DESC')
+            .orderBy('id', 'DESC')
             .getOne();
     }
 };

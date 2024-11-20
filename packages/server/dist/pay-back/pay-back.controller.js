@@ -58,7 +58,6 @@ let PayBackController = PayBackController_1 = class PayBackController {
         this.logger = new common_1.Logger(PayBackController_1.name);
     }
     async testApi(query) {
-        this.consulService.deregister(query.id);
     }
     async autoCrawlTodayDataAM() {
         this.logger.debug('[必入]定时任务执行了！0 */5 9-12 * * 1-5');

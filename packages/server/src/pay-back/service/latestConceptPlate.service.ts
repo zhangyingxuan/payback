@@ -37,8 +37,8 @@ export class LatestConceptPlateService {
     try {
       // 爬取最新概念板块，若果有的话 则保存 近5日新增概念
       latestConceptPlates = await getLatestConceptPlate(conceptPlate);
-      // console.log(latestConceptPlates);
       if (latestConceptPlates) {
+        // 多个概念同时添加时，倒序插入，避免次日重复添加BUG
         latestConceptPlates.forEach(async latestConceptPlate => {
           await this.latestConceptPlateRp.save(latestConceptPlate);
         });
@@ -90,7 +90,7 @@ export class LatestConceptPlateService {
       .createQueryBuilder('latest_concept_plate')
       .offset(0)
       .limit(1)
-      .orderBy('createTime', 'DESC')
+      .orderBy('id', 'DESC')
       .getOne();
   }
 }

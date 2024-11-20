@@ -89,7 +89,8 @@ export class PayBackController {
     // );
     // this.pushServer.emit('fetchNewsTask', {});
     // console.log('query', query.id);
-    this.consulService.deregister(query.id);
+    // this.consulService.deregister(query.id);
+    // this.latestConceptPlateService.crawlLatestConceptPlateData();
     // return 'testApi';
     // return await this.pushServer.send('fetchLatestNews', '');
   }

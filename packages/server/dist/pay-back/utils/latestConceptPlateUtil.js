@@ -14,11 +14,12 @@ async function getLatestConceptPlate(currentLatestConceptPlate) {
         return item['code'] === currentLatestConceptPlate.code;
     });
     const latestConceptPlatesArr = latestConceptPlates.splice(0, index);
+    const createTime = new Date();
     createLatestConceptPlateArr = latestConceptPlatesArr.map(item => {
         const createLatestConceptPlate = new create_latest_concept_plate_1.CreateLatestConceptPlate();
         createLatestConceptPlate.name = item['指数简称'];
         createLatestConceptPlate.code = item['code'];
-        createLatestConceptPlate.createTime = new Date();
+        createLatestConceptPlate.createTime = createTime;
         return createLatestConceptPlate;
     });
     return createLatestConceptPlateArr.reverse();
