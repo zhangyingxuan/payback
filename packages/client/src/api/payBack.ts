@@ -20,10 +20,6 @@ export const fetchChartData = (params: any | null) => {
   return http.request<ChartResult>("get", `${baseUrl}/list`, { params });
 }
 
-export const fetchData = (params: any | null) => {
-  return http.request<ChartResult>("get", `${baseUrl}/list`, { params });
-}
-
 /**
  * 爬取当日数据，更新至数据库
  * @returns 

@@ -10,7 +10,7 @@ export class CreateFundsDataDto {
   hangyeFundsTop: string;
   // 概念板块主力资金Top
   gainianFundsTop: string;
-
+  // 两市，成交额
   marketTurnover: number;
 
   createTime: Date;

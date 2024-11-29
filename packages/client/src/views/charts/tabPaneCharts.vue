@@ -40,12 +40,23 @@
     </el-card>
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
       <template #header>
+        <CardHeader
+          :url="cardUrls.longhuListChartUrl"
+          headerTitle="龙虎榜（净买大，成交低则反转）"
+        />
+      </template>
+      <div ref="longhuListChart" :style="data.style"></div>
+    </el-card>
+    <!-- 赚钱效应：封板率，晋级率 -->
+    <!-- 亏钱效应：炸板率，跌停数，大面数 -->
+    <!-- <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
+      <template #header>
         <CardHeader :url="cardUrls.fundsChartUrl" headerTitle="资金流向">
           {{ data.latestFundsUpdateTime }}
         </CardHeader>
       </template>
       <div ref="fundsChart" :style="data.style"></div>
-    </el-card>
+    </el-card> -->
     <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
       <template #header>
         <CardHeader
@@ -67,15 +78,6 @@
         </CardHeader>
       </template>
       <div ref="fundsByGainianChart" :style="data.styleBig"></div>
-    </el-card>
-    <el-card shadow="hover" class="mgb15" :body-style="{ padding: '0px' }">
-      <template #header>
-        <CardHeader
-          :url="cardUrls.longhuListChartUrl"
-          headerTitle="龙虎榜（净买大，成交低则反转）"
-        />
-      </template>
-      <div ref="longhuListChart" :style="data.style"></div>
     </el-card>
   </div>
 </template>
@@ -187,6 +189,14 @@ async function initPage(pageSize = 15) {
       limit: isMobile ? 10 : pageSize,
     });
 
+    initShortTermChart(result.shortTermData);
+    initMarketChart(result.marketData);
+    initIndexChart(result.marketData, result.fundsData);
+    // 展示屏蔽北向，南向; 北向数据已无法实施展示，故参考意义不大 2024-11-29
+    // initFundsChart(result.fundsData);
+    initHangyeFundsChart(result.fundsData);
+    initGainianFundsChart(result.fundsData);
+
     const styles = getChartStyle();
     data.style = styles.style;
     data.styleBig = styles.styleBig;
@@ -199,13 +209,6 @@ async function initPage(pageSize = 15) {
     data.latestFundsUpdateTime = dayjs(
       result.fundsData[result.fundsData.length - 1].createTime,
     ).format('MM/DD HH:mm');
-
-    initShortTermChart(result.shortTermData);
-    initMarketChart(result.marketData);
-    initIndexChart(result.marketData);
-    initFundsChart(result.fundsData);
-    initHangyeFundsChart(result.fundsData);
-    initGainianFundsChart(result.fundsData);
 
     setTimeout(() => {
       Object.keys(chartList).forEach(key => {
@@ -304,15 +307,17 @@ async function initFundsChart(fundsData: FundsModel[]) {
  * 初始化市场报表
  * @param marketData
  */
-function initIndexChart(marketData: MarketModel[]) {
+function initIndexChart(marketData: MarketModel[], fundsData: FundsModel[]) {
   let xAxisData: any[] = [];
-  let yAxisData: number[][] = [[], [], [], []];
-  marketData.forEach(item => {
+  let yAxisData: any[][] = [[], [], [], [], [], []];
+  marketData.forEach((item, index) => {
     xAxisData.push(dayjs(item.createTime).format('MM/DD'));
     yAxisData[0].push(item.shangzhengPoint);
     yAxisData[1].push(item.shenzhengPoint);
     yAxisData[2].push(item.chuangyePoint);
     yAxisData[3].push(item.beizheng50Point);
+    yAxisData[4].push(item.shangzhengRiseAndFall || 0);
+    yAxisData[5].push(fundsData[index]?.marketTurnover);
   });
 
   // 基于准备好的dom，初始化echarts实例

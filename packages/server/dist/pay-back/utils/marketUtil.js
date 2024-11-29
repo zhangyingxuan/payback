@@ -15,6 +15,7 @@ exports.default = {
         const hangyeRiseFloat = (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.hangyeRiseFloat);
         const hangyeFallFloat = (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.hangyeFallFloat);
         const [indexData, marketData, gainianRiseFloatData, gainianFallFloatData, hangyeRiseFloatData, hangyeFallFloatData,] = await Promise.all([index, market, gainianRiseFloat, gainianFallFloat, hangyeRiseFloat, hangyeFallFloat]);
+        createMarketDataDto.shangzhengRiseAndFall = indexData[0]['f3'];
         createMarketDataDto.shangzhengPoint = indexData[0]['f2'];
         createMarketDataDto.shenzhengPoint = indexData[1]['f2'];
         createMarketDataDto.beizheng50Point = indexData[2]['f2'];

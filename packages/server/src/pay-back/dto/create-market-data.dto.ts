@@ -7,7 +7,7 @@ export class CreateMarketDataDto {
   northFunds: number;
   dailyLimitIncome: number;
 
-  marketTurnover: number;
+  shangzhengRiseAndFall: number;
 
   shangzhengPoint: number;
 

@@ -267,8 +267,8 @@ export const getFundsChartOption = function (xAxisData: any, yAxisData: any) {
  * @returns 
  */
 export const getIndexChartOption = function (xAxisData: any, yAxisData: any) {
-  const colors = ['#ED7874', '#52B3F5', '#ADDE8A', '#EFCA52'];
-  const legendData = ['上证指数', '深圳指数', '创业指数', '北证50'];
+  const colors = ['#ED7874', '#52B3F5', '#ADDE8A', '#ff96f9', '#52B3F5', '#EFCA52'];
+  const legendData = ['上证指数', '深圳指数', '创业指数', '北证50', '上涨涨跌幅', '两市成交额'];
   return {
     color: colors,
     tooltip: {
@@ -277,7 +277,10 @@ export const getIndexChartOption = function (xAxisData: any, yAxisData: any) {
         type: 'cross',
       },
     },
-    grid,
+    grid: {
+      ...grid,
+      top: '15%',
+    },
     toolbox: {
       feature: {
         // dataView: { show: true, readOnly: false },
@@ -315,7 +318,7 @@ export const getIndexChartOption = function (xAxisData: any, yAxisData: any) {
         },
       }, {
         // 深圳指数
-        // show: false,
+        show: false,
         type: 'value',
         name: legendData[1],
         position: 'right',
@@ -361,6 +364,36 @@ export const getIndexChartOption = function (xAxisData: any, yAxisData: any) {
           },
         },
       },
+      // 上证涨跌幅
+      {
+        show: false,
+        type: 'value',
+        name: legendData[4],
+        position: 'top',
+        alignTicks: true,
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: colors[4],
+          },
+        },
+      },
+      // 成交量
+      {
+        type: 'value',
+        name: legendData[5],
+        position: 'right',
+        alignTicks: true,
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: colors[5],
+          },
+        },
+        axisLabel: {
+          formatter: '{value} 万亿',
+        },
+      },
     ],
     series: [
       {
@@ -394,6 +427,36 @@ export const getIndexChartOption = function (xAxisData: any, yAxisData: any) {
         data: yAxisData[3],
         lineStyle: dottedLineItemStyle
       },
+      // {
+      //   name: legendData[4],
+      //   type: 'line',
+      //   yAxisIndex: 4,
+      //   data: yAxisData[4],
+      //   lineStyle: dottedLineItemStyle
+      // },
+      {
+        name: legendData[4],
+        type: 'bar',
+        yAxisIndex: 4,
+        data: yAxisData[4],
+        label: {
+          show: true,
+          color: '#fff',
+          position: 'inside'
+        },
+        barGap: '-100%'
+      },
+      {
+        name: legendData[5],
+        type: 'bar',
+        yAxisIndex: 5,
+        data: yAxisData[5],
+        label: {
+          show: true,
+          color: '#fff',
+          position: 'inside'
+        },
+      }
     ],
   };
 }
@@ -417,7 +480,7 @@ export const getMarketChartOption = function (xAxisData: any, yAxisData: any) {
     },
     grid: {
       right: 60,
-      // top: '30%',
+      top: '15%',
       x2: 0,
       y2: 30,
       x: 30,
@@ -512,7 +575,7 @@ export const getMarketChartOption = function (xAxisData: any, yAxisData: any) {
           position: 'inside'
         },
         stack: 'marketAmount',
-      },
+      }
     ],
   };
 }

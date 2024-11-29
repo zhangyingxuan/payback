@@ -5,6 +5,7 @@ export declare class marketData {
     riseAmount: number;
     fallAmount: number;
     dailyLimitIncome: number;
+    shangzhengRiseAndFall: number;
     shangzhengPoint: number;
     shenzhengPoint: number;
     chuangyePoint: number;

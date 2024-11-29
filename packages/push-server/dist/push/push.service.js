@@ -18,7 +18,6 @@ const thsPlateBaseUrl = 'http://q.10jqka.com.cn/thshy/detail/code/';
 const thsStockBaseUrl = 'https://stockpage.10jqka.com.cn/';
 let PushService = PushService_1 = class PushService {
     constructor() {
-        this.NODE_ENV = process.env.NODE_ENV;
         this.logger = new common_1.Logger(PushService_1.name);
         this.robotList = [
             'ddbae7ea-7496-4cd8-97c5-c0b195d9609b',

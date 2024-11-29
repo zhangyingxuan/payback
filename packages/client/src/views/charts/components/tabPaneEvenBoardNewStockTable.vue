@@ -3,7 +3,7 @@
   <div :class="['table', { isMobile }]" v-if="stockGroupByPlate.length > 0">
     <div class="table__header table-row">
       <div
-        class="col1"
+        class="col1 red_bg"
         @click="
           () => {
             data.isShowContent = !data.isShowContent;
@@ -13,7 +13,7 @@
         行业板块&nbsp;
         <el-icon v-if="!isMobile"><ArrowDownBold /></el-icon>
       </div>
-      <div class="col2 red stocks_header">
+      <div class="col2 red red_bg stocks_header">
         新股
         <el-tooltip
           effect="dark"
@@ -30,8 +30,8 @@
       </div>
     </div>
     <div class="table__header table-row">
-      <div class="col1">板块名</div>
-      <div class="col2">
+      <div class="col1 red_bg">板块名</div>
+      <div class="col2 red_bg">
         <span class="stock large">个股名</span>
         [
         <span class="small">竞价</span>
@@ -183,7 +183,9 @@ function sortPlates(stockGroupByPlate: any) {
 
 <style scoped lang="less">
 @import '../styles/tabPaneEvenBoardStockTable.less';
-
+.red_bg {
+  background-color: #ffbebe !important;
+}
 .col2 {
   min-width: 620px;
   overflow: auto;

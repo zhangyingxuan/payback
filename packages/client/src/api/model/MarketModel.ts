@@ -7,7 +7,7 @@ export interface MarketModel {
   northFunds: number;
   dailyLimitIncome: number;
 
-  marketTurnover: number;
+  shangzhengRiseAndFall: number;
 
   shangzhengPoint: number;
 

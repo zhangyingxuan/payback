@@ -5,7 +5,7 @@ export declare class CreateMarketDataDto {
     fallAmount: number;
     northFunds: number;
     dailyLimitIncome: number;
-    marketTurnover: number;
+    shangzhengRiseAndFall: number;
     shangzhengPoint: number;
     shenzhengPoint: number;
     chuangyePoint: number;

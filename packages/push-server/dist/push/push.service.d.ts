@@ -1,6 +1,5 @@
 export declare class PushService {
     constructor();
-    private readonly NODE_ENV;
     private readonly logger;
     private readonly robotList;
     notice(serviceName: any, msgContent?: string): Promise<void>;

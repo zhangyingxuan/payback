@@ -30,7 +30,8 @@ export default {
       hangyeRiseFloatData,
       hangyeFallFloatData,
     ] = await Promise.all([index, market, gainianRiseFloat, gainianFallFloat, hangyeRiseFloat, hangyeFallFloat]);
-
+    // 上涨涨跌幅
+    createMarketDataDto.shangzhengRiseAndFall = indexData[0]['f3'];
     createMarketDataDto.shangzhengPoint = indexData[0]['f2'];
     createMarketDataDto.shenzhengPoint = indexData[1]['f2'];
     createMarketDataDto.beizheng50Point = indexData[2]['f2'];

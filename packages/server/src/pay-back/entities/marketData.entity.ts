@@ -18,6 +18,9 @@ export class marketData {
   @Column({ comment: '昨日涨停今日收益', type: 'float', default: 0 })
   dailyLimitIncome: number;
 
+  @Column({ comment: '上证涨跌幅', type: 'decimal', default: 0, precision: 8, scale: 2 })
+  shangzhengRiseAndFall: number;
+
   @Column({ comment: '上证点数', type: 'decimal', default: 0, precision: 8, scale: 2 })
   shangzhengPoint: number;
 

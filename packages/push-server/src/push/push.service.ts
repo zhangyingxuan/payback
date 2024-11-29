@@ -12,7 +12,6 @@ const thsStockBaseUrl = 'https://stockpage.10jqka.com.cn/';
 export class PushService {
   constructor() { }
 
-  private readonly NODE_ENV = process.env.NODE_ENV;
   private readonly logger = new Logger(PushService.name);
   private readonly robotList = [
     'ddbae7ea-7496-4cd8-97c5-c0b195d9609b',

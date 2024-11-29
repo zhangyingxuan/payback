@@ -34,6 +34,10 @@ __decorate([
     __metadata("design:type", Number)
 ], marketData.prototype, "dailyLimitIncome", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ comment: '上证涨跌幅', type: 'decimal', default: 0, precision: 8, scale: 2 }),
+    __metadata("design:type", Number)
+], marketData.prototype, "shangzhengRiseAndFall", void 0);
+__decorate([
     (0, typeorm_1.Column)({ comment: '上证点数', type: 'decimal', default: 0, precision: 8, scale: 2 }),
     __metadata("design:type", Number)
 ], marketData.prototype, "shangzhengPoint", void 0);
