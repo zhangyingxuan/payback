@@ -55,7 +55,8 @@ export function calcIncompatibleRate(stocks: Array<any>, showBidding: boolean) {
 export function transformObj2Arr(stockGroupByPlateTemp: Array<any>, showBidding: boolean) {
   const stockGroupByPlateArr: any[] = [];
   Object.keys(stockGroupByPlateTemp).forEach((key: any) => {
-    const o = {
+    console.log(stockGroupByPlateTemp[key])
+    const o: any = {
       key: '',
       value: [],
       closingFundsTotal: stockGroupByPlateTemp[key].closingFundsTotal,
@@ -68,6 +69,7 @@ export function transformObj2Arr(stockGroupByPlateTemp: Array<any>, showBidding:
     o.key = key;
     // 板块内 个股按 连板高度降序 => 首次涨停时间降序
     o.value = sortStocks(stockGroupByPlateTemp[key]);
+    o.maxHeight = o.value[0].evenBoardHeight;
     stockGroupByPlateArr.push(o);
   });
   return stockGroupByPlateArr;
