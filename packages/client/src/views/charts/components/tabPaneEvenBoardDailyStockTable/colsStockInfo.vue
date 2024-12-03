@@ -141,14 +141,13 @@ function calcClass(stock: any) {
     overflow: hidden;
     text-overflow: ellipsis;
     transition: max-width 0.5s ease; /* 平滑过渡效果 */
-  }
-  &:hover {
-    .content__gainian {
+    &:hover {
       overflow: auto;
       white-space: wrap;
       text-overflow: clip;
     }
   }
+
   /deep/.stock,
   > span {
     display: inline-block;

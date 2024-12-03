@@ -210,7 +210,7 @@
     v-model:currentDateData="data.yesterdayDateData"
     v-model:updateTime="data.currentDateData.biddingDataUpdateTime"
     :isMobile="isMobile"
-    title="昨日- 涨停竞价"
+    title="昨日-涨停竞价"
     :showBidding="true"
     @refreshData="handleRefreshData"
   />
@@ -592,7 +592,7 @@ defineExpose({
 }
 
 .evenBoard__table {
-  margin: 0 15px 15px 10px;
+  margin: 0 10px 5px 10px;
   overflow: auto;
   display: flex;
   flex-direction: row;

@@ -89,14 +89,13 @@
           <div class="stocks_header">
             <el-checkbox v-model="data.myStrategyChecked">
               <div class="stocks_header">
-                我的策略 ({{ data.myStrategyCheckedNum }})&nbsp;
                 <el-tooltip
                   class="box-item"
                   effect="dark"
                   content="价格低于30元，流通市值20-120亿，非ST，非科创，非创业板"
                   placement="top"
                 >
-                  <el-icon><InfoFilled /></el-icon>
+                  选股{{ data.myStrategyCheckedNum }}
                 </el-tooltip>
               </div>
             </el-checkbox>
@@ -136,15 +135,7 @@
               content="超预期；换手率>=5%，竞价量比大于10（连板及反包除外）"
               placement="top"
             >
-              竞价策略
-            </el-tooltip>
-            <el-tooltip
-              class="box-item"
-              effect="dark"
-              content="竞价符合条件个数"
-              placement="top"
-            >
-              ({{ data.biddingStrategyCheckedNum }})
+              竞价策略{{ data.biddingStrategyCheckedNum }}
             </el-tooltip>
             &nbsp;
 
@@ -187,7 +178,54 @@
           </el-checkbox>
           <el-checkbox v-model="data.closeDailyLimit">收盘涨停</el-checkbox>
         </div>
+        <el-icon
+          v-if="!isMobile"
+          @click="toggleStockFilterRow"
+          class="toggleIcon"
+        >
+          <ArrowDownBold />
+        </el-icon>
       </div>
+    </div>
+    <!-- 个股筛选条件行，高级筛选 -->
+    <div
+      v-show="data.isShowStockFilterRow"
+      class="table__header stockFilter__row"
+    >
+      <el-select
+        v-model="filter.stockType"
+        placeholder="选择股票类型"
+        size="small"
+        class="select"
+      >
+        <el-option
+          v-for="(item, index) in filter.stockTypeOptions"
+          :key="index"
+          :label="item.label"
+          :value="item.value"
+        />
+      </el-select>
+      <el-checkbox v-model="filter.firstBoardPlateDragon">
+        首板寻龙
+      </el-checkbox>
+      <el-radio-group v-model="filter.dailyLimitTimeType" size="small">
+        <el-radio-button
+          v-for="(item, index) in filter.dailyLimitTimeTypeOptions"
+          :key="index"
+          :label="item.value"
+          >{{ item.label }}
+        </el-radio-button>
+      </el-radio-group>
+
+      <el-button
+        @click="resetFilter"
+        style="margin: 0 5px"
+        type="primary"
+        plain
+        size="small"
+      >
+        重置
+      </el-button>
     </div>
 
     <TabPaneEvenBoardDailyStockTableHeader
@@ -248,9 +286,12 @@ import {
   getRealEvenBoardHeight,
   isConformToMyStrategyChecked,
   transformAndSortEvenBoardHeightOptions,
+  dailyLimitTimeFilter,
+  stockTypeFilter,
 } from './utils';
+import { stockTypeOptions, dailyLimitTimeTypeOptions } from '@/config/index';
 
-const defaultTitle = '今日 - 涨停个股';
+const defaultTitle = '今日-涨停个股';
 let emit = defineEmits(['refreshData']);
 let superData = defineProps({
   currentDateData: {
@@ -278,6 +319,13 @@ let superData = defineProps({
     default: '',
   },
 });
+const filter = reactive({
+  stockType: 'all',
+  stockTypeOptions,
+  dailyLimitTimeType: 'all',
+  dailyLimitTimeTypeOptions,
+  firstBoardPlateDragon: false,
+});
 
 interface Option {
   label: string;
@@ -302,6 +350,7 @@ const data: {
   evenBoardHeightOptions: Array<Option>;
   keyword: string;
   isGainianSwitch: boolean;
+  isShowStockFilterRow: boolean;
 } = reactive({
   // 连板
   notFirstBoardChecked: false,
@@ -309,6 +358,7 @@ const data: {
   firstBoardChecked: false,
   // 我的策略
   myStrategyChecked: false,
+  // 满足策略个股数量
   myStrategyCheckedNum: 0,
   // 竞价策略
   biddingStrategyChecked: false,
@@ -337,7 +387,33 @@ const data: {
   keyword: '',
   // 是否为概念
   isGainianSwitch: true,
+  // 是否展示 个股筛选条件行
+  isShowStockFilterRow: false,
 });
+
+/**
+ * 重置筛选条件
+ */
+const resetFilter = () => {
+  data.notFirstBoardChecked = false;
+  data.firstBoardChecked = false;
+  data.myStrategyChecked = false;
+  data.biddingStrategyChecked = false;
+  data.exceededExpect = false;
+  data.conformToExpect = false;
+  data.closeDailyLimit = false;
+  data.openDailyLimimExclude = false;
+  data.evenBoardHeight = -1;
+  // 高级过滤
+  filter.stockType = 'all';
+  filter.dailyLimitTimeType = 'all';
+  filter.firstBoardPlateDragon = false;
+};
+
+// 展开或收起 筛选条件
+const toggleStockFilterRow = () => {
+  data.isShowStockFilterRow = !data.isShowStockFilterRow;
+};
 
 /**
  * 按板块分类的个股（高标的首板 竞价策略 也需要过滤）
@@ -403,9 +479,9 @@ const stockGroupByPlate: any = computed(() => {
  * 按条件过滤后的数据，基本策略 或 竞价策略 等
  */
 const stockGroupByPlateByFilter = computed(() => {
+  console.log('stockGroupByPlateByFilter');
   // 空对象直接返回
   if (_.isEmpty(stockGroupByPlate.value)) {
-    // console.log('stockGroupByPlate.value null');
     return [];
   }
   const stockGroupByPlateCopy: any = _.cloneDeep(stockGroupByPlate.value);
@@ -418,10 +494,13 @@ const stockGroupByPlateByFilter = computed(() => {
   let isAdd = true;
   stockGroupByPlateCopy.forEach((plateData: any) => {
     let len = 0;
+    const plateMaxHeight = getRealEvenBoardHeight(plateData.value[0]);
+
     plateData.value.forEach((item: DailyLimitStockDto) => {
+      // 根据过滤条件，逐一筛选个股
       isAdd = true;
       // 反包首板 就视为 首板
-      const evenBoardHeight = getRealEvenBoardHeight(item, false);
+      const evenBoardHeight = getRealEvenBoardHeight(item);
       // 需按照首板/我的策略 进行过滤处理
       if (data.firstBoardChecked) {
         isAdd = evenBoardHeight == 1;
@@ -449,6 +528,25 @@ const stockGroupByPlateByFilter = computed(() => {
           isAdd = item.reason ? item.reason.indexOf(data.keyword) > -1 : false;
         }
       }
+      // 主板、创业板、科创、京交所
+      if (filter.stockType !== 'all' && isAdd) {
+        isAdd = stockTypeFilter(
+          item,
+          filter.stockTypeOptions,
+          filter.stockType,
+        );
+      }
+      // 上午板 下午板
+      if (filter.dailyLimitTimeType !== 'all' && isAdd) {
+        isAdd = dailyLimitTimeFilter(
+          item.dailyTime,
+          filter.dailyLimitTimeType === '1',
+        );
+      }
+      // 首板寻龙
+      if (filter.firstBoardPlateDragon) {
+        isAdd = plateMaxHeight === 1;
+      }
       isAdd && myStrategyCheckedNum++;
 
       // 竞价条件过滤 2023-09-09 00:21:30
@@ -475,13 +573,13 @@ const stockGroupByPlateByFilter = computed(() => {
               item.biddingData.expected === (data.conformToExpect ? 1 : 2);
           }
         }
-        // 超预期数量 2024-03-08 11:36:00
+        // 超预期数量 2024-03-08
         item.biddingData.expected === 2 && exceededExpectNum++;
 
         // 超预期；换手率>=5%，竞价量比大于10（连板及反包除外）
         if (data.biddingStrategyChecked && isAdd) {
           // ============ 竞价策略：高标的首板不能按首板考虑 !!!!!!============
-          const evenBoardHeight = getRealEvenBoardHeight(item);
+          const evenBoardHeight = getRealEvenBoardHeight(item, true);
           isAdd = isConformToMyStrategyChecked({ ...item, evenBoardHeight });
         }
         // 竞价符合条件个数
@@ -633,5 +731,21 @@ function handleTicaiClick(key: string) {
 .select {
   width: 60px;
   margin-right: 10px !important;
+}
+.stockFilter__row {
+  background-color: #dcdcdc;
+  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 65px;
+  .el-checkbox {
+    margin-right: 10px;
+  }
+}
+.toggleIcon {
+  flex: 1;
+  margin-right: 10px;
+  justify-content: flex-end;
 }
 </style>

@@ -52,10 +52,10 @@ export function calcIncompatibleRate(stocks: Array<any>, showBidding: boolean) {
   };
 }
 
+// 对象转数组
 export function transformObj2Arr(stockGroupByPlateTemp: Array<any>, showBidding: boolean) {
   const stockGroupByPlateArr: any[] = [];
   Object.keys(stockGroupByPlateTemp).forEach((key: any) => {
-    console.log(stockGroupByPlateTemp[key])
     const o: any = {
       key: '',
       value: [],
@@ -109,7 +109,7 @@ function sortStocks(stocks: []) {
  * 竞价时 反包首板，不能按正常首板考量
  * 其他情况，可按首板考虑
  */
-export function getRealEvenBoardHeight(item: any, isBiddingMode = true) {
+export function getRealEvenBoardHeight(item: any, isBiddingMode = false) {
   if (!item) {
     return 0;
   }
@@ -169,4 +169,37 @@ export function transformAndSortEvenBoardHeightOptions(evenBoardHeightOptions: S
     value: -1,
   });
   return options;
+}
+
+/**
+ * 处理 是否主板、是否创业板 筛选
+ * @param stockGroupByGainian 
+ */
+export const stockTypeFilter = (stock: any, stockTypeOptions: any, stockType: any) => {
+  if (stockType === 'all') {
+    return stock;
+  }
+  // 取出筛选条件 codes
+  const codes = stockTypeOptions.find(
+    (item: { value: string }) => item.value === stockType,
+  ).code;
+
+  // 过滤
+  return codes.some((code: string) => stock.code.startsWith(code));
+};
+
+
+/**
+ * 涨停时间过滤器，上午板 9:30-11:30，下午板 13:00-15:00
+ * 按首次上板时间计算
+ * @param stockCode  个股代码
+ * @param increaseDecline  涨跌幅
+ */
+export function dailyLimitTimeFilter(dailyTime: string, isMorning: boolean) {
+  const aStart = dailyTime.indexOf(',') > -1 ? dailyTime.split(',')[0] : dailyTime;
+
+  // 上午板
+  const morningLimit = dayjs('2023-09-05' + aStart).isBefore(dayjs('2023-09-05 12:00:00'))
+
+  return isMorning ? morningLimit : !morningLimit;
 }

@@ -46,7 +46,7 @@
           <el-select
             class="select"
             v-model="filter.stockType"
-            placeholder="连板高度"
+            placeholder="选择股票类型"
             size="small"
           >
             <el-option
@@ -138,6 +138,7 @@ import { reactive, watch, ref, inject, onBeforeUnmount, computed } from 'vue';
 import { fetchDailyLimitStockGroupByGainian } from '@/api/tonghuashun';
 import dayjs from 'dayjs';
 import { isMobile } from '@/core/util';
+import { stockTypeOptions } from '@/config/index';
 
 const showTooltip: any = inject('showTooltip');
 
@@ -152,14 +153,6 @@ const data: {
   refreshLoading: false,
   initLoading: true,
 });
-
-const stockTypeOptions: any = [
-  { value: 'all', label: '全部' },
-  { value: 'chuangye', label: '创业板', code: ['30'] },
-  { value: 'kechuang', label: '科创板', code: ['68'] },
-  { value: 'zhuban', label: '主板', code: ['60', '0'] },
-  { value: 'beijing', label: '京股', code: ['8', '4', '92'] },
-];
 
 const filter = reactive({
   stockType: 'all',

@@ -85,13 +85,13 @@ const options = [
         children: [
           {
             value: 'tianhe',
-            label: '天河区'
+            label: '天河区',
           },
           {
             value: 'haizhu',
-            label: '海珠区'
-          }
-        ]
+            label: '海珠区',
+          },
+        ],
       },
       {
         value: 'dongguan',
@@ -99,15 +99,15 @@ const options = [
         children: [
           {
             value: 'changan',
-            label: '长安镇'
+            label: '长安镇',
           },
           {
             value: 'humen',
-            label: '虎门镇'
-          }
-        ]
-      }
-    ]
+            label: '虎门镇',
+          },
+        ],
+      },
+    ],
   },
   {
     value: 'hunan',
@@ -119,15 +119,15 @@ const options = [
         children: [
           {
             value: 'yuelu',
-            label: '岳麓区'
-          }
-        ]
-      }
-    ]
-  }
+            label: '岳麓区',
+          },
+        ],
+      },
+    ],
+  },
 ];
 const rules: FormRules = {
-  name: [{ required: true, message: '请输入表单名称', trigger: 'blur' }]
+  name: [{ required: true, message: '请输入表单名称', trigger: 'blur' }],
 };
 const formRef = ref<FormInstance>();
 const form = reactive({
@@ -139,7 +139,7 @@ const form = reactive({
   type: ['步步高'],
   resource: '小天才',
   desc: '',
-  options: []
+  options: [],
 });
 // 提交
 const onSubmit = (formEl: FormInstance | undefined) => {
@@ -147,7 +147,6 @@ const onSubmit = (formEl: FormInstance | undefined) => {
   if (!formEl) return;
   formEl.validate(valid => {
     if (valid) {
-      console.log(form);
       ElMessage.success('提交成功！');
     } else {
       return false;
