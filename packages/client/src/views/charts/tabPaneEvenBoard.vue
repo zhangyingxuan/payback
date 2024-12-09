@@ -126,8 +126,8 @@
         <!-- 反包 -->
         <div class="table-col">
           <span
-            v-for="(stock, index) in item.evenBoardData.gaobiao"
-            :key="'stock' + index"
+            v-for="(stock, gbIndex) in item.evenBoardData.gaobiao"
+            :key="'stock' + gbIndex"
           >
             <Stock
               :showTooltip="true"
@@ -141,15 +141,33 @@
             </span>
           </span>
         </div>
-        <template v-for="(height, index) in heightArr" :key="index">
+        <template v-for="(height, heightIndex) in heightArr" :key="heightIndex">
           <div
-            :class="['table-col', getClassByHeight(height)]"
+            :class="['table-col tableColHeight', getClassByHeight(height)]"
             v-if="height != 1"
             :key="'row' + height"
           >
+            <div
+              class="tableColHeight__extra"
+              v-if="
+                item.evenBoardData &&
+                item.evenBoardData[height] &&
+                item.evenBoardData[height].length > 1
+              "
+            >
+              <span>{{ item.evenBoardData[height].length }}</span>
+              <span v-if="item.evenBoardData[height]" class="gray">{{
+                calPromotionRate(
+                  item.evenBoardAmount,
+                  evenBoard.value,
+                  index,
+                  height,
+                )
+              }}</span>
+            </div>
             <Stock
-              v-for="(stock, index) in item.evenBoardData[height]"
-              :key="'stock' + index"
+              v-for="(stock, evenIndex) in item.evenBoardData[height]"
+              :key="'stock' + evenIndex"
               :showTooltip="true"
               :toolTipContent="stock.reason"
               :showOp="data.showOp"
@@ -166,8 +184,8 @@
         <!-- 跌停数据 -->
         <div class="table-col">
           <span
-            v-for="(stock, index) in item.downLimitData"
-            :key="'downLimitStock' + index"
+            v-for="(stock, dtIndex) in item.downLimitData"
+            :key="'downLimitStock' + dtIndex"
           >
             <Stock
               :showTooltip="true"
@@ -497,12 +515,21 @@ function calPromotionRate(
   evenBoardAmount: any,
   evenBoardValue: any,
   index: number,
+  height: number | undefined = undefined,
 ) {
-  return index !== evenBoardValue.length - 1
-    ? Math.round(
-        (evenBoardAmount / evenBoardValue[index + 1].dailyLimitQuantity) * 100,
-      )
-    : 0;
+  if (index === evenBoardValue.length - 1) {
+    return '';
+  }
+  if (height) {
+    const currentEvenBoardNum =
+      evenBoardValue[index]?.evenBoardData[height]?.length || 0;
+    const yesterdayEvenBoardNum =
+      evenBoardValue[index + 1]?.evenBoardData[height - 1]?.length || 0;
+    return Math.round((currentEvenBoardNum / yesterdayEvenBoardNum) * 100);
+  }
+  return Math.round(
+    (evenBoardAmount / evenBoardValue[index + 1].dailyLimitQuantity) * 100,
+  );
 }
 
 /**
@@ -675,6 +702,20 @@ defineExpose({
     .tableColumsBorder();
     justify-content: flex-start;
 
+    &.tableColHeight {
+      position: relative;
+      .tableColHeight__extra {
+        display: flex;
+        justify-content: space-between;
+        position: absolute;
+        font-size: 12px;
+        color: #bbb;
+        top: 0;
+        left: 0;
+        padding: 1px 2px;
+        width: 100%;
+      }
+    }
     &.height2 {
       height: 110px;
     }

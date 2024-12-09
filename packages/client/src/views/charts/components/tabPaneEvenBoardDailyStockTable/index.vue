@@ -479,7 +479,6 @@ const stockGroupByPlate: any = computed(() => {
  * 按条件过滤后的数据，基本策略 或 竞价策略 等
  */
 const stockGroupByPlateByFilter = computed(() => {
-  console.log('stockGroupByPlateByFilter');
   // 空对象直接返回
   if (_.isEmpty(stockGroupByPlate.value)) {
     return [];
