@@ -316,8 +316,8 @@ function initIndexChart(marketData: MarketModel[], fundsData: FundsModel[]) {
     yAxisData[1].push(item.shenzhengPoint);
     yAxisData[2].push(item.chuangyePoint);
     yAxisData[3].push(item.beizheng50Point);
-    yAxisData[4].push(item.shangzhengRiseAndFall || 0);
-    yAxisData[5].push(fundsData[index]?.marketTurnover);
+    yAxisData[4].push(fundsData[index]?.marketTurnover);
+    yAxisData[5].push(item.shangzhengRiseAndFall || 0);
   });
 
   // 基于准备好的dom，初始化echarts实例

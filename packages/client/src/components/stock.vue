@@ -104,6 +104,10 @@ function handleShowMoreInfo(e: Event) {
 <style scoped lang="less">
 .stock {
   cursor: pointer;
+  .el-tag--small {
+    padding: 0 3px;
+    height: 12px;
+  }
 }
 .op__btnGroup {
   margin: 0;

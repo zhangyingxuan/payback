@@ -124,7 +124,17 @@
           }}
         </div>
         <!-- 反包 -->
-        <div class="table-col">
+        <div class="table-col tableColHeight">
+          <div
+            class="tableColHeight__extra left bottom"
+            v-if="
+              item.evenBoardData &&
+              item.evenBoardData.gaobiao &&
+              item.evenBoardData.gaobiao.length > 1
+            "
+          >
+            <span>{{ item.evenBoardData.gaobiao.length }}</span>
+          </div>
           <span
             v-for="(stock, gbIndex) in item.evenBoardData.gaobiao"
             :key="'stock' + gbIndex"
@@ -147,24 +157,27 @@
             v-if="height != 1"
             :key="'row' + height"
           >
-            <div
-              class="tableColHeight__extra"
+            <template
               v-if="
                 item.evenBoardData &&
                 item.evenBoardData[height] &&
                 item.evenBoardData[height].length > 1
               "
             >
-              <span>{{ item.evenBoardData[height].length }}</span>
-              <span v-if="item.evenBoardData[height]" class="gray">{{
-                calPromotionRate(
-                  item.evenBoardAmount,
-                  evenBoard.value,
-                  index,
-                  height,
-                )
-              }}</span>
-            </div>
+              <span class="tableColHeight__extra left">
+                {{ item.evenBoardData[height].length }}
+              </span>
+              <span class="tableColHeight__extra right gray">
+                {{
+                  calPromotionRate(
+                    item.evenBoardAmount,
+                    evenBoard.value,
+                    index,
+                    height,
+                  )
+                }}
+              </span>
+            </template>
             <Stock
               v-for="(stock, evenIndex) in item.evenBoardData[height]"
               :key="'stock' + evenIndex"
@@ -711,9 +724,16 @@ defineExpose({
         font-size: 12px;
         color: #bbb;
         top: 0;
-        left: 0;
-        padding: 1px 2px;
-        width: 100%;
+        &.bottom {
+          bottom: 0;
+          align-items: flex-end;
+        }
+        &.left {
+          left: 2px;
+        }
+        &.right {
+          right: 2px;
+        }
       }
     }
     &.height2 {

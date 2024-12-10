@@ -267,8 +267,8 @@ export const getFundsChartOption = function (xAxisData: any, yAxisData: any) {
  * @returns 
  */
 export const getIndexChartOption = function (xAxisData: any, yAxisData: any) {
-  const colors = ['#ED7874', '#52B3F5', '#ADDE8A', '#ff96f9', '#52B3F5', '#EFCA52'];
-  const legendData = ['上证指数', '深圳指数', '创业指数', '北证50', '上涨涨跌幅', '两市成交额'];
+  const colors = ['#ED7874', '#52B3F5', '#ADDE8A', '#ff96f9', '#EFCA52'];
+  const legendData = ['上证指数', '深圳指数', '创业指数', '北证50', '两市成交额'];
   return {
     color: colors,
     tooltip: {
@@ -364,30 +364,16 @@ export const getIndexChartOption = function (xAxisData: any, yAxisData: any) {
           },
         },
       },
-      // 上证涨跌幅
-      {
-        show: false,
-        type: 'value',
-        name: legendData[4],
-        position: 'top',
-        alignTicks: true,
-        axisLine: {
-          show: true,
-          lineStyle: {
-            color: colors[4],
-          },
-        },
-      },
       // 成交量
       {
         type: 'value',
-        name: legendData[5],
+        // name: legendData[4],
         position: 'right',
         alignTicks: true,
         axisLine: {
           show: true,
           lineStyle: {
-            color: colors[5],
+            color: colors[4],
           },
         },
         axisLabel: {
@@ -404,7 +390,7 @@ export const getIndexChartOption = function (xAxisData: any, yAxisData: any) {
         label: {
           show: true,
           color: colors[0],
-          position: 'top'
+          position: 'top',
         },
       },
       {
@@ -427,13 +413,6 @@ export const getIndexChartOption = function (xAxisData: any, yAxisData: any) {
         data: yAxisData[3],
         lineStyle: dottedLineItemStyle
       },
-      // {
-      //   name: legendData[4],
-      //   type: 'line',
-      //   yAxisIndex: 4,
-      //   data: yAxisData[4],
-      //   lineStyle: dottedLineItemStyle
-      // },
       {
         name: legendData[4],
         type: 'bar',
@@ -442,19 +421,10 @@ export const getIndexChartOption = function (xAxisData: any, yAxisData: any) {
         label: {
           show: true,
           color: '#fff',
-          position: 'inside'
-        },
-        barGap: '-100%'
-      },
-      {
-        name: legendData[5],
-        type: 'bar',
-        yAxisIndex: 5,
-        data: yAxisData[5],
-        label: {
-          show: true,
-          color: '#fff',
-          position: 'inside'
+          position: 'inside',
+          formatter: (params: any) => {
+            return params.value + '\n\n' + yAxisData[5][params.dataIndex];
+          }
         },
       }
     ],
