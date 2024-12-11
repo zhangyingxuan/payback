@@ -157,27 +157,27 @@
             v-if="height != 1"
             :key="'row' + height"
           >
-            <template
-              v-if="
-                item.evenBoardData &&
-                item.evenBoardData[height] &&
-                item.evenBoardData[height].length > 1
-              "
+            <!-- 当日 当前高度数量 大于1则展示 -->
+            <span
+              class="tableColHeight__extra left"
+              v-if="item.evenBoardData[height]?.length > 1"
             >
-              <span class="tableColHeight__extra left">
-                {{ item.evenBoardData[height].length }}
-              </span>
-              <span class="tableColHeight__extra right gray">
-                {{
-                  calPromotionRate(
-                    item.evenBoardAmount,
-                    evenBoard.value,
-                    index,
-                    height,
-                  )
-                }}
-              </span>
-            </template>
+              {{ item.evenBoardData[height].length }}
+            </span>
+            <!-- 昨日 当前高度数量不为0则展示 -->
+            <span
+              class="tableColHeight__extra right gray"
+              v-if="evenBoard.value[index + 1]?.evenBoardData?.[height - 1]"
+            >
+              {{
+                calPromotionRate(
+                  item.evenBoardAmount,
+                  evenBoard.value,
+                  index,
+                  height,
+                )
+              }}
+            </span>
             <Stock
               v-for="(stock, evenIndex) in item.evenBoardData[height]"
               :key="'stock' + evenIndex"

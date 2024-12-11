@@ -543,7 +543,7 @@ const stockGroupByPlateByFilter = computed(() => {
         );
       }
       // 首板寻龙
-      if (filter.firstBoardPlateDragon) {
+      if (filter.firstBoardPlateDragon && isAdd) {
         isAdd = plateMaxHeight === 1;
       }
       isAdd && myStrategyCheckedNum++;
