@@ -383,7 +383,7 @@ export const getIndexChartOption = function (xAxisData: any, yAxisData: any) {
         show: false,
         type: 'value',
         min: function (value: any) {
-          return +(value.min - 10).toFixed(0);
+          return +(value.min - 1).toFixed(0);
         },
       },
     ],
@@ -439,7 +439,11 @@ export const getIndexChartOption = function (xAxisData: any, yAxisData: any) {
         type: 'line',
         yAxisIndex: 5,
         data: yAxisData[5],
-        lineStyle: dottedLineItemStyle
+        lineStyle: {
+          // 设置线条宽度为0，隐藏线条
+          width: 0
+        },
+        symbol: 'none',
       },
     ],
   };
