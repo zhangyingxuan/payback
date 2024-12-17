@@ -268,7 +268,7 @@ export const getFundsChartOption = function (xAxisData: any, yAxisData: any) {
  */
 export const getIndexChartOption = function (xAxisData: any, yAxisData: any) {
   const colors = ['#ED7874', '#52B3F5', '#ADDE8A', '#ff96f9', '#EFCA52'];
-  const legendData = ['上证指数', '深圳指数', '创业指数', '北证50', '两市成交额'];
+  const legendData = ['上证指数', '深圳指数', '创业指数', '北证50', '两市成交额', '上涨涨跌幅'];
   return {
     color: colors,
     tooltip: {
@@ -283,8 +283,6 @@ export const getIndexChartOption = function (xAxisData: any, yAxisData: any) {
     },
     toolbox: {
       feature: {
-        // dataView: { show: true, readOnly: false },
-        // restore: { show: true },
         saveAsImage: { show: true },
       },
     },
@@ -380,6 +378,14 @@ export const getIndexChartOption = function (xAxisData: any, yAxisData: any) {
           formatter: '{value} 万亿',
         },
       },
+      {
+        // 涨跌幅
+        show: false,
+        type: 'value',
+        min: function (value: any) {
+          return +(value.min - 10).toFixed(0);
+        },
+      },
     ],
     series: [
       {
@@ -426,7 +432,15 @@ export const getIndexChartOption = function (xAxisData: any, yAxisData: any) {
             return params.value + '\n\n' + yAxisData[5][params.dataIndex];
           }
         },
-      }
+      },
+      {
+        show: false,
+        name: legendData[5],
+        type: 'line',
+        yAxisIndex: 5,
+        data: yAxisData[5],
+        lineStyle: dottedLineItemStyle
+      },
     ],
   };
 }

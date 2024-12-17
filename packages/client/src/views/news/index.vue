@@ -26,7 +26,7 @@
         </div>
         <div class="news_item_detail" @click="goDetail(item.url)">
           <span class="title">
-            【{{ item.title }}】
+            【<span v-html="prepareTitle(item.title)"></span>】
             <el-tag type="info" size="small"> {{ item.tag }}</el-tag>
           </span>
           <span class="content">{{ item.digest }}</span>
@@ -95,6 +95,22 @@ const autoRefreshInterval = ref(true);
 let interval: any = null;
 let source: any = CancelToken.source();
 
+/**
+ * 准备消息内容，涨跌 关键字颜色标注
+ * @param tags
+ * @param baseUrl
+ * @returns
+ */
+const prepareTitle = (newsTitle: string) => {
+  const replaceRegZhang = new RegExp('涨', 'ig');
+  const replaceRegDie = new RegExp('跌', 'ig');
+  const replaceStringZhang = `<span class="red">涨</span>`;
+  const replaceStringDie = `<span class="green">跌</span>`;
+  newsTitle = newsTitle.replace(replaceRegZhang, replaceStringZhang);
+  newsTitle = newsTitle.replace(replaceRegDie, replaceStringDie);
+
+  return newsTitle;
+};
 /**
  * 过滤重要消息，并返回最新时间
  * @param list

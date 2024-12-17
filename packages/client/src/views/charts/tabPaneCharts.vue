@@ -191,7 +191,7 @@ async function initPage(pageSize = 15) {
 
     initShortTermChart(result.shortTermData);
     initMarketChart(result.marketData);
-    initIndexChart(result.marketData, result.fundsData);
+    initIndexChart(result.marketData);
     // 展示屏蔽北向，南向; 北向数据已无法实施展示，故参考意义不大 2024-11-29
     // initFundsChart(result.fundsData);
     initHangyeFundsChart(result.fundsData);
@@ -294,7 +294,6 @@ async function initFundsChart(fundsData: FundsModel[]) {
     xAxisData.push(dayjs(item.createTime).format('MM/DD'));
     yAxisData[0].push(item.northFundsBuyAmt);
     yAxisData[1].push(item.southFundsBuyAmt);
-    yAxisData[2].push(item.marketTurnover);
   });
   // 基于准备好的dom，初始化echarts实例
   chartList.fundsChart = echarts.init(fundsChart.value);
@@ -307,16 +306,16 @@ async function initFundsChart(fundsData: FundsModel[]) {
  * 初始化市场报表
  * @param marketData
  */
-function initIndexChart(marketData: MarketModel[], fundsData: FundsModel[]) {
+function initIndexChart(marketData: MarketModel[]) {
   let xAxisData: any[] = [];
   let yAxisData: any[][] = [[], [], [], [], [], []];
-  marketData.forEach((item, index) => {
+  marketData.forEach(item => {
     xAxisData.push(dayjs(item.createTime).format('MM/DD'));
     yAxisData[0].push(item.shangzhengPoint);
     yAxisData[1].push(item.shenzhengPoint);
     yAxisData[2].push(item.chuangyePoint);
     yAxisData[3].push(item.beizheng50Point);
-    yAxisData[4].push(fundsData[index]?.marketTurnover);
+    yAxisData[4].push(item.marketTurnover);
     yAxisData[5].push(item.shangzhengRiseAndFall || 0);
   });
 

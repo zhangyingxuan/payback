@@ -4,7 +4,8 @@ import { CreateMarketDataDto } from '../dto/create-market-data.dto';
 import fundsUtil from './fundsUtil';
 import { fetchMarketPointFromEastmoney, fetchMarketData, fetchIwencaiApi } from '../core/fetchUtil';
 import { params } from '../core/config';
-import { ignoreGainianPlateStr } from './commonUtil';
+import fetch from 'node-fetch';
+import { ignoreGainianPlateStr, toFixed, getMarketTurnover } from './commonUtil';
 
 export default {
   /**
@@ -14,6 +15,7 @@ export default {
     const createMarketDataDto: CreateMarketDataDto = new CreateMarketDataDto();
     // 获取市场指数
     const index = fetchMarketPointFromEastmoney();
+    const dateTime = new Date().getTime();
     // 获取同花顺分数、涨跌家数
     const market = fetchMarketData();
     // 板块涨跌排行
@@ -21,6 +23,10 @@ export default {
     const gainianFallFloat = fetchIwencaiApi(params.gainianFallFloat + ignoreGainianPlateStr);
     const hangyeRiseFloat = fetchIwencaiApi(params.hangyeRiseFloat);
     const hangyeFallFloat = fetchIwencaiApi(params.hangyeFallFloat);
+    // 成交量，涨幅数据
+    const responseMarketTurnover = fetch(
+      `https://push2.eastmoney.com/api/qt/ulist.np/get?cb=jQuery112304396074520394937_1688383194361&fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5&_=${dateTime}`,
+    );
 
     const [
       indexData,
@@ -29,7 +35,16 @@ export default {
       gainianFallFloatData,
       hangyeRiseFloatData,
       hangyeFallFloatData,
-    ] = await Promise.all([index, market, gainianRiseFloat, gainianFallFloat, hangyeRiseFloat, hangyeFallFloat]);
+      responseMarketTurnoverData,
+    ] = await Promise.all([
+      index,
+      market,
+      gainianRiseFloat,
+      gainianFallFloat,
+      hangyeRiseFloat,
+      hangyeFallFloat,
+      responseMarketTurnover,
+    ]);
     // 上涨涨跌幅
     createMarketDataDto.shangzhengRiseAndFall = indexData[0]['f3'];
     createMarketDataDto.shangzhengPoint = indexData[0]['f2'];
@@ -41,6 +56,7 @@ export default {
     createMarketDataDto.riseAmount = marketData.zdfb_data.znum;
     createMarketDataDto.marketScore = marketData.dppj_data;
 
+    const marketTurnover: any = getMarketTurnover(await responseMarketTurnoverData.text());
     const gainianRiseFloatTop5 = fundsUtil.getPlateTop(gainianRiseFloatData, dateStr);
     const gainianFallFloatTop5 = fundsUtil.getPlateTop(gainianFallFloatData, dateStr);
     const hangyeRiseFloatTop5 = fundsUtil.getPlateTop(hangyeRiseFloatData, dateStr);
@@ -49,6 +65,7 @@ export default {
     createMarketDataDto.gainianFallFloat = JSON.stringify(gainianFallFloatTop5);
     createMarketDataDto.hangyeRiseFloat = JSON.stringify(hangyeRiseFloatTop5);
     createMarketDataDto.hangyeFallFloat = JSON.stringify(hangyeFallFloatTop5);
+    createMarketDataDto.marketTurnover = toFixed(marketTurnover / 10000 / 10000 / 10000);
     createMarketDataDto.createTime = new Date();
     return createMarketDataDto;
   },

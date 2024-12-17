@@ -11,7 +11,5 @@ export interface FundsModel {
 
   gainianFundsTop: string;
 
-  marketTurnover: number;
-
   createTime: Date;
 }

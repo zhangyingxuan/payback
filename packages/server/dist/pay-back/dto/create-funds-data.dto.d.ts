@@ -5,6 +5,5 @@ export declare class CreateFundsDataDto {
     southFundsBuyAmt: number;
     hangyeFundsTop: string;
     gainianFundsTop: string;
-    marketTurnover: number;
     createTime: Date;
 }

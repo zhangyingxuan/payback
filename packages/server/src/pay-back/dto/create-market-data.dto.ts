@@ -21,6 +21,8 @@ export class CreateMarketDataDto {
   gainianFallFloat: string;
   hangyeRiseFloat: string;
   hangyeFallFloat: string;
+  // 成交量
+  marketTurnover: number;
 
   riseMore5: number;
 

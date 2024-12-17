@@ -18,6 +18,7 @@ export interface MarketModel {
   beizheng50Point: number;
 
   riseMore5: number;
+  marketTurnover: number;
   fallMore5: number;
 
   createTime: Date;

@@ -113,6 +113,19 @@ export function getLastTradingDay(nowStr: string) {
   return yesterday;
 }
 
+/**
+ * 获取 市场总成交额
+ * @param response
+ */
+export const getMarketTurnover = responseMarketTurnoverStr => {
+  const marketTurnoverStr = responseMarketTurnoverStr.substring(
+    responseMarketTurnoverStr.indexOf('(') + 1,
+    responseMarketTurnoverStr.length - 2,
+  );
+  const responseMarketTurnoverJson = JSON.parse(marketTurnoverStr).data.diff;
+  return responseMarketTurnoverJson[0].f6 + responseMarketTurnoverJson[1].f6;
+};
+
 export default {
   ignoreGainianPlates,
   ignoreGainianPlateStr,
@@ -120,4 +133,5 @@ export default {
   toFixed,
   fundsToFixed,
   getLastTradingDay,
+  getMarketTurnover,
 };

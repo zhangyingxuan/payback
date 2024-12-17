@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getLastTradingDay = exports.getStocksPagingDataByIwencai = exports.getStocksDataByIwencai = exports.getIwencaiData = exports.fundsToFixed = exports.toFixed = exports.ignoreGainianPlateStr = exports.ignoreGainianPlates = void 0;
+exports.getMarketTurnover = exports.getLastTradingDay = exports.getStocksPagingDataByIwencai = exports.getStocksDataByIwencai = exports.getIwencaiData = exports.fundsToFixed = exports.toFixed = exports.ignoreGainianPlateStr = exports.ignoreGainianPlates = void 0;
 const dayjs = require("dayjs");
 exports.ignoreGainianPlates = ['融资融券', '深股通', '沪股通'];
 exports.ignoreGainianPlateStr = (function prepareConditionStr() {
@@ -95,6 +95,12 @@ function getLastTradingDay(nowStr) {
     return yesterday;
 }
 exports.getLastTradingDay = getLastTradingDay;
+const getMarketTurnover = responseMarketTurnoverStr => {
+    const marketTurnoverStr = responseMarketTurnoverStr.substring(responseMarketTurnoverStr.indexOf('(') + 1, responseMarketTurnoverStr.length - 2);
+    const responseMarketTurnoverJson = JSON.parse(marketTurnoverStr).data.diff;
+    return responseMarketTurnoverJson[0].f6 + responseMarketTurnoverJson[1].f6;
+};
+exports.getMarketTurnover = getMarketTurnover;
 exports.default = {
     ignoreGainianPlates: exports.ignoreGainianPlates,
     ignoreGainianPlateStr: exports.ignoreGainianPlateStr,
@@ -102,5 +108,6 @@ exports.default = {
     toFixed,
     fundsToFixed,
     getLastTradingDay,
+    getMarketTurnover: exports.getMarketTurnover,
 };
 //# sourceMappingURL=commonUtil.js.map

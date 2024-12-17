@@ -17,7 +17,7 @@ function getPlateTop(platesData, dateStr, len = 5) {
 
 export default {
   /**
-   * 获取 市场数据
+   * 获取 板块数据
    */
   async getPlateData(dateStr): Promise<CreatePlateDataDto> {
     const createPlateDataDto: CreatePlateDataDto = new CreatePlateDataDto();

@@ -70,6 +70,7 @@ export class MarketService {
         'market_data.fallAmount',
         'market_data.dailyLimitIncome',
         'market_data.shangzhengRiseAndFall',
+        'market_data.marketTurnover',
         'market_data.shangzhengPoint',
         'market_data.shenzhengPoint',
         'market_data.chuangyePoint',

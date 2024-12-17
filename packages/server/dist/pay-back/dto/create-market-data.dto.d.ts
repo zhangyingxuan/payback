@@ -14,6 +14,7 @@ export declare class CreateMarketDataDto {
     gainianFallFloat: string;
     hangyeRiseFloat: string;
     hangyeFallFloat: string;
+    marketTurnover: number;
     riseMore5: number;
     fallMore5: number;
     createTime: Date;

@@ -222,7 +222,7 @@ export default {
     const gaiNianFundsOutflow = await fetchIwencaiApi(iwencaiUrl + params.gainianFundsOutflow);
 
     const foreignFunds: any = transformForeignFunds(responseForeignFunds);
-    const marketTurnover: any = fundsUtil.getMarketTurnover(responseMarketTurnover);
+    const marketTurnover: any = commonUtil.getMarketTurnover(responseMarketTurnover);
     // 获取行业板块流入 Top3
     const hangyeFundsInflowTop3 = fundsUtil.getPlateTop(hangyeFundsInflow, dateStr, 3);
     const hangyeFundsOutflowTop3 = fundsUtil.getPlateTop(hangyeFundsOutflow, dateStr, 3);
@@ -235,7 +235,6 @@ export default {
     createFundsDataDto.northFundsBuyAmt = commonUtil.toFixed(foreignFunds.northFundsBuyAmt / 10000);
     createFundsDataDto.southFundsAmtIn = commonUtil.toFixed(foreignFunds.southFundsAmtIn / 10000);
     createFundsDataDto.southFundsBuyAmt = commonUtil.toFixed(foreignFunds.southFundsBuyAmt / 10000);
-    createFundsDataDto.marketTurnover = commonUtil.toFixed(marketTurnover / 10000 / 10000 / 10000);
     createFundsDataDto.hangyeFundsTop = JSON.stringify({ in: hangyeFundsInflowTop3, out: hangyeFundsOutflowTop3 });
     createFundsDataDto.gainianFundsTop = JSON.stringify({ in: gainianFundsInflowTop3, out: gainianFundsOutflowTop3 });
     createFundsDataDto.createTime = new Date();
