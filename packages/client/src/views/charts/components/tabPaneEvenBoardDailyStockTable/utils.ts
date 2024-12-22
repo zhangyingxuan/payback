@@ -96,8 +96,8 @@ function sortStocks(stocks: []) {
   // 连板高度降序
   stocks.sort((a: any, b: any) => {
     // 反包板高于首板 处理
-    aHeight = +getRealEvenBoardHeight(a);
-    bHeight = +getRealEvenBoardHeight(b);
+    aHeight = getRealEvenBoardHeight(a);
+    bHeight = getRealEvenBoardHeight(b);
 
     return bHeight - aHeight;
   });
@@ -122,7 +122,7 @@ export function getRealEvenBoardHeight(item: any, isBiddingMode = false) {
     // 反包首板，强制将反包首板视为非首板
     return isBiddingMode ? 2 : 1;
   }
-  return item.evenBoardHeight;
+  return +item.evenBoardHeight;
 }
 
 /**

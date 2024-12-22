@@ -10,6 +10,7 @@ const warpperEnv = (envConf: Recordable): ViteEnv => {
     VITE_BASE_API: "",
     VITE_BASE_API_THS: "",
     VITE_BASE_API_THS_NEWS: "",
+    VITE_BASE_API_THS_DQ: "",
   };
 
   for (const envName of Object.keys(envConf)) {

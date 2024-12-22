@@ -685,8 +685,8 @@ function sortPlates(stockGroupByPlateArr: any) {
       bStock = b.value.find((stock: any) => {
         return stock.isAdd;
       });
-      aHeight = +getRealEvenBoardHeight(aStock);
-      bHeight = +getRealEvenBoardHeight(bStock);
+      aHeight = getRealEvenBoardHeight(aStock);
+      bHeight = getRealEvenBoardHeight(bStock);
       return bHeight - aHeight;
     });
   }

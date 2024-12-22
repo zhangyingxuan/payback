@@ -176,7 +176,7 @@ const iconList: Array<string> = [
   'sort',
   'searchlist',
   'search',
-  'edit'
+  'edit',
 ];
 const keyword = ref('');
 const list = computed(() => {
@@ -199,10 +199,7 @@ const list = computed(() => {
 .search {
   width: 300px;
 }
-ul,
-li {
-  list-style: none;
-}
+
 .icon-li {
   display: inline-block;
   padding: 10px;

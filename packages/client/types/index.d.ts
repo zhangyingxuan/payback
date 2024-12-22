@@ -8,6 +8,7 @@ interface ViteEnv {
   VITE_BASE_API: string;
   VITE_BASE_API_THS: string;
   VITE_BASE_API_THS_NEWS: string;
+  VITE_BASE_API_THS_DQ: string;
 }
 
 type RefType<T> = T | null;
