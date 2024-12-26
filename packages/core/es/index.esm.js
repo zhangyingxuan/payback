@@ -1043,7 +1043,7 @@ const params = {
     // 获取昨日涨停的数据（主观数据） 昨日涨停换手率>=5%；（去除庄股或利好一字） 防止炸板
     chooseStock1to2: '昨日首板涨停；涨停开板次数；首次涨停时间；最终涨停时间；昨日竞价量情况；今日竞价量情况；今日竞价看多；昨日涨停换手率>=5%；' + personalPreferenceCondition,
     // 首板预期个股，竞价抢筹，小幅高开 性价比高
-    chooseStock1Expected: '竞价看多；竞价抢筹；竞价涨幅>0；10个交易日内有涨停；昨日未涨停；集中度70<=11；昨日收盘获利>=50%；' + personalPreferenceCondition,
+    chooseStock1Expected: '竞价看多；竞价抢筹；竞价涨幅>0；10个交易日内有涨停；昨日未涨停；集中度70<=11；昨日收盘获利>=50%；今日流通市值；' + personalPreferenceCondition,
     // 新股
     chooseStockNewStock: '今日新股上市；行业；竞价涨幅；流通市值；',
     // =============== =============== 选股 end  =============== ===============

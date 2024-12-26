@@ -17,10 +17,7 @@ body {
     arial, STHeiTi, sans-serif;
   /* transform: translate3d(0,0,0); */
 }
-ul,
-li {
-  list-style: none;
-}
+
 a {
   text-decoration: none;
 }

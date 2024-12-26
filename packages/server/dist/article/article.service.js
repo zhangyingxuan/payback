@@ -22,7 +22,9 @@ let ArticleService = class ArticleService {
         this.articleRp = articleRp;
     }
     async create(createArticleDto) {
-        createArticleDto.createTime = new Date();
+        const createTime = new Date();
+        createArticleDto.createTime = createTime;
+        createArticleDto.updatedTime = createTime;
         const newArticle = await this.articleRp.create(createArticleDto);
         return await this.articleRp.save(newArticle);
     }

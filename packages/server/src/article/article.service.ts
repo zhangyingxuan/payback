@@ -6,11 +6,13 @@ import { CreateArticleDto } from './dto/create-article.dto';
 
 @Injectable()
 export class ArticleService {
-  constructor(@InjectRepository(Article) private readonly articleRp: Repository<Article>) {}
+  constructor(@InjectRepository(Article) private readonly articleRp: Repository<Article>) { }
 
   async create(createArticleDto: CreateArticleDto) {
+    const createTime = new Date();
     // 前端传入数据createTestDto
-    createArticleDto.createTime = new Date();
+    createArticleDto.createTime = createTime;
+    createArticleDto.updatedTime = createTime;
     const newArticle = await this.articleRp.create(createArticleDto);
     return await this.articleRp.save(newArticle);
   }

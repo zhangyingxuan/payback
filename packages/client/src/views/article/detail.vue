@@ -2,7 +2,11 @@
   <div class="container">
     <div class="handle-box">
       <el-button @click="goBack"> 返回 </el-button>
-      <div class="date">{{ data.updatedTime }}</div>
+      <div class="date">
+        更新时间：{{ data.updatedTime }} &nbsp;&nbsp;&nbsp; 创建时间：{{
+          data.createTime
+        }}
+      </div>
     </div>
     <div id="articleDetail">
       <div class="title">{{ data.title }}</div>
@@ -41,7 +45,7 @@ function initPage() {
     findOne({ id }).then(result => {
       data.title = result.title;
       data.content = result.content;
-      data.createTime = result.createTime;
+      data.createTime = dayjs(result.createTime).format(dateTimeFormat);
       data.updatedTime = dayjs(result.updatedTime).format(dateTimeFormat);
     });
   }

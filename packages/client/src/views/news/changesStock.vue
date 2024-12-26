@@ -63,7 +63,6 @@ const formatDataListDate = (dataList: any) => {
     const end_date = dayjs(item.end_date).format('YYYY-MM-DD');
     const start_date = dayjs(item.start_date).format('YYYY-MM-DD');
     const endDateIsToday = now.isSame(end_date, 'day');
-    console.log(endDateIsToday, dayjs(item.end_date), now);
     return {
       ...item,
       end_date,
@@ -81,12 +80,10 @@ const initPage = async () => {
   // 历史历史异动个股
   const stockHaltMonitorHistoryResult = await fetchThsStockHaltMonitorHistory();
 
-  console.log(stockHaltMonitorResult, stockHaltMonitorHistoryResult);
   data.stockHaltMonitorList = formatDataListDate(stockHaltMonitorResult?.list);
   data.stockHaltMonitorHistoryList = formatDataListDate(
     stockHaltMonitorHistoryResult?.list,
   );
-  console.log(data.stockHaltMonitorList);
 };
 
 initPage();
@@ -95,6 +92,10 @@ initPage();
 <style scoped lang="less">
 .container {
   font-size: 14px;
+  ul,
+  li {
+    list-style: none;
+  }
   li {
     margin-bottom: 5px;
   }
