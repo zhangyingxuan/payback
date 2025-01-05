@@ -157,7 +157,7 @@ const updateTodayData = debounce(async (fetchTodayDataType = 0, index) => {
     }
   }
   /deep/.el-tabs__content {
-    padding: 15px 0;
+    padding: 5px 0;
   }
   .el-tab-pane {
     height: calc(100vh - 125px);

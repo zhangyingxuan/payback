@@ -13,7 +13,7 @@ const schedulerTaskList = [
     taskName: 'autoCrawlfundsDataLateSession',
     service: 'fundsService',
     func: 'crawlfundsData',
-    cron: '0 10 16 * * 1-5',
+    cron: '0 45 15 * * 1-5',
   },
   // {
   //   // 更新北向资金 - 北向已不出具体流入金额，暂时不启用 2024-11-11

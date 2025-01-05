@@ -632,7 +632,7 @@ defineExpose({
 }
 
 .evenBoard__table {
-  margin: 0 10px 5px 10px;
+  margin: 0 5px 5px 5px;
   overflow: auto;
   display: flex;
   flex-direction: row;
@@ -641,7 +641,7 @@ defineExpose({
   .tableContentBorder();
   .tableColumsBorder();
   &.isMobile {
-    margin: 0;
+    margin: 5px 0 0 0;
   }
 
   .date-col {

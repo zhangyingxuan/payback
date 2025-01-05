@@ -13,7 +13,7 @@ const schedulerTaskList = [
         taskName: 'autoCrawlfundsDataLateSession',
         service: 'fundsService',
         func: 'crawlfundsData',
-        cron: '0 10 16 * * 1-5',
+        cron: '0 45 15 * * 1-5',
     },
     {
         taskName: 'autoCrawlfundsDataMidday',

@@ -175,6 +175,7 @@ watch(
     if (time === -1) {
       return;
     }
+    initPage();
     interval = setInterval(() => {
       initPage();
     }, time * 1000);

@@ -91,12 +91,12 @@ const items: any = [
     title: '今日资讯',
     permiss: '1',
   },
-  {
-    icon: 'Aim',
-    index: '/shortTerm',
-    title: '短线',
-    permiss: '11',
-  },
+  // {
+  //   icon: 'Aim',
+  //   index: '/shortTerm',
+  //   title: '短线',
+  //   permiss: '11',
+  // },
   {
     icon: 'DocumentCopy',
     index: '/article',
