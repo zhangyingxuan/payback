@@ -4,7 +4,7 @@ import { params } from '../core/config';
 import { fetchAllStocksByIwencai } from '../core/fetchUtil';
 import { getCurrentCycle, iWencaiDateFormat } from 'pay-back-core';
 import * as dayjs from 'dayjs';
-import fetch from 'node-fetch';
+import { createFetch } from '@/utils/abortFetch';
 
 // 跌停个股只需考虑数量，无需所有个股都存储
 const downLimitNum = 50;
@@ -33,8 +33,9 @@ export async function getShortTermData(todayDateStr, lastTradingDayData): Promis
   const dailyLimitOpen: any = fetchAllStocksByIwencai(params.dailyLimitOpen);
   // 跌幅大于等于15的个股
   const hugeFall: any = fetchAllStocksByIwencai(params.hugeFall, otherNum);
+  const abortFetch = createFetch();
   // 获取涨停个股 按题材分类
-  const dailyLimitGroupByGainain = fetch(
+  const dailyLimitGroupByGainain = abortFetch(
     `https://data.10jqka.com.cn/dataapi/limit_up/block_top?filter=HS,GEM2STAR&date=${dayjs(todayDateStr).format(
       'YYYYMMDD',
     )}`,
@@ -72,8 +73,10 @@ export async function getShortTermDataByDate(todayDateStr, lastTradingDayData): 
   const dailyLimitOpen: any = fetchAllStocksByIwencai(params.dailyLimitOpenByDate.replace('${date}', todayDateStr));
   // 跌幅大于等于15的个股
   const hugeFall: any = fetchAllStocksByIwencai(params.hugeFallByDate.replace('${date}', todayDateStr), otherNum);
+
+  const abortFetch = createFetch();
   // 获取涨停个股 按题材分类
-  const dailyLimitGroupByGainain = fetch(
+  const dailyLimitGroupByGainain = abortFetch(
     `https://data.10jqka.com.cn/dataapi/limit_up/block_top?filter=HS,GEM2STAR&date=${dayjs(todayDateStr).format(
       'YYYYMMDD',
     )}`,

@@ -7,7 +7,7 @@ const config_1 = require("../core/config");
 const fetchUtil_1 = require("../core/fetchUtil");
 const pay_back_core_1 = require("pay-back-core");
 const dayjs = require("dayjs");
-const node_fetch_1 = require("node-fetch");
+const abortFetch_1 = require("../../utils/abortFetch");
 const downLimitNum = 50;
 const otherNum = 50;
 function isBefore930() {
@@ -19,7 +19,8 @@ async function getShortTermData(todayDateStr, lastTradingDayData) {
     const downLimit = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.downLimit, downLimitNum);
     const dailyLimitOpen = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.dailyLimitOpen);
     const hugeFall = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.hugeFall, otherNum);
-    const dailyLimitGroupByGainain = (0, node_fetch_1.default)(`https://data.10jqka.com.cn/dataapi/limit_up/block_top?filter=HS,GEM2STAR&date=${dayjs(todayDateStr).format('YYYYMMDD')}`);
+    const abortFetch = (0, abortFetch_1.createFetch)();
+    const dailyLimitGroupByGainain = abortFetch(`https://data.10jqka.com.cn/dataapi/limit_up/block_top?filter=HS,GEM2STAR&date=${dayjs(todayDateStr).format('YYYYMMDD')}`);
     const [dailyLimitData, downLimitData, dailyLimitOpenData, hugeFallData, dailyLimitGroupByGainainD] = await Promise.all([dailyLimit, downLimit, dailyLimitOpen, hugeFall, dailyLimitGroupByGainain]);
     const dailyLimitGroupByGainainData = await dailyLimitGroupByGainainD.json();
     return prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, lastTradingDayData, dailyLimitGroupByGainainData, todayDateStr);
@@ -30,7 +31,8 @@ async function getShortTermDataByDate(todayDateStr, lastTradingDayData) {
     const downLimit = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.downLimitByDate.replace('${date}', todayDateStr), downLimitNum);
     const dailyLimitOpen = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.dailyLimitOpenByDate.replace('${date}', todayDateStr));
     const hugeFall = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.hugeFallByDate.replace('${date}', todayDateStr), otherNum);
-    const dailyLimitGroupByGainain = (0, node_fetch_1.default)(`https://data.10jqka.com.cn/dataapi/limit_up/block_top?filter=HS,GEM2STAR&date=${dayjs(todayDateStr).format('YYYYMMDD')}`);
+    const abortFetch = (0, abortFetch_1.createFetch)();
+    const dailyLimitGroupByGainain = abortFetch(`https://data.10jqka.com.cn/dataapi/limit_up/block_top?filter=HS,GEM2STAR&date=${dayjs(todayDateStr).format('YYYYMMDD')}`);
     const [dailyLimitData, downLimitData, dailyLimitOpenData, hugeFallData, dailyLimitGroupByGainainD] = await Promise.all([dailyLimit, downLimit, dailyLimitOpen, hugeFall, dailyLimitGroupByGainain]);
     const dailyLimitGroupByGainainData = await dailyLimitGroupByGainainD.json();
     return prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, lastTradingDayData, dailyLimitGroupByGainainData, todayDateStr);

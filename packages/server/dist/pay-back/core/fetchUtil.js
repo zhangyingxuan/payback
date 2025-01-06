@@ -75,7 +75,8 @@ async function fetchStockPagingDataList(question, pageSize = 5, pageNum = 1, con
         uuid: 24087,
         condition,
     };
-    const result = await (0, node_fetch_1.default)('https://www.iwencai.com/gateway/urp/v7/landing/getDataList', {
+    const abortFetch = (0, abortFetch_1.createFetch)();
+    const result = await abortFetch('https://www.iwencai.com/gateway/urp/v7/landing/getDataList', {
         headers: {
             accept: 'application/json, text/plain, */*',
             'accept-language': 'zh-CN,zh;q=0.9',
@@ -94,7 +95,8 @@ async function fetchStockPagingDataList(question, pageSize = 5, pageNum = 1, con
 }
 exports.fetchStockPagingDataList = fetchStockPagingDataList;
 async function fetchMarketData() {
-    const result = await (0, node_fetch_1.default)('http://q.10jqka.com.cn/api.php?t=indexflash&', {
+    const abortFetch = (0, abortFetch_1.createFetch)();
+    const result = await abortFetch('http://q.10jqka.com.cn/api.php?t=indexflash&', {
         headers: {
             accept: '*/*',
             'accept-language': 'zh-CN,zh;q=0.9',
@@ -134,7 +136,8 @@ exports.clearThsSelfStocks = clearThsSelfStocks;
 async function fetchMarketPointFromEastmoney() {
     var _a;
     const dateTime = new Date().getTime();
-    const result = await (0, node_fetch_1.default)(`http://57.push2.eastmoney.com/api/qt/clist/get?cb=jQuery112402821055891936557_${dateTime}&pn=1&pz=6&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&wbp2u=|0|0|0|web&fid=&fs=b:MK0010&fields=f2,f3,f12,f14&_=${dateTime}`, {
+    const abortFetch = (0, abortFetch_1.createFetch)();
+    const result = await abortFetch(`http://57.push2.eastmoney.com/api/qt/clist/get?cb=jQuery112402821055891936557_${dateTime}&pn=1&pz=6&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&wbp2u=|0|0|0|web&fid=&fs=b:MK0010&fields=f2,f3,f12,f14&_=${dateTime}`, {
         headers: {
             accept: '*/*',
             'accept-language': 'zh-CN,zh;q=0.9',
@@ -155,7 +158,8 @@ async function fetchMarketPointFromEastmoney() {
 }
 exports.fetchMarketPointFromEastmoney = fetchMarketPointFromEastmoney;
 async function fetchMarketPoint(apiUrl, key) {
-    const result = await (0, node_fetch_1.default)(apiUrl, {
+    const abortFetch = (0, abortFetch_1.createFetch)();
+    const result = await abortFetch(apiUrl, {
         headers: {
             accept: '*/*',
             'accept-language': 'zh-CN,zh;q=0.9',
@@ -178,7 +182,8 @@ exports.fetchMarketPoint = fetchMarketPoint;
 async function fetchNorhFunds() {
     const dateTime = new Date().getTime();
     const url = `https://datacenter-web.eastmoney.com/api/data/v1/get?callback=jQuery112304542900785353563_${dateTime}&reportName=RPT_MUTUAL_QUOTA&columns=TRADE_DATE%2CMUTUAL_TYPE%2CBOARD_TYPE%2CMUTUAL_TYPE_NAME%2CFUNDS_DIRECTION%2CINDEX_CODE%2CINDEX_NAME%2CBOARD_CODE&quoteColumns=status~07~BOARD_CODE%2CdayNetAmtIn~07~BOARD_CODE%2CdayAmtRemain~07~BOARD_CODE%2CdayAmtThreshold~07~BOARD_CODE%2Cf104~07~BOARD_CODE%2Cf105~07~BOARD_CODE%2Cf106~07~BOARD_CODE%2Cf3~03~INDEX_CODE~INDEX_f3%2CnetBuyAmt~07~BOARD_CODE&quoteType=0&pageNumber=1&pageSize=200&sortTypes=1&sortColumns=MUTUAL_TYPE&source=WEB&client=WEB&_=${dateTime}`;
-    const result = await (0, node_fetch_1.default)(url, {
+    const abortFetch = (0, abortFetch_1.createFetch)();
+    const result = await abortFetch(url, {
         headers: {
             accept: '*/*',
             'accept-language': 'zh-CN,zh;q=0.9',

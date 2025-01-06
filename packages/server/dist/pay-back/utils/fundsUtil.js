@@ -4,13 +4,14 @@ const commonUtil_1 = require("./commonUtil");
 const fetchUtil_1 = require("../core/fetchUtil");
 const create_funds_data_dto_1 = require("../dto/create-funds-data.dto");
 const config_1 = require("../core/config");
-const node_fetch_1 = require("node-fetch");
 const commonUtil_2 = require("./commonUtil");
 const transformDataUtil_1 = require("./transformDataUtil");
+const abortFetch_1 = require("../../utils/abortFetch");
 exports.default = {
     async getFundsData(dateStr) {
         const dateTime = new Date().getTime();
-        const responseForeignFunds = (0, node_fetch_1.default)(`https://push2.eastmoney.com/api/qt/kamt/get?fields1=f1,f2,f3,f4&fields2=f51,f52,f53,f54,f56,f60,f62,f63,f65,f66&ut=fa5fd1943c7b386f172d6893dbfba10b&cb=jQuery1123049543730033209155_${dateTime}&_=${dateTime}`);
+        const abortFetch = (0, abortFetch_1.createFetch)();
+        const responseForeignFunds = abortFetch(`https://push2.eastmoney.com/api/qt/kamt/get?fields1=f1,f2,f3,f4&fields2=f51,f52,f53,f54,f56,f60,f62,f63,f65,f66&ut=fa5fd1943c7b386f172d6893dbfba10b&cb=jQuery1123049543730033209155_${dateTime}&_=${dateTime}`);
         const hangyeFundsInflow = (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.hangyeFundsInflow);
         const hangyeFundsOutflow = (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.hangyeFundsOutflow);
         const gaiNianFundsInflow = (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.gainianFundsInflow + commonUtil_2.ignoreGainianPlateStr);

@@ -4,15 +4,16 @@ exports.getHotListData = void 0;
 const create_hot_list_dto_1 = require("../dto/create-hot-list.dto");
 const common_1 = require("@nestjs/common");
 const transformDataUtil_1 = require("./transformDataUtil");
-const node_fetch_1 = require("node-fetch");
+const abortFetch_1 = require("../../utils/abortFetch");
 const logger = new common_1.Logger('hotListUtil');
 async function getHotListData() {
     const createHotListDto = new create_hot_list_dto_1.CreateHotListDto();
+    const abortFetch = (0, abortFetch_1.createFetch)();
     const baseUrl = 'https://dq.10jqka.com.cn/fuyao/hot_list_data/out/hot_list/v1';
-    const normal = (0, node_fetch_1.default)(baseUrl + '/stock?stock_type=a&type=hour&list_type=normal');
-    const value = (0, node_fetch_1.default)(baseUrl + '/stock?stock_type=a&type=day&list_type=value');
-    const concept = (0, node_fetch_1.default)(baseUrl + '/plate?type=concept');
-    const industry = (0, node_fetch_1.default)(baseUrl + '/plate?type=industry');
+    const normal = abortFetch(baseUrl + '/stock?stock_type=a&type=hour&list_type=normal');
+    const value = abortFetch(baseUrl + '/stock?stock_type=a&type=day&list_type=value');
+    const concept = abortFetch(baseUrl + '/plate?type=concept');
+    const industry = abortFetch(baseUrl + '/plate?type=industry');
     const maxAmount10 = 10;
     const maxAmount5 = 5;
     try {

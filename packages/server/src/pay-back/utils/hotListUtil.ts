@@ -1,7 +1,7 @@
 import { CreateHotListDto } from '../dto/create-hot-list.dto';
 import { Logger } from '@nestjs/common';
 import { transformStockData, transformPlateData } from './transformDataUtil';
-import fetch from 'node-fetch';
+import { createFetch } from '@/utils/abortFetch';
 
 const logger = new Logger('hotListUtil');
 
@@ -11,11 +11,12 @@ const logger = new Logger('hotListUtil');
  */
 export async function getHotListData() {
   const createHotListDto = new CreateHotListDto();
+  const abortFetch = createFetch();
   const baseUrl = 'https://dq.10jqka.com.cn/fuyao/hot_list_data/out/hot_list/v1';
-  const normal = fetch(baseUrl + '/stock?stock_type=a&type=hour&list_type=normal');
-  const value = fetch(baseUrl + '/stock?stock_type=a&type=day&list_type=value');
-  const concept = fetch(baseUrl + '/plate?type=concept');
-  const industry = fetch(baseUrl + '/plate?type=industry');
+  const normal = abortFetch(baseUrl + '/stock?stock_type=a&type=hour&list_type=normal');
+  const value = abortFetch(baseUrl + '/stock?stock_type=a&type=day&list_type=value');
+  const concept = abortFetch(baseUrl + '/plate?type=concept');
+  const industry = abortFetch(baseUrl + '/plate?type=industry');
   const maxAmount10 = 10;
   const maxAmount5 = 5;
   try {

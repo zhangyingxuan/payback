@@ -2,9 +2,9 @@ import commonUtil from './commonUtil';
 import { fetchIwencaiApi } from '../core/fetchUtil';
 import { CreateFundsDataDto } from '../dto/create-funds-data.dto';
 import { params } from '../core/config';
-import fetch from 'node-fetch';
 import { ignoreGainianPlateStr, getLastTradingDay } from './commonUtil';
 import { transformForeignFundsNew } from './transformDataUtil';
+import { createFetch } from '@/utils/abortFetch';
 
 export default {
   /**
@@ -15,8 +15,9 @@ export default {
     // const responseForeignFunds = await fetchNorhFunds();
     // 更新数据获取接口 2024-05-15 21:26:00
     const dateTime = new Date().getTime();
+    const abortFetch = createFetch();
     // 暂时去除，北向、南向资金
-    const responseForeignFunds = fetch(
+    const responseForeignFunds = abortFetch(
       `https://push2.eastmoney.com/api/qt/kamt/get?fields1=f1,f2,f3,f4&fields2=f51,f52,f53,f54,f56,f60,f62,f63,f65,f66&ut=fa5fd1943c7b386f172d6893dbfba10b&cb=jQuery1123049543730033209155_${dateTime}&_=${dateTime}`,
     );
 
