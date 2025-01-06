@@ -4,8 +4,8 @@ const create_market_data_dto_1 = require("../dto/create-market-data.dto");
 const fundsUtil_1 = require("./fundsUtil");
 const fetchUtil_1 = require("../core/fetchUtil");
 const config_1 = require("../core/config");
-const node_fetch_1 = require("node-fetch");
 const commonUtil_1 = require("./commonUtil");
+const abortFetch_1 = require("../../utils/abortFetch");
 exports.default = {
     async getMarketData(dateStr) {
         const createMarketDataDto = new create_market_data_dto_1.CreateMarketDataDto();
@@ -16,7 +16,8 @@ exports.default = {
         const gainianFallFloat = (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.gainianFallFloat + commonUtil_1.ignoreGainianPlateStr);
         const hangyeRiseFloat = (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.hangyeRiseFloat);
         const hangyeFallFloat = (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.hangyeFallFloat);
-        const responseMarketTurnover = (0, node_fetch_1.default)(`https://push2.eastmoney.com/api/qt/ulist.np/get?cb=jQuery112304396074520394937_1688383194361&fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5&_=${dateTime}`);
+        const abortFetch = (0, abortFetch_1.createFetch)();
+        const responseMarketTurnover = abortFetch(`https://push2.eastmoney.com/api/qt/ulist.np/get?cb=jQuery112304396074520394937_1688383194361&fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5&_=${dateTime}`);
         const [indexData, marketData, gainianRiseFloatData, gainianFallFloatData, hangyeRiseFloatData, hangyeFallFloatData, responseMarketTurnoverData,] = await Promise.all([
             index,
             market,

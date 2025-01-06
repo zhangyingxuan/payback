@@ -4,8 +4,8 @@ import { CreateMarketDataDto } from '../dto/create-market-data.dto';
 import fundsUtil from './fundsUtil';
 import { fetchMarketPointFromEastmoney, fetchMarketData, fetchIwencaiApi } from '../core/fetchUtil';
 import { params } from '../core/config';
-import fetch from 'node-fetch';
 import { ignoreGainianPlateStr, toFixed, getMarketTurnover } from './commonUtil';
+import { createFetch } from '@/utils/abortFetch';
 
 export default {
   /**
@@ -23,8 +23,9 @@ export default {
     const gainianFallFloat = fetchIwencaiApi(params.gainianFallFloat + ignoreGainianPlateStr);
     const hangyeRiseFloat = fetchIwencaiApi(params.hangyeRiseFloat);
     const hangyeFallFloat = fetchIwencaiApi(params.hangyeFallFloat);
+    const abortFetch = createFetch();
     // 成交量，涨幅数据
-    const responseMarketTurnover = fetch(
+    const responseMarketTurnover = abortFetch(
       `https://push2.eastmoney.com/api/qt/ulist.np/get?cb=jQuery112304396074520394937_1688383194361&fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5&_=${dateTime}`,
     );
 

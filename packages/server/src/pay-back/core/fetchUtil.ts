@@ -2,6 +2,7 @@ import { createV } from 'pay-back-core';
 import fetch from 'node-fetch';
 import { getIwencaiData, getStocksDataByIwencai, getStocksPagingDataByIwencai } from '../utils/commonUtil';
 import { stringify } from 'qs';
+import { createFetch } from '@/utils/abortFetch';
 
 // 爱问财最大分页码为100
 const maxPageSize = 100;
@@ -85,8 +86,8 @@ export async function fetchIwencai(question, pageSize = 5, isPlate = false) {
     secondary_intent: isPlate ? 'zhishu' : 'stock',
     add_info: '{"urp":{"scene":1,"company":1,"business":1},"contentType":"json","searchInfo":true}',
   };
-
-  const result = await fetch('http://www.iwencai.com/customized/chart/get-robot-data', {
+  const abortFetch = createFetch();
+  const result = await abortFetch('http://www.iwencai.com/customized/chart/get-robot-data', {
     headers: {
       accept: 'application/json, text/plain, */*',
       'accept-language': 'zh-CN,zh;q=0.9',

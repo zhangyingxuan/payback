@@ -5,6 +5,7 @@ const pay_back_core_1 = require("pay-back-core");
 const node_fetch_1 = require("node-fetch");
 const commonUtil_1 = require("../utils/commonUtil");
 const qs_1 = require("qs");
+const abortFetch_1 = require("../../utils/abortFetch");
 const maxPageSize = 100;
 async function fetchIwencaiApi(question, pageSize = 5) {
     const result = await fetchIwencai(question, pageSize, true);
@@ -43,7 +44,8 @@ async function fetchIwencai(question, pageSize = 5, isPlate = false) {
         secondary_intent: isPlate ? 'zhishu' : 'stock',
         add_info: '{"urp":{"scene":1,"company":1,"business":1},"contentType":"json","searchInfo":true}',
     };
-    const result = await (0, node_fetch_1.default)('http://www.iwencai.com/customized/chart/get-robot-data', {
+    const abortFetch = (0, abortFetch_1.createFetch)();
+    const result = await abortFetch('http://www.iwencai.com/customized/chart/get-robot-data', {
         headers: {
             accept: 'application/json, text/plain, */*',
             'accept-language': 'zh-CN,zh;q=0.9',
