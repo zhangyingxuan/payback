@@ -34,7 +34,6 @@ let QyWechatNotice = QyWechatNotice_1 = class QyWechatNotice {
             msgtype: 'markdown',
             markdown: {
                 content: content.join(''),
-                mentioned_list: ['yxuanzhang', '@all'],
             },
         };
         return await this.pushMsg2Robot(body);
@@ -71,7 +70,6 @@ let QyWechatNotice = QyWechatNotice_1 = class QyWechatNotice {
             msgtype: 'markdown',
             markdown: {
                 content: content.join(''),
-                mentioned_list: ['yxuanzhang', '@all'],
             },
         };
         return await this.pushMsg2Robot(body);

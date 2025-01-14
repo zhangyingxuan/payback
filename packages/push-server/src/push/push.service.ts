@@ -40,8 +40,6 @@ export class PushService {
       msgtype: 'markdown',
       markdown: {
         content: content.join(''),
-        mentioned_list: ['yxuanzhang', '@all'],
-        // mentioned_mobile_list: ['13800001111', '@all'],
       },
     };
     return await this.pushMsg2Robot(body);
@@ -75,7 +73,7 @@ export class PushService {
   /**
    * 新闻通知
    * @param newsTitle
-   * @param msgContent
+   * @param msgContent markdown内容，最长不超过2048个字节，必须是utf8编码
    * @param newsUrl
    * @returns
    */
@@ -113,8 +111,6 @@ export class PushService {
       msgtype: 'markdown',
       markdown: {
         content: content.join(''),
-        mentioned_list: ['yxuanzhang', '@all'],
-        // mentioned_mobile_list: ['13800001111', '@all'],
       },
     };
     return await this.pushMsg2Robot(body);

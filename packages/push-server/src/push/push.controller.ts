@@ -10,10 +10,6 @@ export class PushController {
   noticeNews(newsTitle, msgContent = '哎哟，不错哦', newsUrl, news?: any): any {
     return this.pushService.noticeNews(newsTitle, msgContent, newsUrl, news);
   }
-  // @MessagePattern('noticeNews')
-  // noticeNews(newsTitle, msgContent = '哎哟，不错哦', newsUrl, news?: any): any {
-  //   return this.pushService.noticeNews(newsTitle, msgContent, newsUrl, news);
-  // }
 
   @EventPattern('notice')
   notice(serviceName, msgContent): any {

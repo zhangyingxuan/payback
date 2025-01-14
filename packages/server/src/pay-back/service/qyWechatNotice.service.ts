@@ -34,8 +34,6 @@ export class QyWechatNotice {
       msgtype: 'markdown',
       markdown: {
         content: content.join(''),
-        mentioned_list: ['yxuanzhang', '@all'],
-        // mentioned_mobile_list: ['13800001111', '@all'],
       },
     };
     return await this.pushMsg2Robot(body);
@@ -93,8 +91,6 @@ export class QyWechatNotice {
       msgtype: 'markdown',
       markdown: {
         content: content.join(''),
-        mentioned_list: ['yxuanzhang', '@all'],
-        // mentioned_mobile_list: ['13800001111', '@all'],
       },
     };
     return await this.pushMsg2Robot(body);

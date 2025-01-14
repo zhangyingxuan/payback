@@ -180,7 +180,7 @@ export class PayBackController {
       // 竞价修改时间改为 正确的时间
       result.biddingDataUpdateTime = currentDayEventData[0].biddingDataUpdateTime;
     } catch (e) {
-      this.logger.debug(e);
+      this.logger.error(e);
     }
     return {
       code: 0,

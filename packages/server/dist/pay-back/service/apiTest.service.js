@@ -39,7 +39,6 @@ let ApiTestService = ApiTestService_1 = class ApiTestService {
             msgtype: 'markdown',
             text: {
                 content: '广州今日天气：29度，大部分多云，降雨概率：60%',
-                mentioned_list: ['yxuanzhang'],
             },
         };
         return await this.qyWechatNotice.notice(ApiTestService_1.name, `[crawlfundsData]出错了：${JSON.stringify(body)}`);

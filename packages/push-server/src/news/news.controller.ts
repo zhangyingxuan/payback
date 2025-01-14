@@ -27,8 +27,10 @@ export class NewsController {
       try {
         // 推送消息
         this.pushService.noticeNews(news.title, news.digest, news.url, news);
+
+        news.title.includes('A股') && this.logger.log('PUSH A股====' + news.title);
       } catch (e) {
-        this.logger.log('[fetchNewsTask] 推送消息失败：' + e);
+        this.logger.error('[fetchNewsTask] 推送消息失败：' + e);
         // 推送失败，还原查询时间
         this.newsService.reductionLatestTime();
       }

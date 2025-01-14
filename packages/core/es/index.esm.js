@@ -1,6 +1,6 @@
 /*!
- * index.js v0.0.16
- * (c) 2018-2024 blowsysun
+ * index.js v0.0.17
+ * (c) 2018-2025 blowsysun
  * Released under the MIT License.
  */
 import dayjs from 'dayjs';
@@ -1019,10 +1019,10 @@ function createV() {
 }
 
 const iWencaiDateFormat = 'YYYYMMDD';
-const stockBaseCondition = '非st；非退市；行业';
+const stockBaseCondition = '非st；非退市；所属同花顺行业级别是二级行业；';
 // export const personalPreferenceCondition = '行业；股价低于30元；流通市值<=120亿；流通市值>=20亿；非创业板；非科创板；非ST';
 // 2024-06-18 17:36:19 个人偏好条件 可以做创业板，尝试绩优股
-const personalPreferenceCondition = '市盈率>0；股价低于50元；流通市值<=500亿；流通市值>=20亿；非科创板；非ST；非退市' + stockBaseCondition;
+const personalPreferenceCondition = '市盈率>0；股价低于50元；流通市值<=500亿；流通市值>=20亿；非科创板；非ST；非退市';
 const params = {
     downLimit: '跌停；' + stockBaseCondition,
     downLimitByDate: '${date}跌停；' + stockBaseCondition,
@@ -1045,7 +1045,7 @@ const params = {
     // 首板预期个股，竞价抢筹，小幅高开 性价比高
     chooseStock1Expected: '竞价看多；竞价抢筹；竞价涨幅>0；10个交易日内有涨停；昨日未涨停；集中度70<=11；昨日收盘获利>=50%；今日流通市值；' + personalPreferenceCondition,
     // 新股
-    chooseStockNewStock: '今日新股上市；行业；竞价涨幅；流通市值；',
+    chooseStockNewStock: '今日新股上市；竞价涨幅；流通市值；',
     // =============== =============== 选股 end  =============== ===============
     // 近三日资金流向
     capitalFlows3: '近三日资金流向降序',

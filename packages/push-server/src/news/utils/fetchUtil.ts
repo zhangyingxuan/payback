@@ -64,6 +64,46 @@ export async function fetchNewsRequest(time = '1725962009', signal) {
 }
 
 /**
+ * 
+ * @returns 获取所有的消息，400条
+ */
+export async function fetchAllNewsRequest(limit = 400) {
+  return new Promise(async (resolve, reject) => {
+    const params: any = {
+      headers: {
+        accept: '*/*',
+        'accept-language': 'zh-CN,zh;q=0.9',
+        'hexin-v':
+          'AzrmeXApCAlpfoS5bPTuu6mujWtZ67aQMGkwL0Qz4kKY9NTVLHsO1QD_i0MX',
+        'sec-ch-ua':
+          '"Not)A;Brand";v="99", "Google Chrome";v="127", "Chromium";v="127"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"macOS"',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-origin',
+        'x-requested-with': 'XMLHttpRequest',
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
+      },
+      referrer: 'https://news.10jqka.com.cn/realtimenews.html',
+      referrerPolicy: 'strict-origin-when-cross-origin',
+      body: null,
+      method: 'GET',
+      mode: 'cors',
+      credentials: 'include',
+    };
+
+    fetch(
+      `https://news.10jqka.com.cn/tapp/news/push/stock/?page=1&tag=&track=website&pagesize=${limit}`,
+      params,
+    ).then(async (result) => {
+        resolve(await result.json());
+    })
+  });
+}
+
+/**
  * 获取新闻消息（财联社 电报）
  * 通过接口返回的 list 数据取出 rtime 作为下次请求的参数
  * @param time

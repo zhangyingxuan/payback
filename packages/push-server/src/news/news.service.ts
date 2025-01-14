@@ -46,6 +46,7 @@ export class NewsService {
         }
         // color 为 '2'，重要消息
         if (news.color === '2') {
+          news.title.includes('A股') && this.logger.log('News A股====' + news.title);
           needPushNews.push(news);
         }
       });

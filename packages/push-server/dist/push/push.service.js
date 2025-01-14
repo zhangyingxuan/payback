@@ -36,7 +36,6 @@ let PushService = PushService_1 = class PushService {
             msgtype: 'markdown',
             markdown: {
                 content: content.join(''),
-                mentioned_list: ['yxuanzhang', '@all'],
             },
         };
         return await this.pushMsg2Robot(body);
@@ -72,7 +71,6 @@ let PushService = PushService_1 = class PushService {
             msgtype: 'markdown',
             markdown: {
                 content: content.join(''),
-                mentioned_list: ['yxuanzhang', '@all'],
             },
         };
         return await this.pushMsg2Robot(body);

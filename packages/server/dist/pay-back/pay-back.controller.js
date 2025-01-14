@@ -121,7 +121,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
             result.biddingDataUpdateTime = currentDayEventData[0].biddingDataUpdateTime;
         }
         catch (e) {
-            this.logger.debug(e);
+            this.logger.error(e);
         }
         return {
             code: 0,

@@ -40,6 +40,7 @@ let NewsService = NewsService_1 = class NewsService {
                     latestTime = news.ctime;
                 }
                 if (news.color === '2') {
+                    news.title.includes('A股') && this.logger.log('News A股====' + news.title);
                     needPushNews.push(news);
                 }
             });
