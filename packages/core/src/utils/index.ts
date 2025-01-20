@@ -25,9 +25,9 @@ export function getCurrentCycle(currentTradingDayData: any, lastTradingDayData: 
   // 周期定义
   const cycles = ['启动', '发酵', '高潮', '退潮', '冰点', '混沌'];
   // 最大高度 currentTradingDayData.evenBoardData
-  const maxHeightCurrent: any = currentTradingDayData.marketHeight;
+  const maxHeightCurrent: any = currentTradingDayData?.marketHeight;
   // 昨日高度
-  const maxHeightLast: any = lastTradingDayData.marketHeight;
+  const maxHeightLast: any = lastTradingDayData?.marketHeight;
 
   // 用赚钱效应、亏钱效应判断 还是 高度？高度资金可以硬怼出来
   // 跌幅大于15的个股

@@ -8,5 +8,5 @@ export declare class PlateService {
     crawlPlateData(): Promise<CreatePlateDataDto>;
     findAll(): Promise<plateData[]>;
     findByLimit(len?: number): Promise<plateData[]>;
-    delteByCreateTime(date: any): Promise<import("typeorm").DeleteResult>;
+    deleteByCreateTime(date: any): Promise<import("typeorm").DeleteResult>;
 }

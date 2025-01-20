@@ -47,6 +47,7 @@ export declare class PayBackController {
     crawlBinddingData(body: CrawlTodayDataDto, req: any): Promise<{
         code: number;
         data: any;
+        message: string;
     }>;
     crawlSpecialStockData(): Promise<{
         code: number;

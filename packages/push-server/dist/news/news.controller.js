@@ -32,8 +32,8 @@ let NewsController = NewsController_1 = class NewsController {
         const newsList = await this.newsService.fetchNewsTask(this.controller.signal);
         newsList.forEach((news) => {
             try {
+                this.logger.log('推送消息 A股====' + news.title);
                 this.pushService.noticeNews(news.title, news.digest, news.url, news);
-                news.title.includes('A股') && this.logger.log('PUSH A股====' + news.title);
             }
             catch (e) {
                 this.logger.error('[fetchNewsTask] 推送消息失败：' + e);

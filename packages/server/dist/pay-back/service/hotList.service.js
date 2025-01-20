@@ -60,7 +60,7 @@ let HotListService = HotListService_1 = class HotListService {
         }
         return hotListData;
     }
-    async delteByCreateTime(date) {
+    async deleteByCreateTime(date) {
         return await this.hotListRp
             .createQueryBuilder()
             .delete()

@@ -8,15 +8,15 @@
   >
     <pre>
       【早盘工作】<br />
-      1. 9点前，外围美股昨日涨跌情况 <a href="https://stock.10jqka.com.cn/zaopan/" target="_blank">早盘必读</a>  <a href="http://stock.10jqka.com.cn/fincalendar.shtml" target="_blank">投资日历</a>  <a href="http://stock.10jqka.com.cn/jyts_list/" target="_blank">交易提醒</a> <a href="http://stock.10jqka.com.cn/bktt_list/" target="_blank">四大证券文章精华</a> 
+      1. 9点前，外围美股昨日涨跌情况；今日题材梳理 <a href="https://stock.10jqka.com.cn/zaopan/" target="_blank">早盘必读</a>  <a href="http://stock.10jqka.com.cn/fincalendar.shtml" target="_blank">投资日历</a>  <a href="http://stock.10jqka.com.cn/jyts_list/" target="_blank">交易提醒</a> <a href="http://stock.10jqka.com.cn/bktt_list/" target="_blank">四大证券文章精华</a> 
       2. 大盘趋势，保本？进攻？全天策略基调，注意变盘
       3. 看集合竞价
           2.1 9.20-9.25，<span style="color: red">一字板方向</span>与前日对比封单多少变化，为资金追随方向，对应 <span style="color: red">板块分支</span>加关注
-          2.2 9.24 - 9.25一分钟看匹配量，可暴露主力意图（看价格走势，判断出货还是抢筹）
+          2.2 9.24 - 9.25，看9.25一分钟核心标的匹配量，可暴露主力意图（看价格走势，判断出货还是抢筹）
           2.3 9.25 - 9.30，竞价比对昨日功课中，预期差；<span style="color: red">去弱留强</span>，直接删除低开2个点以上的自选股，快速反应强势弱势，使用什么模式，盘面题材整理！！！
           2.4 9.30 后，按昨日计划处理持仓，优先处理不及预期个股。
       4. 选股：留意超预期，筹码，位置，价格，公告业绩，大单；临盘自选低位强势首板，或大资金加持小票
-      5. 1进2玩法：高开3%以下，最好打板介入； 3-7%适合低吸，7%以上竞价直接上；一字板不打
+      5. 接力玩法：高开3%以下，最好打板介入； 3-7%适合低吸，7%以上竞价直接上；一字板不打
       
       【盘中消息】
       1. <a href="https://news.10jqka.com.cn/realtimenews.html" target="_blank">同花顺全球财经</a> <a href="https://www.cls.cn/telegraph" target="_blank">财联社电报</a>
@@ -28,6 +28,12 @@
       3. 高开6个点以上，10-30分钟不冲击涨停，离场
     </pre>
     <pre>
+      【午盘工作】<br />
+      1. 同花顺午评；
+      2. 今日题材梳理
+      3. 涨跌停整理；封板率，连板
+    </pre>
+    <pre>
       【复盘工作】<br />
       1. 市场情绪预判：敬畏市场，预测指数，及板块次日走势，判断次日是否参与，需与市场共振。
       2. 短线情绪预判：高位抱团还是低位补涨？人气股/<a target="_blank" href="http://www.iwencai.com/unifiedwap/result?w=%E6%88%90%E4%BA%A4%E9%A2%9D%E9%99%8D%E5%BA%8F%EF%BC%9B%E6%B5%81%E9%80%9A%E5%B8%82%E5%80%BC%EF%BC%9B%E5%B8%82%E5%80%BC%EF%BC%9B%E6%8D%A2%E6%89%8B%E7%8E%87&querytype=stock">容量核心</a>/龙头 当前阶段，预测明日走势 给出操作预案
@@ -36,7 +42,6 @@
       5. 龙虎榜游资参与情况（哪些在参与资金量如何），方向确定
       6. 消息收集，睡前少爷 + 股道风 + 龙头司令
       7. 制定交易计划（选股/仓位/买卖点/止盈止损位）
-
     </pre>
     <pre>
       【交易计划】 <br />

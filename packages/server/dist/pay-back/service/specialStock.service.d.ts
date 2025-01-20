@@ -13,5 +13,5 @@ export declare class SpecialStockService {
     findAll(): Promise<specialStock[]>;
     findByLimit(len?: number): Promise<specialStock[]>;
     getLastTradingDayByDB(todayDateStr: any): Promise<string>;
-    delteByCreateTime(date: any): Promise<import("typeorm").DeleteResult>;
+    deleteByCreateTime(date: any): Promise<import("typeorm").DeleteResult>;
 }

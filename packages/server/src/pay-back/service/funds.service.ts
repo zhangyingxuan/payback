@@ -77,7 +77,7 @@ export class FundsService {
       .getMany();
   }
 
-  async delteByCreateTime(date) {
+  async deleteByCreateTime(date) {
     return await this.fundsDataRp
       .createQueryBuilder()
       .delete()

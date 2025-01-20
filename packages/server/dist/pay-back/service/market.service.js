@@ -92,7 +92,7 @@ let MarketService = MarketService_1 = class MarketService {
             .orderBy('createTime', 'DESC')
             .getMany();
     }
-    async delteByCreateTime(date) {
+    async deleteByCreateTime(date) {
         return await this.marketDataRp
             .createQueryBuilder()
             .delete()

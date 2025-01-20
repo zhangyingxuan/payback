@@ -8,5 +8,5 @@ export declare class FundsService {
     crawlfundsData(): Promise<CreateFundsDataDto>;
     findAll(): Promise<fundsData[]>;
     findByLimit(len?: number): Promise<fundsData[]>;
-    delteByCreateTime(date: any): Promise<import("typeorm").DeleteResult>;
+    deleteByCreateTime(date: any): Promise<import("typeorm").DeleteResult>;
 }

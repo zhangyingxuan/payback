@@ -11,12 +11,12 @@ export async function getLatestConceptPlate(currentLatestConceptPlate) {
   const latestConceptPlates: any = await fetchIwencaiApi(iwencaiUrl + params.gainianPlate);
 
   // 与最新板块比较，判断是否 有新增的概念板块，如有 则返回
-  if (currentLatestConceptPlate.code === latestConceptPlates[0]['code']) {
+  if (currentLatestConceptPlate?.code === latestConceptPlates?.[0]['code']) {
     return null;
   }
 
   const index = latestConceptPlates.findIndex(item => {
-    return item['code'] === currentLatestConceptPlate.code;
+    return item['code'] === currentLatestConceptPlate?.code;
   });
   // 取出待录入的 板块信息
   const latestConceptPlatesArr = latestConceptPlates.splice(0, index);

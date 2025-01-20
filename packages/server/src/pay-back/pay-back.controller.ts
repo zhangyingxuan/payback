@@ -168,6 +168,8 @@ export class PayBackController {
   @UseGuards(JwtAuthGuard)
   @Post('/crawlBinddingData')
   async crawlBinddingData(@Body() body: CrawlTodayDataDto, @Request() req) {
+    let code = 0,
+      message = 'success';
     // 是否剔除 不及预期数据；注意接收到的参数 是否为字符串
     const binddingData = await this.specialStockService.crawlBinddingData(body.isRemoveIncompatible, req.user?.account);
     let result = null;
@@ -181,10 +183,13 @@ export class PayBackController {
       result.biddingDataUpdateTime = currentDayEventData[0].biddingDataUpdateTime;
     } catch (e) {
       this.logger.error(e);
+      code = 500;
+      message = e;
     }
     return {
-      code: 0,
+      code,
       data: result,
+      message
     };
   }
 
@@ -204,17 +209,17 @@ export class PayBackController {
       message = 'success';
     try {
       // 删除短线数据
-      const shorTerm = this.shorTermService.delteByCreateTime(body.date);
+      const shorTerm = this.shorTermService.deleteByCreateTime(body.date);
       // 删除竞价数据
-      const specialStock = this.specialStockService.delteByCreateTime(body.date);
+      const specialStock = this.specialStockService.deleteByCreateTime(body.date);
       // 删除市场数据
-      const market = this.marketService.delteByCreateTime(body.date);
+      const market = this.marketService.deleteByCreateTime(body.date);
       // 资金数据
-      const funds = this.fundsService.delteByCreateTime(body.date);
+      const funds = this.fundsService.deleteByCreateTime(body.date);
       // 板块数据
-      const plate = this.plateService.delteByCreateTime(body.date);
+      const plate = this.plateService.deleteByCreateTime(body.date);
       // 热榜
-      const hostList = this.hotListService.delteByCreateTime(body.date);
+      const hostList = this.hotListService.deleteByCreateTime(body.date);
       await Promise.all([shorTerm, specialStock, market, funds, plate, hostList]);
     } catch (e) {
       code = 500;
@@ -380,10 +385,12 @@ export class PayBackController {
    */
   @Get('/initSchedulerTask')
   async initSchedulerTask() {
+    this.logger.debug('initSchedulerTask初始化定时任务');
     schedulerTaskList.forEach(task => {
       this.schedulerTaskService.executeTask(task.taskName, task.cron, async () => {
         try {
-          if (task.taskName === 'autoCrawlShortTermDataMidday') {
+          // 尾盘短线定时任务，根据系统配置，自动添加涨停个股（连板、首板）
+          if (task.taskName === 'autoCrawlShortTermDataLatePm') {
             const result = await this[task.service][task.func]();
             process.env.NODE_ENV !== 'dev' &&
               (await this.thsService.autoModifyThsSelfStocks(JSON.parse(result.evenBoardData), 'admin'));

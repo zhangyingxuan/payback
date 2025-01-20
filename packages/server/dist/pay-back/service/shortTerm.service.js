@@ -76,6 +76,7 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
         }
         catch (e) {
             this.logger.error('出错啦！！！', e);
+            throw new Error(e);
         }
         return createPayBackDto;
     }
@@ -136,7 +137,7 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
         const shortTermDataResult = (0, shortTermUtil_1.mergeExtra2ShortTermData)(shortTermData, specialStocks);
         return shortTermDataResult;
     }
-    async delteByCreateTime(date) {
+    async deleteByCreateTime(date) {
         return await this.shortTermDataRp
             .createQueryBuilder()
             .delete()

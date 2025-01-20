@@ -51,7 +51,7 @@
         [
         <!-- <span class="small">竞价</span>
         <span class="middle">竞价评级</span> -->
-        <span class="middle lanse">平均成本</span>
+        <span class="middle lanse">股价</span>
         <!-- <span class="middle"> 换手率 </span> -->
         <span class="middle">流通市值</span>
         <span class="middle">集中度70</span>

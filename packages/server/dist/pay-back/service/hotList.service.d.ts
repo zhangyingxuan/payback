@@ -6,7 +6,7 @@ export declare class HotListService {
     constructor(hotListRp: Repository<hotList>);
     private readonly logger;
     crawlHotListData(): Promise<CreateHotListDto>;
-    delteByCreateTime(date: any): Promise<import("typeorm").DeleteResult>;
+    deleteByCreateTime(date: any): Promise<import("typeorm").DeleteResult>;
     findAll(): Promise<hotList[]>;
     findByLimit(len?: number): Promise<hotList[]>;
 }

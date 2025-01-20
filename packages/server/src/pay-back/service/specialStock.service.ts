@@ -130,6 +130,7 @@ export class SpecialStockService {
       this.logger.debug('crawlSpecialStockData is success!');
     } catch (e) {
       this.logger.error('出错啦！！！', e);
+      throw new Error(e);
     }
 
     return todayDataFromDB ? todayDataFromDB : specialStockDto;
@@ -195,16 +196,17 @@ export class SpecialStockService {
       .orderBy('createTime', 'DESC')
       .getMany();
 
+
     const currentDate = dayjs(todayDateStr).format(iWencaiDateFormat);
-    let lastTradingDay = dayjs(dateArr[0].createTime).format(iWencaiDateFormat);
+    let lastTradingDay = dayjs(dateArr[0]?.createTime).format(iWencaiDateFormat);
     if (lastTradingDay === currentDate) {
-      lastTradingDay = dayjs(dateArr[1].createTime).format(iWencaiDateFormat);
+      lastTradingDay = dayjs(dateArr[1]?.createTime).format(iWencaiDateFormat);
     }
 
     return lastTradingDay;
   }
 
-  async delteByCreateTime(date) {
+  async deleteByCreateTime(date) {
     return await this.specialStockRp
       .createQueryBuilder()
       .delete()

@@ -101,7 +101,7 @@ export class MarketService {
       .getMany();
   }
 
-  async delteByCreateTime(date) {
+  async deleteByCreateTime(date) {
     return await this.marketDataRp
       .createQueryBuilder()
       .delete()

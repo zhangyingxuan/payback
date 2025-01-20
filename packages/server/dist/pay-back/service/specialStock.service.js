@@ -105,6 +105,7 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
         }
         catch (e) {
             this.logger.error('出错啦！！！', e);
+            throw new Error(e);
         }
         return todayDataFromDB ? todayDataFromDB : specialStockDto;
     }
@@ -140,6 +141,7 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
             .getMany();
     }
     async getLastTradingDayByDB(todayDateStr) {
+        var _a, _b;
         const dateArr = await this.specialStockRp
             .createQueryBuilder('special_stock')
             .offset(0)
@@ -148,13 +150,13 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
             .orderBy('createTime', 'DESC')
             .getMany();
         const currentDate = dayjs(todayDateStr).format(pay_back_core_1.iWencaiDateFormat);
-        let lastTradingDay = dayjs(dateArr[0].createTime).format(pay_back_core_1.iWencaiDateFormat);
+        let lastTradingDay = dayjs((_a = dateArr[0]) === null || _a === void 0 ? void 0 : _a.createTime).format(pay_back_core_1.iWencaiDateFormat);
         if (lastTradingDay === currentDate) {
-            lastTradingDay = dayjs(dateArr[1].createTime).format(pay_back_core_1.iWencaiDateFormat);
+            lastTradingDay = dayjs((_b = dateArr[1]) === null || _b === void 0 ? void 0 : _b.createTime).format(pay_back_core_1.iWencaiDateFormat);
         }
         return lastTradingDay;
     }
-    async delteByCreateTime(date) {
+    async deleteByCreateTime(date) {
         return await this.specialStockRp
             .createQueryBuilder()
             .delete()

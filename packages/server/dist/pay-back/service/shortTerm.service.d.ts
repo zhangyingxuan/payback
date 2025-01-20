@@ -16,5 +16,5 @@ export declare class ShorTermService {
     findAll(): Promise<shortTermData[]>;
     findByLimit(len?: number): Promise<shortTermData[]>;
     findEvenBoardByLimit(len?: number): Promise<any[]>;
-    delteByCreateTime(date: any): Promise<import("typeorm").DeleteResult>;
+    deleteByCreateTime(date: any): Promise<import("typeorm").DeleteResult>;
 }

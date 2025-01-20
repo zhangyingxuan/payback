@@ -56,7 +56,7 @@ export class HotListService {
 
     return hotListData;
   }
-  async delteByCreateTime(date) {
+  async deleteByCreateTime(date) {
     return await this.hotListRp
       .createQueryBuilder()
       .delete()

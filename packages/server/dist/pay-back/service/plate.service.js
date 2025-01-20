@@ -69,7 +69,7 @@ let PlateService = PlateService_1 = class PlateService {
             .orderBy('createTime', 'DESC')
             .getMany();
     }
-    async delteByCreateTime(date) {
+    async deleteByCreateTime(date) {
         return await this.plateDataRp
             .createQueryBuilder()
             .delete()

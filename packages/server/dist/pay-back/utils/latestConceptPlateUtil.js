@@ -7,11 +7,11 @@ const config_1 = require("../core/config");
 async function getLatestConceptPlate(currentLatestConceptPlate) {
     let createLatestConceptPlateArr = [];
     const latestConceptPlates = await (0, fetchUtil_1.fetchIwencaiApi)(config_1.iwencaiUrl + config_1.params.gainianPlate);
-    if (currentLatestConceptPlate.code === latestConceptPlates[0]['code']) {
+    if ((currentLatestConceptPlate === null || currentLatestConceptPlate === void 0 ? void 0 : currentLatestConceptPlate.code) === (latestConceptPlates === null || latestConceptPlates === void 0 ? void 0 : latestConceptPlates[0]['code'])) {
         return null;
     }
     const index = latestConceptPlates.findIndex(item => {
-        return item['code'] === currentLatestConceptPlate.code;
+        return item['code'] === (currentLatestConceptPlate === null || currentLatestConceptPlate === void 0 ? void 0 : currentLatestConceptPlate.code);
     });
     const latestConceptPlatesArr = latestConceptPlates.splice(0, index);
     const createTime = new Date();

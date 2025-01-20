@@ -75,7 +75,7 @@ export class PlateService {
       .getMany();
   }
 
-  async delteByCreateTime(date) {
+  async deleteByCreateTime(date) {
     return await this.plateDataRp
       .createQueryBuilder()
       .delete()

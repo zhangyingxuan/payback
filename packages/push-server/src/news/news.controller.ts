@@ -26,9 +26,8 @@ export class NewsController {
     newsList.forEach((news) => {
       try {
         // 推送消息
+        this.logger.log('推送消息 A股====' + news.title);
         this.pushService.noticeNews(news.title, news.digest, news.url, news);
-
-        news.title.includes('A股') && this.logger.log('PUSH A股====' + news.title);
       } catch (e) {
         this.logger.error('[fetchNewsTask] 推送消息失败：' + e);
         // 推送失败，还原查询时间

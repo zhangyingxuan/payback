@@ -64,7 +64,7 @@ let FundsService = FundsService_1 = class FundsService {
             .orderBy('createTime', 'DESC')
             .getMany();
     }
-    async delteByCreateTime(date) {
+    async deleteByCreateTime(date) {
         return await this.fundsDataRp
             .createQueryBuilder()
             .delete()

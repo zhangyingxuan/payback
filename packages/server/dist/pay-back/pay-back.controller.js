@@ -111,6 +111,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
     }
     async crawlBinddingData(body, req) {
         var _a;
+        let code = 0, message = 'success';
         const binddingData = await this.specialStockService.crawlBinddingData(body.isRemoveIncompatible, (_a = req.user) === null || _a === void 0 ? void 0 : _a.account);
         let result = null;
         try {
@@ -122,10 +123,13 @@ let PayBackController = PayBackController_1 = class PayBackController {
         }
         catch (e) {
             this.logger.error(e);
+            code = 500;
+            message = e;
         }
         return {
-            code: 0,
+            code,
             data: result,
+            message
         };
     }
     async crawlSpecialStockData() {
@@ -138,12 +142,12 @@ let PayBackController = PayBackController_1 = class PayBackController {
     async deleteData(body) {
         let code = 0, message = 'success';
         try {
-            const shorTerm = this.shorTermService.delteByCreateTime(body.date);
-            const specialStock = this.specialStockService.delteByCreateTime(body.date);
-            const market = this.marketService.delteByCreateTime(body.date);
-            const funds = this.fundsService.delteByCreateTime(body.date);
-            const plate = this.plateService.delteByCreateTime(body.date);
-            const hostList = this.hotListService.delteByCreateTime(body.date);
+            const shorTerm = this.shorTermService.deleteByCreateTime(body.date);
+            const specialStock = this.specialStockService.deleteByCreateTime(body.date);
+            const market = this.marketService.deleteByCreateTime(body.date);
+            const funds = this.fundsService.deleteByCreateTime(body.date);
+            const plate = this.plateService.deleteByCreateTime(body.date);
+            const hostList = this.hotListService.deleteByCreateTime(body.date);
             await Promise.all([shorTerm, specialStock, market, funds, plate, hostList]);
         }
         catch (e) {
@@ -257,10 +261,11 @@ let PayBackController = PayBackController_1 = class PayBackController {
         };
     }
     async initSchedulerTask() {
+        this.logger.debug('initSchedulerTask初始化定时任务');
         config_1.schedulerTaskList.forEach(task => {
             this.schedulerTaskService.executeTask(task.taskName, task.cron, async () => {
                 try {
-                    if (task.taskName === 'autoCrawlShortTermDataMidday') {
+                    if (task.taskName === 'autoCrawlShortTermDataLatePm') {
                         const result = await this[task.service][task.func]();
                         process.env.NODE_ENV !== 'dev' &&
                             (await this.thsService.autoModifyThsSelfStocks(JSON.parse(result.evenBoardData), 'admin'));
