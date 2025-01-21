@@ -100,7 +100,7 @@ const schedulerTaskList = [
     cron: '0 35 15 * * 1-5',
   },
   // 短线数据 === end
-  // 竞价数据&新股&强势股 === start
+  // 昨日涨停竞价数据 === start
   {
     taskName: 'autoCrawlBinddingDataMidday',
     service: 'specialStockService',
@@ -113,6 +113,20 @@ const schedulerTaskList = [
     func: 'crawlBinddingData',
     cron: '00 33 15 * * 1-5',
   },
-  // 竞价数据&新股&强势股 === end
+  // 昨日涨停竞价数据 === end
+  // 新股&强势股 === start
+  {
+    taskName: 'autoCrawlSpecialStockDataMidday',
+    service: 'specialStockService',
+    func: 'crawlSpecialStockData',
+    cron: '00 40 11 * * 1-5',
+  },
+  {
+    taskName: 'autoCrawlSpecialStockDataPm',
+    service: 'specialStockService',
+    func: 'crawlSpecialStockData',
+    cron: '00 37 15 * * 1-5',
+  },
+  // 新股&强势股 === end
 ];
 export { schedulerTaskList, newsPushSchedulerTask };
