@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { modifyThsSelfRequest, modifyThsSelfStocksRequest } from '../core/fetchUtil';
+import { modifyThsSelfRequest, modifyThsSelfStocksRequest, fetchIwencai } from '../core/fetchUtil';
 import { AsynTaskIterator, dailyLimitOptionalStrategy } from 'pay-back-core';
 import { UsersService } from '../../users/users.service';
 import { SystemConfigService } from './systemConfig.service';
@@ -185,6 +185,37 @@ export class ThsService {
     let msg = '';
 
     try {
+      const result = await modifyThsSelfRequest(code, userid, ticket, user, type, true);
+      // this.logger.log(result);
+      msg = dealPlateResult(result, type, this.usersService, account);
+    } catch (e) {
+      msg = e;
+      this.logger.log('updateThsSelfStock[' + type + '] 失败了！' + e);
+    }
+    return {
+      code: msg ? 400 : 0,
+      data: msg,
+    };
+  }
+  /**
+   *  更新单个自选板块（用于手动操作新增板块）
+   * @param code
+   * @returns
+   */
+  async updateThsSelfPlateByNameCn(plateNameCn, type, account) {
+    const userInfo = await this.usersService.getUserByAccount(account);
+    this.logger.log('[updateThsSelfPlate] 加入自选板块' + plateNameCn);
+    // 1、获取用户信息
+    const userid = atob(userInfo.userid);
+    const ticket = userInfo.ticket;
+    const user = userInfo.user;
+    let msg = '';
+
+    try {
+      // 先根据中文 获取 板块code
+      const plateInfo = await fetchIwencai(plateNameCn, 1, true);
+      // 获取code 
+      const code = plateInfo?.data.answer[0]?.txt[0]?.content?.page?.more?.codes[0] || '';
       const result = await modifyThsSelfRequest(code, userid, ticket, user, type, true);
       // this.logger.log(result);
       msg = dealPlateResult(result, type, this.usersService, account);

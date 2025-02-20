@@ -19,4 +19,8 @@ export declare class ThsService {
         code: number;
         data: string;
     }>;
+    updateThsSelfPlateByNameCn(plateNameCn: any, type: any, account: any): Promise<{
+        code: number;
+        data: string;
+    }>;
 }

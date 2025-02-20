@@ -150,6 +150,29 @@ let ThsService = ThsService_1 = class ThsService {
             data: msg,
         };
     }
+    async updateThsSelfPlateByNameCn(plateNameCn, type, account) {
+        var _a, _b, _c, _d, _e;
+        const userInfo = await this.usersService.getUserByAccount(account);
+        this.logger.log('[updateThsSelfPlate] 加入自选板块' + plateNameCn);
+        const userid = (0, thsUtils_1.atob)(userInfo.userid);
+        const ticket = userInfo.ticket;
+        const user = userInfo.user;
+        let msg = '';
+        try {
+            const plateInfo = await (0, fetchUtil_1.fetchIwencai)(plateNameCn, 1, true);
+            const code = ((_e = (_d = (_c = (_b = (_a = plateInfo === null || plateInfo === void 0 ? void 0 : plateInfo.data.answer[0]) === null || _a === void 0 ? void 0 : _a.txt[0]) === null || _b === void 0 ? void 0 : _b.content) === null || _c === void 0 ? void 0 : _c.page) === null || _d === void 0 ? void 0 : _d.more) === null || _e === void 0 ? void 0 : _e.codes[0]) || '';
+            const result = await (0, fetchUtil_1.modifyThsSelfRequest)(code, userid, ticket, user, type, true);
+            msg = (0, thsUtils_1.dealPlateResult)(result, type, this.usersService, account);
+        }
+        catch (e) {
+            msg = e;
+            this.logger.log('updateThsSelfStock[' + type + '] 失败了！' + e);
+        }
+        return {
+            code: msg ? 400 : 0,
+            data: msg,
+        };
+    }
 };
 ThsService = ThsService_1 = __decorate([
     (0, common_1.Injectable)(),

@@ -59,4 +59,23 @@ export class ThsTradeController {
   async delThsSelfPlate(@Body('code') code: string, @Request() req) {
     return this.thsService.updateThsSelfPlate(code, ThsOprate.del, req.user?.account);
   }
+    /**
+   * 新增自选
+   * @returns
+   */
+  @UseGuards(JwtAuthGuard)
+  @Post('addThsSelfPlateByNameCn')
+  async addThsSelfPlateByNameCn(@Body('plateNameCn') plateNameCn: string, @Request() req) {
+    return this.thsService.updateThsSelfPlateByNameCn(plateNameCn, ThsOprate.add, req.user?.account);
+  }
+
+  /**
+   * 删除自选
+   * @returns
+   */
+  @UseGuards(JwtAuthGuard)
+  @Post('delThsSelfPlateByNameCn')
+  async delThsSelfPlateByNameCn(@Body('plateNameCn') plateNameCn: string, @Request() req) {
+    return this.thsService.updateThsSelfPlateByNameCn(plateNameCn, ThsOprate.del, req.user?.account);
+  }
 }

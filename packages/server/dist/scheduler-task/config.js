@@ -93,6 +93,18 @@ const schedulerTaskList = [
         func: 'crawlBinddingData',
         cron: '00 33 15 * * 1-5',
     },
+    {
+        taskName: 'autoCrawlSpecialStockDataMidday',
+        service: 'specialStockService',
+        func: 'crawlSpecialStockData',
+        cron: '00 40 11 * * 1-5',
+    },
+    {
+        taskName: 'autoCrawlSpecialStockDataPm',
+        service: 'specialStockService',
+        func: 'crawlSpecialStockData',
+        cron: '00 37 15 * * 1-5',
+    },
 ];
 exports.schedulerTaskList = schedulerTaskList;
 //# sourceMappingURL=config.js.map

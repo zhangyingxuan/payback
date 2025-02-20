@@ -23,4 +23,12 @@ export declare class ThsTradeController {
         code: number;
         data: string;
     }>;
+    addThsSelfPlateByNameCn(plateNameCn: string, req: any): Promise<{
+        code: number;
+        data: string;
+    }>;
+    delThsSelfPlateByNameCn(plateNameCn: string, req: any): Promise<{
+        code: number;
+        data: string;
+    }>;
 }
