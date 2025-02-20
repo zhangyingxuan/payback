@@ -24,16 +24,31 @@ export const delThsSelfStock = (data: any | null) => {
   return http.request<string | null>("post", `${baseUrl}/delThsSelfStock`, { data });
 }
 /**
- * 同步自选个股
+ * 添加自选板块
  * @returns 
  */
 export const addThsSelfPlate = (data: any | null) => {
   return http.request<string | null>("post", `${baseUrl}/addThsSelfPlate`, { data });
 }
 /**
- * 同步自选个股
+ * 删除自选板块
  * @returns 
  */
 export const delThsSelfPlate = (data: any | null) => {
   return http.request<string | null>("post", `${baseUrl}/delThsSelfPlate`, { data });
+}
+
+/**
+ * 通过 板块中文名 添加自选板块
+ * @returns 
+ */
+export const addThsSelfPlateByNameCn = (data: any | null) => {
+  return http.request<string | null>("post", `${baseUrl}/addThsSelfPlateByNameCn`, { data });
+}
+/**
+ * 通过 板块中文名 删除自选板块
+ * @returns 
+ */
+export const delThsSelfPlateByNameCn = (data: any | null) => {
+  return http.request<string | null>("post", `${baseUrl}/delThsSelfPlateByNameCn`, { data });
 }

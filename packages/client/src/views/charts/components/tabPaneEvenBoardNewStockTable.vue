@@ -55,7 +55,7 @@
     >
       <div class="col1">
         <div>
-          <span class="zise">{{ item.key }}</span>
+          <Plate class="zise" :name="item.key" />
           <br v-if="isMobile" />
           <span v-if="item.value.length > 1">
             &nbsp;{{ item.value.length }}

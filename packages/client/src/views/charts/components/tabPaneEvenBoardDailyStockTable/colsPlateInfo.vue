@@ -12,7 +12,7 @@
           },
         ]"
       >
-        {{ item.key }} {{ item.maxHeight }}
+        <Plate :name="item.key" /> {{ item.maxHeight }}
       </div>
       <div v-if="item.value.length > 1 && showBidding" class="gray">
         {{ incompatibleRate.exceededNum }}

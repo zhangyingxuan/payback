@@ -16,7 +16,7 @@
   </el-popover>
 </template>
 <script lang="ts" setup>
-import { addThsSelfPlate, delThsSelfPlate } from '../api/thsTrade';
+import { addThsSelfPlate, delThsSelfPlate, addThsSelfPlateByNameCn, delThsSelfPlateByNameCn } from '../api/thsTrade';
 import { Plus, Minus } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
 import { usePermissStore } from '../store/permiss';
@@ -31,8 +31,10 @@ let superData = defineProps({
 });
 
 async function handleAdd() {
-  const result = await addThsSelfPlate({
+  const addApi = superData.virtualRefData?.code ? addThsSelfPlate : addThsSelfPlateByNameCn;
+  const result = await addApi({
     code: superData.virtualRefData?.code,
+    plateNameCn: superData.virtualRefData?.name,
   });
   if (!result) {
     ElMessage({
@@ -43,8 +45,10 @@ async function handleAdd() {
   }
 }
 async function handleDel() {
-  const result = await delThsSelfPlate({
+  const delApi = superData.virtualRefData?.code ? delThsSelfPlate : delThsSelfPlateByNameCn;
+  const result = await delApi({
     code: superData.virtualRefData?.code,
+    plateNameCn: superData.virtualRefData?.name,
   });
   if (!result) {
     ElMessage({
