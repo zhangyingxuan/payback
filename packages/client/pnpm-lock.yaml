@@ -42,8 +42,8 @@ dependencies:
     specifier: ^4.17.21
     version: 4.17.21
   pay-back-core:
-    specifier: ^0.0.16
-    version: 0.0.16
+    specifier: ^0.0.17
+    version: 0.0.17
   pinia:
     specifier: ^2.0.20
     version: 2.0.28(typescript@4.9.4)(vue@3.2.45)
@@ -3450,8 +3450,8 @@ packages:
     resolution: {integrity: sha512-nPdMG0Pd09HuSsr7QOKUXO2Jr9eqaDiZvDwdyIhNG5SHYujkQHYKDfGQkulBxvbDHz8oHLsTgKN86LSwYzSHAg==}
     dev: true
 
-  /pay-back-core@0.0.16:
-    resolution: {integrity: sha512-rY3BSlUd2NNJoNQoT/umvfviW2YYHvJ0b6/Nzfi40r2upemX+UG5hkHuxGgxoQ8wj2h8evG1h8NIecH+i37QkQ==}
+  /pay-back-core@0.0.17:
+    resolution: {integrity: sha512-T23ZbRw9DE30oid0IhL2/yt2HlnUSUjK+JHuVlraZNmlLdrAk6eBP9vcvUbpwZjZaDPS/mqz7hY3fOlZYeZQwg==}
     dependencies:
       dayjs: 1.11.10
     dev: false
