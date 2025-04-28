@@ -1,5 +1,5 @@
 /*!
- * index.js v0.0.17
+ * index.js v0.0.18
  * (c) 2018-2025 blowsysun
  * Released under the MIT License.
  */
@@ -61,9 +61,9 @@ function getCurrentCycle(currentTradingDayData, lastTradingDayData) {
     }
     // B. 主跌 【亏钱效应出现】龙头倒下/高度降低，负反馈出现，天地板、大面，高位持续A杀，接力情绪差
     if (maxHeightCurrent <= maxHeightLast) {
-        // 高度下降(退潮、冰点)
+        // 高度下降(退潮、冰点)，且最高板仅4板下
         if (currentTradingDayData.downLimitQuantity > config.downLimitNum
-            && hugeFallNum > 0) {
+            && hugeFallNum > 0 && currentTradingDayData.maxHeightCurrent <= config.startUpHeight) {
             return cycles[4];
         }
         // 退潮

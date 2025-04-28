@@ -20,6 +20,7 @@ import { QyWechatNotice } from './service/qyWechatNotice.service';
 import { schedulerTaskList, newsPushSchedulerTask } from '../scheduler-task/config';
 import { SystemConfigService } from './service/systemConfig.service';
 import { ClientProxy } from '@nestjs/microservices';
+import { executeTaskFunc } from './utils/schedulerUtil';
 
 class CrawlTodayDataDto {
   fetchTodayDataType: number;
@@ -387,21 +388,7 @@ export class PayBackController {
   async initSchedulerTask() {
     this.logger.debug('initSchedulerTask初始化定时任务');
     schedulerTaskList.forEach(task => {
-      this.schedulerTaskService.executeTask(task.taskName, task.cron, async () => {
-        try {
-          // 尾盘短线定时任务，根据系统配置，自动添加涨停个股（连板、首板）
-          if (task.taskName === 'autoCrawlShortTermDataLatePm') {
-            const result = await this[task.service][task.func]();
-            process.env.NODE_ENV !== 'dev' &&
-              (await this.thsService.autoModifyThsSelfStocks(JSON.parse(result.evenBoardData), 'admin'));
-            return;
-          }
-          await this[task.service][task.func]();
-        } catch (e) {
-          // 报错后 通知企微
-          this.qyWechatNotice.notice(task.service, `[${task.func}]出错了：${e}`);
-        }
-      });
+      this.schedulerTaskService.executeTask(task.taskName, task.cron, () => executeTaskFunc(this, task, 3))
     });
     // 判断是否开启 新闻推送 定时任务列表
     const config = await this.systemConfigService.findLatestOne();

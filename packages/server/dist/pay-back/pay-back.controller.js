@@ -35,6 +35,7 @@ const qyWechatNotice_service_1 = require("./service/qyWechatNotice.service");
 const config_1 = require("../scheduler-task/config");
 const systemConfig_service_1 = require("./service/systemConfig.service");
 const microservices_1 = require("@nestjs/microservices");
+const schedulerUtil_1 = require("./utils/schedulerUtil");
 class CrawlTodayDataDto {
 }
 let PayBackController = PayBackController_1 = class PayBackController {
@@ -263,20 +264,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
     async initSchedulerTask() {
         this.logger.debug('initSchedulerTask初始化定时任务');
         config_1.schedulerTaskList.forEach(task => {
-            this.schedulerTaskService.executeTask(task.taskName, task.cron, async () => {
-                try {
-                    if (task.taskName === 'autoCrawlShortTermDataLatePm') {
-                        const result = await this[task.service][task.func]();
-                        process.env.NODE_ENV !== 'dev' &&
-                            (await this.thsService.autoModifyThsSelfStocks(JSON.parse(result.evenBoardData), 'admin'));
-                        return;
-                    }
-                    await this[task.service][task.func]();
-                }
-                catch (e) {
-                    this.qyWechatNotice.notice(task.service, `[${task.func}]出错了：${e}`);
-                }
-            });
+            this.schedulerTaskService.executeTask(task.taskName, task.cron, () => (0, schedulerUtil_1.executeTaskFunc)(this, task, 3));
         });
         const config = await this.systemConfigService.findLatestOne();
         const { isAutoPushNews } = config;

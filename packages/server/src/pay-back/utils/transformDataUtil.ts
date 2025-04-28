@@ -104,6 +104,7 @@ function transformDailyLimitData(dailyLimitData, dailyLimitGroupByGainainData, c
     jitianjiban = '',
     dailyLimitReturnSealQuantity = 0;
   const evenBoardData = { maxHeight: 1, gaobiao: [], yizi: 0 };
+  const evenBoardLabel = `连续涨停天数[${currentDate}]`;
 
   dailyLimitData &&
     dailyLimitData.forEach(item => {
@@ -142,7 +143,7 @@ function transformDailyLimitData(dailyLimitData, dailyLimitGroupByGainainData, c
       dailyLimitStockDto.gainian = getGainianByCode(dailyLimitGroupByGainainData, dailyLimitStockDto.code);
 
       // 当前股票 连板高度 -- 优化竞价时无法获取当前高度的问题，合并为高标 2024-05-06 15:50:18
-      currentLevel = 1;
+      currentLevel = item[evenBoardLabel] || 1;
       // 如果是 断板连板 则统计几天几板
       jitianjiban = item[`几天几板[${currentDate}]`];
 
@@ -153,9 +154,11 @@ function transformDailyLimitData(dailyLimitData, dailyLimitGroupByGainainData, c
         if (day !== even) {
           dailyLimitStockDto.evenDays = jitianjiban;
           evenBoardData.gaobiao.push(dailyLimitStockDto);
+          // 如果 竞价 未取出当前高度，则使用几天几板的高度
+          !currentLevel && (currentLevel = 1);
         } else {
           // 如果 竞价 未取出当前高度，则使用几天几板的高度
-          currentLevel = even;
+          !currentLevel && (currentLevel = even);
         }
       }
       if (currentLevel > maxHeight) {
@@ -302,7 +305,7 @@ export function transformStrongStockData(stocks, todayDateStr, yesterdayDate): A
     // 将竞价基础数据填入 参数中
     loadBiddingBaseData(strongStockDto, item, currentDate);
     if (!strongStockDto.price) {
-      strongStockDto.price = item[`收盘价:不复权[${currentDate}]`];
+      strongStockDto.price = item[`平均成本[${currentDate}]`] || item[`平均成本[${yesterdayDate}]`];
     }
     // 换手率
     strongStockDto.turnoverRate = toFixed(item[`换手率[${yesterdayDate}]`], 1);

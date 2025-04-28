@@ -70,6 +70,7 @@ function transformDownLimitData(dailyLimitData, currentDate) {
 function transformDailyLimitData(dailyLimitData, dailyLimitGroupByGainainData, currentDate) {
     let board1 = 0, maxHeight = 1, currentLevel = 1, jitianjiban = '', dailyLimitReturnSealQuantity = 0;
     const evenBoardData = { maxHeight: 1, gaobiao: [], yizi: 0 };
+    const evenBoardLabel = `连续涨停天数[${currentDate}]`;
     dailyLimitData &&
         dailyLimitData.forEach(item => {
             const dailyLimitStockDto = new daily_limit_stock_dto_1.DailyLimitStockDto();
@@ -94,7 +95,7 @@ function transformDailyLimitData(dailyLimitData, dailyLimitGroupByGainainData, c
                 dailyLimitStockDto.dailyTime += ',' + item[`最终涨停时间[${currentDate}]`].trim();
             }
             dailyLimitStockDto.gainian = getGainianByCode(dailyLimitGroupByGainainData, dailyLimitStockDto.code);
-            currentLevel = 1;
+            currentLevel = item[evenBoardLabel] || 1;
             jitianjiban = item[`几天几板[${currentDate}]`];
             if (jitianjiban && jitianjiban.indexOf('天') > -1) {
                 const day = +jitianjiban.split('天')[0];
@@ -102,9 +103,10 @@ function transformDailyLimitData(dailyLimitData, dailyLimitGroupByGainainData, c
                 if (day !== even) {
                     dailyLimitStockDto.evenDays = jitianjiban;
                     evenBoardData.gaobiao.push(dailyLimitStockDto);
+                    !currentLevel && (currentLevel = 1);
                 }
                 else {
-                    currentLevel = even;
+                    !currentLevel && (currentLevel = even);
                 }
             }
             if (currentLevel > maxHeight) {
@@ -197,7 +199,7 @@ function transformStrongStockData(stocks, todayDateStr, yesterdayDate) {
         loadStockBaseData(strongStockDto, item, currentDate);
         loadBiddingBaseData(strongStockDto, item, currentDate);
         if (!strongStockDto.price) {
-            strongStockDto.price = item[`收盘价:不复权[${currentDate}]`];
+            strongStockDto.price = item[`平均成本[${currentDate}]`] || item[`平均成本[${yesterdayDate}]`];
         }
         strongStockDto.turnoverRate = (0, commonUtil_1.toFixed)(item[`换手率[${yesterdayDate}]`], 1);
         strongStockDto.cmjzd = (0, commonUtil_1.toFixed)(item[`集中度70[${currentDate}]`] || item[`集中度70[${yesterdayDate}]`], 1);
