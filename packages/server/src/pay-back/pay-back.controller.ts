@@ -123,13 +123,14 @@ export class PayBackController {
   @UseGuards(JwtAuthGuard)
   async crawlTodayData(@Body() body: CrawlTodayDataDto, @Request() req) {
     let short, funds, market, bindding, resultData, plate, specialStock;
+    const account = req.user?.account || 'admin';
     switch (body.fetchTodayDataType) {
       case 0:
         short = this.shorTermService.crawlShortTermData();
         funds = this.fundsService.crawlfundsData();
         market = this.marketService.crawlMarketData();
-        bindding = this.specialStockService.crawlBinddingData(0, req.user?.account);
-        specialStock = this.specialStockService.crawlSpecialStockData();
+        bindding = this.specialStockService.crawlBinddingData(0, account);
+        specialStock = this.specialStockService.crawlSpecialStockData(account);
         plate = this.plateService.crawlPlateData();
         resultData = {};
         await Promise.all([short, funds, market, bindding, specialStock, plate]);
@@ -151,7 +152,7 @@ export class PayBackController {
         // 获取竞价数据
         // 是否剔除 不及预期数据；注意接收到的参数 是否为字符串
         const crawlBindding = this.specialStockService.crawlBinddingData(body.isRemoveIncompatible, req.user?.account);
-        const crawlSpecialStock = this.specialStockService.crawlSpecialStockData();
+        const crawlSpecialStock = this.specialStockService.crawlSpecialStockData(account);
 
         const [crawlBinddingData, crawlSpecialStockData] = await Promise.all([crawlBindding, crawlSpecialStock]);
         resultData = crawlSpecialStockData;
@@ -195,9 +196,10 @@ export class PayBackController {
   }
 
   @Post('/crawlSpecialStockData')
-  async crawlSpecialStockData() {
+  async crawlSpecialStockData(@Request() req) {
+    const account = req.user?.account || 'admin';
     // 是否剔除 不及预期数据；注意接收到的参数 是否为字符串
-    const specialStockData = await this.specialStockService.crawlSpecialStockData();
+    const specialStockData = await this.specialStockService.crawlSpecialStockData(account);
     return {
       code: 0,
       data: specialStockData,

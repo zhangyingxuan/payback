@@ -69,7 +69,7 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
         }
         return todayDataFromDB ? todayDataFromDB : specialStockDto;
     }
-    async crawlSpecialStockData() {
+    async crawlSpecialStockData(account) {
         this.logger.debug('crawlSpecialStockData is Begining!');
         let todayDataFromDB = null;
         const todayDateStr = new Date().toLocaleDateString();
@@ -85,6 +85,9 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
         try {
             const yesterdayDateStr = await this.getLastTradingDayByDB(todayDateStr);
             const { newStocks, chooseStock1Expected } = await (0, specialStockUtil_1.fetchSpecialStockBinddingData)(todayDateStr, yesterdayDateStr);
+            if (newStocks && newStocks.length > 0) {
+                this.thsService.batchUpdateThsSelfStock(newStocks, fetchUtil_1.ThsOprate.add, account);
+            }
             todayDataFromDB = await this.getTodayData(todayDateStr);
             if (todayDataFromDB) {
                 todayDataFromDB.newStock = JSON.stringify(newStocks);

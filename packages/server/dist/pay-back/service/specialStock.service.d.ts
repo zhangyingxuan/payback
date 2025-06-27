@@ -7,7 +7,7 @@ export declare class SpecialStockService {
     constructor(specialStockRp: Repository<specialStock>, thsService: ThsService);
     private readonly logger;
     crawlBinddingData(isRemoveIncompatible: number, account: any): Promise<any>;
-    crawlSpecialStockData(): Promise<any>;
+    crawlSpecialStockData(account: any): Promise<any>;
     dealIncompatibleExpectStocks(dailyLimitYesterdayBidding: any, account: any): Promise<void>;
     getTodayData(todayDateStr: string): Promise<specialStock>;
     findAll(): Promise<specialStock[]>;

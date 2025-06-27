@@ -74,13 +74,14 @@ let PayBackController = PayBackController_1 = class PayBackController {
     async crawlTodayData(body, req) {
         var _a, _b;
         let short, funds, market, bindding, resultData, plate, specialStock;
+        const account = ((_a = req.user) === null || _a === void 0 ? void 0 : _a.account) || 'admin';
         switch (body.fetchTodayDataType) {
             case 0:
                 short = this.shorTermService.crawlShortTermData();
                 funds = this.fundsService.crawlfundsData();
                 market = this.marketService.crawlMarketData();
-                bindding = this.specialStockService.crawlBinddingData(0, (_a = req.user) === null || _a === void 0 ? void 0 : _a.account);
-                specialStock = this.specialStockService.crawlSpecialStockData();
+                bindding = this.specialStockService.crawlBinddingData(0, account);
+                specialStock = this.specialStockService.crawlSpecialStockData(account);
                 plate = this.plateService.crawlPlateData();
                 resultData = {};
                 await Promise.all([short, funds, market, bindding, specialStock, plate]);
@@ -98,7 +99,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
                 break;
             case 4:
                 const crawlBindding = this.specialStockService.crawlBinddingData(body.isRemoveIncompatible, (_b = req.user) === null || _b === void 0 ? void 0 : _b.account);
-                const crawlSpecialStock = this.specialStockService.crawlSpecialStockData();
+                const crawlSpecialStock = this.specialStockService.crawlSpecialStockData(account);
                 const [crawlBinddingData, crawlSpecialStockData] = await Promise.all([crawlBindding, crawlSpecialStock]);
                 resultData = crawlSpecialStockData;
                 break;
@@ -133,8 +134,10 @@ let PayBackController = PayBackController_1 = class PayBackController {
             message
         };
     }
-    async crawlSpecialStockData() {
-        const specialStockData = await this.specialStockService.crawlSpecialStockData();
+    async crawlSpecialStockData(req) {
+        var _a;
+        const account = ((_a = req.user) === null || _a === void 0 ? void 0 : _a.account) || 'admin';
+        const specialStockData = await this.specialStockService.crawlSpecialStockData(account);
         return {
             code: 0,
             data: specialStockData,
@@ -305,8 +308,9 @@ __decorate([
 ], PayBackController.prototype, "crawlBinddingData", null);
 __decorate([
     (0, common_1.Post)('/crawlSpecialStockData'),
+    __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "crawlSpecialStockData", null);
 __decorate([

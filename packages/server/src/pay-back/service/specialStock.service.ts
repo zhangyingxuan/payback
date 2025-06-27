@@ -85,7 +85,7 @@ export class SpecialStockService {
   /**
    * 爬取特殊个股数据并返回
    */
-  async crawlSpecialStockData() {
+  async crawlSpecialStockData(account) {
     this.logger.debug('crawlSpecialStockData is Begining!');
 
     let todayDataFromDB: any = null;
@@ -108,6 +108,11 @@ export class SpecialStockService {
 
       // 获取竞价情况
       const { newStocks, chooseStock1Expected } = await fetchSpecialStockBinddingData(todayDateStr, yesterdayDateStr);
+
+      // 如果当日有新股数据，则自动加入自选 2025-04-28 18:19:15、
+      if (newStocks && newStocks.length > 0) {
+        this.thsService.batchUpdateThsSelfStock(newStocks, ThsOprate.add, account);
+      }
 
       // 如果存在数据
       todayDataFromDB = await this.getTodayData(todayDateStr);

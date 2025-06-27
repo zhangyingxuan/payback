@@ -49,7 +49,7 @@ export declare class PayBackController {
         data: any;
         message: string;
     }>;
-    crawlSpecialStockData(): Promise<{
+    crawlSpecialStockData(req: any): Promise<{
         code: number;
         data: any;
     }>;
