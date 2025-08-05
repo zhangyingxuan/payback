@@ -2,6 +2,7 @@
   <div class="container">
     <div class="handle-box">
       <el-button @click="goBack"> 返回 </el-button>
+      <div class="title">{{ data.title }}</div>
       <div class="date">
         更新时间：{{ data.updatedTime }} &nbsp;&nbsp;&nbsp; 创建时间：{{
           data.createTime
@@ -9,24 +10,22 @@
       </div>
     </div>
     <div id="articleDetail">
-      <div class="title">{{ data.title }}</div>
-      <v-md-preview :text="data.content" />
+
+
+      <VueMarkdown :text="data.content" />
+
     </div>
   </div>
-  <el-backtop
-    :right="20"
-    :bottom="20"
-    target=".content"
-    :visibility-height="200"
-  />
+  <el-backtop :right="20" :bottom="20" target=".content" :visibility-height="200" />
 </template>
 
 <script setup lang="ts" name="articleDetail">
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { findOne } from '@/api/article';
 import dayjs from 'dayjs';
 import { dateTimeFormat } from './config';
+import VueMarkdown from './components/md-preview-with-topic.vue';
 
 const { query } = useRoute();
 const router = useRouter();
@@ -62,9 +61,10 @@ const goBack = () => {
 
 <style scoped lang="less">
 .title {
-  padding: 10px 0;
+  padding: 10px 20px;
   font-size: 20px;
   font-weight: 500;
+  width: calc(100% - 200px);
 }
 
 .date {
@@ -79,9 +79,5 @@ const goBack = () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-/deep/ .vuepress-markdown-body {
-  padding: 1rem;
 }
 </style>
