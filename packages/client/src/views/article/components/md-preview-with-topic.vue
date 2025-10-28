@@ -6,7 +6,7 @@
         {{ t.title }}
       </li>
     </ul>
-    <v-md-preview class="right-preview" :text="text" ref="preview" @scroll="onScroll" />
+    <v-md-preview class="right-preview" :text="text" ref="preview" @scroll="onScroll" default-show-toc />
   </div>
 </template>
 <script setup lang="ts">

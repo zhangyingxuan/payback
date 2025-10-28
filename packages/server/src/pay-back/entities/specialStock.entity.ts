@@ -8,7 +8,7 @@ export class specialStock {
   @Column({ comment: '昨日涨停今日集合竞价情况', type: 'mediumtext', nullable: true })
   biddingData: string;
 
-  @Column({ comment: '新股数据', type: 'varchar', length: 512, nullable: true })
+  @Column({ comment: '新股数据', type: 'varchar', length: 1024, nullable: true })
   newStock: string;
 
   @Column({ comment: '策略选股', type: 'varchar', length: 4096, nullable: true })

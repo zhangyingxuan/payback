@@ -6,12 +6,13 @@
           <el-input v-model="form.title"></el-input>
         </el-form-item>
         <el-form-item label="文章内容" prop="content">
-          <v-md-editor v-model="form.content" height="80vh"></v-md-editor>
+          <v-md-editor v-model="form.content" height="80vh" :include-level="[1, 2, 3, 4]"
+            default-show-toc></v-md-editor>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="onSubmit(formRef)">{{
             query && query.id ? '编辑' : '新增'
-            }}</el-button>
+          }}</el-button>
           <el-button @click="onReset(formRef)">重置表单</el-button>
           <el-button class="error-btn" @click="goBack"> 返回 </el-button>
         </el-form-item>
