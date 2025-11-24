@@ -1,166 +1,218 @@
-# lerna 项目开发流程
+# Pay-Back 项目
 
-## 项目创建
+一个基于微服务架构的综合性管理系统，采用 Lerna Monorepo 模式进行项目管理。
 
-## 打包部署
+## 📋 项目概述
 
-1. 前端
+Pay-Back 是一个集成了前端管理界面、后端 API 服务、消息推送功能的完整解决方案。项目采用现代化的技术栈，支持模块化开发和独立部署。
 
-```
-pnpm build
-上传至服务器
-```
-
-2. 后端
+## 🏗️ 项目架构
 
 ```
-上传至服务器
-如果有 package.json 更新，则执行 pnpm install
+pay-back/
+├── packages/
+│   ├── client/          # 前端应用 (Vue 3 + TypeScript)
+│   ├── server/          # 后端API服务 (NestJS)
+│   ├── core/            # 前后端共享核心模块
+│   ├── push-server/     # 推送服务
+│   └── wxPusher/        # 微信推送服务
+├── docker-compose.yml   # Docker 编排配置
+└── lerna.json          # Monorepo 配置
 ```
 
-3. 核心 core
+## 🚀 技术栈
 
+### 前端 (Client)
+
+- **框架**: Vue 3 + TypeScript
+- **构建工具**: Vite
+- **UI 组件库**: Element Plus
+- **状态管理**: Pinia
+- **路由**: Vue Router 4
+- **图表**: ECharts
+- **编辑器**: v-md-editor
+
+### 后端 (Server)
+
+- **框架**: NestJS
+- **数据库**: MySQL + TypeORM
+- **认证**: JWT + Passport
+- **API 文档**: Swagger
+- **任务调度**: @nestjs/schedule
+- **微服务**: @nestjs/microservices
+
+### 核心模块 (Core)
+
+- **构建工具**: Rollup
+- **语言**: TypeScript
+- **功能**: 前后端共享工具函数和类型定义
+
+### 推送服务
+
+- **推送服务**: 基于 NestJS 的微服务架构
+- **微信推送**: 集成 Wechaty 实现多渠道消息推送
+
+## 📦 安装依赖
+
+```bash
+# 安装根目录依赖
+pnpm install
+
+# 安装所有子包依赖
+pnpm bootstrap
 ```
-修改 package.json 版本号
-检查 pnpm 源是否正确
-pnpm build
-pnpm publish
-```
 
-## 项目研发
+## 🛠️ 开发环境启动
 
-1.  启动项目
+### 启动所有服务
 
-- 启动前清理端口
-
-```js
-lsof -i:3000
-kill -9 pid
-```
-
-- 启动项目
-
-```
+```bash
+# 启动后端服务
 pnpm start:server
+
+# 启动前端开发服务器
 pnpm start:client
+
+# 启动推送服务
+pnpm start:pushServer
+
+# 启动微信推送服务
+pnpm start:wxPusher
 ```
 
-## 项目部署
+### 单独启动服务
 
-1.  前端部署
-
-2.  后端部署
-
-3.  核心 core 部署
-4.  mysql 数据库
-
-## 项目运维
-
-1. IO 监控（硬盘 IO 繁忙比率>90%重启 docker mysql 容器)
-
-- 1.1 脚本编写
-
-```
-#!/bin/bash
-
-# 获取MySQL容器的名称或ID
-container_name_or_id="mysql"
-
-# 判断容器是否存在
-container_id=$(docker ps --filter "name=$container_name_or_id" --format "{{.ID}}")
-if [ -z "$container_id" ]; then
-  echo "MySQL容器未找到"
-  exit 1
-fi
-
-# 获取MySQL容器的磁盘设备名
-device_name=$(docker inspect --format '{{ .GraphDriver.Data.DeviceName }}' "$container_id")
-
-# 使用iotop检查MySQL容器的IO占比，限制iotop运行时间为1秒
-io_usage=$(timeout 1s iotop -P -b -n 1 -d 1 | grep "$device_name" | awk '{print $10}' | sed 's/%//')
-
-# 判断IO占比是否大于90
-if [ ! -z "$io_usage" ] && (( $(echo "$io_usage > 90" | bc -l) )); then
-  echo "MySQL容器IO占比大于90%，正在重启容器"
-  docker restart "$container_id"
-fi
+```bash
+# 进入对应目录启动
+cd packages/server && pnpm start
+cd packages/client && pnpm start
 ```
 
-- 1.2 定时任务配置
+## 🔨 构建部署
 
-```
-执行 crontab -e
+### 构建所有包
 
-# 加入下面命令
-*/2 7-23 * * * sh /usr/local/mysql/ioMonitorTaskIOTop.sh
-
-日志存储到文件
-*/2 7-23 * * * sh /usr/local/mysql/ioMonitorTaskIOTop.sh > /usr/local/mysql/ioMonitorTaskIOTop.log 2>&1 &
-
-# 保存退出
+```bash
+pnpm build
 ```
 
-2. mysql 数据备份
-   2.1 脚本编写
+### 单独构建
 
-```
-#!/bin/bash
+```bash
+# 构建前端
+cd packages/client && pnpm build
 
-# MySQL 容器名称
-CONTAINER_NAME="mysql"
+# 构建后端
+cd packages/server && pnpm build
 
-# I/O 占比阈值
-THRESHOLD=90
-
-# 获取容器的 PID
-CONTAINER_PID=$(docker inspect --format '{{.State.Pid}}' $CONTAINER_NAME)
-
-echo "$CONTAINER_PID"
-# 检查 I/O 占比
-IO_USAGE=0
-if [ -n "$CONTAINER_PID" ]; then
-    echo "高 I/O 用量: $IO_USAGE%, start"
-    # 使用 iotop 获取 I/O 占比
-    IO_USAGE=$(iotop -p $CONTAINER_PID -b | awk 'NR==4 {print $8}')
-    echo "高 I/O 用量: $IO_USAGE%, end"
-fi
-
-# 检查 I/O 占比是否超过阈值
-if [ "$IO_USAGE" -ge "$THRESHOLD" ]; then
-    echo "高 I/O 用量: $IO_USAGE%, 重启 MySQL container..."
-    docker restart $CONTAINER_NAME
-fi
+# 构建核心模块
+cd packages/core && pnpm build
 ```
 
-- 2.2 定时任务配置
+### Docker 部署
 
-```
-0 0 19 * 1-5 sh /usr/local/mysql/timerTask.sh
-```
+```bash
+# 使用 Docker Compose 启动所有服务
+docker-compose up -d
 
-1. 前端异常监控 rum
-2. 定时任务失败告警 企微机器人
-
-## 服务器重启操作
-
-1. 恢复 docker mysql 容器
-
-```
-docker start mysql
+# 启动 Consul 服务发现
+docker-compose -f docker-compose-consul.yml up -d
 ```
 
-2. 重启 pm2 进程
+## 📁 项目结构详解
 
-```
-pm2 start /workspace/git/pay-back/packages/server/dist/main.js --name=payBack --watch
-```
+### Client (前端)
 
-3. 重启 nginx
+- `src/views/` - 页面组件
+- `src/components/` - 通用组件
+- `src/api/` - API 接口定义
+- `src/store/` - 状态管理
+- `src/router/` - 路由配置
 
-```
-nginx -s reload
-```
+### Server (后端)
 
-无限未来 (Infinite Future)
-数字前沿 (Digital Frontier)
-云端智造 (Cloud Smart Manufacturing)
+- `src/article/` - 文章管理模块
+- `src/auth/` - 认证授权模块
+- `src/pay-back/` - 核心业务模块
+- `src/scheduler-task/` - 定时任务
+- `src/users/` - 用户管理模块
+
+### Core (核心模块)
+
+- `src/utils/` - 工具函数
+- `src/config/` - 配置管理
+
+## 🔧 开发工具配置
+
+### 代码规范
+
+- ESLint - 代码质量检查
+- Prettier - 代码格式化
+- TypeScript - 类型检查
+
+### Git Hooks
+
+- Husky - Git 钩子管理
+- lint-staged - 暂存区代码检查
+
+## 📊 监控与运维
+
+### 前端监控
+
+- Aegis Web SDK - 前端异常监控
+
+### 数据库监控
+
+- MySQL I/O 监控脚本
+- 自动重启机制
+
+### 进程管理
+
+- PM2 - 进程守护
+- Docker - 容器化部署
+
+## 🔐 环境配置
+
+项目支持多环境配置：
+
+- 开发环境 (development)
+- 生产环境 (production)
+
+环境变量文件位于各包的根目录：
+
+- `.env` - 基础配置
+- `.env.development` - 开发环境
+- `.env.production` - 生产环境
+
+## 📈 功能特性
+
+- ✅ 用户认证与授权
+- ✅ 文章管理系统
+- ✅ 实时消息推送
+- ✅ 微信集成推送
+- ✅ 定时任务调度
+- ✅ 微服务架构
+- ✅ 容器化部署
+- ✅ 代码质量检查
+- ✅ 类型安全(TypeScript)
+
+## 🤝 贡献指南
+
+1. Fork 本项目
+2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 创建 Pull Request
+
+## 📄 许可证
+
+本项目采用 ISC 许可证 - 查看 [LICENSE](packages/client/LICENSE) 文件了解详情。
+
+## 📞 联系方式
+
+- 项目维护者: yxuanzhang@tencent.com
+- 项目仓库: [Gitee](https://gitee.com/chongqing-woteng/pay-back.git)
+
+---
+
+**无限未来 (Infinite Future) | 数字前沿 (Digital Frontier) | 云端智造 (Cloud Smart Manufacturing)**
