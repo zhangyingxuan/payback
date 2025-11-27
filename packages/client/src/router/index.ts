@@ -193,7 +193,7 @@ router.beforeEach((to, from, next) => {
   const permiss = usePermissStore();
 
   // 允许未登录用户访问登录页面和作品集页面
-  if (!permiss.name && to.path !== '/login' && to.path !== '/portfolio') {
+  if (!permiss.name && to.path !== '/login' && to.path !== '/works') {
     next('/login');
   } else if (to.meta.permiss && !permiss.key.includes(to.meta.permiss)) {
     // 如果没有权限，则进入403
