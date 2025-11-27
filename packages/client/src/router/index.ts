@@ -5,7 +5,15 @@ import Home from '../views/home.vue';
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    redirect: '/charts',
+    redirect: '/works',
+  },
+  {
+    path: '/works',
+    name: 'works',
+    meta: {
+      title: '作品集',
+    },
+    component: () => import(/* webpackChunkName: "works" */ '../views/works/index.vue'),
   },
   {
     path: '/',
@@ -183,7 +191,9 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   document.title = `${to.meta.title} | pay-back`;
   const permiss = usePermissStore();
-  if (!permiss.name && to.path !== '/login') {
+
+  // 允许未登录用户访问登录页面和作品集页面
+  if (!permiss.name && to.path !== '/login' && to.path !== '/portfolio') {
     next('/login');
   } else if (to.meta.permiss && !permiss.key.includes(to.meta.permiss)) {
     // 如果没有权限，则进入403

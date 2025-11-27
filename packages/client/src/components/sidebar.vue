@@ -121,6 +121,12 @@ const items: any = [
     title: '系统配置',
     permiss: '1',
   },
+  {
+    icon: 'Collection',
+    index: '/works',
+    title: '作品集',
+    permiss: '1',
+  },
   // {
   //   icon: 'DocumentCopy',
   //   index: '/tabs',
