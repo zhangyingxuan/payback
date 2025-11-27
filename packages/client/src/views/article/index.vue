@@ -1,7 +1,7 @@
 <template>
   <div class="article__container container">
     <div class="handle-box">
-      <el-button type="primary" :icon="Plus" @click="handleAdd" v-permiss="16">
+      <el-button type="primary" :icon="Plus" @click="handleAdd" v-isAdmin>
         新增
       </el-button>
 
@@ -34,17 +34,13 @@
       ></el-table-column>
       <el-table-column label="操作" min-width="90" fixed="right">
         <template #default="scope">
-          <span
-            class="oprate__btn"
-            @click="handleEdit(scope.row.id)"
-            v-permiss="16"
-          >
+          <span class="oprate__btn" @click="handleEdit(scope.row.id)" v-isAdmin>
             编辑
           </span>
           <span
             class="oprate__btn red"
             @click="handleDelete(scope.$index, scope.row.id)"
-            v-permiss="16"
+            v-isAdmin
           >
             删除
           </span>

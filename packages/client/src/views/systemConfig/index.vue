@@ -53,7 +53,7 @@
           ></el-switch>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onSubmit(formRef)">
+          <el-button type="primary" @click="onSubmit(formRef)" v-isAdmin>
             保存
           </el-button>
         </el-form-item>
@@ -94,6 +94,7 @@
           <el-button
             type="danger"
             @click="onDataManageSubmit(dataManageFormRef)"
+            v-isAdmin
           >
             删除
           </el-button>
@@ -121,7 +122,11 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onSaveUserInfo(userInfoFormRef)">
+          <el-button
+            type="primary"
+            @click="onSaveUserInfo(userInfoFormRef)"
+            v-isAdmin
+          >
             保存
           </el-button>
         </el-form-item>
@@ -171,6 +176,7 @@ const userInfoForm = reactive({
   user: '',
   token: '',
 });
+
 async function initPage() {
   // 获取配置信息
   const configInfo: any = await fetchSystemConfig();
@@ -232,6 +238,7 @@ const onDataManageSubmit = (formEl: FormInstance | undefined) => {
     }
   });
 };
+
 // 用户信息提交
 const onSaveUserInfo = (formEl: FormInstance | undefined) => {
   // 表单校验

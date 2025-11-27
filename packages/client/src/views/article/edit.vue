@@ -6,11 +6,15 @@
           <el-input v-model="form.title"></el-input>
         </el-form-item>
         <el-form-item label="文章内容" prop="content">
-          <v-md-editor v-model="form.content" height="80vh" :include-level="[1, 2, 3, 4]"
-            default-show-toc></v-md-editor>
+          <v-md-editor
+            v-model="form.content"
+            height="80vh"
+            :include-level="[1, 2, 3, 4]"
+            default-show-toc
+          ></v-md-editor>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="onSubmit(formRef)">{{
+          <el-button type="primary" @click="onSubmit(formRef)" v-isAdmin>{{
             query && query.id ? '编辑' : '新增'
           }}</el-button>
           <el-button @click="onReset(formRef)">重置表单</el-button>
@@ -29,7 +33,6 @@ import { useRouter, useRoute } from 'vue-router';
 import { findOne, create, update } from '@/api/article';
 
 const { query } = useRoute();
-
 const router = useRouter();
 
 const rules: FormRules = {

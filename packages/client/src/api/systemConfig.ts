@@ -1,6 +1,7 @@
 import { http } from '@/core/request';
 
 const baseUrlSystemConfig = 'blowsysun/system-config';
+
 /**
  * 获取系统配置
  * @returns 

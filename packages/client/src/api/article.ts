@@ -38,7 +38,7 @@ export const update = (data: any | null) => {
   });
 }
 /**
- * 编辑
+ * 删除
  * @param params 
  * @returns 
  */

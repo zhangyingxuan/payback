@@ -3,13 +3,13 @@ import { ShortTermModel } from './model/ShortTermModel';
 import { MarketModel } from './model/MarketModel';
 import { FundsModel } from './model/FundsModel';
 
-const baseUrl = 'blowsysun/pay-back';
-
 export interface ChartResult {
   shortTermData: ShortTermModel[],
   marketData: MarketModel[],
   fundsData: FundsModel[],
 }
+
+const baseUrl = 'blowsysun/pay-back';
 
 /**
  * 获取图表数据
