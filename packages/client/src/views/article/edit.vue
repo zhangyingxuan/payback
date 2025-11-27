@@ -6,8 +6,12 @@
           <el-input v-model="form.title"></el-input>
         </el-form-item>
         <el-form-item label="文章内容" prop="content">
-          <v-md-editor v-model="form.content" height="80vh" :include-level="[1, 2, 3, 4]"
-            default-show-toc></v-md-editor>
+          <v-md-editor
+            v-model="form.content"
+            height="80vh"
+            :include-level="[1, 2, 3, 4]"
+            default-show-toc
+          ></v-md-editor>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="onSubmit(formRef)">{{
@@ -52,7 +56,7 @@ const onSubmit = (formEl: FormInstance | undefined) => {
     if (valid) {
       if (!form.content) {
         ElMessage.error('请输入文章内容！！！');
-        return false;
+        return;
       }
 
       let params, apiRequest;
@@ -70,9 +74,6 @@ const onSubmit = (formEl: FormInstance | undefined) => {
         ElMessage.success('保存成功！');
         goBack();
       });
-      return true;
-    } else {
-      return false;
     }
   });
 };

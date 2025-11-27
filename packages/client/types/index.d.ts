@@ -1,4 +1,23 @@
 // 此文件跟同级目录的 global.d.ts 文件一样也是全局类型声明，只不过这里存放一些零散的全局类型，无需引入直接在 .vue 、.ts 、.tsx 文件使用即可获得类型提示
+
+// Vue JSX 类型定义
+import { VNode } from 'vue';
+
+declare global {
+  namespace JSX {
+    interface Element extends VNode { }
+    interface ElementClass {
+      $props: {}
+    }
+    interface ElementAttributesProperty {
+      $props: {}
+    }
+    interface IntrinsicElements {
+      [elem: string]: any
+    }
+  }
+}
+
 interface ViteEnv {
   VITE_PORT: number;
   VITE_PUBLIC_PATH: string;

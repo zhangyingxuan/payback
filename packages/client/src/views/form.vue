@@ -149,7 +149,7 @@ const onSubmit = (formEl: FormInstance | undefined) => {
     if (valid) {
       ElMessage.success('提交成功！');
     } else {
-      return false;
+      // 移除return false，因为FormValidateCallback要求返回void
     }
   });
 };

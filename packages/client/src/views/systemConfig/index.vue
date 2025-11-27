@@ -204,8 +204,6 @@ const onSubmit = (formEl: FormInstance | undefined) => {
     if (valid) {
       await updateSystemConfig(form);
       ElMessage.success('提交成功！');
-    } else {
-      return false;
     }
   });
 };
@@ -227,8 +225,6 @@ const onDataManageSubmit = (formEl: FormInstance | undefined) => {
         .catch(() => {
           // catch error
         });
-    } else {
-      return false;
     }
   });
 };
@@ -249,8 +245,6 @@ const onSaveUserInfo = (formEl: FormInstance | undefined) => {
         .catch(() => {
           // ElMessage.success('更新失败！');
         });
-    } else {
-      return false;
     }
   });
 };

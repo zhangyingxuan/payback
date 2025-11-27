@@ -113,7 +113,7 @@ const submitForm = (event: MouseEvent) => {
       }
     } else {
       ElMessage.error('登录失败');
-      return false;
+      // 移除return false，因为FormValidateCallback要求返回void
     }
   });
 };

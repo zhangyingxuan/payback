@@ -11,7 +11,8 @@ import { warpperEnv } from "./build";
 import path from 'path';
 import compress from 'vite-plugin-compression';
 import { visualizer } from 'rollup-plugin-visualizer';
-import { manualChunksPlugin } from 'vite-plugin-webpackchunkname';
+// 移除有问题的插件
+// import { manualChunksPlugin } from 'vite-plugin-webpackchunkname';
 
 
 /** 路径查找 */
@@ -119,7 +120,8 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 		},
 		plugins: [
 			compress({ threshold: 10240 }), // gzip 压缩
-			manualChunksPlugin(), // 合并webpackChunkName
+			// 移除有问题的插件调用
+			// manualChunksPlugin(), // 合并webpackChunkName
 			// 打包分析
 			visualizer({
 				gzipSize: true,

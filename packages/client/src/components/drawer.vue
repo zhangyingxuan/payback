@@ -165,27 +165,23 @@
       tagType="success"
       title="爱问财收藏 - 个股（套利） - 超跌反弹，转势买"
       :urlList="iwencaiCollectChaodieList"
-      :suffix="stockSuffix"
     />
     <DrawerUl
       tagType="success"
       title="爱问财收藏 - 个股（套利） - 欲突破，转势买"
       :urlList="iwencaiCollectYutupoList"
-      :suffix="stockSuffix"
     />
     <br />
     <DrawerUl
       tagType="error"
       title="爱问财收藏 - 个股（短线）- 突破形态"
       :urlList="iwencaiCollectShortStockList"
-      :suffix="stockBaseWord"
     />
     <br />
     <DrawerUl
       tagType="success"
       title="爱问财收藏 - 个股（波段）"
       :urlList="iwencaiCollectMiddleStockList"
-      :suffix="stockBaseWord"
     />
     <br />
     <DrawerUl
@@ -193,7 +189,6 @@
       tagType="warning"
       title="爱问财收藏 - 行业板块"
       :urlList="iwencaiCollectPlateList"
-      :suffix="stockBaseWord"
     />
   </el-drawer>
 </template>

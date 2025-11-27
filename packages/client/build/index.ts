@@ -1,5 +1,5 @@
 /** 处理环境变量 */
-const warpperEnv = (envConf: Recordable): ViteEnv => {
+const warpperEnv = (envConf: Record<string, any>): any => {
   /** 此处为默认值 */
   const ret: any = {
     VITE_PORT: 8848,
@@ -31,9 +31,4 @@ const warpperEnv = (envConf: Recordable): ViteEnv => {
   return ret;
 };
 
-/** 获取环境变量 */
-const loadEnv = (): ViteEnv => {
-  return import.meta.env;
-};
-
-export { warpperEnv, loadEnv };
+export { warpperEnv };
