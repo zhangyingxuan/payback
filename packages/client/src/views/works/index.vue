@@ -285,7 +285,7 @@
             <div class="project-showcase">
               <div class="project-item">
                 <div class="project-info">
-                  <span class="project-name">腾讯云购买</span>
+                  <span class="project-name">腾讯云购买页</span>
                   <el-tag class="project-tag" type="primary" effect="dark">
                     腾讯云
                   </el-tag>
