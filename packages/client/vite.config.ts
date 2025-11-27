@@ -64,62 +64,93 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 				},
 			}
 		},
+		// 依赖预构建优化
+		optimizeDeps: {
+			include: [
+				'vue',
+				'vue-router',
+				'pinia',
+				'axios',
+				'dayjs',
+				'qs',
+				'js-cookie'
+			],
+			exclude: ['echarts', '@kangc/v-md-editor']
+		},
 		// 打包优化，vender 拆分为多个
 		build: {
 			outDir: path.resolve(__dirname, 'dist'),
 			emptyOutDir: true,
+			// 启用更小的chunk大小警告阈值
+			chunkSizeWarningLimit: 800,
 			rollupOptions: {
 				// input: viteMultiPages,
 				output: {
+					// 更细粒度的代码分割
 					manualChunks: (id) => {
-						if (
-							id.indexOf('/node_modules/echarts/') !== -1
-						) {
-							return 'vendor-echarts';
-						}
-						// if (
-						// 	id.indexOf('node_modules/core-js/') !== -1 ||
-						// 	id.indexOf('node_modules/@vue/') !== -1 ||
-						// 	id.indexOf('node_modules/vue/') !== -1 ||
-						// 	id.indexOf('node_modules/vue-router/') !== -1 ||
-						// 	id.indexOf('node_modules/vuex/') !== -1 ||
-						// 	id.indexOf('node_modules/axios/') !== -1
-						// ) {
-						// 	return 'vendor-core';
-						// }
-						if (id.indexOf('/node_modules/element-plus/') !== -1 ||
-							id.indexOf('/node_modules/@element-plus/icons-vue/') !== -1) {
+						// Element Plus 相关依赖
+						if (id.includes('/node_modules/element-plus/') ||
+							id.includes('/node_modules/@element-plus/icons-vue/')) {
 							return 'vendor-element-plus';
 						}
-						if (id.indexOf('/node_modules/@kangc/') !== -1) {
-							return 'vendor-markdown';
+						// ECharts 相关依赖
+						if (id.includes('/node_modules/echarts/') ||
+							id.includes('/node_modules/zrender/')) {
+							return 'vendor-echarts';
 						}
-						if (
-							id.indexOf('node_modules/zrender/') !== -1 ||
-							id.indexOf('node_modules/qs/') !== -1 ||
-							id.indexOf('node_modules/dayjs/') !== -1 ||
-							id.indexOf('node_modules/lodash-es/') !== -1
-						) {
+						// // Markdown 编辑器相关
+						// if (id.includes('/node_modules/@kangc/v-md-editor/') ||
+						// 	id.includes('/node_modules/hyperdown/')) {
+						// 	return 'vendor-markdown';
+						// }
+						// // Vue 核心相关
+						// if (id.includes('/node_modules/vue/') ||
+						// 	id.includes('/node_modules/@vue/') ||
+						// 	id.includes('/node_modules/vue-router/') ||
+						// 	id.includes('/node_modules/pinia/')) {
+						// 	return 'vendor-vue';
+						// }
+						// 工具库
+						if (id.includes('/node_modules/lodash-es/') ||
+							id.includes('/node_modules/dayjs/') ||
+							id.includes('/node_modules/qs/') ||
+							id.includes('/node_modules/axios/')) {
 							return 'vendor-utils';
 						}
-						// 剩余的外部依赖全部装入 utils中
-						// if (id.indexOf('/node_modules/') !== -1) {
-						// 	return 'vendor-external';
+						// // 图片处理相关
+						// if (id.includes('/node_modules/cropperjs/') ||
+						// 	id.includes('/node_modules/vue-cropperjs/')) {
+						// 	return 'vendor-image';
+						// }
+						// 其他第三方库
+						// if (id.includes('/node_modules/')) {
+						// 	return 'vendor-other';
 						// }
 					},
-				},
-			},
-			terserOptions: {
-				compress: {
-					// 生产环境时移除console
-					drop_console: true,
-					drop_debugger: true,
+					// 更优化的chunk命名
+					chunkFileNames: 'assets/[name]-[hash].js',
+					entryFileNames: 'assets/[name]-[hash].js',
+					assetFileNames: 'assets/[name]-[hash].[ext]'
 				},
 			},
 			sourcemap: false,
+			// 启用更小的构建目标
+			target: 'es2020',
+			// 启用更小的polyfill策略
+			modulePreload: {
+				polyfill: false
+			},
+			// 使用esbuild进行压缩，避免terser依赖问题
+			minify: 'esbuild',
 		},
 		plugins: [
-			compress({ threshold: 10240 }), // gzip 压缩
+			compress({
+				threshold: 10240,
+				// 启用更多压缩算法
+				algorithm: 'gzip',
+				ext: '.gz',
+				deleteOriginFile: false
+			}),
 			// 移除有问题的插件调用
 			// manualChunksPlugin(), // 合并webpackChunkName
 			// 打包分析
@@ -134,15 +165,17 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 			vue(),
 			// VueSetupExtend(),
 			AutoImport({
-				resolvers: [ElementPlusResolver()]
+				resolvers: [ElementPlusResolver()],
+				// 优化自动导入
+				dts: true,
+				imports: ['vue', 'vue-router', 'pinia']
 			}),
 			Components({
-				resolvers: [ElementPlusResolver()]
+				resolvers: [ElementPlusResolver()],
+				// 优化组件导入
+				dts: true
 			})
 		],
-		// optimizeDeps: {
-		// 	include: ['schart.js', 'lodash']
-		// },
 		css: {
 			preprocessorOptions: {
 				less: {
