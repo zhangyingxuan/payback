@@ -1,3 +1,19 @@
+/** 环境变量类型定义 */
+type ViteEnv = {
+  VITE_PORT: number;
+  VITE_PUBLIC_PATH: string;
+  VITE_ROUTER_HISTORY: string;
+  VITE_CDN: boolean;
+  VITE_COMPRESSION: string;
+  VITE_BASE_API: string;
+  VITE_BASE_API_THS: string;
+  VITE_BASE_API_THS_NEWS: string;
+  VITE_BASE_API_THS_DQ: string;
+  [key: string]: any;
+};
+
+type Recordable<T = any> = Record<string, T>;
+
 /** 处理环境变量 */
 const warpperEnv = (envConf: Recordable): ViteEnv => {
   /** 此处为默认值 */

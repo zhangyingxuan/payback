@@ -7,11 +7,10 @@ import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
 // import markdownLoader from './build/markdownLoader';
-import { warpperEnv } from "./build";
+import { warpperEnv } from "./build/index";
 import path from 'path';
 import compress from 'vite-plugin-compression';
 import { visualizer } from 'rollup-plugin-visualizer';
-import { manualChunksPlugin } from 'vite-plugin-webpackchunkname';
 
 
 /** 路径查找 */
@@ -63,8 +62,11 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 				},
 			}
 		},
-		// 打包优化，vender 拆分为多个
+		// 浏览器兼容性配置
 		build: {
+			minify: "esbuild",
+			// 浏览器兼容性目标
+			target: ['es2020', 'chrome80', 'firefox78', 'safari14', 'edge88'],
 			outDir: path.resolve(__dirname, 'dist'),
 			emptyOutDir: true,
 			rollupOptions: {
@@ -108,18 +110,10 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 					},
 				},
 			},
-			terserOptions: {
-				compress: {
-					// 生产环境时移除console
-					drop_console: true,
-					drop_debugger: true,
-				},
-			},
 			sourcemap: false,
 		},
 		plugins: [
 			compress({ threshold: 10240 }), // gzip 压缩
-			manualChunksPlugin(), // 合并webpackChunkName
 			// 打包分析
 			visualizer({
 				gzipSize: true,
@@ -150,6 +144,34 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 					javascriptEnabled: true,
 				},
 			},
+			// PostCSS配置，添加浏览器前缀
+			postcss: {
+				plugins: [
+					require('autoprefixer')({
+						overrideBrowserslist: [
+							'> 1%',           // 全球使用率大于1%的浏览器
+							'last 2 versions', // 每个浏览器的最后2个版本
+							'not dead',       // 不包含已经"死亡"的浏览器
+							'ie >= 11',       // 支持IE11及以上
+							'iOS >= 9',       // 支持iOS 9及以上
+							'Android >= 4.4'  // 支持Android 4.4及以上
+						],
+						grid: true, // 启用CSS Grid布局前缀
+					}),
+					require('postcss-preset-env')({
+						stage: 3, // 使用Stage 3阶段的CSS特性
+						features: {
+							'nesting-rules': true, // 启用嵌套规则
+							'custom-properties': true, // 启用自定义属性
+						},
+					}),
+				],
+			},
+		},
+		// 现代浏览器构建优化
+		esbuild: {
+			// ES6+语法转换，确保兼容性
+			target: 'es2020',
 		},
 	}
 };
