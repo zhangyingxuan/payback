@@ -283,9 +283,16 @@
               <span class="card-title">Web项目</span>
             </div>
             <div class="project-showcase">
-              <div class="project-item">
+              <div
+                class="project-item"
+                @click="openLink('https://buy.cloud.tencent.com/tcia')"
+                @keydown.enter="openLink('https://buy.cloud.tencent.com/tcia')"
+                tabindex="0"
+                role="button"
+                :aria-label="'打开腾讯云新购页'"
+              >
                 <div class="project-info">
-                  <span class="project-name">腾讯云购买</span>
+                  <span class="project-name">腾讯云新购页</span>
                   <el-tag class="project-tag" type="primary" effect="dark">
                     腾讯云
                   </el-tag>
@@ -297,7 +304,14 @@
                   </div>
                 </div>
               </div>
-              <div class="project-item">
+              <div
+                class="project-item"
+                @click="openLink('https://efapiao.tencent.com')"
+                @keydown.enter="openLink('https://efapiao.tencent.com')"
+                tabindex="0"
+                role="button"
+                :aria-label="'打开线上订购门户'"
+              >
                 <div class="project-info">
                   <span class="project-name">线上订购门户</span>
                   <el-tag class="project-tag" type="success" effect="dark">
@@ -492,6 +506,18 @@ onMounted(() => {
     // 添加触摸反馈
     const interactiveElements = document.querySelectorAll('.interactive-item');
     interactiveElements.forEach(element => {
+      element.addEventListener('touchstart', () => {
+        element.classList.add('touch-active');
+      });
+
+      element.addEventListener('touchend', () => {
+        element.classList.remove('touch-active');
+      });
+    });
+
+    // 为项目项添加触摸反馈
+    const projectItems = document.querySelectorAll('.project-item');
+    projectItems.forEach(element => {
       element.addEventListener('touchstart', () => {
         element.classList.add('touch-active');
       });
@@ -1125,11 +1151,63 @@ onMounted(() => {
   align-items: center;
   transition: all 0.2s ease;
   -webkit-transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.15);
     transform: translateX(3px);
     -webkit-transform: translateX(3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      transparent
+    );
+    background: -webkit-linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      transparent
+    );
+    transition: left 0.5s ease;
+    -webkit-transition: left 0.5s ease;
+  }
+
+  &:hover::after {
+    left: 100%;
+  }
+
+  .project-info {
+    position: relative;
+    z-index: 2;
+  }
+
+  .project-name {
+    position: relative;
+    transition: color 0.2s ease;
+    -webkit-transition: color 0.2s ease;
+  }
+
+  &:hover .project-name {
+    color: #93c5fd;
+  }
+
+  .project-tag {
+    position: relative;
+    z-index: 2;
   }
 
   .project-info {
@@ -1152,6 +1230,8 @@ onMounted(() => {
   .project-stats {
     display: flex;
     gap: 10px;
+    position: relative;
+    z-index: 2;
 
     .stat {
       display: flex;
@@ -1169,6 +1249,12 @@ onMounted(() => {
         font-size: 0.6rem;
       }
     }
+  }
+
+  &.touch-active {
+    background: rgba(255, 255, 255, 0.2) !important;
+    transform: scale(0.98) !important;
+    -webkit-transform: scale(0.98) !important;
   }
 }
 

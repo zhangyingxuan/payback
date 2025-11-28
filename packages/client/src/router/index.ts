@@ -196,7 +196,7 @@ router.beforeEach((to, from, next) => {
   if (themeColorMeta) {
     if (to.path === '/works') {
       // works页面：theme-color与页面背景色相同（蓝色渐变背景）
-      themeColorMeta.setAttribute('content', '#1e3a8a');
+      themeColorMeta.setAttribute('content', '#60a5fa');
     } else {
       // 其他页面：设置为#324157
       themeColorMeta.setAttribute('content', '#324157');
