@@ -1,1 +1,0 @@
-import{h as t}from"./index-3b9d77d8.js";const r="blowsysun/article",n=()=>t.request("get",`${r}/findAll`),o=e=>t.request("get",`${r}/findOne`,{params:e}),u=e=>t.request("post",`${r}/create`,{data:e}),a=e=>t.request("post",`${r}/update`,{data:e}),c=e=>t.request("post",`${r}/remove`,{data:e});export{o as a,u as c,n as f,c as r,a as u};
