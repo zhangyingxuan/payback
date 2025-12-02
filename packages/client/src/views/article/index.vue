@@ -34,7 +34,7 @@
       ></el-table-column>
       <el-table-column label="操作" min-width="90" fixed="right">
         <template #default="scope">
-          <span class="oprate__btn" @click="handleEdit(scope.row.id)">
+          <span class="oprate__btn" v-isAdmin @click="handleEdit(scope.row.id)">
             编辑
           </span>
           <span
