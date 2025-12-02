@@ -1,8 +1,10 @@
-import { Controller, Get, Logger, Post, Body, Inject } from '@nestjs/common';
+import { Controller, Get, Logger, Post, Body, Inject, UseGuards } from '@nestjs/common';
 import { SystemConfigService } from './service/systemConfig.service';
 import { newsPushSchedulerTask } from '../scheduler-task/config';
 import { SchedulerTaskService } from '@/scheduler-task/scheduler-task.service';
 import { ClientProxy } from '@nestjs/microservices';
+import { AdminGuard } from '../auth/admin.guard';
+import { Admin } from '../auth/admin.decorator';
 // import { Public } from '../decorator/public.decorator';
 
 class SystemConfigDto {
@@ -36,7 +38,8 @@ export class SystemConfigController {
     };
   }
 
-  // @Public()
+  @Admin()
+  @UseGuards(AdminGuard)
   @Post('/updateSystemConfig')
   async updateSystemConfig(@Body() body: SystemConfigDto) {
     const config = await this.systemConfigService.findLatestOne();
@@ -49,6 +52,8 @@ export class SystemConfigController {
   }
 
   // 推送启用、禁用
+  @Admin()
+  @UseGuards(AdminGuard)
   @Post('/toggleNewsPushEnable')
   async toggleNewsPushEnable(@Body() body: SystemConfigDto) {
     try {

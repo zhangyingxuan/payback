@@ -15,6 +15,8 @@ import { Public } from '../decorator/public.decorator';
 // import { Cron } from '@nestjs/schedule';
 import { UsersService } from '../users/users.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { AdminGuard } from '../auth/admin.guard';
+import { Admin } from '../auth/admin.decorator';
 import * as dayjs from 'dayjs';
 import { QyWechatNotice } from './service/qyWechatNotice.service';
 import { schedulerTaskList, newsPushSchedulerTask } from '../scheduler-task/config';
@@ -206,6 +208,8 @@ export class PayBackController {
     };
   }
 
+  @Admin()
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Post('/deleteData')
   async deleteData(@Body() body: any) {
     let code = 0,
