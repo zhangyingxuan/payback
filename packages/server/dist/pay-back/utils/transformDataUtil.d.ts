@@ -1,0 +1,36 @@
+import { StrongStockDto } from '../dto/strong-stock.dto';
+import { DailyLimitYesterdayBiddingDto } from '../dto/daily-limit-yesterday-bidding.dto';
+import { NewStockDto } from '../dto/new-stock.dto';
+export declare enum ExpectEnum {
+    conformTo = 1,
+    exceed = 2,
+    incompatible = 0
+}
+export declare function transformStockData(stockList: any): any;
+export declare function transformPlateData(plateList: any): any;
+export declare function transformBidData(stocks: any, todayDateStr: any, yesterdayDate: any): Array<DailyLimitYesterdayBiddingDto>;
+export declare function transformNewStockData(stocks: any, todayDateStr: any): Array<NewStockDto>;
+export declare function transformStrongStockData(stocks: any, todayDateStr: any, yesterdayDate: any): Array<StrongStockDto>;
+export declare function transformShortTermSourceData(dailyLimitData: any, downLimitData: any, hugeFallData: any, dailyLimitGroupByGainainData: any, todayDateStr: any): {
+    board1: number;
+    evenBoardData: {
+        maxHeight: number;
+        gaobiao: any[];
+        yizi: number;
+    };
+    downLimitDataArr: any[];
+    hugeFallDataArr: any[];
+    dailyLimitReturnSealQuantity: number;
+};
+export declare function transformForeignFunds(dataStr: any): {
+    northFundsAmtIn: number;
+    southFundsAmtIn: number;
+    northFundsBuyAmt: number;
+    southFundsBuyAmt: number;
+};
+export declare function transformForeignFundsNew(dataStr: any): {
+    northFundsAmtIn: number;
+    southFundsAmtIn: number;
+    northFundsBuyAmt: number;
+    southFundsBuyAmt: number;
+};
