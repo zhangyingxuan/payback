@@ -88,7 +88,7 @@ const routes: RouteRecordRaw[] = [
         name: 'systemConfig',
         meta: {
           title: '系统配置',
-          permiss: '11',
+          permiss: '16',
         },
         component: () => import(/* webpackChunkName: "systemConfig" */ '../views/systemConfig/index.vue'),
       },

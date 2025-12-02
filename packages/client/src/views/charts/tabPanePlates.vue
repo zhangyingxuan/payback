@@ -11,7 +11,6 @@
           "
         >
           <el-button
-            v-isAdmin
             type="primary"
             @click="updateData"
             size="small"

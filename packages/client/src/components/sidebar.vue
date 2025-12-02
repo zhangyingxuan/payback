@@ -119,7 +119,7 @@ const items: any = [
     icon: 'Setting',
     index: '/systemConfig',
     title: '系统配置',
-    permiss: '1',
+    permiss: '16',
   },
   // {
   //   icon: 'DocumentCopy',

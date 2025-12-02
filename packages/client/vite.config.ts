@@ -75,7 +75,7 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 				'qs',
 				'js-cookie'
 			],
-			exclude: ['echarts', '@kangc/v-md-editor']
+			// exclude: ['echarts', '@kangc/v-md-editor']
 		},
 		// 打包优化，vender 拆分为多个
 		build: {
