@@ -1,3 +1,5 @@
+import type { Recordable, ViteEnv } from '../types';
+
 /** 处理环境变量 */
 const warpperEnv = (envConf: Recordable): ViteEnv => {
   /** 此处为默认值 */
@@ -32,7 +34,7 @@ const warpperEnv = (envConf: Recordable): ViteEnv => {
 };
 
 /** 获取环境变量 */
-const loadEnv = (): ViteEnv => {
+const loadEnv = () => {
   return import.meta.env;
 };
 
