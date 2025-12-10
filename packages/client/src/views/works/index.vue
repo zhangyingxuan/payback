@@ -1,13 +1,10 @@
 <template>
   <div class="works-container">
-    <!-- 移动端优化：添加viewport meta检查 -->
-    <div v-if="isMobile" class="mobile-optimization"></div>
-
     <!-- 惊艳头部设计 -->
     <div class="hero-header">
       <div class="hero-content">
         <h1 class="hero-title" :class="{ 'mobile-title': isMobile }">
-          <span class="title-gradient">前端作品集</span>
+          <span class="title-gradient">项目展示</span>
           <div class="title-sparkle">✨</div>
         </h1>
 
@@ -31,7 +28,7 @@
           <div class="header-icon">
             <el-icon class="section-icon"><User /></el-icon>
           </div>
-          <h2 class="section-title" id="personal-projects">个人作品</h2>
+          <h2 class="section-title" id="personal-projects">个人项目</h2>
           <div class="header-decoration"></div>
         </div>
 
@@ -1307,10 +1304,9 @@ onMounted(() => {
   }
 
   .section-header {
-    flex-direction: column;
     text-align: center;
     gap: 10px;
-    margin-bottom: 25px;
+    margin-bottom: 10px;
 
     .header-decoration {
       margin-left: 0;
@@ -1319,13 +1315,7 @@ onMounted(() => {
     }
   }
 
-  .qr-display,
-  .qr-gallery {
-    flex-direction: column;
-  }
-
   .project-item {
-    flex-direction: column;
     gap: 10px;
     text-align: center;
   }
@@ -1333,12 +1323,11 @@ onMounted(() => {
 
 @media (max-width: 576px) {
   .hero-header {
-    padding: 25px 10px 15px;
+    padding: 20px 10px 0;
     margin-bottom: 20px;
   }
 
   .hero-title {
-    flex-direction: column;
     gap: 8px;
 
     .title-gradient {
