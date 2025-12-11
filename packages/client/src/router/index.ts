@@ -193,15 +193,6 @@ router.beforeEach((to, from, next) => {
 
   // 设置浏览器顶部theme-color（兼容Safari）
   const themeColorMeta = document.querySelector('meta[name="theme-color"]');
-<<<<<<< HEAD
-  if (themeColorMeta) {
-    if (to.path === '/works') {
-      // works页面：theme-color与页面背景色相同（蓝色渐变背景）
-      themeColorMeta.setAttribute('content', '#2f4154');
-    } else {
-      // 其他页面：设置为#324157
-      themeColorMeta.setAttribute('content', '#2f4154');
-=======
   const appleStatusBarMeta = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
 
   if (to.path === '/works') {
@@ -216,7 +207,6 @@ router.beforeEach((to, from, next) => {
     // 其他页面：设置为#324157
     if (themeColorMeta) {
       themeColorMeta.setAttribute('content', '#324157');
->>>>>>> 499f3eff6109532a2a31e6a0d4788fd8ec30bc9b
     }
     if (appleStatusBarMeta) {
       appleStatusBarMeta.setAttribute('content', 'default');
