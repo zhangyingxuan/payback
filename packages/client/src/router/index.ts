@@ -191,15 +191,25 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   document.title = `${to.meta.title} | pay-back`;
 
-  // 设置浏览器顶部theme-color
+  // 设置浏览器顶部theme-color（兼容Safari）
   const themeColorMeta = document.querySelector('meta[name="theme-color"]');
-  if (themeColorMeta) {
-    if (to.path === '/works') {
-      // works页面：theme-color与页面背景色相同（蓝色渐变背景）
+  const appleStatusBarMeta = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+
+  if (to.path === '/works') {
+    // works页面：theme-color与页面背景色相同（蓝色渐变背景）
+    if (themeColorMeta) {
       themeColorMeta.setAttribute('content', '#60a5fa');
-    } else {
-      // 其他页面：设置为#324157
+    }
+    if (appleStatusBarMeta) {
+      appleStatusBarMeta.setAttribute('content', 'black-translucent');
+    }
+  } else {
+    // 其他页面：设置为#324157
+    if (themeColorMeta) {
       themeColorMeta.setAttribute('content', '#324157');
+    }
+    if (appleStatusBarMeta) {
+      appleStatusBarMeta.setAttribute('content', 'default');
     }
   }
 
