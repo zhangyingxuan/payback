@@ -225,4 +225,11 @@ router.beforeEach((to, from, next) => {
   }
 });
 
+router.afterEach((to, from) => {
+  // 每次路由变化后，手动推送新的页面路径给百度统计
+  if (window._hmt) {
+    window._hmt.push(['_trackPageview', to.fullPath]);
+  }
+});
+
 export default router;
