@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "dev": "vite --force",
     "start": "vite --force",
     "start:prod": "vite --mode production",
     "build": "vue-tsc --noEmit && vite build",

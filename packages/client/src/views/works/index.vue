@@ -182,17 +182,22 @@
             </div>
             <div class="qr-display">
               <div class="qr-container">
-                <img
-                  src="/src/assets/img/health-tools.jpg"
-                  alt="健康小工具小程序二维码"
-                  class="qr-image animated-qr"
-                  :class="{ 'mobile-qr': isMobile }"
-                  loading="lazy"
-                />
+                <picture>
+                  <source :srcset="healthToolsAvif" type="image/avif" />
+                  <source :srcset="healthToolsWebp" type="image/webp" />
+                  <img
+                    :src="healthToolsJpg"
+                    alt="健康小工具小程序二维码"
+                    class="qr-image animated-qr"
+                    :class="{ 'mobile-qr': isMobile }"
+                    loading="lazy"
+                  />
+                </picture>
                 <div class="qr-overlay">
                   <span class="qr-label">扫码体验</span>
                 </div>
               </div>
+              <span class="qr-label">健康小工具</span>
             </div>
           </article>
         </div>
@@ -227,39 +232,51 @@
             <div class="qr-gallery">
               <div class="qr-item">
                 <div class="qr-frame">
-                  <img
-                    src="/src/assets/img/wpe2c.png"
-                    alt="腾讯云发票管家小程序二维码"
-                    class="qr-image"
-                    :class="{ 'mobile-qr': isMobile }"
-                    loading="lazy"
-                  />
+                  <picture>
+                    <source :srcset="wpe2cAvif" type="image/avif" />
+                    <source :srcset="wpe2cWebp" type="image/webp" />
+                    <img
+                      :src="wpe2cPng"
+                      alt="腾讯云发票管家小程序二维码"
+                      class="qr-image"
+                      :class="{ 'mobile-qr': isMobile }"
+                      loading="lazy"
+                    />
+                  </picture>
                   <div class="qr-badge">企业级</div>
                 </div>
                 <span class="qr-label">腾讯云发票管家</span>
               </div>
               <div class="qr-item">
                 <div class="qr-frame">
-                  <img
-                    src="/src/assets/img/wpe2b.png"
-                    alt="腾讯云发票助手小程序二维码"
-                    class="qr-image"
-                    :class="{ 'mobile-qr': isMobile }"
-                    loading="lazy"
-                  />
+                  <picture>
+                    <source :srcset="wpe2bAvif" type="image/avif" />
+                    <source :srcset="wpe2bWebp" type="image/webp" />
+                    <img
+                      :src="wpe2bPng"
+                      alt="腾讯云发票助手小程序二维码"
+                      class="qr-image"
+                      :class="{ 'mobile-qr': isMobile }"
+                      loading="lazy"
+                    />
+                  </picture>
                   <div class="qr-badge">工具类</div>
                 </div>
                 <span class="qr-label">腾讯云发票助手</span>
               </div>
               <div class="qr-item">
                 <div class="qr-frame">
-                  <img
-                    src="/src/assets/img/halfTest.jpg"
-                    alt="半屏测试小程序二维码"
-                    class="qr-image"
-                    :class="{ 'mobile-qr': isMobile }"
-                    loading="lazy"
-                  />
+                  <picture>
+                    <source :srcset="halfTestAvif" type="image/avif" />
+                    <source :srcset="halfTestWebp" type="image/webp" />
+                    <img
+                      :src="halfTestJpg"
+                      alt="半屏测试小程序二维码"
+                      class="qr-image"
+                      :class="{ 'mobile-qr': isMobile }"
+                      loading="lazy"
+                    />
+                  </picture>
                   <div class="qr-badge">测试版</div>
                 </div>
                 <span class="qr-label">半屏测试</span>
@@ -344,6 +361,22 @@ import {
   Link,
 } from '@element-plus/icons-vue';
 import { onMounted, ref } from 'vue';
+
+import healthToolsAvif from '../../assets/img/health-tools.avif';
+import healthToolsWebp from '../../assets/img/health-tools.webp';
+import healthToolsJpg from '../../assets/img/health-tools.jpg';
+
+import wpe2cAvif from '../../assets/img/wpe2c.avif';
+import wpe2cWebp from '../../assets/img/wpe2c.webp';
+import wpe2cPng from '../../assets/img/wpe2c.png';
+
+import wpe2bAvif from '../../assets/img/wpe2b.avif';
+import wpe2bWebp from '../../assets/img/wpe2b.webp';
+import wpe2bPng from '../../assets/img/wpe2b.png';
+
+import halfTestAvif from '../../assets/img/halfTest.avif';
+import halfTestWebp from '../../assets/img/halfTest.webp';
+import halfTestJpg from '../../assets/img/halfTest.jpg';
 
 // 浏览器兼容性检测
 const isTouchDevice = ref(false);
@@ -1035,6 +1068,15 @@ onMounted(() => {
   gap: 12px;
   flex-wrap: wrap;
 }
+.qr-display {
+  flex-direction: column;
+  .qr-label {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-align: center;
+  }
+}
 
 .qr-container {
   position: relative;
@@ -1322,6 +1364,10 @@ onMounted(() => {
 }
 
 @media (max-width: 576px) {
+  .qr-overlay {
+    width: 100%;
+    height: 100%;
+  }
   .hero-header {
     padding: 20px 10px 0;
     margin-bottom: 20px;
@@ -1401,7 +1447,6 @@ onMounted(() => {
   }
 
   .card-header {
-    flex-direction: column;
     gap: 8px;
     text-align: center;
   }
