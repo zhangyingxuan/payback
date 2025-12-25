@@ -165,6 +165,21 @@
                 </div>
                 <div class="item-hover-effect"></div>
               </div>
+              <div
+                class="interactive-item"
+                :class="{ 'touch-active': isTouchDevice }"
+                @click="openLink('https://blowsysun.top/convert/')"
+                @keydown.enter="openLink('https://blowsysun.top/convert/')"
+                tabindex="0"
+                role="button"
+                :aria-label="'图片转换工具'"
+              >
+                <div class="item-content">
+                  <span class="item-name">图片转换工具</span>
+                  <el-icon class="link-icon"><Link /></el-icon>
+                </div>
+                <div class="item-hover-effect"></div>
+              </div>
             </div>
           </article>
 
