@@ -118,7 +118,20 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 			sourcemap: false,
 		},
 		plugins: [
-			compress({ threshold: 10240 }), // gzip 压缩
+			// 1. 生成 .gz 文件
+			compress({
+				algorithm: 'gzip',
+				ext: '.gz',
+				threshold: 10240, // 超过 10kb 才压缩
+				deleteOriginFile: false // 切记：不要删除源文件！
+			}),
+			// 2. 生成 .br 文件
+			compress({
+				algorithm: 'brotliCompress',
+				ext: '.br',
+				threshold: 10240,
+				deleteOriginFile: false
+			}),
 			manualChunksPlugin(), // 合并webpackChunkName
 			// 打包分析
 			visualizer({
