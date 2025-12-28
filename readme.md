@@ -20,7 +20,59 @@ pay-back/
 └── lerna.json          # Monorepo 配置
 ```
 
+### 系统架构图
+
+```mermaid
+graph TD
+    subgraph PayBack_System [Pay-Back System]
+        direction TB
+        Client[Client-Vue 3]
+        Server[Server-NestJS]
+        PushServer[Push Server]
+        WxPusher[WxPusher]
+        Core[Core-Shared Lib]
+
+        Client -->|HTTP/API| Server
+        Client -.->|Import| Core
+        Server -.->|Import| Core
+
+        Server -->|Event/Queue| PushServer
+        PushServer -->|Dispatch| WxPusher
+
+        DB[(MySQL)]
+        Server -->|ORM| DB
+    end
+```
+
 ## 🚀 技术栈
+
+```mermaid
+mindmap
+  root((Pay-Back))
+    Client(前端应用)
+      Vue 3
+      TypeScript
+      Vite
+      Element Plus
+      Pinia
+      ECharts
+    Server(后端服务)
+      NestJS
+      MySQL
+      TypeORM
+      JWT / Passport
+      Swagger
+    Core(核心模块)
+      TypeScript
+      Rollup
+      Shared Utils
+    DevOps(运维部署)
+      Docker
+      Lerna
+      PM2
+      Consul
+      Nginx
+```
 
 ### 前端 (Client)
 
@@ -63,6 +115,18 @@ pnpm bootstrap
 ```
 
 ## 🛠️ 开发环境启动
+
+```mermaid
+graph LR
+    Start((开始)) --> Install[安装依赖 pnpm install]
+    Install --> Bootstrap[初始化 pnpm bootstrap]
+    Bootstrap --> StartAll{启动服务}
+
+    StartAll -->|API| Server[后端 Server]
+    StartAll -->|UI| Client[前端 Client]
+    StartAll -->|Push| Push[推送服务]
+    StartAll -->|Wx| Wx[微信推送]
+```
 
 ### 启动所有服务
 
