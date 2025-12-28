@@ -168,8 +168,8 @@
               <div
                 class="interactive-item"
                 :class="{ 'touch-active': isTouchDevice }"
-                @click="openLink('https://blowsysun.top/convert/')"
-                @keydown.enter="openLink('https://blowsysun.top/convert/')"
+                @click="openLink('https://v2.blowsysun.top')"
+                @keydown.enter="openLink('https://v2.blowsysun.top')"
                 tabindex="0"
                 role="button"
                 :aria-label="'图片转换工具'"
