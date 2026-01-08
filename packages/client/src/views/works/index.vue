@@ -258,7 +258,6 @@
                       loading="lazy"
                     />
                   </picture>
-                  <div class="qr-badge">企业级</div>
                 </div>
                 <span class="qr-label">腾讯云发票管家</span>
               </div>
@@ -275,7 +274,6 @@
                       loading="lazy"
                     />
                   </picture>
-                  <div class="qr-badge">工具类</div>
                 </div>
                 <span class="qr-label">腾讯云发票助手</span>
               </div>
@@ -292,7 +290,6 @@
                       loading="lazy"
                     />
                   </picture>
-                  <div class="qr-badge">测试版</div>
                 </div>
                 <span class="qr-label">半屏测试</span>
               </div>
