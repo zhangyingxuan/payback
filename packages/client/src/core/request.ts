@@ -85,17 +85,14 @@ class PureHttp {
       },
       (error: PureHttpError) => {
         const response = error.response;
-        // console.log(error);
+        console.log(error);
         if (response) {
-          if (response.status === 429) {
-            ElMessage({
-              showClose: true,
-              message: '服务器繁忙中，请稍后再试',
-              type: 'error',
-            })
-          }
           // 解析错误码
-          // eslint-disable-next-line no-unsafe-optional-chaining
+          ElMessage({
+            showClose: true,
+            message: (response.data as any)?.message,
+            type: 'error',
+          })
           const { statusCode }: any = response?.data;
           // 如果返回401，则 清空storage 及 cookie，跳转至登录页
           if (statusCode === 401) {

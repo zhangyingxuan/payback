@@ -14,6 +14,8 @@
     "build": "lerna run build",
     "publish:beta": "lerna publish --force-publish --dist-tag=beta --skip-git",
     "publish:latest": "lerna publish --force-publish --skip-git",
+    "start": "lerna run start --scope='*/packages/client' --scope='*/packages/server'",
+    "start:all": "lerna run start --parallel",
     "start:webhookServer": "cd packages/webhook-server && pnpm start",
     "start:pushServer": "cd packages/push-server && pnpm start",
     "start:wxPusher": "cd packages/wxPusher && pnpm start",

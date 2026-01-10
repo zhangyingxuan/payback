@@ -5,12 +5,12 @@
   "main": "./lib/index.cjs",
   "umd": "./lib/index.umd.js",
   "module": "./es/index.esm.js",
-  "types": "./es/types/index.d.ts",
+  "types": "./es/index.d.ts",
   "exports": {
     ".": {
       "import": "./es/index.esm.js",
       "require": "./lib/index.cjs",
-      "types": "./es/types/index.d.ts"
+      "types": "./es/index.d.ts"
     }
   },
   "files": [
