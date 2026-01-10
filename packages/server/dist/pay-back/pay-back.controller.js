@@ -268,7 +268,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
     async initSchedulerTask() {
         this.logger.debug('initSchedulerTask初始化定时任务');
         config_1.schedulerTaskList.forEach(task => {
-            this.schedulerTaskService.executeTask(task.taskName, task.cron, () => (0, schedulerUtil_1.executeTaskFunc)(this, task, 3));
+            this.schedulerTaskService.executeTask(task.taskName, task.cron, () => (0, schedulerUtil_1.executeTaskFunc)(this, task, process.env.TASK_RETRY_TIME || 3));
         });
         const config = await this.systemConfigService.findLatestOne();
         const { isAutoPushNews } = config;

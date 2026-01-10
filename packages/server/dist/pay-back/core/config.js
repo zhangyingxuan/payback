@@ -1,8 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.beizhengIndexApi = exports.chuangyeIndexApi = exports.shenzhengIndexApi = exports.shangzhengIndexApi = exports.allIndexApiFrom = exports.marketUrl = exports.iwencaiUrl = exports.params = exports.chooseStockBaseCondition = void 0;
+exports.beizhengIndexApi = exports.chuangyeIndexApi = exports.shenzhengIndexApi = exports.shangzhengIndexApi = exports.allIndexApiFrom = exports.marketUrl = exports.iwencaiUrl = exports.params = void 0;
 const pay_back_core_1 = require("pay-back-core");
-exports.chooseStockBaseCondition = pay_back_core_1.chooseStockBaseCondition;
 exports.params = pay_back_core_1.params;
 exports.iwencaiUrl = 'http://www.iwencai.com/unifiedwap/result?w=';
 exports.marketUrl = 'http://q.10jqka.com.cn';
