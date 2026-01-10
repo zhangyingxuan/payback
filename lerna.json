@@ -1,12 +1,12 @@
 {
-  "packages": [
-    "packages/*"
-  ],
+  "$schema": "node_modules/lerna/schemas/lerna-schema.json",
+  "packages": ["packages/*"],
   "npmClient": "pnpm",
   "publishConfig": {
     "verifyAccess": false,
     "registry": "https://registry.npm.taobao.org"
   },
+  "useWorkspaces": true,
   "command": {
     "publish": {
       "verifyAccess": false,

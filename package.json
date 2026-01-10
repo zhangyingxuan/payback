@@ -2,16 +2,12 @@
   "name": "root",
   "private": true,
   "devDependencies": {
-    "lerna": "^4.0.0"
+    "lerna": "^8.1.2"
   },
-  "version": "0.0.12",
-  "command": {
-    "bootstrap": {
-      "hoist": true
-    }
-  },
+  "version": "0.0.18",
   "scripts": {
-    "bootstrap": "lerna bootstrap --force-local",
+    "bootstrap": "pnpm install",
+    "version": "lerna version --no-commit-hooks",
     "clean": "lerna clean && rm -rf ./node_modules",
     "clean:dist": "rm -rf ./packages/*/dist",
     "clean:cache": "rm -rf ./packages/*/node_modules/.cache",
