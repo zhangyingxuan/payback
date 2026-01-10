@@ -66,7 +66,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import _ from 'lodash-es';
+import { cloneDeep } from 'lodash-es';
 import { openNewIwencaiWindow } from '../utils';
 import { params } from 'pay-back-core';
 import { computed } from 'vue';
@@ -94,7 +94,7 @@ let superData = defineProps({
 });
 
 const stockGroupByPlate = computed(() => {
-  const downLimitData = _.cloneDeep(superData.downLimitData);
+  const downLimitData = cloneDeep(superData.downLimitData);
 
   const stockGroupByPlate: any = {};
   // 按 行业板块 将涨停个股分类

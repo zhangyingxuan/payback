@@ -144,7 +144,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import _ from 'lodash-es';
+import { debounce, cloneDeep } from 'lodash-es';
 import { computed, reactive } from 'vue';
 import dayjs from 'dayjs';
 import { params } from 'pay-back-core';
@@ -174,7 +174,7 @@ const data = reactive({
 /**
  * 刷新竞价数据
  */
-const refreshData = _.debounce(() => {
+const refreshData = debounce(() => {
   emit('refreshData');
 }, 500);
 
@@ -190,7 +190,7 @@ const isShowRefreshBtn = computed(() => {
 
 const stockGroupByPlate = computed(() => {
   const biddingData = superData.propsData
-    ? _.cloneDeep(superData.propsData.chooseStock1Expected)
+    ? cloneDeep(superData.propsData.chooseStock1Expected)
     : // ? _.cloneDeep(superData.propsData.chooseStock1to2)
       null;
 

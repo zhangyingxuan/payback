@@ -271,7 +271,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import _ from 'lodash-es';
+import { isEmpty, debounce, cloneDeep } from 'lodash-es';
 import ColsBiddingData from './colsBiddingData.vue';
 import ColsStockInfo from './colsStockInfo.vue';
 import ColsPlateInfo from './colsPlateInfo.vue';
@@ -420,11 +420,11 @@ const toggleStockFilterRow = () => {
  */
 const stockGroupByPlate: any = computed(() => {
   // 空对象直接返回
-  if (_.isEmpty(superData.currentDateData)) {
+  if (isEmpty(superData.currentDateData)) {
     // console.log('superData.currentDateData null');
     return [];
   }
-  const currentDateData = _.cloneDeep(superData.currentDateData);
+  const currentDateData = cloneDeep(superData.currentDateData);
   const evenBoardHeightOptions = new Set();
 
   if (!currentDateData.evenBoardData) return [];
@@ -480,10 +480,10 @@ const stockGroupByPlate: any = computed(() => {
  */
 const stockGroupByPlateByFilter = computed(() => {
   // 空对象直接返回
-  if (_.isEmpty(stockGroupByPlate.value)) {
+  if (isEmpty(stockGroupByPlate.value)) {
     return [];
   }
-  const stockGroupByPlateCopy: any = _.cloneDeep(stockGroupByPlate.value);
+  const stockGroupByPlateCopy: any = cloneDeep(stockGroupByPlate.value);
   let myStrategyCheckedNum = 0;
   let biddingStrategyCheckedNum = 0;
   let dailyLimitNum = 0;
@@ -655,7 +655,7 @@ const isShowRefreshBtn = computed(() => {
 /**
  * 刷新竞价数据
  */
-const refreshData = _.debounce(() => {
+const refreshData = debounce(() => {
   // superData.title有值则 刷新竞价数据，否则刷新短线数据
   emit('refreshData', superData.title);
 }, 500);

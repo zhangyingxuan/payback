@@ -2,7 +2,7 @@
 import { FundsModel } from '../../../api/model/FundsModel';
 import { ShortTermModel } from '../../../api/model/ShortTermModel';
 import dayjs from 'dayjs';
-import _ from 'lodash-es';
+import { isEmpty } from 'lodash-es';
 import { FundsKey } from '../utils/index.d';
 import { getCurrentCycle } from 'pay-back-core';
 
@@ -33,7 +33,7 @@ export const transformFundsData = (fundsData: FundsModel[], key: FundsKey) => {
   const topMaxAmount = 3;
   fundsData.forEach(item => {
     const fundsTop: any = JSON.parse(item[key] || '{}');
-    if (_.isEmpty(fundsTop)) {
+    if (isEmpty(fundsTop)) {
       return
     }
     // 准备某一天的数据

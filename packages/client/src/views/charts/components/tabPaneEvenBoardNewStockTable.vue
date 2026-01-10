@@ -118,7 +118,7 @@
 <script lang="ts" setup>
 import { calcClassByBidRating, openNewIwencaiWindow } from '../utils';
 import { params } from 'pay-back-core';
-import _ from 'lodash-es';
+import { cloneDeep } from 'lodash-es';
 import { computed, reactive } from 'vue';
 let superData = defineProps({
   propsData: {
@@ -141,7 +141,7 @@ const data = reactive({
 });
 
 const stockGroupByPlate = computed(() => {
-  const biddingData = _.cloneDeep(superData.propsData);
+  const biddingData = cloneDeep(superData.propsData);
 
   const stockGroupByPlate: any = {};
   // 按 行业板块 将涨停个股分类

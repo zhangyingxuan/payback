@@ -11,7 +11,7 @@ import { warpperEnv } from "./build";
 import path from 'path';
 import compress from 'vite-plugin-compression';
 import { visualizer } from 'rollup-plugin-visualizer';
-import { manualChunksPlugin } from 'vite-plugin-webpackchunkname';
+// vite-plugin-webpackchunkname 不兼容 Vite 7，已移除
 
 
 /** 路径查找 */
@@ -70,40 +70,108 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 			rollupOptions: {
 				// input: viteMultiPages,
 				output: {
-					manualChunks: (id) => {
+					// 自定义 chunk 文件名格式
+					chunkFileNames: (chunkInfo) => {
+						// 保持 vendor、common、page 开头的 chunk 名称不变
 						if (
-							id.indexOf('/node_modules/echarts/') !== -1
+							chunkInfo.name.startsWith('vendor-') ||
+							chunkInfo.name.startsWith('common-') ||
+							chunkInfo.name.startsWith('page-')
 						) {
-							return 'vendor-echarts';
+							return `assets/${chunkInfo.name}-[hash].js`;
 						}
-						// if (
-						// 	id.indexOf('node_modules/core-js/') !== -1 ||
-						// 	id.indexOf('node_modules/@vue/') !== -1 ||
-						// 	id.indexOf('node_modules/vue/') !== -1 ||
-						// 	id.indexOf('node_modules/vue-router/') !== -1 ||
-						// 	id.indexOf('node_modules/vuex/') !== -1 ||
-						// 	id.indexOf('node_modules/axios/') !== -1
-						// ) {
-						// 	return 'vendor-core';
-						// }
-						if (id.indexOf('/node_modules/element-plus/') !== -1 ||
-							id.indexOf('/node_modules/@element-plus/icons-vue/') !== -1) {
+						return 'assets/[name]-[hash].js';
+					},
+					// 入口文件命名
+					entryFileNames: 'assets/[name]-[hash].js',
+					// 静态资源命名
+					assetFileNames: 'assets/[name]-[hash].[ext]',
+					manualChunks: (id) => {
+						// ============ 第三方依赖分包策略 ============
+
+						// 1. Vue 核心库及其紧密依赖（首屏必需，必须同步加载）
+						// 注意：vue-demi、@vueuse、vue-* 等库依赖 Vue 的响应式系统，必须与 Vue 一起打包
+						if (
+							id.includes('/node_modules/vue/') ||
+							id.includes('/node_modules/@vue/') ||
+							id.includes('/node_modules/vue-router/') ||
+							id.includes('/node_modules/vue-demi/') ||
+							id.includes('/node_modules/@vueuse/') ||
+							id.includes('/node_modules/pinia/') ||
+							id.includes('/node_modules/vuex/') ||
+							// 匹配所有 vue- 开头的库（如 vue-cropperjs, vue-schart 等）
+							/\/node_modules\/vue-[^/]+\//.test(id)
+						) {
+							return 'vendor-vue';
+						}
+
+						// 2. Element Plus UI 库（按需加载的组件会自动拆分）
+						if (
+							id.includes('/node_modules/element-plus/') ||
+							id.includes('/node_modules/@element-plus/')
+						) {
 							return 'vendor-element-plus';
 						}
-						if (id.indexOf('/node_modules/@kangc/') !== -1) {
+
+						// 3. 图表库（仅 charts 页面需要）
+						if (id.includes('/node_modules/echarts/')) {
+							return 'vendor-echarts';
+						}
+						if (id.includes('/node_modules/zrender/')) {
+							return 'vendor-zrender';
+						}
+
+						// 4. Markdown 编辑器（仅 article 页面需要）
+						if (id.includes('/node_modules/@kangc/')) {
 							return 'vendor-markdown';
 						}
+
+						// 5. 常用工具库（多页面共享）
 						if (
-							id.indexOf('node_modules/zrender/') !== -1 ||
-							id.indexOf('node_modules/qs/') !== -1 ||
-							id.indexOf('node_modules/dayjs/') !== -1 ||
-							id.indexOf('node_modules/lodash-es/') !== -1
+							id.includes('/node_modules/axios/') ||
+							id.includes('/node_modules/qs/') ||
+							id.includes('/node_modules/dayjs/') ||
+							id.includes('/node_modules/lodash-es/') ||
+							id.includes('/node_modules/lodash/')
 						) {
 							return 'vendor-utils';
 						}
-						// 剩余的外部依赖全部装入 utils中
-						// if (id.indexOf('/node_modules/') !== -1) {
-						// 	return 'vendor-external';
+
+						// 6. 其他 node_modules 依赖统一打包
+						if (id.includes('/node_modules/')) {
+							return 'vendor-libs';
+						}
+
+						// ============ 页面级代码分包策略 ============
+						// 策略：只对 views 下的直接子目录中的 .vue 入口文件进行聚合
+						// 对于 components/ 等子目录，不做强制聚合，让 Rollup 自动处理以避免循环依赖
+
+						// 匹配 /src/views/{pageName}/*.vue（直接子文件，非嵌套目录）
+						const directViewMatch = id.match(/\/src\/views\/([^/]+)\/[^/]+\.vue$/);
+						if (directViewMatch) {
+							return `page-${directViewMatch[1]}`;
+						}
+
+						// // ============ 公共模块分包 ============
+
+						// // 公共组件
+						// if (id.includes('/src/components/')) {
+						// 	return 'common-components';
+						// }
+
+						// // 公共工具函数
+						// if (id.includes('/src/utils/') || id.includes('/src/hooks/')) {
+						// 	return 'common-utils';
+						// }
+
+						// // Store 状态管理
+						// if (id.includes('/src/store/')) {
+						// 	return 'common-store';
+						// }
+
+						// // API 接口
+						// if (id.includes('/src/api/')) {
+						// 	return 'common-api';
 						// }
 					},
 				},
@@ -132,7 +200,6 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 				threshold: 10240,
 				deleteOriginFile: false
 			}),
-			manualChunksPlugin(), // 合并webpackChunkName
 			// 打包分析
 			visualizer({
 				gzipSize: true,
@@ -151,9 +218,10 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 				resolvers: [ElementPlusResolver()]
 			})
 		],
-		// optimizeDeps: {
-		// 	include: ['schart.js', 'lodash']
-		// },
+		optimizeDeps: {
+			// include: ['schart.js', 'lodash'],
+			exclude: ['pay-back-core']
+		},
 		css: {
 			preprocessorOptions: {
 				less: {

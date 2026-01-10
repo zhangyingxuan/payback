@@ -83,11 +83,20 @@
           class="table-col height1"
           :class="{
             green:
-              calPromotionRate(item.evenBoardAmount, evenBoard.value, index) <
-              20,
+              Number(
+                calPromotionRate(item.evenBoardAmount, evenBoard.value, index),
+              ) < 20,
           }"
         >
-          {{ calPromotionRate(item.evenBoardAmount, evenBoard.value, index) }}%
+          {{
+            calPromotionRate(
+              item.evenBoardAmount,
+              evenBoard.value,
+              index,
+              undefined,
+              true,
+            )
+          }}%
         </div>
         <!-- 连板数 -->
         <div class="table-col height1">{{ item.evenBoardAmount }}</div>
@@ -523,15 +532,19 @@ async function refreshShortTermData() {
  * @param evenBoardAmount
  * @param evenBoardValue
  * @param index
+ * @param height
+ * @param returnEmptyForLast 是否在最后一项时返回空字符串（用于显示）
  */
 function calPromotionRate(
   evenBoardAmount: any,
   evenBoardValue: any,
   index: number,
   height: number | undefined = undefined,
-) {
+  returnEmptyForLast: boolean = false,
+): number | string {
   if (index === evenBoardValue.length - 1) {
-    return '';
+    // 最后一项无法计算晋级率
+    return returnEmptyForLast ? '' : 100;
   }
   if (height) {
     const currentEvenBoardNum =

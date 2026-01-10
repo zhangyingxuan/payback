@@ -21,7 +21,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 const markdownTxts: any = {};
-const files: any = import.meta.globEager('@/assets/docs/md/*.md');
+const files: Record<string, any> = import.meta.glob('@/assets/docs/md/*.md', {
+  eager: true,
+});
 Object.keys(files).forEach(fileName => {
   const name = fileName.replace(/\.\/|\.md/g, '');
   markdownTxts[name] = files[fileName].default;
