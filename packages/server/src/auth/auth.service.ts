@@ -32,12 +32,13 @@ export class AuthService {
     // 验证码
 
     if (result) {
+      const payload = { account: user.account };
       return {
         code: 0,
         data: {
           isAdmin: !!result.isAdmin,
           name: result.name,
-          token: this.jwtService.sign(user),
+          token: this.jwtService.sign(payload),
         },
       };
     } else {

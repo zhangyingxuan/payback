@@ -18,7 +18,8 @@ const limiter = rateLimit({
     res.header('Content-Type', 'application/json; charset=utf-8');
     res.status(429).json({
       code: 429,
-      data: 'Too many requests, please try again later.',
+      data: { message: '请求过于频繁，请稍后再试' },
+      // data: 'Too many requests, please try again later.',
     });
     console.log(
       `Request from ${req.ip} - ${req.headers['x-real-ip']} - ${req.headers['x-forwarded-for']}; exceeded rate limit`,

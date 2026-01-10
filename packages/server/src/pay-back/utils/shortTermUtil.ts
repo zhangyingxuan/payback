@@ -1,5 +1,5 @@
 import { CreatePayBackDto } from '../dto/create-pay-back.dto';
-import { transformShortTermSourceData } from '../utils/transformDataUtil';
+import { transformShortTermSourceData } from './transformDataUtil';
 import { params } from '../core/config';
 import { fetchAllStocksByIwencai } from '../core/fetchUtil';
 import { getCurrentCycle, iWencaiDateFormat } from 'pay-back-core';

@@ -1,6 +1,4 @@
-import { chooseStockBaseCondition as csb, params as p } from 'pay-back-core';
-
-export const chooseStockBaseCondition = csb;
+import { params as p } from 'pay-back-core';
 
 export const params = p;
 // 爱问财
