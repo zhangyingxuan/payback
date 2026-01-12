@@ -152,11 +152,11 @@ const updateTodayData = debounce(async (fetchTodayDataType = 0, index) => {
 // 复盘看板
 .reviewBoard__tabs {
   &.isMobile {
-    /deep/.el-tabs__content {
+    :deep(.el-tabs__content) {
       padding: 40px 0 15px 0;
     }
   }
-  /deep/.el-tabs__content {
+  :deep(.el-tabs__content) {
     padding: 5px 0;
   }
   .el-tab-pane {

@@ -683,7 +683,7 @@ defineExpose({
       width: 62px;
       min-width: 62px;
       .isActive {
-        /deep/.el-icon {
+        :deep(.el-icon) {
           display: none;
         }
       }

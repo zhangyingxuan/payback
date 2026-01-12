@@ -186,7 +186,7 @@ refreshCodeImg();
   line-height: 30px;
   color: #fff;
 }
-/deep/.el-input-group__append {
+:deep(.el-input-group__append) {
   padding: 0;
 }
 .captchaImg {

@@ -14,7 +14,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@build/*": ["build/*"]
+      "@build/*": ["build/*"],
+      "pay-back-core": ["../core/src/main.ts"]
     },
     "skipLibCheck": true
   },

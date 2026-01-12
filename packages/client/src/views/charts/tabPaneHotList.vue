@@ -145,7 +145,7 @@ initPage();
     margin-left: 15px;
   }
 
-  /deep/.el-card__header {
+  :deep(.el-card__header) {
     padding: 5px 10px;
   }
 }

@@ -11,8 +11,6 @@ import { warpperEnv } from "./build";
 import path from 'path';
 import compress from 'vite-plugin-compression';
 import { visualizer } from 'rollup-plugin-visualizer';
-// vite-plugin-webpackchunkname 不兼容 Vite 7，已移除
-
 
 /** 路径查找 */
 const pathResolve = (dir: string): string => {
@@ -22,7 +20,8 @@ const pathResolve = (dir: string): string => {
 /** 设置别名 */
 const alias: Record<string, string> = {
 	"@": pathResolve("src"),
-	"@build": pathResolve("build")
+	"@build": pathResolve("build"),
+	"pay-back-core": pathResolve("../core/src/main.ts")
 };
 
 export default ({ command, mode }: ConfigEnv): UserConfigExport => {
@@ -34,8 +33,9 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 			alias
 		},
 		server: {
+			// allowedHosts: true // 设置为 true 将允许所有主机名
 			// 是否开启 https
-			https: false,
+			https: undefined,
 			// 端口号
 			port: VITE_PORT,
 			host: "0.0.0.0",
@@ -220,7 +220,8 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 		],
 		optimizeDeps: {
 			// include: ['schart.js', 'lodash'],
-			exclude: ['pay-back-core']
+			// exclude: ['pay-back-core'],
+			entries: ['index.html']
 		},
 		css: {
 			preprocessorOptions: {

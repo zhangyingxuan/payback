@@ -148,7 +148,7 @@ function calcClass(stock: any) {
     }
   }
 
-  /deep/.stock,
+  :deep(.stock),
   > span {
     display: inline-block;
   }

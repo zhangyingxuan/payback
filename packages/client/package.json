@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "vite --force",
     "start": "vite --force",
+    "start:test": "vite --mode test",
     "start:prod": "vite --mode production",
     "build": "vue-tsc -p tsconfig.json --noEmit && vite build",
     "serve": "vite preview",
@@ -86,8 +87,5 @@
   "repository": {
     "type": "git",
     "url": "https://gitee.com/chongqing-woteng/pay-back.git"
-  },
-  "engines": {
-    "pnpm": ">=8.0.0 <9.0.0"
   }
 }

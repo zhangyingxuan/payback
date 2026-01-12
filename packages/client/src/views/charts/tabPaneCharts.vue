@@ -11,15 +11,8 @@
       <Plate :name="item.name" :code="item.code" />
       <span>{{ item.createTime }}</span>
     </span>
-    <el-tooltip
-      effect="dark"
-      content="15个自然日内的最新概念"
-      placement="top"
-    >
-      <el-icon
-        class="thsTooltip__icon"
-        ><InfoFilled
-      /></el-icon>
+    <el-tooltip effect="dark" content="15个自然日内的最新概念" placement="top">
+      <el-icon class="thsTooltip__icon"><InfoFilled /></el-icon>
     </el-tooltip>
   </div>
   <div class="chartList__container">
@@ -390,7 +383,7 @@ defineExpose({
     margin-left: 15px;
   }
 
-  /deep/.el-card__header {
+  :deep(.el-card__header) {
     padding: 5px 10px;
   }
 }

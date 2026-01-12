@@ -319,7 +319,7 @@ const handleCommand = (command: string) => {
 }
 .user-avator {
   margin-left: 20px;
-  /deep/ img {
+  :deep(img) {
     width: 30px;
     height: 30px;
   }

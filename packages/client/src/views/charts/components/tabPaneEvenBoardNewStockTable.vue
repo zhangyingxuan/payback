@@ -189,7 +189,7 @@ function sortPlates(stockGroupByPlate: any) {
 .col2 {
   min-width: 620px;
   overflow: auto;
-  /deep/.stock,
+  :deep(.stock),
   span {
     display: inline-block;
   }
