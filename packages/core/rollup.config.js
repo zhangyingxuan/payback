@@ -11,12 +11,14 @@ import resolve from "@rollup/plugin-node-resolve";
 import json from "@rollup/plugin-json";
 import eslint from '@rollup/plugin-eslint';
 import babel from "@rollup/plugin-babel";
-import commonjs from "rollup-plugin-commonjs";
-import typescript from "rollup-plugin-typescript";
+import commonjs from "@rollup/plugin-commonjs";
+import typescript from "@rollup/plugin-typescript";
 import dts from "rollup-plugin-dts";
 import filesize from 'rollup-plugin-filesize';
-import { terser } from "rollup-plugin-terser";
-import pkg from './package.json' assert { type: "json" };
+import terser from "@rollup/plugin-terser";
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const pkg = require('./package.json');
 
 const name = pkg.name;
 // const version = '0.0.1';
@@ -34,7 +36,11 @@ const plugins = [
   // 打包插件
   resolve(), // 查找和打包node_modules中的第三方模块
   json(), // 	将 .json 文件转换为 ES6 模块
-  typescript(), // 解析TypeScript
+  typescript({
+    compilerOptions: {
+      emitDeclarationOnly: false
+    }
+  }), // 解析TypeScript
   commonjs(), // 将 CommonJS 转换成 ES2015 模块供 Rollup 处理
   babel({ babelHelpers: "bundled" }), // babel配置,编译es6
   filesize()
@@ -88,7 +94,7 @@ export default [
   },
   {
     input: "src/main.ts",
-    output: [{ file: "es/index.d.ts", format: "dist" }],
+    output: [{ file: "es/index.d.ts", format: "es" }],
     plugins: [dts()]
   }
 ];
