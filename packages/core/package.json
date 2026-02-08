@@ -27,7 +27,7 @@
     "utils"
   ],
   "type": "module",
-  "author": "blowsysun",
+  "author": "blowsysun<827516789@qq.com>",
   "license": "ISC",
   "devDependencies": {
     "@rollup/plugin-babel": "^6.0.3",
