@@ -15,12 +15,12 @@ export class AsynTaskIterator {
     this.middlewares = [];
   }
 
-  add(fn) {
+  add(fn: Function) {
     this.middlewares.push(fn); //存入任务
     return this;
   }
-  async run(ctx) {
-    function createNext(middleware, oldNext) {
+  async run(ctx: any) {
+    function createNext(middleware: Function, oldNext: Function) {
       return async () => {
         await middleware(ctx, oldNext);
       }

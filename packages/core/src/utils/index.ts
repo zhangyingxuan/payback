@@ -73,7 +73,7 @@ export function getCurrentCycle(currentTradingDayData: any, lastTradingDayData: 
   return cycles[5]
 }
 
-function compatible(currentTradingDayData, cycles, maxHeightCurrent, hugeFallNum) {
+function compatible(currentTradingDayData: any, cycles: any[], maxHeightCurrent: any, hugeFallNum: any) {
 
   // 高度低于5板
   if (maxHeightCurrent <= config.startUpHeight) {

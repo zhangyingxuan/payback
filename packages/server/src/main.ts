@@ -60,6 +60,17 @@ async function bootstrap() {
 
   // 示例用法
   const port: any = await getAvailablePort(3000);
+  // 捕获未处理的 Promise 拒绝
+  process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  });
+
+  // 捕获未捕获的异常
+  process.on('uncaughtException', (err) => {
+    console.error('Uncaught Exception thrown:', err);
+    // 建议记录日志后优雅退出，交给 PM2 重启
+    process.exit(1);
+  });
   await app.listen(port);
 }
 bootstrap();
