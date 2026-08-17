@@ -39,6 +39,13 @@ async function bootstrap() {
     }));
     app.useGlobalFilters(new HttpExceptionFilter_1.HttpExceptionFilter());
     const port = await (0, portManager_1.getAvailablePort)(3000);
+    process.on('unhandledRejection', (reason, promise) => {
+        console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+    });
+    process.on('uncaughtException', (err) => {
+        console.error('Uncaught Exception thrown:', err);
+        process.exit(1);
+    });
     await app.listen(port);
 }
 bootstrap();
