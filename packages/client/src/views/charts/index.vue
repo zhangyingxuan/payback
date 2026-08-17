@@ -151,6 +151,10 @@ const updateTodayData = debounce(async (fetchTodayDataType = 0, index) => {
 <style scoped lang="less">
 // 复盘看板
 .reviewBoard__tabs {
+  height: 100%;
+  box-sizing: border-box;
+  border-radius: 0;
+
   &.isMobile {
     :deep(.el-tabs__content) {
       padding: 40px 0 15px 0;
@@ -158,9 +162,11 @@ const updateTodayData = debounce(async (fetchTodayDataType = 0, index) => {
   }
   :deep(.el-tabs__content) {
     padding: 5px 0;
+    height: calc(100% - 40px);
+    box-sizing: border-box;
   }
   .el-tab-pane {
-    height: calc(100vh - 125px);
+    height: 100%;
     overflow-y: auto;
   }
 }

@@ -7,6 +7,61 @@ import { createFetch } from '@/utils/abortFetch';
 // 爱问财最大分页码为100
 const maxPageSize = 100;
 
+// 爱问财会对同一 IP 的瞬时并发请求返回 403。更新全部数据时多个服务会同时
+// 请求该接口，因此在请求层统一串行化，并在请求之间留出短暂间隔。
+const iwencaiRequestInterval = 1200;
+const iwencaiMaxAttempts = 6;
+const iwencaiBrowserHeaders = {
+  'user-agent':
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+  origin: 'https://www.iwencai.com',
+  referer: 'https://www.iwencai.com/',
+};
+let iwencaiRequestQueue: Promise<void> = Promise.resolve();
+
+const delay = (timeout: number) => new Promise<void>(resolve => setTimeout(resolve, timeout));
+
+function enqueueIwencaiRequest<T>(request: () => Promise<T>): Promise<T> {
+  const result = iwencaiRequestQueue.then(request, request);
+  iwencaiRequestQueue = result.then(
+    () => delay(iwencaiRequestInterval),
+    () => delay(iwencaiRequestInterval),
+  );
+  return result;
+}
+
+async function fetchIwencaiJson(
+  resource: string,
+  options: any,
+  isValidResponse: (data: any) => boolean,
+): Promise<any> {
+  return enqueueIwencaiRequest(async () => {
+    let lastError: Error;
+
+    for (let attempt = 1; attempt <= iwencaiMaxAttempts; attempt++) {
+      try {
+        const response = await createFetch()(resource, options);
+        const data = await response.json();
+        if (response.ok && isValidResponse(data)) {
+          return data;
+        }
+
+        const status = data?.status_code ?? response.status;
+        const message = data?.status_msg || data?.message || response.statusText || '响应结构异常';
+        lastError = new Error(`爱问财接口请求失败(${status}): ${message}`);
+      } catch (error) {
+        lastError = error instanceof Error ? error : new Error(String(error));
+      }
+
+      if (attempt < iwencaiMaxAttempts) {
+        await delay(iwencaiRequestInterval * attempt);
+      }
+    }
+
+    throw lastError;
+  });
+}
+
 /**
  * 获取爱问财数据
  * @param question
@@ -26,6 +81,8 @@ interface IwencaiStockResult {
   data: any;
   length: number;
   condition: Array<any>;
+  compId: number;
+  uuid: number;
 }
 /**
  * 获取个股数据 通过 爱问财数据
@@ -45,7 +102,14 @@ export async function fetchAllStocksByIwencai(question, limit = null) {
   // 需要分页：还有多余数据未查出，且需要查更多
   if (iwencaiStockResult.length > iwencaiStockResult.data.length && !limit) {
     while (true) {
-      result = await fetchStockPagingDataList(question, maxPageSize, ++pageNum, iwencaiStockResult.condition);
+      result = await fetchStockPagingDataList(
+        question,
+        maxPageSize,
+        ++pageNum,
+        iwencaiStockResult.condition,
+        iwencaiStockResult.compId,
+        iwencaiStockResult.uuid,
+      );
       // 分页数据 第二页开始，临时数据
       data = getStocksPagingDataByIwencai(result);
       iwencaiStockResult.data.push(...data);
@@ -86,9 +150,9 @@ export async function fetchIwencai(question, pageSize = 5, isPlate = false) {
     secondary_intent: isPlate ? 'zhishu' : 'stock',
     add_info: '{"urp":{"scene":1,"company":1,"business":1},"contentType":"json","searchInfo":true}',
   };
-  const abortFetch = createFetch();
-  const result = await abortFetch('http://www.iwencai.com/customized/chart/get-robot-data', {
+  return fetchIwencaiJson('https://www.iwencai.com/customized/chart/get-robot-data', {
     headers: {
+      ...iwencaiBrowserHeaders,
       accept: 'application/json, text/plain, */*',
       'accept-language': 'zh-CN,zh;q=0.9',
       'cache-control': 'no-cache',
@@ -101,9 +165,7 @@ export async function fetchIwencai(question, pageSize = 5, isPlate = false) {
     method: 'POST',
     mode: 'cors',
     credentials: 'include',
-  });
-
-  return await result.json();
+  }, data => data?.status_code === 0 && Array.isArray(data?.data?.answer));
 }
 
 /**
@@ -113,7 +175,7 @@ export async function fetchIwencai(question, pageSize = 5, isPlate = false) {
  * @param isPlate
  * @returns
  */
-export async function fetchStockPagingDataList(question, pageSize = 5, pageNum = 1, condition) {
+export async function fetchStockPagingDataList(question, pageSize = 5, pageNum = 1, condition, compId, uuid) {
   const body = {
     urp_sort_way: 'desc',
     query: question,
@@ -122,14 +184,14 @@ export async function fetchStockPagingDataList(question, pageSize = 5, pageNum =
     perpage: pageSize,
     page: pageNum,
     // 组件Id 必须
-    comp_id: 6836372,
+    comp_id: compId,
     // 组件Id 必须
-    uuid: 24087,
+    uuid,
     condition,
   };
-  const abortFetch = createFetch();
-  const result = await abortFetch('https://www.iwencai.com/gateway/urp/v7/landing/getDataList', {
+  return fetchIwencaiJson('https://www.iwencai.com/gateway/urp/v7/landing/getDataList', {
     headers: {
+      ...iwencaiBrowserHeaders,
       accept: 'application/json, text/plain, */*',
       'accept-language': 'zh-CN,zh;q=0.9',
       'cache-control': 'no-cache',
@@ -142,9 +204,7 @@ export async function fetchStockPagingDataList(question, pageSize = 5, pageNum =
     method: 'POST',
     mode: 'cors',
     credentials: 'include',
-  });
-
-  return await result.json();
+  }, data => Array.isArray(data?.answer?.components));
 }
 
 /**
@@ -204,27 +264,52 @@ export async function fetchMarketPointFromEastmoney() {
   // 从这个界面的表格接口获取 http://quote.eastmoney.com/center/hszs.html
 
   const abortFetch = createFetch();
-  const result = await abortFetch(
-    `http://57.push2.eastmoney.com/api/qt/clist/get?cb=jQuery112402821055891936557_${dateTime}&pn=1&pz=6&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&wbp2u=|0|0|0|web&fid=&fs=b:MK0010&fields=f2,f3,f12,f14&_=${dateTime}`,
-    {
-      headers: {
-        accept: '*/*',
-        'accept-language': 'zh-CN,zh;q=0.9',
-        'cache-control': 'no-cache',
-        pragma: 'no-cache',
+  try {
+    const result = await abortFetch(
+      `https://push2.eastmoney.com/api/qt/clist/get?cb=jQuery112402821055891936557_${dateTime}&pn=1&pz=6&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&wbp2u=|0|0|0|web&fid=&fs=b:MK0010&fields=f2,f3,f12,f14&_=${dateTime}`,
+      {
+        headers: {
+          accept: '*/*',
+          'accept-language': 'zh-CN,zh;q=0.9',
+          'cache-control': 'no-cache',
+          pragma: 'no-cache',
+        },
+        referrer: 'https://quote.eastmoney.com/center/hszs.html',
+        referrerPolicy: 'unsafe-url',
+        body: null,
+        method: 'GET',
+        mode: 'cors',
+        credentials: 'include',
       },
-      referrer: 'http://quote.eastmoney.com/center/hszs.html',
-      referrerPolicy: 'unsafe-url',
-      body: null,
-      method: 'GET',
-      mode: 'cors',
-      credentials: 'include',
-    },
-  );
-  const responseData = await result.text();
-  const dataStr = responseData.substring(responseData.indexOf('(') + 1, responseData.length - 2);
-  const dataJSON = JSON.parse(dataStr).data?.diff;
-  return dataJSON;
+    );
+    const responseData = await result.text();
+    const start = responseData.indexOf('(');
+    const end = responseData.lastIndexOf(')');
+    const dataJSON = JSON.parse(start >= 0 ? responseData.substring(start + 1, end) : responseData).data?.diff;
+    if (!Array.isArray(dataJSON) || dataJSON.length < 4) throw new Error('东方财富指数数据不完整');
+    return dataJSON;
+  } catch (error) {
+    return fetchMarketSnapshotFromTencent().then(data => data.indexes);
+  }
+}
+
+export async function fetchMarketSnapshotFromTencent() {
+  const response = await createFetch()('https://qt.gtimg.cn/q=sh000001,sz399001,bj899050,sz399006', {
+    headers: { referer: 'https://finance.qq.com/' },
+  });
+  const text = await response.text();
+  const quotes = text
+    .split(';')
+    .map(line => line.substring(line.indexOf('"') + 1, line.lastIndexOf('"')).split('~'))
+    .filter(fields => fields.length > 37);
+
+  if (quotes.length < 4) throw new Error('腾讯行情指数数据不完整');
+
+  return {
+    indexes: quotes.map(fields => ({ f2: +fields[3], f3: +fields[32], f12: fields[2] })),
+    // 腾讯成交额字段单位为万元，转换为元后供现有逻辑统一计算。
+    turnover: (+quotes[0][37] + +quotes[1][37]) * 10000,
+  };
 }
 /**
  * 获取市场指数 点数 - 同花顺

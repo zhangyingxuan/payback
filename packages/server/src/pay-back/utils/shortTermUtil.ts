@@ -15,6 +15,28 @@ function isBefore930() {
   return currentTime.hour() < 9 || (currentTime.hour() === 9 && currentTime.minute() < 30);
 }
 
+async function fetchDailyLimitGroupByGainian(todayDateStr) {
+  const url = `https://data.10jqka.com.cn/dataapi/limit_up/block_top?filter=HS,GEM2STAR&date=${dayjs(todayDateStr).format(
+    'YYYYMMDD',
+  )}`;
+  let lastError: any;
+
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const response = await createFetch()(url);
+      if (!response.ok) throw new Error(`题材聚合接口请求失败: HTTP ${response.status}`);
+      return await response.json();
+    } catch (error) {
+      lastError = error;
+      if (attempt < 3) {
+        await new Promise<void>(resolve => setTimeout(resolve, 500 * attempt));
+      }
+    }
+  }
+
+  throw lastError;
+}
+
 /**
  * 通过接口方式获取短线数据
  * @returns
@@ -33,20 +55,15 @@ export async function getShortTermData(todayDateStr, lastTradingDayData): Promis
   const dailyLimitOpen: any = fetchAllStocksByIwencai(params.dailyLimitOpen);
   // 跌幅大于等于15的个股
   const hugeFall: any = fetchAllStocksByIwencai(params.hugeFall, otherNum);
-  const abortFetch = createFetch();
   // 获取涨停个股 按题材分类
-  const dailyLimitGroupByGainain = abortFetch(
-    `https://data.10jqka.com.cn/dataapi/limit_up/block_top?filter=HS,GEM2STAR&date=${dayjs(todayDateStr).format(
-      'YYYYMMDD',
-    )}`,
-  );
+  const dailyLimitGroupByGainain = fetchDailyLimitGroupByGainian(todayDateStr);
   // const end = performance.now();
   // console.log('cost is', `${end - start}ms`);
   // console.timeEnd();
   const [dailyLimitData, downLimitData, dailyLimitOpenData, hugeFallData, dailyLimitGroupByGainainD] =
     await Promise.all([dailyLimit, downLimit, dailyLimitOpen, hugeFall, dailyLimitGroupByGainain]);
 
-  const dailyLimitGroupByGainainData = await dailyLimitGroupByGainainD.json();
+  const dailyLimitGroupByGainainData = dailyLimitGroupByGainainD;
 
   return prepareShortTermDto(
     dailyLimitData,
@@ -74,18 +91,13 @@ export async function getShortTermDataByDate(todayDateStr, lastTradingDayData): 
   // 跌幅大于等于15的个股
   const hugeFall: any = fetchAllStocksByIwencai(params.hugeFallByDate.replace('${date}', todayDateStr), otherNum);
 
-  const abortFetch = createFetch();
   // 获取涨停个股 按题材分类
-  const dailyLimitGroupByGainain = abortFetch(
-    `https://data.10jqka.com.cn/dataapi/limit_up/block_top?filter=HS,GEM2STAR&date=${dayjs(todayDateStr).format(
-      'YYYYMMDD',
-    )}`,
-  );
+  const dailyLimitGroupByGainain = fetchDailyLimitGroupByGainian(todayDateStr);
 
   const [dailyLimitData, downLimitData, dailyLimitOpenData, hugeFallData, dailyLimitGroupByGainainD] =
     await Promise.all([dailyLimit, downLimit, dailyLimitOpen, hugeFall, dailyLimitGroupByGainain]);
 
-  const dailyLimitGroupByGainainData = await dailyLimitGroupByGainainD.json();
+  const dailyLimitGroupByGainainData = dailyLimitGroupByGainainD;
 
   return prepareShortTermDto(
     dailyLimitData,

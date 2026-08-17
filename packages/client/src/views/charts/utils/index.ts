@@ -103,12 +103,8 @@ export function openNewIwencaiWindow(keyWord: string) {
 
 
 export function getChartStyle(isMobile: boolean) {
-  // 计算宽度；屏幕宽度 - 左侧siderBar - 边框 - cardLeft
-  const columnsAmount = 2;
-  const screenWidth = screen.width - 64 - 20 - columnsAmount * 15;
-  const cardWidth = isMobile ? screen.width - 20 : screenWidth / columnsAmount;
   return {
-    style: `width: ${cardWidth}px;`,
+    style: 'width: 100%;',
   };
 }
 

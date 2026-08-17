@@ -1,1 +1,1 @@
-export declare function createFetch(timeout?: number): (resource: any, options?: any) => any;
+export declare function createFetch(timeout?: number, maxAttempts?: number): (resource: any, options?: any) => Promise<any>;
