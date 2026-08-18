@@ -14,10 +14,12 @@ exports.PushService = void 0;
 const common_1 = require("@nestjs/common");
 const node_fetch_1 = require("node-fetch");
 const dayjs = require("dayjs");
+const feishu_robot_service_1 = require("./feishu-robot.service");
 const thsPlateBaseUrl = 'http://q.10jqka.com.cn/thshy/detail/code/';
 const thsStockBaseUrl = 'https://stockpage.10jqka.com.cn/';
 let PushService = PushService_1 = class PushService {
-    constructor() {
+    constructor(feishuRobotService) {
+        this.feishuRobotService = feishuRobotService;
         this.logger = new common_1.Logger(PushService_1.name);
         this.robotList = [
             'ddbae7ea-7496-4cd8-97c5-c0b195d9609b',
@@ -38,7 +40,12 @@ let PushService = PushService_1 = class PushService {
                 content: content.join(''),
             },
         };
-        return await this.pushMsg2Robot(body);
+        const results = await Promise.allSettled([
+            this.pushMsg2Robot(body),
+            this.feishuRobotService.notice(serviceName, msgContent),
+        ]);
+        this.logRejectedChannels(results);
+        return results;
     }
     prepareTagContent(tags, baseUrl) {
         const tagContent = [];
@@ -73,38 +80,50 @@ let PushService = PushService_1 = class PushService {
                 content: content.join(''),
             },
         };
-        return await this.pushMsg2Robot(body);
+        const results = await Promise.allSettled([
+            this.pushMsg2Robot(body),
+            this.feishuRobotService.noticeNews(newsTitle, msgContent, newsUrl, news),
+        ]);
+        this.logRejectedChannels(results);
+        return results;
     }
     pushMsg2Robot(body) {
-        this.robotList.forEach(async (robotKey) => {
-            this.qyapi(robotKey, body);
+        return Promise.allSettled(this.robotList.map((robotKey) => this.qyapi(robotKey, body)));
+    }
+    logRejectedChannels(results) {
+        results.forEach((result) => {
+            if (result.status === 'rejected') {
+                this.logger.error(result.reason);
+            }
         });
     }
-    qyapi(robotKey, body) {
-        (0, node_fetch_1.default)(`https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${robotKey}`, {
-            headers: {
-                accept: 'application/json, text/plain, */*',
-                'accept-language': 'zh-CN,zh;q=0.9',
-                'cache-control': 'no-cache',
-                'content-type': 'application/json',
-                pragma: 'no-cache',
-            },
-            body: JSON.stringify(body),
-            referrerPolicy: 'strict-origin-when-cross-origin',
-            method: 'POST',
-            mode: 'cors',
-            credentials: 'include',
-        })
-            .then(async (response) => await response.json())
-            .then((data) => {
-            return data;
-        })
-            .catch((e) => this.logger.error(e));
+    async qyapi(robotKey, body) {
+        try {
+            const response = await (0, node_fetch_1.default)(`https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${robotKey}`, {
+                headers: {
+                    accept: 'application/json, text/plain, */*',
+                    'accept-language': 'zh-CN,zh;q=0.9',
+                    'cache-control': 'no-cache',
+                    'content-type': 'application/json',
+                    pragma: 'no-cache',
+                },
+                body: JSON.stringify(body),
+                referrerPolicy: 'strict-origin-when-cross-origin',
+                method: 'POST',
+                mode: 'cors',
+                credentials: 'include',
+            });
+            return await response.json();
+        }
+        catch (e) {
+            this.logger.error(e);
+            throw e;
+        }
     }
 };
 PushService = PushService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [feishu_robot_service_1.FeishuRobotService])
 ], PushService);
 exports.PushService = PushService;
 //# sourceMappingURL=push.service.js.map

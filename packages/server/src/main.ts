@@ -33,7 +33,7 @@ async function bootstrap() {
 
   // 通过依赖注入获取控制器实例
   const payBackController = app.get(PayBackController);
-  payBackController.initSchedulerTask();
+  await payBackController.initSchedulerTask();
 
   //此接口NestExpressApplication才有
   app.set('trust proxy', true);

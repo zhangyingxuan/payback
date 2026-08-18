@@ -94,6 +94,12 @@ const schedulerTaskList = [
         cron: '00 33 15 * * 1-5',
     },
     {
+        taskName: 'autoCrawlSpecialStockDataOpening',
+        service: 'specialStockService',
+        func: 'crawlSpecialStockData',
+        cron: '00 26 9 * * 1-5',
+    },
+    {
         taskName: 'autoCrawlSpecialStockDataMidday',
         service: 'specialStockService',
         func: 'crawlSpecialStockData',

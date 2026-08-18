@@ -25,7 +25,7 @@ const limiter = (0, express_rate_limit_1.rateLimit)({
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     const payBackController = app.get(pay_back_controller_1.PayBackController);
-    payBackController.initSchedulerTask();
+    await payBackController.initSchedulerTask();
     app.set('trust proxy', true);
     app.setGlobalPrefix('blowsysun');
     app.use('/blowsysun/auth', limiter);

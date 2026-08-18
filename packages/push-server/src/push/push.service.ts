@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import fetch from 'node-fetch';
 import * as dayjs from 'dayjs';
+import { FeishuRobotService } from './feishu-robot.service';
 
 const thsPlateBaseUrl = 'http://q.10jqka.com.cn/thshy/detail/code/';
 const thsStockBaseUrl = 'https://stockpage.10jqka.com.cn/';
@@ -10,7 +11,7 @@ const thsStockBaseUrl = 'https://stockpage.10jqka.com.cn/';
  */
 @Injectable()
 export class PushService {
-  constructor() { }
+  constructor(private readonly feishuRobotService: FeishuRobotService) { }
 
   private readonly logger = new Logger(PushService.name);
   private readonly robotList = [
@@ -42,7 +43,12 @@ export class PushService {
         content: content.join(''),
       },
     };
-    return await this.pushMsg2Robot(body);
+    const results = await Promise.allSettled([
+      this.pushMsg2Robot(body),
+      this.feishuRobotService.notice(serviceName, msgContent),
+    ]);
+    this.logRejectedChannels(results);
+    return results;
   }
   /**
    * 准备标签内容
@@ -113,12 +119,23 @@ export class PushService {
         content: content.join(''),
       },
     };
-    return await this.pushMsg2Robot(body);
+    const results = await Promise.allSettled([
+      this.pushMsg2Robot(body),
+      this.feishuRobotService.noticeNews(newsTitle, msgContent, newsUrl, news),
+    ]);
+    this.logRejectedChannels(results);
+    return results;
   }
 
   pushMsg2Robot(body) {
-    this.robotList.forEach(async (robotKey) => {
-      this.qyapi(robotKey, body);
+    return Promise.allSettled(this.robotList.map((robotKey) => this.qyapi(robotKey, body)));
+  }
+
+  private logRejectedChannels(results: PromiseSettledResult<any>[]) {
+    results.forEach((result) => {
+      if (result.status === 'rejected') {
+        this.logger.error(result.reason);
+      }
     });
   }
 
@@ -127,8 +144,9 @@ export class PushService {
    * @param robotKey
    * @param body
    */
-  qyapi(robotKey, body) {
-    fetch(`https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${robotKey}`, {
+  async qyapi(robotKey, body) {
+    try {
+      const response = await fetch(`https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${robotKey}`, {
       headers: {
         accept: 'application/json, text/plain, */*',
         'accept-language': 'zh-CN,zh;q=0.9',
@@ -141,11 +159,11 @@ export class PushService {
       method: 'POST',
       mode: 'cors',
       credentials: 'include',
-    })
-      .then(async (response) => await response.json())
-      .then((data) => {
-        return data;
-      })
-      .catch((e) => this.logger.error(e));
+      });
+      return await response.json();
+    } catch (e) {
+      this.logger.error(e);
+      throw e;
+    }
   }
 }

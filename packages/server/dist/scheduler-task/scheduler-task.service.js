@@ -19,12 +19,25 @@ let SchedulerTaskService = class SchedulerTaskService {
     }
     async executeTask(name, cronExpression, callback, needDel) {
         try {
-            const job = new cron_1.CronJob(cronExpression, () => {
-                if (callback) {
-                    callback();
+            if (this.doesExist('cron', name)) {
+                return;
+            }
+            let running = false;
+            const job = new cron_1.CronJob(cronExpression, async () => {
+                if (running) {
+                    return;
                 }
-                needDel && this.deleteCron(name);
-            });
+                running = true;
+                try {
+                    if (callback) {
+                        await callback();
+                    }
+                }
+                finally {
+                    running = false;
+                    needDel && this.deleteCron(name);
+                }
+            }, null, false, 'Asia/Shanghai');
             this.schedulerRegistry.addCronJob(name, job);
             job.start();
         }

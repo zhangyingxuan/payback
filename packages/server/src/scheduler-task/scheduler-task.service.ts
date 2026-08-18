@@ -22,14 +22,30 @@ export class SchedulerTaskService {
     needDel?: boolean,
   ) {
     try {
+      // 防止启动流程或初始化接口被重复调用时注册同名任务
+      if (this.doesExist('cron', name)) {
+        return;
+      }
+
+      let running = false;
       // 创建定时任务
-      const job: CronJob = new CronJob(cronExpression, () => {
-        if (callback) {
-          callback();
+      const job: CronJob = new CronJob(cronExpression, async () => {
+        // 外部数据源响应较慢时，避免同一任务重入
+        if (running) {
+          return;
         }
-        // 删除定时任务
-        needDel && this.deleteCron(name);
-      });
+
+        running = true;
+        try {
+          if (callback) {
+            await callback();
+          }
+        } finally {
+          running = false;
+          // 删除一次性定时任务
+          needDel && this.deleteCron(name);
+        }
+      }, null, false, 'Asia/Shanghai');
       // 添加定时任务
       this.schedulerRegistry.addCronJob(name, job);
       // 启动定时任务

@@ -393,9 +393,13 @@ export class PayBackController {
   @Get('/initSchedulerTask')
   async initSchedulerTask() {
     this.logger.debug('initSchedulerTask初始化定时任务');
-    schedulerTaskList.forEach(task => {
-      this.schedulerTaskService.executeTask(task.taskName, task.cron, () => executeTaskFunc(this, task, process.env.TASK_RETRY_TIME || 3))
-    });
+    await Promise.all(
+      schedulerTaskList.map(task =>
+        this.schedulerTaskService.executeTask(task.taskName, task.cron, () =>
+          executeTaskFunc(this, task, Number(process.env.TASK_RETRY_TIME) || 3),
+        ),
+      ),
+    );
     // 判断是否开启 新闻推送 定时任务列表
     const config = await this.systemConfigService.findLatestOne();
     const { isAutoPushNews } = config;

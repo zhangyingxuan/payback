@@ -167,6 +167,8 @@ services:
 关键配置项：
 - Consul服务发现配置
 - 企业微信机器人密钥
+- 飞书机器人配置：`FEISHU_WEBHOOK_URLS`，多个 Webhook 使用英文逗号分隔
+- 飞书签名配置：`FEISHU_SIGNING_SECRETS`，按顺序与 Webhook 对应；未启用签名校验时留空
 - 同花顺API配置
 - 服务端口和主机配置
 

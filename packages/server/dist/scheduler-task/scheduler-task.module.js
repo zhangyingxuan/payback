@@ -8,13 +8,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SchedulerTaskModule = void 0;
 const common_1 = require("@nestjs/common");
-const schedule_1 = require("@nestjs/schedule");
 const scheduler_task_service_1 = require("./scheduler-task.service");
 let SchedulerTaskModule = class SchedulerTaskModule {
 };
 SchedulerTaskModule = __decorate([
     (0, common_1.Module)({
-        imports: [schedule_1.ScheduleModule.forRoot()],
         providers: [scheduler_task_service_1.SchedulerTaskService],
         exports: [scheduler_task_service_1.SchedulerTaskService],
     })

@@ -116,6 +116,13 @@ const schedulerTaskList = [
   // 昨日涨停竞价数据 === end
   // 新股&强势股 === start
   {
+    // 9:25 集合竞价结束后，尽早获取今日上市新股并加入自选
+    taskName: 'autoCrawlSpecialStockDataOpening',
+    service: 'specialStockService',
+    func: 'crawlSpecialStockData',
+    cron: '00 26 9 * * 1-5',
+  },
+  {
     taskName: 'autoCrawlSpecialStockDataMidday',
     service: 'specialStockService',
     func: 'crawlSpecialStockData',
