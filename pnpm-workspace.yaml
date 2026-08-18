@@ -1,3 +1,29 @@
 packages:
   - "packages/*"
   - "apps/*"
+allowBuilds:
+  '@nestjs/core': false
+  esbuild: true
+  less: true
+  leveldown: false
+  nx: false
+  protobufjs: false
+  puppeteer: false
+  vue-demi: true
+
+overrides:
+  vite: ^7.0.0
+  webpack: ^5.90.0
+  form-data: ^4.0.0
+  nth-check: ^2.0.1
+  braces: ^3.0.3
+  ws: ^8.17.1
+  body-parser: ^1.20.3
+  axios: ^1.7.4
+  tar-fs: ^2.1.4
+  qs: ^6.14.1
+  express>path-to-regexp: ^0.1.12
+  '@nestjs/core>path-to-regexp': ^3.3.0
+  '@nestjs/swagger>path-to-regexp': ^3.3.0
+  multer: ^2.0.0
+  cheerio: ^1.0.0

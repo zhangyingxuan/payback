@@ -42,13 +42,16 @@ exports.getIwencaiData = getIwencaiData;
 function getStocksDataByIwencai(responseJson) {
     let data = [];
     let length = 0;
-    let extra, condition;
+    let extra, condition, compId, uuid;
     try {
-        const result = responseJson.data.answer[0].txt[0].content.components[0].data;
+        const component = responseJson.data.answer[0].txt[0].content.components[0];
+        const result = component.data;
         data = result.datas;
         extra = result.meta.extra;
         length = extra.row_count;
         condition = extra.condition;
+        compId = component.cid;
+        uuid = component.puuid;
     }
     catch (e) {
         console.log('[error log] getIwencaiData 数据结构错误！', e);
@@ -57,6 +60,8 @@ function getStocksDataByIwencai(responseJson) {
         data,
         length,
         condition,
+        compId,
+        uuid,
     };
 }
 exports.getStocksDataByIwencai = getStocksDataByIwencai;

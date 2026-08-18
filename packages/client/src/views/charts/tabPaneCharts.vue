@@ -111,7 +111,7 @@ import {
   transformFundsData,
   transformLonghuListData,
 } from './utils/transformUtil';
-import { columnsConfig, cardUrls } from './utils/config';
+import { cardUrls } from './utils/config';
 import { FundsKey } from './utils/index.d';
 import { useSidebarStore } from '@/store/sidebar';
 import { ref, onMounted, reactive, watch, getCurrentInstance } from 'vue';
@@ -224,13 +224,9 @@ async function initPage(pageSize = 15) {
 }
 
 function getChartStyle() {
-  // 计算宽度；屏幕宽度 - 左侧sideBar - 边框 - cardLeft
-  const columnsAmount = columnsConfig[countDays.value] || 1;
-  const screenWidth = screen.width - 64 - 20 - columnsAmount * 15;
-  const cardWidth = isMobile ? screen.width - 30 : screenWidth / columnsAmount;
   return {
-    style: `width: ${cardWidth}px; height: 260px`,
-    styleBig: `width: ${cardWidth}px; height: 320px`,
+    style: 'width: 100%; height: 260px',
+    styleBig: 'width: 100%; height: 320px',
   };
 }
 
@@ -376,15 +372,24 @@ defineExpose({
 
 <style scoped lang="less">
 .chartList__container {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 15px;
+  width: 100%;
 
   > .el-card {
-    margin-left: 15px;
+    min-width: 0;
+    margin: 0;
   }
 
   :deep(.el-card__header) {
     padding: 5px 10px;
+  }
+}
+
+@media (max-width: 900px) {
+  .chartList__container {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

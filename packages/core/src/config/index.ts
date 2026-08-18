@@ -3,7 +3,7 @@ export const iWencaiDateFormat = 'YYYYMMDD';
 export const stockBaseCondition = '非st；非退市；行业';
 // export const personalPreferenceCondition = '行业；股价低于30元；流通市值<=120亿；流通市值>=20亿；非创业板；非科创板；非ST';
 // 2024-06-18 17:36:19 个人偏好条件 可以做创业板，尝试绩优股
-export const personalPreferenceCondition = '市盈率>0；股价低于50元；流通市值<=500亿；流通市值>=20亿；非科创板；非ST；非退市' + stockBaseCondition;
+export const personalPreferenceCondition = '市盈率>0；股价低于50元；流通市值>=20亿；' + stockBaseCondition;
 
 export const params = {
   downLimit: '跌停；' + stockBaseCondition,

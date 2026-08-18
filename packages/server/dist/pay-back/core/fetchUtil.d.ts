@@ -3,13 +3,19 @@ interface IwencaiStockResult {
     data: any;
     length: number;
     condition: Array<any>;
+    compId: number;
+    uuid: number;
 }
 export declare function fetchAllStocksByIwencai(question: any, limit?: any): Promise<IwencaiStockResult>;
 export declare function fetchIwencai(question: any, pageSize?: number, isPlate?: boolean): Promise<any>;
-export declare function fetchStockPagingDataList(question: any, pageSize: number, pageNum: number, condition: any): Promise<any>;
+export declare function fetchStockPagingDataList(question: any, pageSize: number, pageNum: number, condition: any, compId: any, uuid: any): Promise<any>;
 export declare function fetchMarketData(): Promise<any>;
 export declare function clearThsSelfStocks(user: any): Promise<any>;
 export declare function fetchMarketPointFromEastmoney(): Promise<any>;
+export declare function fetchMarketSnapshotFromTencent(): Promise<{
+    indexes: any;
+    turnover: number;
+}>;
 export declare function fetchMarketPoint(apiUrl: any, key: any): Promise<number>;
 export declare function fetchNorhFunds(): Promise<any>;
 export declare enum ThsOprate {

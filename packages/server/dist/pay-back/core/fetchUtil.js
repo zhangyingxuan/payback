@@ -1,12 +1,51 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.promiseLimit = exports.modifyThsSelfRequest = exports.modifyThsSelfStocksRequest = exports.ThsOprate = exports.fetchNorhFunds = exports.fetchMarketPoint = exports.fetchMarketPointFromEastmoney = exports.clearThsSelfStocks = exports.fetchMarketData = exports.fetchStockPagingDataList = exports.fetchIwencai = exports.fetchAllStocksByIwencai = exports.fetchIwencaiApi = void 0;
+exports.promiseLimit = exports.modifyThsSelfRequest = exports.modifyThsSelfStocksRequest = exports.ThsOprate = exports.fetchNorhFunds = exports.fetchMarketPoint = exports.fetchMarketSnapshotFromTencent = exports.fetchMarketPointFromEastmoney = exports.clearThsSelfStocks = exports.fetchMarketData = exports.fetchStockPagingDataList = exports.fetchIwencai = exports.fetchAllStocksByIwencai = exports.fetchIwencaiApi = void 0;
 const pay_back_core_1 = require("pay-back-core");
 const node_fetch_1 = require("node-fetch");
 const commonUtil_1 = require("../utils/commonUtil");
 const qs_1 = require("qs");
 const abortFetch_1 = require("../../utils/abortFetch");
 const maxPageSize = 100;
+const iwencaiRequestInterval = 1200;
+const iwencaiMaxAttempts = 6;
+const iwencaiBrowserHeaders = {
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+    origin: 'https://www.iwencai.com',
+    referer: 'https://www.iwencai.com/',
+};
+let iwencaiRequestQueue = Promise.resolve();
+const delay = (timeout) => new Promise(resolve => setTimeout(resolve, timeout));
+function enqueueIwencaiRequest(request) {
+    const result = iwencaiRequestQueue.then(request, request);
+    iwencaiRequestQueue = result.then(() => delay(iwencaiRequestInterval), () => delay(iwencaiRequestInterval));
+    return result;
+}
+async function fetchIwencaiJson(resource, options, isValidResponse) {
+    return enqueueIwencaiRequest(async () => {
+        var _a;
+        let lastError;
+        for (let attempt = 1; attempt <= iwencaiMaxAttempts; attempt++) {
+            try {
+                const response = await (0, abortFetch_1.createFetch)()(resource, options);
+                const data = await response.json();
+                if (response.ok && isValidResponse(data)) {
+                    return data;
+                }
+                const status = (_a = data === null || data === void 0 ? void 0 : data.status_code) !== null && _a !== void 0 ? _a : response.status;
+                const message = (data === null || data === void 0 ? void 0 : data.status_msg) || (data === null || data === void 0 ? void 0 : data.message) || response.statusText || '响应结构异常';
+                lastError = new Error(`爱问财接口请求失败(${status}): ${message}`);
+            }
+            catch (error) {
+                lastError = error instanceof Error ? error : new Error(String(error));
+            }
+            if (attempt < iwencaiMaxAttempts) {
+                await delay(iwencaiRequestInterval * attempt);
+            }
+        }
+        throw lastError;
+    });
+}
 async function fetchIwencaiApi(question, pageSize = 5) {
     const result = await fetchIwencai(question, pageSize, true);
     return (0, commonUtil_1.getIwencaiData)(result);
@@ -20,7 +59,7 @@ async function fetchAllStocksByIwencai(question, limit = null) {
     const iwencaiStockResult = (0, commonUtil_1.getStocksDataByIwencai)(result);
     if (iwencaiStockResult.length > iwencaiStockResult.data.length && !limit) {
         while (true) {
-            result = await fetchStockPagingDataList(question, maxPageSize, ++pageNum, iwencaiStockResult.condition);
+            result = await fetchStockPagingDataList(question, maxPageSize, ++pageNum, iwencaiStockResult.condition, iwencaiStockResult.compId, iwencaiStockResult.uuid);
             data = (0, commonUtil_1.getStocksPagingDataByIwencai)(result);
             iwencaiStockResult.data.push(...data);
             if (data.length === 0 ||
@@ -44,26 +83,17 @@ async function fetchIwencai(question, pageSize = 5, isPlate = false) {
         secondary_intent: isPlate ? 'zhishu' : 'stock',
         add_info: '{"urp":{"scene":1,"company":1,"business":1},"contentType":"json","searchInfo":true}',
     };
-    const abortFetch = (0, abortFetch_1.createFetch)();
-    const result = await abortFetch('http://www.iwencai.com/customized/chart/get-robot-data', {
-        headers: {
-            accept: 'application/json, text/plain, */*',
-            'accept-language': 'zh-CN,zh;q=0.9',
-            'cache-control': 'no-cache',
-            'content-type': 'application/json',
-            'hexin-v': (0, pay_back_core_1.createV)(),
-            pragma: 'no-cache',
-        },
+    return fetchIwencaiJson('https://www.iwencai.com/customized/chart/get-robot-data', {
+        headers: Object.assign(Object.assign({}, iwencaiBrowserHeaders), { accept: 'application/json, text/plain, */*', 'accept-language': 'zh-CN,zh;q=0.9', 'cache-control': 'no-cache', 'content-type': 'application/json', 'hexin-v': (0, pay_back_core_1.createV)(), pragma: 'no-cache' }),
         body: JSON.stringify(body),
         referrerPolicy: 'strict-origin-when-cross-origin',
         method: 'POST',
         mode: 'cors',
         credentials: 'include',
-    });
-    return await result.json();
+    }, data => { var _a; return (data === null || data === void 0 ? void 0 : data.status_code) === 0 && Array.isArray((_a = data === null || data === void 0 ? void 0 : data.data) === null || _a === void 0 ? void 0 : _a.answer); });
 }
 exports.fetchIwencai = fetchIwencai;
-async function fetchStockPagingDataList(question, pageSize = 5, pageNum = 1, condition) {
+async function fetchStockPagingDataList(question, pageSize = 5, pageNum = 1, condition, compId, uuid) {
     const body = {
         urp_sort_way: 'desc',
         query: question,
@@ -71,27 +101,18 @@ async function fetchStockPagingDataList(question, pageSize = 5, pageNum = 1, con
         source: 'Ths_iwencai_Xuangu',
         perpage: pageSize,
         page: pageNum,
-        comp_id: 6836372,
-        uuid: 24087,
+        comp_id: compId,
+        uuid,
         condition,
     };
-    const abortFetch = (0, abortFetch_1.createFetch)();
-    const result = await abortFetch('https://www.iwencai.com/gateway/urp/v7/landing/getDataList', {
-        headers: {
-            accept: 'application/json, text/plain, */*',
-            'accept-language': 'zh-CN,zh;q=0.9',
-            'cache-control': 'no-cache',
-            'content-type': 'application/x-www-form-urlencoded',
-            'hexin-v': (0, pay_back_core_1.createV)(),
-            pragma: 'no-cache',
-        },
+    return fetchIwencaiJson('https://www.iwencai.com/gateway/urp/v7/landing/getDataList', {
+        headers: Object.assign(Object.assign({}, iwencaiBrowserHeaders), { accept: 'application/json, text/plain, */*', 'accept-language': 'zh-CN,zh;q=0.9', 'cache-control': 'no-cache', 'content-type': 'application/x-www-form-urlencoded', 'hexin-v': (0, pay_back_core_1.createV)(), pragma: 'no-cache' }),
         body: (0, qs_1.stringify)(body),
         referrerPolicy: 'strict-origin-when-cross-origin',
         method: 'POST',
         mode: 'cors',
         credentials: 'include',
-    });
-    return await result.json();
+    }, data => { var _a; return Array.isArray((_a = data === null || data === void 0 ? void 0 : data.answer) === null || _a === void 0 ? void 0 : _a.components); });
 }
 exports.fetchStockPagingDataList = fetchStockPagingDataList;
 async function fetchMarketData() {
@@ -137,26 +158,51 @@ async function fetchMarketPointFromEastmoney() {
     var _a;
     const dateTime = new Date().getTime();
     const abortFetch = (0, abortFetch_1.createFetch)();
-    const result = await abortFetch(`http://57.push2.eastmoney.com/api/qt/clist/get?cb=jQuery112402821055891936557_${dateTime}&pn=1&pz=6&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&wbp2u=|0|0|0|web&fid=&fs=b:MK0010&fields=f2,f3,f12,f14&_=${dateTime}`, {
-        headers: {
-            accept: '*/*',
-            'accept-language': 'zh-CN,zh;q=0.9',
-            'cache-control': 'no-cache',
-            pragma: 'no-cache',
-        },
-        referrer: 'http://quote.eastmoney.com/center/hszs.html',
-        referrerPolicy: 'unsafe-url',
-        body: null,
-        method: 'GET',
-        mode: 'cors',
-        credentials: 'include',
-    });
-    const responseData = await result.text();
-    const dataStr = responseData.substring(responseData.indexOf('(') + 1, responseData.length - 2);
-    const dataJSON = (_a = JSON.parse(dataStr).data) === null || _a === void 0 ? void 0 : _a.diff;
-    return dataJSON;
+    try {
+        const result = await abortFetch(`https://push2.eastmoney.com/api/qt/clist/get?cb=jQuery112402821055891936557_${dateTime}&pn=1&pz=6&po=1&np=1&ut=bd1d9ddb04089700cf9c27f6f7426281&fltt=2&invt=2&wbp2u=|0|0|0|web&fid=&fs=b:MK0010&fields=f2,f3,f12,f14&_=${dateTime}`, {
+            headers: {
+                accept: '*/*',
+                'accept-language': 'zh-CN,zh;q=0.9',
+                'cache-control': 'no-cache',
+                pragma: 'no-cache',
+            },
+            referrer: 'https://quote.eastmoney.com/center/hszs.html',
+            referrerPolicy: 'unsafe-url',
+            body: null,
+            method: 'GET',
+            mode: 'cors',
+            credentials: 'include',
+        });
+        const responseData = await result.text();
+        const start = responseData.indexOf('(');
+        const end = responseData.lastIndexOf(')');
+        const dataJSON = (_a = JSON.parse(start >= 0 ? responseData.substring(start + 1, end) : responseData).data) === null || _a === void 0 ? void 0 : _a.diff;
+        if (!Array.isArray(dataJSON) || dataJSON.length < 4)
+            throw new Error('东方财富指数数据不完整');
+        return dataJSON;
+    }
+    catch (error) {
+        return fetchMarketSnapshotFromTencent().then(data => data.indexes);
+    }
 }
 exports.fetchMarketPointFromEastmoney = fetchMarketPointFromEastmoney;
+async function fetchMarketSnapshotFromTencent() {
+    const response = await (0, abortFetch_1.createFetch)()('https://qt.gtimg.cn/q=sh000001,sz399001,bj899050,sz399006', {
+        headers: { referer: 'https://finance.qq.com/' },
+    });
+    const text = await response.text();
+    const quotes = text
+        .split(';')
+        .map(line => line.substring(line.indexOf('"') + 1, line.lastIndexOf('"')).split('~'))
+        .filter(fields => fields.length > 37);
+    if (quotes.length < 4)
+        throw new Error('腾讯行情指数数据不完整');
+    return {
+        indexes: quotes.map(fields => ({ f2: +fields[3], f3: +fields[32], f12: fields[2] })),
+        turnover: (+quotes[0][37] + +quotes[1][37]) * 10000,
+    };
+}
+exports.fetchMarketSnapshotFromTencent = fetchMarketSnapshotFromTencent;
 async function fetchMarketPoint(apiUrl, key) {
     const abortFetch = (0, abortFetch_1.createFetch)();
     const result = await abortFetch(apiUrl, {

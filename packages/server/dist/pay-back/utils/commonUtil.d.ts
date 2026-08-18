@@ -7,6 +7,8 @@ export declare function getStocksDataByIwencai(responseJson: any): {
     data: any[];
     length: number;
     condition: any;
+    compId: any;
+    uuid: any;
 };
 export declare function getStocksPagingDataByIwencai(responseJson: any): any[];
 export declare function getLastTradingDay(nowStr: string): string;

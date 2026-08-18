@@ -6,7 +6,6 @@ import Axios, {
 import {
   PureHttpError,
   RequestMethods,
-  PureHttpResponse,
   PureHttpRequestConfig
 } from "./types.d";
 import { stringify } from "qs";
@@ -69,7 +68,7 @@ class PureHttp {
   private httpInterceptorsResponse(): void {
     const instance = PureHttp.axiosInstance;
     instance.interceptors.response.use(
-      (response: PureHttpResponse) => {
+      response => {
         const data = response.data;
         // console.log(response);
         const url = response.config.url || '';
@@ -81,7 +80,7 @@ class PureHttp {
             type: 'error',
           })
         }
-        return response.data;
+        return response;
       },
       (error: PureHttpError) => {
         const response = error.response;
@@ -131,9 +130,22 @@ class PureHttp {
         .request(config)
         .then((response: any) => {
           if (config.responseType === 'blob') {
-            resolve(response);
-          } else {
             resolve(response.data);
+          } else {
+            const responseData = response.data;
+            const isEnvelope =
+              responseData !== null &&
+              typeof responseData === 'object' &&
+              !Array.isArray(responseData) &&
+              Object.prototype.hasOwnProperty.call(responseData, 'data') &&
+              ('code' in responseData ||
+                'status_code' in responseData ||
+                'statusCode' in responseData);
+
+            // Existing APIs return an envelope such as { code, data } or
+            // { status_code, data }. Keep exposing its data payload, while
+            // also accepting APIs that now return the payload directly.
+            resolve(isEnvelope ? responseData.data : responseData);
           }
         })
         .catch(error => {

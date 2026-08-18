@@ -18,37 +18,11 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("typeorm");
 const review_entity_1 = require("../entities/review.entity");
 const typeorm_2 = require("@nestjs/typeorm");
-const playWrightUtil_1 = require("../utils/playWrightUtil");
 const dayjs = require("dayjs");
 let ReviewService = ReviewService_1 = class ReviewService {
     constructor(reviewDataRp) {
         this.reviewDataRp = reviewDataRp;
         this.logger = new common_1.Logger(ReviewService_1.name);
-    }
-    async updateTodayReviewData() {
-        this.logger.debug('updateTodayReviewData is Begining!');
-        const todayDateStr = new Date().toLocaleDateString();
-        const todayDataFromDB = await this.reviewDataRp
-            .createQueryBuilder('market_data')
-            .where('market_data.createTime like :createTime', { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
-            .getOne();
-        if (todayDataFromDB) {
-            this.logger.debug('updateTodayReviewData is end![isExist]!');
-            return {
-                code: 'isExist',
-                msg: todayDateStr + ' 数据已存在！',
-            };
-        }
-        let marketData;
-        try {
-            marketData = await playWrightUtil_1.default.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
-            await this.reviewDataRp.save(marketData);
-            this.logger.debug('updateTodayReviewData is success!');
-        }
-        catch (e) {
-            this.logger.error('出错啦！！！', e);
-        }
-        return marketData;
     }
     async findAll() {
         return await this.reviewDataRp.find();

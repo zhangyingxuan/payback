@@ -275,21 +275,24 @@ defineExpose({
 
 <style scoped lang="less">
 .chartList__container {
-  display: flex;
-  flex-wrap: wrap;
-
-  &.isMobile {
-    > .el-card {
-      margin-left: 5px;
-    }
-  }
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 15px;
+  width: 100%;
 
   > .el-card {
-    margin-left: 15px;
+    min-width: 0;
+    margin: 0;
   }
 
   :deep(.el-card__header) {
     padding: 5px 10px;
+  }
+}
+
+@media (max-width: 900px) {
+  .chartList__container {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 </style>

@@ -17,7 +17,7 @@ exports.default = {
         const hangyeRiseFloat = (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.hangyeRiseFloat);
         const hangyeFallFloat = (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.hangyeFallFloat);
         const abortFetch = (0, abortFetch_1.createFetch)();
-        const responseMarketTurnover = abortFetch(`https://push2.eastmoney.com/api/qt/ulist.np/get?cb=jQuery112304396074520394937_1688383194361&fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5&_=${dateTime}`);
+        const responseMarketTurnover = abortFetch(`https://push2.eastmoney.com/api/qt/ulist.np/get?cb=jQuery112304396074520394937_1688383194361&fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5&_=${dateTime}`).catch(() => null);
         const [indexData, marketData, gainianRiseFloatData, gainianFallFloatData, hangyeRiseFloatData, hangyeFallFloatData, responseMarketTurnoverData,] = await Promise.all([
             index,
             market,
@@ -36,7 +36,13 @@ exports.default = {
         createMarketDataDto.fallAmount = marketData.zdfb_data.dnum;
         createMarketDataDto.riseAmount = marketData.zdfb_data.znum;
         createMarketDataDto.marketScore = marketData.dppj_data;
-        const marketTurnover = (0, commonUtil_1.getMarketTurnover)(await responseMarketTurnoverData.text());
+        let marketTurnover;
+        try {
+            marketTurnover = (0, commonUtil_1.getMarketTurnover)(await responseMarketTurnoverData.text());
+        }
+        catch (error) {
+            marketTurnover = (await (0, fetchUtil_1.fetchMarketSnapshotFromTencent)()).turnover;
+        }
         const gainianRiseFloatTop5 = fundsUtil_1.default.getPlateTop(gainianRiseFloatData, dateStr);
         const gainianFallFloatTop5 = fundsUtil_1.default.getPlateTop(gainianFallFloatData, dateStr);
         const hangyeRiseFloatTop5 = fundsUtil_1.default.getPlateTop(hangyeRiseFloatData, dateStr);
