@@ -115,7 +115,7 @@
                 middle: true,
               }"
             >
-              {{ stock.bidIncreaseT && +stock.bidIncreaseT.toFixed(2) }}
+              {{ stock.bidIncreaseT && (+stock.bidIncreaseT).toFixed(2) }}
             </span>
             ]&nbsp;&nbsp;
             <span

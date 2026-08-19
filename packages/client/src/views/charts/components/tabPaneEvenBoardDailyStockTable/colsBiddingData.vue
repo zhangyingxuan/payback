@@ -2,7 +2,7 @@
 <template>
   <div v-if="!isEmpty(stock)" class="biddingData__row">
     <span class="middle" :class="{ 'red bold': stock.bidIncreaseT >= 7 }">
-      {{ stock.bidIncreaseT && +stock.bidIncreaseT.toFixed(2) }}
+      {{ stock.bidIncreaseT && (+stock.bidIncreaseT).toFixed(2) }}
       <el-tag
         v-if="isDailyLimit(stock.code, stock.bidIncreaseT)"
         size="small"

@@ -87,7 +87,7 @@
           </span>
           <span class="zise middle">{{ stock.circulationValue }}亿</span>
           <span :class="{ 'red bold': stock.bidIncreaseT >= 7, middle: true }">
-            {{ stock.bidIncreaseT && +stock.bidIncreaseT.toFixed(2) }}
+            {{ stock.bidIncreaseT && (+stock.bidIncreaseT).toFixed(2) }}
           </span>
           ]&nbsp;&nbsp;
           <span
