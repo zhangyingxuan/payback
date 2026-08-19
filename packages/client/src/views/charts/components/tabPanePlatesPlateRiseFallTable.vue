@@ -102,7 +102,7 @@ let superData = defineProps({
   min-height: 16px;
 }
 .table {
-  overflow: auto;
+  overflow: hidden;
   // content-visibility: auto;
 }
 .table * {
@@ -118,6 +118,8 @@ let superData = defineProps({
 }
 
 .table__container {
+  overflow-x: auto;
+  overflow-y: hidden;
   display: flex;
   flex-direction: row;
   text-align: center;
@@ -164,7 +166,7 @@ let superData = defineProps({
   }
   .table-col {
     width: 100%;
-    overflow: scroll;
+    overflow: hidden;
     // flex: 1;
     .flexCenter();
     .tableColumsBorder();

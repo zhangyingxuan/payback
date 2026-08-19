@@ -18,7 +18,8 @@
 .table {
   margin: 0 5px 5px 5px;
   font-size: 12px;
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: hidden;
   border-top: 1px solid @tableColumsBorderColor;
   border-right: 1px solid @tableColumsBorderColor;
   // content-visibility: auto;
@@ -84,7 +85,7 @@
   display: flex;
   align-items: center;
   min-width: 940px;
-  overflow: auto;
+  overflow: visible;
 
   :deep(.stock),
   > span {
@@ -93,7 +94,7 @@
 }
 .biddingData__filter--row {
   min-width: 550px;
-  overflow: auto;
+  overflow: visible;
 
   .el-checkbox {
     margin-right: 10px;

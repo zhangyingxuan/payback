@@ -646,7 +646,8 @@ defineExpose({
 
 .evenBoard__table {
   margin: 0 5px 5px 5px;
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: hidden;
   display: flex;
   flex-direction: row;
   text-align: center;
@@ -722,7 +723,8 @@ defineExpose({
   .table-col {
     width: 100%;
     height: 83px;
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
     // flex: 1;
     .flexCenter();
     .tableColumsBorder();

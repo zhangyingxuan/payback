@@ -134,7 +134,7 @@ function calcClass(stock: any) {
 <style scoped lang="less">
 .dailyLimit__content {
   min-width: 990px;
-  overflow: auto;
+  overflow: visible;
 
   .content__gainian {
     white-space: nowrap; /* 防止文本换行 */
@@ -142,7 +142,7 @@ function calcClass(stock: any) {
     text-overflow: ellipsis;
     transition: max-width 0.5s ease; /* 平滑过渡效果 */
     &:hover {
-      overflow: auto;
+      overflow: visible;
       white-space: wrap;
       text-overflow: clip;
     }

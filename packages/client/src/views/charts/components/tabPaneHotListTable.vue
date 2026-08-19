@@ -99,7 +99,8 @@ defineProps({
 }
 
 .table {
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: hidden;
   display: flex;
   flex-direction: row;
   text-align: center;
@@ -184,7 +185,7 @@ defineProps({
   }
   .table-col {
     width: 100%;
-    overflow: scroll;
+    overflow: hidden;
     // flex: 1;
     .flexCenter();
     .tableColumsBorder();
