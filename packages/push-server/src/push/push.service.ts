@@ -1,18 +1,20 @@
 import { Injectable, Logger } from '@nestjs/common';
 import fetch from 'node-fetch';
 import * as dayjs from 'dayjs';
-import { FeishuRobotService } from './feishu-robot.service';
+import { createHmac } from 'crypto';
 
 const thsPlateBaseUrl = 'http://q.10jqka.com.cn/thshy/detail/code/';
 const thsStockBaseUrl = 'https://stockpage.10jqka.com.cn/';
+const feishuWebhookUrls = [
+  'https://open.feishu.cn/open-apis/bot/v2/hook/d3876526-1889-44de-a2fc-3df92f1c0442',
+];
+const feishuSigningSecrets: string[] = [];
 
 /**
  * 企微机器人 通知
  */
 @Injectable()
 export class PushService {
-  constructor(private readonly feishuRobotService: FeishuRobotService) { }
-
   private readonly logger = new Logger(PushService.name);
   private readonly robotList = [
     'ddbae7ea-7496-4cd8-97c5-c0b195d9609b',
@@ -37,15 +39,16 @@ export class PushService {
       )}</font>\n`,
     );
     content.push(`> <font color=\"comment\">${msgContent}</font>`);
+    const markdownContent = content.join('');
     const body = {
       msgtype: 'markdown',
       markdown: {
-        content: content.join(''),
+        content: markdownContent,
       },
     };
     const results = await Promise.allSettled([
       this.pushMsg2Robot(body),
-      this.feishuRobotService.notice(serviceName, msgContent),
+      this.pushFeishuMarkdown(markdownContent),
     ]);
     this.logRejectedChannels(results);
     return results;
@@ -113,15 +116,16 @@ export class PushService {
         content.push(this.prepareTagContent(news?.stock, thsStockBaseUrl));
       }
     }
+    const markdownContent = content.join('');
     const body = {
       msgtype: 'markdown',
       markdown: {
-        content: content.join(''),
+        content: markdownContent,
       },
     };
     const results = await Promise.allSettled([
       this.pushMsg2Robot(body),
-      this.feishuRobotService.noticeNews(newsTitle, msgContent, newsUrl, news),
+      this.pushFeishuMarkdown(markdownContent),
     ]);
     this.logRejectedChannels(results);
     return results;
@@ -137,6 +141,56 @@ export class PushService {
         this.logger.error(result.reason);
       }
     });
+  }
+
+  private async pushFeishuMarkdown(content: string) {
+    const card = {
+      msg_type: 'interactive',
+      card: {
+        config: { wide_screen_mode: true },
+        elements: [
+          {
+            tag: 'div',
+            text: { tag: 'lark_md', content },
+          },
+        ],
+      },
+    };
+
+    return Promise.allSettled(
+      feishuWebhookUrls.map((webhookUrl, index) =>
+        this.sendFeishu(webhookUrl, feishuSigningSecrets[index], card),
+      ),
+    );
+  }
+
+  private async sendFeishu(webhookUrl: string, secret: string, card: any) {
+    const body = secret ? { ...card, ...this.createFeishuSignature(secret) } : card;
+    const response = await fetch(webhookUrl, {
+      headers: { 'content-type': 'application/json; charset=utf-8' },
+      body: JSON.stringify(body),
+      method: 'POST',
+    });
+    const result: any = await response.json();
+
+    if (!response.ok || (result.code !== undefined && result.code !== 0)) {
+      const error = new Error(
+        `飞书机器人推送失败: HTTP ${response.status}, code=${result.code}, msg=${result.msg || ''}`,
+      );
+      this.logger.error(error.message);
+      throw error;
+    }
+
+    return result;
+  }
+
+  private createFeishuSignature(secret: string) {
+    const timestamp = Math.floor(Date.now() / 1000).toString();
+    const stringToSign = `${timestamp}\n${secret}`;
+    const sign = createHmac('sha256', stringToSign)
+      .update('')
+      .digest('base64');
+    return { timestamp, sign };
   }
 
   /**

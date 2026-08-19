@@ -138,11 +138,22 @@ let PayBackController = PayBackController_1 = class PayBackController {
     async crawlSpecialStockData(req) {
         var _a;
         const account = ((_a = req.user) === null || _a === void 0 ? void 0 : _a.account) || 'admin';
-        const specialStockData = await this.specialStockService.crawlSpecialStockData(account);
-        return {
-            code: 0,
-            data: specialStockData,
-        };
+        try {
+            const specialStockData = await this.specialStockService.crawlSpecialStockData(account);
+            return {
+                code: 0,
+                data: specialStockData,
+            };
+        }
+        catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            this.logger.error('crawlSpecialStockData failed', error);
+            return {
+                code: 500,
+                data: null,
+                message,
+            };
+        }
     }
     async deleteData(body) {
         let code = 0, message = 'success';

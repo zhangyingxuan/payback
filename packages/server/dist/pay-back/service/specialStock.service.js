@@ -86,7 +86,12 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
             const yesterdayDateStr = await this.getLastTradingDayByDB(todayDateStr);
             const { newStocks, chooseStock1Expected } = await (0, specialStockUtil_1.fetchSpecialStockBinddingData)(todayDateStr, yesterdayDateStr);
             if (newStocks && newStocks.length > 0) {
-                this.thsService.batchUpdateThsSelfStock(newStocks, fetchUtil_1.ThsOprate.add, account);
+                try {
+                    this.thsService.batchUpdateThsSelfStock(newStocks, fetchUtil_1.ThsOprate.add, account);
+                }
+                catch (error) {
+                    this.logger.error('自动加入新股到自选股失败', error);
+                }
             }
             todayDataFromDB = await this.getTodayData(todayDateStr);
             if (todayDataFromDB) {
@@ -108,7 +113,7 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
         }
         catch (e) {
             this.logger.error('出错啦！！！', e);
-            throw new Error(e);
+            throw e instanceof Error ? e : new Error(String(e));
         }
         return todayDataFromDB ? todayDataFromDB : specialStockDto;
     }

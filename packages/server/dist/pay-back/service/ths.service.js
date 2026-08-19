@@ -75,9 +75,10 @@ let ThsService = ThsService_1 = class ThsService {
         };
     }
     async batchUpdateThsSelfStock(stocks = [], type, account) {
+        var _a, _b;
         const sysTemconfig = await this.systemConfigService.findLatestOne();
-        const isBinddingDelEventBoard = sysTemconfig.isBinddingDelEventBoard;
-        const isBinddingDelFirstBoard = sysTemconfig.isBinddingDelFirstBoard;
+        const isBinddingDelEventBoard = (_a = sysTemconfig === null || sysTemconfig === void 0 ? void 0 : sysTemconfig.isBinddingDelEventBoard) !== null && _a !== void 0 ? _a : false;
+        const isBinddingDelFirstBoard = (_b = sysTemconfig === null || sysTemconfig === void 0 ? void 0 : sysTemconfig.isBinddingDelFirstBoard) !== null && _b !== void 0 ? _b : false;
         const app = new pay_back_core_1.AsynTaskIterator();
         const userInfo = await this.usersService.getUserByAccount(account);
         const userid = (0, thsUtils_1.atob)(userInfo.userid);

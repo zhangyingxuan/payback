@@ -94,8 +94,8 @@ export class ThsService {
   async batchUpdateThsSelfStock(stocks = [], type, account) {
     // 获取系统配置
     const sysTemconfig = await this.systemConfigService.findLatestOne();
-    const isBinddingDelEventBoard = sysTemconfig.isBinddingDelEventBoard;
-    const isBinddingDelFirstBoard = sysTemconfig.isBinddingDelFirstBoard;
+    const isBinddingDelEventBoard = sysTemconfig?.isBinddingDelEventBoard ?? false;
+    const isBinddingDelFirstBoard = sysTemconfig?.isBinddingDelFirstBoard ?? false;
 
     const app = new AsynTaskIterator();
     const userInfo = await this.usersService.getUserByAccount(account);

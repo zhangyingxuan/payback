@@ -52,6 +52,11 @@ export declare class PayBackController {
     crawlSpecialStockData(req: any): Promise<{
         code: number;
         data: any;
+        message?: undefined;
+    } | {
+        code: number;
+        data: any;
+        message: string;
     }>;
     deleteData(body: any): Promise<{
         code: number;

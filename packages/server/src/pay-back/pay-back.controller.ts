@@ -200,12 +200,21 @@ export class PayBackController {
   @Post('/crawlSpecialStockData')
   async crawlSpecialStockData(@Request() req) {
     const account = req.user?.account || 'admin';
-    // 是否剔除 不及预期数据；注意接收到的参数 是否为字符串
-    const specialStockData = await this.specialStockService.crawlSpecialStockData(account);
-    return {
-      code: 0,
-      data: specialStockData,
-    };
+    try {
+      const specialStockData = await this.specialStockService.crawlSpecialStockData(account);
+      return {
+        code: 0,
+        data: specialStockData,
+      };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.logger.error('crawlSpecialStockData failed', error);
+      return {
+        code: 500,
+        data: null,
+        message,
+      };
+    }
   }
 
   // @Admin()

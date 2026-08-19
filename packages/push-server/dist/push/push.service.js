@@ -5,21 +5,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
 var PushService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PushService = void 0;
 const common_1 = require("@nestjs/common");
 const node_fetch_1 = require("node-fetch");
 const dayjs = require("dayjs");
-const feishu_robot_service_1 = require("./feishu-robot.service");
+const crypto_1 = require("crypto");
 const thsPlateBaseUrl = 'http://q.10jqka.com.cn/thshy/detail/code/';
 const thsStockBaseUrl = 'https://stockpage.10jqka.com.cn/';
+const feishuWebhookUrls = [
+    'https://open.feishu.cn/open-apis/bot/v2/hook/d3876526-1889-44de-a2fc-3df92f1c0442',
+];
+const feishuSigningSecrets = [];
 let PushService = PushService_1 = class PushService {
-    constructor(feishuRobotService) {
-        this.feishuRobotService = feishuRobotService;
+    constructor() {
         this.logger = new common_1.Logger(PushService_1.name);
         this.robotList = [
             'ddbae7ea-7496-4cd8-97c5-c0b195d9609b',
@@ -34,15 +34,16 @@ let PushService = PushService_1 = class PushService {
         content.push(` <font color=\"warning\">${process.env.NODE_ENV}</font>`);
         content.push(` <font color=\"comment\">${dayjs(todayDateStr).format('HH:mm:ss')}</font>\n`);
         content.push(`> <font color=\"comment\">${msgContent}</font>`);
+        const markdownContent = content.join('');
         const body = {
             msgtype: 'markdown',
             markdown: {
-                content: content.join(''),
+                content: markdownContent,
             },
         };
         const results = await Promise.allSettled([
             this.pushMsg2Robot(body),
-            this.feishuRobotService.notice(serviceName, msgContent),
+            this.pushFeishuMarkdown(markdownContent),
         ]);
         this.logRejectedChannels(results);
         return results;
@@ -74,15 +75,16 @@ let PushService = PushService_1 = class PushService {
                 content.push(this.prepareTagContent(news === null || news === void 0 ? void 0 : news.stock, thsStockBaseUrl));
             }
         }
+        const markdownContent = content.join('');
         const body = {
             msgtype: 'markdown',
             markdown: {
-                content: content.join(''),
+                content: markdownContent,
             },
         };
         const results = await Promise.allSettled([
             this.pushMsg2Robot(body),
-            this.feishuRobotService.noticeNews(newsTitle, msgContent, newsUrl, news),
+            this.pushFeishuMarkdown(markdownContent),
         ]);
         this.logRejectedChannels(results);
         return results;
@@ -96,6 +98,44 @@ let PushService = PushService_1 = class PushService {
                 this.logger.error(result.reason);
             }
         });
+    }
+    async pushFeishuMarkdown(content) {
+        const card = {
+            msg_type: 'interactive',
+            card: {
+                config: { wide_screen_mode: true },
+                elements: [
+                    {
+                        tag: 'div',
+                        text: { tag: 'lark_md', content },
+                    },
+                ],
+            },
+        };
+        return Promise.allSettled(feishuWebhookUrls.map((webhookUrl, index) => this.sendFeishu(webhookUrl, feishuSigningSecrets[index], card)));
+    }
+    async sendFeishu(webhookUrl, secret, card) {
+        const body = secret ? Object.assign(Object.assign({}, card), this.createFeishuSignature(secret)) : card;
+        const response = await (0, node_fetch_1.default)(webhookUrl, {
+            headers: { 'content-type': 'application/json; charset=utf-8' },
+            body: JSON.stringify(body),
+            method: 'POST',
+        });
+        const result = await response.json();
+        if (!response.ok || (result.code !== undefined && result.code !== 0)) {
+            const error = new Error(`飞书机器人推送失败: HTTP ${response.status}, code=${result.code}, msg=${result.msg || ''}`);
+            this.logger.error(error.message);
+            throw error;
+        }
+        return result;
+    }
+    createFeishuSignature(secret) {
+        const timestamp = Math.floor(Date.now() / 1000).toString();
+        const stringToSign = `${timestamp}\n${secret}`;
+        const sign = (0, crypto_1.createHmac)('sha256', stringToSign)
+            .update('')
+            .digest('base64');
+        return { timestamp, sign };
     }
     async qyapi(robotKey, body) {
         try {
@@ -122,8 +162,7 @@ let PushService = PushService_1 = class PushService {
     }
 };
 PushService = PushService_1 = __decorate([
-    (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [feishu_robot_service_1.FeishuRobotService])
+    (0, common_1.Injectable)()
 ], PushService);
 exports.PushService = PushService;
 //# sourceMappingURL=push.service.js.map

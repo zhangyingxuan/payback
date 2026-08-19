@@ -111,7 +111,12 @@ export class SpecialStockService {
 
       // 如果当日有新股数据，则自动加入自选 2025-04-28 18:19:15、
       if (newStocks && newStocks.length > 0) {
-        this.thsService.batchUpdateThsSelfStock(newStocks, ThsOprate.add, account);
+        try {
+          this.thsService.batchUpdateThsSelfStock(newStocks, ThsOprate.add, account);
+        } catch (error) {
+          // 同步自选股是附加操作，失败不应中断特殊个股数据的抓取和保存。
+          this.logger.error('自动加入新股到自选股失败', error);
+        }
       }
 
       // 如果存在数据
@@ -135,7 +140,7 @@ export class SpecialStockService {
       this.logger.debug('crawlSpecialStockData is success!');
     } catch (e) {
       this.logger.error('出错啦！！！', e);
-      throw new Error(e);
+      throw e instanceof Error ? e : new Error(String(e));
     }
 
     return todayDataFromDB ? todayDataFromDB : specialStockDto;
