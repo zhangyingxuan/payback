@@ -3,7 +3,7 @@
 <!-- 赤橙黄绿青蓝紫 -->
 <!-- 封单大于 1亿的 标红 -->
 <template>
-  <div :class="['table', { isMobile }]">
+  <div :class="['table', { isMobile, 'is-compact': showBidding }]">
     <div class="table__header table-row">
       <div
         class="col1"
@@ -746,5 +746,68 @@ function handleTicaiClick(key: string) {
   flex: 1;
   margin-right: 10px;
   justify-content: flex-end;
+}
+
+@media (max-width: 1540px) {
+  .table.is-compact {
+    font-size: 12px;
+    width: calc(100% - 10px);
+
+    .table-row {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .table-row > .col1 {
+      flex: 0 0 clamp(100px, 10vw, 120px);
+      width: clamp(100px, 10vw, 120px);
+      min-width: 0;
+    }
+
+    .table-row > .col2 {
+      min-width: 0;
+      overflow: visible;
+    }
+
+    :deep(.dailyLimit__row) {
+      display: grid;
+      grid-template-columns:
+        100px 200px minmax(36px, 0.6fr) repeat(2, minmax(44px, 0.7fr))
+        minmax(54px, 0.85fr) minmax(60px, 1fr) minmax(48px, 0.75fr)
+        minmax(36px, 0.6fr) repeat(2, minmax(50px, 0.8fr))
+        minmax(36px, 0.6fr) minmax(54px, 0.9fr) minmax(50px, 0.8fr);
+      align-items: center;
+      width: 100%;
+      min-width: 0;
+    }
+
+    :deep(.dailyLimit__content),
+    :deep(.biddingData__row) {
+      display: contents;
+    }
+
+    :deep(.dailyLimit__row span) {
+      min-width: 0;
+      max-width: 100%;
+      white-space: nowrap;
+    }
+
+    :deep(.dailyLimit__row .large--fixed) {
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    .table__header > .col2,
+    .stocks_header {
+      min-width: 0;
+      flex-wrap: nowrap;
+      white-space: nowrap;
+    }
+
+    .stockFilter__row {
+      width: 100%;
+      white-space: nowrap;
+    }
+  }
 }
 </style>

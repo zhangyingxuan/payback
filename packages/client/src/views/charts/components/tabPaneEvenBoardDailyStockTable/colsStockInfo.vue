@@ -8,8 +8,6 @@
       :code="stock.code"
     />
     <Stock v-else class="large--fixed" :name="stock.name" :code="stock.code" />
-    &nbsp;[&nbsp;
-
     <span class="orange content-large content__gainian">
       <span
         v-show="!isGainianSwitch"
@@ -57,7 +55,6 @@
     <span class="lvse small text-center">
       {{ stock.openTimes }}
     </span>
-    ]&nbsp;&nbsp;
     <span class="red bold middle">{{ getExpectedStr(stock) }}</span>
     <!-- <span v-if="stock.turnoverType" class="red large">
               {{ stock.turnoverType }}

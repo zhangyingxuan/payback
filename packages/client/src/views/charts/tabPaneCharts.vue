@@ -236,7 +236,11 @@ function getChartStyle() {
  */
 async function initlonghuListChart(pageSize: number) {
   // 获取龙虎榜数据
-  const response: any = await fetchLonghuHistoryData();
+  const response: any = await fetchLonghuHistoryData().catch(error => {
+    console.warn('龙虎榜接口暂不可用', error);
+    return null;
+  });
+  if (!response?.items) return;
 
   const { xAxisData, yAxisData, legendData } = transformLonghuListData(
     response.items,

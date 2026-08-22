@@ -1,7 +1,13 @@
 <!-- 集合竞价数据 -->
 <template>
   <div v-if="!isEmpty(stock)" class="biddingData__row">
-    <span class="middle" :class="{ 'red bold': stock.bidIncreaseT >= 7 }">
+    <span
+      class="middle"
+      :class="{
+        'red bold': Number(stock.expected) === 2,
+        green: ![1, 2].includes(Number(stock.expected)),
+      }"
+    >
       {{ stock.bidIncreaseT && (+stock.bidIncreaseT).toFixed(2) }}
       <el-tag
         v-if="isDailyLimit(stock.code, stock.bidIncreaseT)"
@@ -12,10 +18,6 @@
         >1
       </el-tag>
     </span>
-    <span class="middle" :class="{ 'red bold': stock.expected === 2 }">
-      {{ getExpectedStr(stock.expected) }}
-    </span>
-
     <span
       class="middle"
       :class="
@@ -29,7 +31,6 @@
       <!-- （{{ (stock.closeIncrease - stock.bidIncreaseT).toFixed(2) }}） -->
       {{ stock.closeIncrease }}
     </span>
-    [
     <span class="small" :class="calcClassByBidRating(stock.bidRating)"
       >{{ stock.bidRating }}
     </span>
@@ -46,7 +47,6 @@
     <span class="middle" :class="{ 'red bold': stock.bidVolumeRatio >= 10 }">
       {{ stock.bidVolumeRatio }}
     </span>
-    ]
   </div>
 </template>
 <script lang="ts" setup>
@@ -60,15 +60,6 @@ defineProps({
   },
 });
 
-function getExpectedStr(expected: number) {
-  if (expected === 1) {
-    return '符合预期';
-  }
-  if (expected === 2) {
-    return '超预期';
-  }
-  return '不及预期';
-}
 </script>
 
 <style scoped lang="less">
