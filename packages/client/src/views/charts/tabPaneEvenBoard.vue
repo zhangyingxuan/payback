@@ -247,8 +247,8 @@
   </div>
   <!-- 昨日涨停竞价情况 -->
   <DailyStockTable
-    v-model:currentDateData="data.yesterdayDateData"
-    v-model:updateTime="data.currentDateData.biddingDataUpdateTime"
+    :currentDateData="data.yesterdayDateData"
+    :updateTime="data.currentDateData.biddingDataUpdateTime"
     :isMobile="isMobile"
     title="昨日-涨停竞价"
     :showBidding="true"
@@ -256,7 +256,7 @@
   />
   <!-- 当日涨停分布，按行业板块划分 -->
   <DailyStockTable
-    v-model:currentDateData="data.currentDateData"
+    :currentDateData="data.currentDateData"
     :updateTime="dayjs(data.currentDateData.createTime).format('MM/DD HH:mm')"
     :isMobile="isMobile"
     @refreshData="handleRefreshData"

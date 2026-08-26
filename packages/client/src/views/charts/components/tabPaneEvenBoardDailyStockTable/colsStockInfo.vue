@@ -17,7 +17,6 @@
       <span v-show="isGainianSwitch">
         <el-tag
           size="small"
-          type=""
           style="margin: 0 2px 1px 0; padding: 0 2px; height: 14px"
           v-for="(gainian, index) in stock.gainian"
           :key="index"

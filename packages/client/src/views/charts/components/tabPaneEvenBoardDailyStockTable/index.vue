@@ -95,7 +95,7 @@
                   content="价格低于30元，流通市值20-120亿，非ST，非科创，非创业板"
                   placement="top"
                 >
-                  选股{{ data.myStrategyCheckedNum }}
+                  选股{{ stockGroupByPlateByFilter.myStrategyCheckedNum }}
                 </el-tooltip>
               </div>
             </el-checkbox>
@@ -118,7 +118,9 @@
               size="small"
             >
               <el-option
-                v-for="(item, index) in data.evenBoardHeightOptions"
+                v-for="(
+                  item, index
+                ) in stockGroupByPlate.evenBoardHeightOptions"
                 :key="index"
                 :label="item.label"
                 :value="item.value"
@@ -135,21 +137,22 @@
               content="超预期；换手率>=5%，竞价量比大于10（连板及反包除外）"
               placement="top"
             >
-              竞价策略{{ data.biddingStrategyCheckedNum }}
+              竞价策略{{ stockGroupByPlateByFilter.biddingStrategyCheckedNum }}
             </el-tooltip>
             &nbsp;
 
             <el-tooltip
               class="box-item"
               effect="dark"
-              :content="`竞价符合条件个股涨停率，涨停数量/符合条件个数=${data.dailyLimitNum}/${data.biddingStrategyCheckedNum}`"
+              :content="`竞价符合条件个股涨停率，涨停数量/符合条件个数=${stockGroupByPlateByFilter.dailyLimitNum}/${stockGroupByPlateByFilter.biddingStrategyCheckedNum}`"
               placement="top"
             >
               <span class="red bold">
                 {{
-                  (data.dailyLimitNum / data.biddingStrategyCheckedNum).toFixed(
-                    2,
-                  )
+                  (
+                    stockGroupByPlateByFilter.dailyLimitNum /
+                    stockGroupByPlateByFilter.biddingStrategyCheckedNum
+                  ).toFixed(2)
                 }}
               </span>
             </el-tooltip>
@@ -159,13 +162,14 @@
             <el-tooltip
               class="box-item"
               effect="dark"
-              :content="`超预期率，超预期个数/符合条件个数=${data.exceededExpectNum}/${data.biddingStrategyCheckedNum}`"
+              :content="`超预期率，超预期个数/符合条件个数=${stockGroupByPlateByFilter.exceededExpectNum}/${stockGroupByPlateByFilter.biddingStrategyCheckedNum}`"
               placement="top"
             >
               <span class="red bold">
                 &nbsp;{{
                   (
-                    data.exceededExpectNum / data.biddingStrategyCheckedNum
+                    stockGroupByPlateByFilter.exceededExpectNum /
+                    stockGroupByPlateByFilter.biddingStrategyCheckedNum
                   ).toFixed(2)
                 }}
               </span>
@@ -230,14 +234,14 @@
 
     <TabPaneEvenBoardDailyStockTableHeader
       :showBidding="showBidding"
-      :platesLength="stockGroupByPlateByFilter.length"
+      :platesLength="stockGroupByPlateByFilter.plates.length"
       @sortByIncompatibleRateDesc="sortByIncompatibleRateDesc"
     />
 
     <div
       v-show="data.isShowContent"
       class="table-row"
-      v-for="(item, key) in stockGroupByPlateByFilter"
+      v-for="(item, key) in stockGroupByPlateByFilter.plates"
       :key="key"
     >
       <div class="col1">
@@ -271,7 +275,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { isEmpty, debounce, cloneDeep } from 'lodash-es';
+import { isEmpty, debounce } from 'lodash-es';
 import ColsBiddingData from './colsBiddingData.vue';
 import ColsStockInfo from './colsStockInfo.vue';
 import ColsPlateInfo from './colsPlateInfo.vue';
@@ -327,27 +331,18 @@ const filter = reactive({
   firstBoardPlateDragon: false,
 });
 
-interface Option {
-  label: string;
-  value: number;
-}
 const data: {
   notFirstBoardChecked: boolean;
   firstBoardChecked: boolean;
   myStrategyChecked: boolean;
-  myStrategyCheckedNum: number;
   biddingStrategyChecked: boolean;
-  biddingStrategyCheckedNum: number;
-  dailyLimitNum: number;
   exceededExpect: boolean;
-  exceededExpectNum: number;
   conformToExpect: boolean;
   closeDailyLimit: boolean;
   openDailyLimimExclude: boolean;
   isShowContent: boolean;
   sortPlateByIncompatibleRate: boolean;
   evenBoardHeight: number;
-  evenBoardHeightOptions: Array<Option>;
   keyword: string;
   isGainianSwitch: boolean;
   isShowStockFilterRow: boolean;
@@ -358,18 +353,10 @@ const data: {
   firstBoardChecked: false,
   // 我的策略
   myStrategyChecked: false,
-  // 满足策略个股数量
-  myStrategyCheckedNum: 0,
   // 竞价策略
   biddingStrategyChecked: false,
-  // 竞价满足条件个股数
-  biddingStrategyCheckedNum: 0,
-  // 涨停数量
-  dailyLimitNum: 0,
   // 超预期
   exceededExpect: false,
-  // 超预期数量
-  exceededExpectNum: 0,
   // 符合预期
   conformToExpect: false,
   // 收盘涨停
@@ -382,8 +369,6 @@ const data: {
   sortPlateByIncompatibleRate: false,
   // 连板高度，-1代表全部
   evenBoardHeight: -1,
-  // 连板高度可选项
-  evenBoardHeightOptions: [],
   keyword: '',
   // 是否为概念
   isGainianSwitch: true,
@@ -422,18 +407,20 @@ const stockGroupByPlate: any = computed(() => {
   // 空对象直接返回
   if (isEmpty(superData.currentDateData)) {
     // console.log('superData.currentDateData null');
-    return [];
+    return { plates: [], evenBoardHeightOptions: [] };
   }
-  const currentDateData = cloneDeep(superData.currentDateData);
+  const currentDateData = superData.currentDateData;
   const evenBoardHeightOptions = new Set();
 
-  if (!currentDateData.evenBoardData) return [];
+  if (!currentDateData.evenBoardData)
+    return { plates: [], evenBoardHeightOptions: [] };
 
   const stockGroupByPlateTemp: any = {};
   // 按 行业板块 将涨停个股分类
   Object.keys(currentDateData.evenBoardData).forEach((key: string) => {
     Array.isArray(currentDateData.evenBoardData[key]) &&
       currentDateData.evenBoardData[key].forEach((item: DailyLimitStockDto) => {
+        item = { ...item };
         // 按板块划分 涨停数据
         if (!stockGroupByPlateTemp[item.plateLevel2]) {
           stockGroupByPlateTemp[item.plateLevel2] = [];
@@ -465,14 +452,12 @@ const stockGroupByPlate: any = computed(() => {
       });
   });
 
-  // 连板高度 可选项
-  // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-  data.evenBoardHeightOptions = transformAndSortEvenBoardHeightOptions(
-    evenBoardHeightOptions,
-  );
-
-  // 将对象转换为数组 便于排序
-  return transformObj2Arr(stockGroupByPlateTemp, superData.showBidding);
+  return {
+    plates: transformObj2Arr(stockGroupByPlateTemp, superData.showBidding),
+    evenBoardHeightOptions: transformAndSortEvenBoardHeightOptions(
+      evenBoardHeightOptions,
+    ),
+  };
 });
 
 /**
@@ -480,10 +465,21 @@ const stockGroupByPlate: any = computed(() => {
  */
 const stockGroupByPlateByFilter = computed(() => {
   // 空对象直接返回
-  if (isEmpty(stockGroupByPlate.value)) {
-    return [];
+  if (stockGroupByPlate.value.plates.length === 0) {
+    return {
+      plates: [],
+      myStrategyCheckedNum: 0,
+      biddingStrategyCheckedNum: 0,
+      dailyLimitNum: 0,
+      exceededExpectNum: 0,
+    };
   }
-  const stockGroupByPlateCopy: any = cloneDeep(stockGroupByPlate.value);
+  const stockGroupByPlateCopy: any = stockGroupByPlate.value.plates.map(
+    (plateData: any) => ({
+      ...plateData,
+      value: plateData.value.map((item: DailyLimitStockDto) => ({ ...item })),
+    }),
+  );
   let myStrategyCheckedNum = 0;
   let biddingStrategyCheckedNum = 0;
   let dailyLimitNum = 0;
@@ -598,28 +594,14 @@ const stockGroupByPlateByFilter = computed(() => {
     plateData.len = len;
   });
 
-  // 更新 各种数量
-  updateNums(
+  return {
+    plates: sortPlates(stockGroupByPlateCopy),
     myStrategyCheckedNum,
     biddingStrategyCheckedNum,
     dailyLimitNum,
     exceededExpectNum,
-  );
-
-  return sortPlates(stockGroupByPlateCopy);
+  };
 });
-
-function updateNums(
-  myStrategyCheckedNum: number,
-  biddingStrategyCheckedNum: number,
-  dailyLimitNum: number,
-  exceededExpectNum: number,
-) {
-  data.myStrategyCheckedNum = myStrategyCheckedNum;
-  data.biddingStrategyCheckedNum = biddingStrategyCheckedNum;
-  data.dailyLimitNum = dailyLimitNum;
-  data.exceededExpectNum = exceededExpectNum;
-}
 
 /**
  * 点击 首板复选框
