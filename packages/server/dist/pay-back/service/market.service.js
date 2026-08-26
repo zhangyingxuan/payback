@@ -19,22 +19,27 @@ const typeorm_1 = require("typeorm");
 const marketData_entity_1 = require("../entities/marketData.entity");
 const typeorm_2 = require("@nestjs/typeorm");
 const marketUtil_1 = require("../utils/marketUtil");
-const dayjs = require("dayjs");
+const tradeDateUtil_1 = require("../utils/tradeDateUtil");
+const users_service_1 = require("../../users/users.service");
+const thsUtils_1 = require("../utils/thsUtils");
 let MarketService = MarketService_1 = class MarketService {
-    constructor(marketDataRp) {
+    constructor(marketDataRp, usersService) {
         this.marketDataRp = marketDataRp;
+        this.usersService = usersService;
         this.logger = new common_1.Logger(MarketService_1.name);
     }
-    async crawlMarketData() {
+    async crawlMarketData(account = 'admin') {
         this.logger.debug('crawlMarketData is Begining!');
-        const todayDateStr = new Date().toLocaleDateString();
+        const todayDateStr = (0, tradeDateUtil_1.toTradeDate)();
         let marketData;
         try {
-            marketData = await marketUtil_1.default.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
+            marketData = await marketUtil_1.default.getMarketData((0, tradeDateUtil_1.toIwencaiDate)(todayDateStr), (0, thsUtils_1.getIwencaiCookie)(await this.usersService.getUserByAccount(account)));
+            marketData.tradeDate = todayDateStr;
             const todayDataFromDB = await this.marketDataRp
                 .createQueryBuilder('market_data')
-                .where('market_data.createTime like :createTime', {
-                createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%',
+                .where('market_data.tradeDate = :tradeDate', { tradeDate: todayDateStr })
+                .orWhere('market_data.tradeDate IS NULL AND DATE(market_data.createTime) = :tradeDate', {
+                tradeDate: todayDateStr,
             })
                 .getOne();
             if (todayDataFromDB) {
@@ -49,7 +54,7 @@ let MarketService = MarketService_1 = class MarketService {
         }
         catch (e) {
             this.logger.error('出错啦！！！', e);
-            throw new Error(e);
+            throw e;
         }
         return marketData;
     }
@@ -62,6 +67,7 @@ let MarketService = MarketService_1 = class MarketService {
             .offset(0)
             .limit(len)
             .select([
+            'market_data.tradeDate',
             'market_data.createTime',
             'market_data.marketScore',
             'market_data.riseAmount',
@@ -103,7 +109,8 @@ let MarketService = MarketService_1 = class MarketService {
 MarketService = MarketService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_2.InjectRepository)(marketData_entity_1.marketData)),
-    __metadata("design:paramtypes", [typeorm_1.Repository])
+    __metadata("design:paramtypes", [typeorm_1.Repository,
+        users_service_1.UsersService])
 ], MarketService);
 exports.MarketService = MarketService;
 //# sourceMappingURL=market.service.js.map

@@ -1,4 +1,19 @@
 <template>
+  <div class="data-health" v-if="data.health.sources.length">
+    <span>数据日期 {{ data.health.expectedDate }}</span>
+    <el-tag
+      v-for="source in data.health.sources"
+      :key="source.name"
+      :type="getHealthType(source.status)"
+      size="small"
+      :title="source.updatedTime || ''"
+    >
+      {{ source.name }}：{{ getHealthText(source.status) }}
+      <template v-if="source.count !== undefined"
+        >({{ source.count }})</template
+      >
+    </el-tag>
+  </div>
   <!-- 10日连板梯队 -->
   <!-- 行数取决于 时间范围内 最高连板 -->
   <!-- 列数取决于 日期数量 -->
@@ -55,7 +70,7 @@
         { isMonday: judgeMonday(item.createTime) },
       ]"
       v-for="(item, index) in evenBoard.value"
-      :key="'evenBoard' + index"
+      :key="item.createDate"
     >
       <!-- 日期列 -->
       <div
@@ -144,10 +159,7 @@
           >
             <span>{{ item.evenBoardData.gaobiao.length }}</span>
           </div>
-          <span
-            v-for="(stock, gbIndex) in item.evenBoardData.gaobiao"
-            :key="'stock' + gbIndex"
-          >
+          <span v-for="stock in item.evenBoardData.gaobiao" :key="stock.code">
             <Stock
               :showTooltip="true"
               :toolTipContent="stock.reason"
@@ -188,8 +200,8 @@
               }}
             </span>
             <Stock
-              v-for="(stock, evenIndex) in item.evenBoardData[height]"
-              :key="'stock' + evenIndex"
+              v-for="stock in item.evenBoardData[height]"
+              :key="stock.code"
               :showTooltip="true"
               :toolTipContent="stock.reason"
               :showOp="data.showOp"
@@ -205,10 +217,7 @@
         </template>
         <!-- 跌停数据 -->
         <div class="table-col">
-          <span
-            v-for="(stock, dtIndex) in item.downLimitData"
-            :key="'downLimitStock' + dtIndex"
-          >
+          <span v-for="stock in item.downLimitData" :key="stock.code">
             <Stock
               :showTooltip="true"
               :toolTipContent="stock.reason"
@@ -284,6 +293,7 @@
 <script lang="ts" setup>
 import {
   fetchEvenBoardData,
+  fetchDataHealth,
   crawlBinddingData,
   crawlSpecialStockData,
   crawlTodayData,
@@ -291,7 +301,7 @@ import {
 import { judgeMonday } from './utils';
 import { ElMessage } from 'element-plus';
 import { transformEvenBoardData } from './utils/transformUtil';
-import { reactive, watch, computed } from 'vue';
+import { reactive, watch, computed, markRaw } from 'vue';
 import { useSidebarStore } from '@/store/sidebar';
 import { storeToRefs } from 'pinia';
 import { isMobile } from '@/core/util';
@@ -319,6 +329,7 @@ const data: {
   showOp: boolean;
   virtualRef: any;
   virtualRefData: any;
+  health: { expectedDate: string; sources: any[] };
 } = reactive({
   isShowContent: true,
   showOp: false,
@@ -370,6 +381,7 @@ const data: {
   ],
   virtualRef: null,
   virtualRefData: null,
+  health: { expectedDate: '', sources: [] },
 });
 
 const sideBar = useSidebarStore();
@@ -410,15 +422,31 @@ function getType(cycle: string) {
 }
 
 async function initPage(pageSize: number) {
-  // 获取图表数据
-  const result: any = await fetchEvenBoardData({
-    // limit: 10,
-    limit: pageSize,
-    isMobile,
-  });
-  evenBoard.value = transformEvenBoardData(result);
+  const [result, health]: any[] = await Promise.all([
+    fetchEvenBoardData({ limit: pageSize, isMobile }),
+    fetchDataHealth(),
+  ]);
+  evenBoard.value = markRaw(transformEvenBoardData(result));
+  data.health = health;
   // 将当日涨停个股，按连板高度、行业 做成表格
   handleDateClick(evenBoard.value[0]);
+}
+
+function getHealthType(status: string) {
+  return status === 'fresh'
+    ? 'success'
+    : status === 'empty'
+    ? 'info'
+    : status === 'stale'
+    ? 'warning'
+    : 'danger';
+}
+
+function getHealthText(status: string) {
+  return (
+    { fresh: '正常', empty: '空', stale: '过期', missing: '缺失' }[status] ||
+    status
+  );
 }
 
 function initAutoRefresh(val: boolean) {
@@ -460,6 +488,9 @@ async function handleRefreshData(
     ElMessage.success('更新失败！');
   } finally {
     loadingMessage.close();
+    fetchDataHealth()
+      .then((health: any) => (data.health = health))
+      .catch(() => undefined);
   }
 }
 
@@ -479,15 +510,12 @@ async function refreshBinddingData(isRemoveIncompatible = 0) {
     res.biddingDataUpdateTime,
   ).format('MM/DD HH:mm');
 
-  crawlSpecialStockData({}).then((specialStockData: any) => {
-    // 调用另外一个接口 2024-05-10
-    // 更新新股 和 强势股 2024-01-07
-    data.currentDateData.newStock = JSON.parse(specialStockData.newStock);
-    data.currentDateData.chooseStock = JSON.parse(specialStockData.chooseStock);
-    data.currentDateData.specialDataUpdateTime = dayjs(
-      specialStockData.updatedTime,
-    ).format('MM/DD HH:mm');
-  });
+  const specialStockData: any = await crawlSpecialStockData({});
+  data.currentDateData.newStock = JSON.parse(specialStockData.newStock);
+  data.currentDateData.chooseStock = JSON.parse(specialStockData.chooseStock);
+  data.currentDateData.specialDataUpdateTime = dayjs(
+    specialStockData.updatedTime,
+  ).format('MM/DD HH:mm');
 }
 /**
  * 刷新短线数据
@@ -615,6 +643,15 @@ defineExpose({
 
 <style scoped lang="less">
 @tableColumsBorderColor: #dcdcdc;
+.data-health {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  overflow-x: auto;
+  white-space: nowrap;
+  font-size: 12px;
+}
 .tableColumsBorder {
   border-right: 1px solid @tableColumsBorderColor;
   border-bottom: 1px solid @tableColumsBorderColor;

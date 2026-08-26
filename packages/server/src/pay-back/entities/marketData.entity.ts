@@ -1,10 +1,14 @@
 // https://xueqiu.com/hq 雪球可以拿到市场点数
-import { PrimaryGeneratedColumn, Column, Entity, Timestamp, Decimal128 } from 'typeorm';
+import { PrimaryGeneratedColumn, Column, Entity, Timestamp, Decimal128, Index } from 'typeorm';
 
 @Entity()
+@Index('IDX_market_trade_date', ['tradeDate'], { unique: true })
 export class marketData {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({ type: 'date', nullable: true, comment: '交易日期' })
+  tradeDate: string;
 
   @Column({ comment: '大盘评级', type: 'float', default: 0 })
   marketScore: number;

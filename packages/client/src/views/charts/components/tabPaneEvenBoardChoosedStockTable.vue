@@ -65,11 +65,7 @@
 
     <!-- 内容区域 -->
     <div v-show="data.isShowContent" class="table__content">
-      <div
-        class="table-row"
-        v-for="(item, key) in stockGroupByPlate"
-        :key="key"
-      >
+      <div class="table-row" v-for="item in stockGroupByPlate" :key="item.key">
         <div class="col1">
           <div>
             <Plate class="zise" :name="item.key" />
@@ -80,7 +76,7 @@
           </div>
         </div>
         <div :class="`col2 ${isMobile ? 'isMobile' : ''}`">
-          <div v-for="(stock, index) in item.value" :key="'stock' + index">
+          <div v-for="stock in item.value" :key="stock.code">
             <Stock
               class="stock__span large"
               :name="stock.name"

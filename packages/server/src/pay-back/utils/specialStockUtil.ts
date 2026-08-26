@@ -5,20 +5,20 @@ import { fetchAllStocksByIwencai } from '../core/fetchUtil';
 /**
  * 获取昨日涨停 今日竞价数据
  */
-export async function fetchLastdayDailyLimitBinddingData(todayDateStr, yesterdayDateStr) {
-  const dailyLimitYesterdayDataRs: any = await fetchAllStocksByIwencai(params.dailyLimitYesterday);
+export async function fetchLastdayDailyLimitBinddingData(todayDateStr, yesterdayDateStr, cookie: string) {
+  const dailyLimitYesterdayDataRs: any = await fetchAllStocksByIwencai(params.dailyLimitYesterday, null, cookie);
   const dailyLimitYesterdayBidding = transformBidData(dailyLimitYesterdayDataRs.data, todayDateStr, yesterdayDateStr);
   return dailyLimitYesterdayBidding;
 }
 
-export async function fetchSpecialStockBinddingData(todayDateStr, yesterdayDateStr) {
+export async function fetchSpecialStockBinddingData(todayDateStr, yesterdayDateStr, cookie: string) {
   // 竞价看多数据 1进2
   // const chooseStock1to2: any = await fetchAllStocksByIwencai(params.chooseStock1to2, chooseStock1Expected, false);
   // console.log(params.chooseStock1Expected);
   // 竞价看多数据 首板预期
-  const chooseStock1ExpectedPromise: any = fetchAllStocksByIwencai(params.chooseStock1Expected);
+  const chooseStock1ExpectedPromise: any = fetchAllStocksByIwencai(params.chooseStock1Expected, null, cookie);
   // 新股数据
-  const newStocksPromise: any = fetchAllStocksByIwencai(params.chooseStockNewStock);
+  const newStocksPromise: any = fetchAllStocksByIwencai(params.chooseStockNewStock, null, cookie);
 
   const [chooseStock1ExpectedRs, newStocksRs] = await Promise.all([chooseStock1ExpectedPromise, newStocksPromise]);
 

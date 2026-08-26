@@ -18,6 +18,10 @@ __decorate([
     __metadata("design:type", Number)
 ], fundsData.prototype, "id", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ type: 'date', nullable: true, comment: '交易日期' }),
+    __metadata("design:type", String)
+], fundsData.prototype, "tradeDate", void 0);
+__decorate([
     (0, typeorm_1.Column)({ comment: '北向资金（聪明资金）净流入', type: 'float', default: 0 }),
     __metadata("design:type", Number)
 ], fundsData.prototype, "northFundsAmtIn", void 0);
@@ -50,7 +54,8 @@ __decorate([
     __metadata("design:type", typeorm_1.Timestamp)
 ], fundsData.prototype, "createTime", void 0);
 fundsData = __decorate([
-    (0, typeorm_1.Entity)()
+    (0, typeorm_1.Entity)(),
+    (0, typeorm_1.Index)('IDX_funds_trade_date', ['tradeDate'], { unique: true })
 ], fundsData);
 exports.fundsData = fundsData;
 //# sourceMappingURL=fundsData.entity.js.map

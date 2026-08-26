@@ -160,7 +160,7 @@ let ThsService = ThsService_1 = class ThsService {
         const user = userInfo.user;
         let msg = '';
         try {
-            const plateInfo = await (0, fetchUtil_1.fetchIwencai)(plateNameCn, 1, true);
+            const plateInfo = await (0, fetchUtil_1.fetchIwencai)(plateNameCn, 1, true, `user=${user}; ticket=${ticket}; userid=${userid}`);
             const code = ((_e = (_d = (_c = (_b = (_a = plateInfo === null || plateInfo === void 0 ? void 0 : plateInfo.data.answer[0]) === null || _a === void 0 ? void 0 : _a.txt[0]) === null || _b === void 0 ? void 0 : _b.content) === null || _c === void 0 ? void 0 : _c.page) === null || _d === void 0 ? void 0 : _d.more) === null || _e === void 0 ? void 0 : _e.codes[0]) || '';
             const result = await (0, fetchUtil_1.modifyThsSelfRequest)(code, userid, ticket, user, type, true);
             msg = (0, thsUtils_1.dealPlateResult)(result, type, this.usersService, account);

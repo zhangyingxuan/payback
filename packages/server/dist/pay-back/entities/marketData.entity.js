@@ -18,6 +18,10 @@ __decorate([
     __metadata("design:type", Number)
 ], marketData.prototype, "id", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ type: 'date', nullable: true, comment: '交易日期' }),
+    __metadata("design:type", String)
+], marketData.prototype, "tradeDate", void 0);
+__decorate([
     (0, typeorm_1.Column)({ comment: '大盘评级', type: 'float', default: 0 }),
     __metadata("design:type", Number)
 ], marketData.prototype, "marketScore", void 0);
@@ -86,7 +90,8 @@ __decorate([
     __metadata("design:type", typeorm_1.Timestamp)
 ], marketData.prototype, "createTime", void 0);
 marketData = __decorate([
-    (0, typeorm_1.Entity)()
+    (0, typeorm_1.Entity)(),
+    (0, typeorm_1.Index)('IDX_market_trade_date', ['tradeDate'], { unique: true })
 ], marketData);
 exports.marketData = marketData;
 //# sourceMappingURL=marketData.entity.js.map

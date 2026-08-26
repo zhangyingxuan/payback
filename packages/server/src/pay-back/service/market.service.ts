@@ -3,12 +3,17 @@ import { Repository } from 'typeorm';
 import { marketData } from '../entities/marketData.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import marketUtil from '../utils/marketUtil';
-import * as dayjs from 'dayjs';
 import { CreateMarketDataDto } from '../dto/create-market-data.dto';
+import { toIwencaiDate, toTradeDate } from '../utils/tradeDateUtil';
+import { UsersService } from '@/users/users.service';
+import { getIwencaiCookie } from '../utils/thsUtils';
 
 @Injectable()
 export class MarketService {
-  constructor(@InjectRepository(marketData) private readonly marketDataRp: Repository<marketData>) { }
+  constructor(
+    @InjectRepository(marketData) private readonly marketDataRp: Repository<marketData>,
+    private readonly usersService: UsersService,
+  ) {}
 
   private readonly logger = new Logger(MarketService.name);
 
@@ -23,19 +28,24 @@ export class MarketService {
   //   this.crawlMarketData();
   // }
 
-  async crawlMarketData() {
+  async crawlMarketData(account = 'admin') {
     this.logger.debug('crawlMarketData is Begining!');
-    const todayDateStr = new Date().toLocaleDateString();
+    const todayDateStr = toTradeDate();
 
     let marketData: CreateMarketDataDto;
     try {
-      marketData = await marketUtil.getMarketData(dayjs(todayDateStr).format('YYYYMMDD'));
+      marketData = await marketUtil.getMarketData(
+        toIwencaiDate(todayDateStr),
+        getIwencaiCookie(await this.usersService.getUserByAccount(account)),
+      );
+      marketData.tradeDate = todayDateStr;
 
       // 如果存在数据，则返回已有该数据
       const todayDataFromDB = await this.marketDataRp
         .createQueryBuilder('market_data')
-        .where('market_data.createTime like :createTime', {
-          createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%',
+        .where('market_data.tradeDate = :tradeDate', { tradeDate: todayDateStr })
+        .orWhere('market_data.tradeDate IS NULL AND DATE(market_data.createTime) = :tradeDate', {
+          tradeDate: todayDateStr,
         })
         .getOne();
       if (todayDataFromDB) {
@@ -49,7 +59,7 @@ export class MarketService {
       this.logger.debug('crawlMarketData is success!');
     } catch (e) {
       this.logger.error('出错啦！！！', e);
-      throw new Error(e);
+      throw e;
     }
 
     return marketData;
@@ -64,6 +74,7 @@ export class MarketService {
       .offset(0)
       .limit(len)
       .select([
+        'market_data.tradeDate',
         'market_data.createTime',
         'market_data.marketScore',
         'market_data.riseAmount',

@@ -3,12 +3,17 @@ import { Repository } from 'typeorm';
 import { plateData } from '../entities/plateData.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import plateUtil from '../utils/plateUtil';
-import * as dayjs from 'dayjs';
 import { CreatePlateDataDto } from '../dto/create-plate-data.dto';
+import { toIwencaiDate, toTradeDate } from '../utils/tradeDateUtil';
+import { UsersService } from '@/users/users.service';
+import { getIwencaiCookie } from '../utils/thsUtils';
 
 @Injectable()
 export class PlateService {
-  constructor(@InjectRepository(plateData) private readonly plateDataRp: Repository<plateData>) { }
+  constructor(
+    @InjectRepository(plateData) private readonly plateDataRp: Repository<plateData>,
+    private readonly usersService: UsersService,
+  ) {}
 
   private readonly logger = new Logger(PlateService.name);
 
@@ -23,19 +28,26 @@ export class PlateService {
   //   this.crawlPlateData();
   // }
 
-  async crawlPlateData() {
+  async crawlPlateData(account = 'admin') {
     this.logger.debug('crawlPlateData is Begining!');
-    const todayDateStr = new Date().toLocaleDateString();
+    const todayDateStr = toTradeDate();
 
     let plateData: CreatePlateDataDto;
     try {
-      plateData = await plateUtil.getPlateData(dayjs(todayDateStr).format('YYYYMMDD'));
+      plateData = await plateUtil.getPlateData(
+        toIwencaiDate(todayDateStr),
+        getIwencaiCookie(await this.usersService.getUserByAccount(account)),
+      );
+      plateData.tradeDate = todayDateStr;
       // console.log(plateData);
 
       // 如果存在数据，则返回已有该数据
       const todayDataFromDB = await this.plateDataRp
         .createQueryBuilder('plate_data')
-        .where('plate_data.createTime like :createTime', { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
+        .where('plate_data.tradeDate = :tradeDate', { tradeDate: todayDateStr })
+        .orWhere('plate_data.tradeDate IS NULL AND DATE(plate_data.createTime) = :tradeDate', {
+          tradeDate: todayDateStr,
+        })
         .getOne();
       if (todayDataFromDB) {
         this.logger.log('crawlPlateData 更新数据');
@@ -50,7 +62,7 @@ export class PlateService {
       this.logger.debug('crawlPlateData is success!');
     } catch (e) {
       this.logger.error('出错啦！！！', e);
-      throw new Error(e);
+      throw e;
     }
 
     return plateData;
@@ -65,6 +77,7 @@ export class PlateService {
       .offset(0)
       .limit(len)
       .select([
+        'plate_data.tradeDate',
         'plate_data.createTime',
         'plate_data.gainianDailyLimitData',
         'plate_data.gainianDailyLimitNum',

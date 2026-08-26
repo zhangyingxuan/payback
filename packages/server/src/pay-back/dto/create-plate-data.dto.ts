@@ -1,4 +1,5 @@
 export class CreatePlateDataDto {
+  tradeDate: string;
   // 涨停家数最多的概念板块
   gainianDailyLimitData: string;
   // 涨停家数最多的概念板块

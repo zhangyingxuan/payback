@@ -41,20 +41,22 @@ async function fetchDailyLimitGroupByGainian(todayDateStr) {
  * 通过接口方式获取短线数据
  * @returns
  */
-export async function getShortTermData(todayDateStr, lastTradingDayData): Promise<CreatePayBackDto> {
+export async function getShortTermData(todayDateStr, lastTradingDayData, cookie = ''): Promise<CreatePayBackDto> {
   // const start = performance.now();
   // console.time();
   // 当前时间是9.30之前，则使用 binddingDailyLimitMoreThan1 否则使用 dailyLimitMoreThan1
   // 准备涨停数据
   const dailyLimit: any = fetchAllStocksByIwencai(
     isBefore930() ? '今日涨停；非st；非退市；行业' : params.dailyLimitMoreThan1,
+    null,
+    cookie,
   );
   // 跌停数据
-  const downLimit: any = fetchAllStocksByIwencai(params.downLimit, downLimitNum);
+  const downLimit: any = fetchAllStocksByIwencai(params.downLimit, downLimitNum, cookie);
   // 涨停打开个股
-  const dailyLimitOpen: any = fetchAllStocksByIwencai(params.dailyLimitOpen);
+  const dailyLimitOpen: any = fetchAllStocksByIwencai(params.dailyLimitOpen, null, cookie);
   // 跌幅大于等于15的个股
-  const hugeFall: any = fetchAllStocksByIwencai(params.hugeFall, otherNum);
+  const hugeFall: any = fetchAllStocksByIwencai(params.hugeFall, otherNum, cookie);
   // 获取涨停个股 按题材分类
   const dailyLimitGroupByGainain = fetchDailyLimitGroupByGainian(todayDateStr);
   // const end = performance.now();
@@ -76,20 +78,22 @@ export async function getShortTermData(todayDateStr, lastTradingDayData): Promis
   );
 }
 
-export async function getShortTermDataByDate(todayDateStr, lastTradingDayData): Promise<CreatePayBackDto> {
+export async function getShortTermDataByDate(todayDateStr, lastTradingDayData, cookie = ''): Promise<CreatePayBackDto> {
   // 准备涨停数据
   const dailyLimit: any = fetchAllStocksByIwencai(
     (isBefore930() ? params.binddingDailyLimitMoreThan1ByDate : params.dailyLimitMoreThan1ByDate).replace(
       '${date}',
       todayDateStr,
     ),
+    null,
+    cookie,
   );
   // 跌停数据
-  const downLimit: any = fetchAllStocksByIwencai(params.downLimitByDate.replace('${date}', todayDateStr), downLimitNum);
+  const downLimit: any = fetchAllStocksByIwencai(params.downLimitByDate.replace('${date}', todayDateStr), downLimitNum, cookie);
   // 涨停打开个股
-  const dailyLimitOpen: any = fetchAllStocksByIwencai(params.dailyLimitOpenByDate.replace('${date}', todayDateStr));
+  const dailyLimitOpen: any = fetchAllStocksByIwencai(params.dailyLimitOpenByDate.replace('${date}', todayDateStr), null, cookie);
   // 跌幅大于等于15的个股
-  const hugeFall: any = fetchAllStocksByIwencai(params.hugeFallByDate.replace('${date}', todayDateStr), otherNum);
+  const hugeFall: any = fetchAllStocksByIwencai(params.hugeFallByDate.replace('${date}', todayDateStr), otherNum, cookie);
 
   // 获取涨停个股 按题材分类
   const dailyLimitGroupByGainain = fetchDailyLimitGroupByGainian(todayDateStr);
@@ -209,7 +213,7 @@ export function mergeExtra2ShortTermData(shortTermData: Array<any>, specialStock
  */
 function findBiddingDataByCreateTime(biddingDatas, createDate) {
   return biddingDatas.find(item => {
-    return dayjs(item.createTime).format(iWencaiDateFormat) === createDate;
+    return dayjs(item.tradeDate || item.createTime).format(iWencaiDateFormat) === createDate;
   });
 }
 

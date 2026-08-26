@@ -1,4 +1,5 @@
 export class CreateFundsDataDto {
+  tradeDate: string;
   northFundsAmtIn: number;
 
   northFundsBuyAmt: number;

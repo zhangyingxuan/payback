@@ -6,6 +6,7 @@ const node_fetch_1 = require("node-fetch");
 const commonUtil_1 = require("../utils/commonUtil");
 const qs_1 = require("qs");
 const abortFetch_1 = require("../../utils/abortFetch");
+const common_1 = require("@nestjs/common");
 const maxPageSize = 100;
 const iwencaiRequestInterval = 1200;
 const iwencaiMaxAttempts = 6;
@@ -28,15 +29,23 @@ async function fetchIwencaiJson(resource, options, isValidResponse) {
         for (let attempt = 1; attempt <= iwencaiMaxAttempts; attempt++) {
             try {
                 const response = await (0, abortFetch_1.createFetch)()(resource, options);
+                if (response.status === 401 || response.status === 403) {
+                    throw new common_1.InternalServerErrorException('爱问财登录已失效，请重新登录');
+                }
                 const data = await response.json();
                 if (response.ok && isValidResponse(data)) {
                     return data;
                 }
                 const status = (_a = data === null || data === void 0 ? void 0 : data.status_code) !== null && _a !== void 0 ? _a : response.status;
                 const message = (data === null || data === void 0 ? void 0 : data.status_msg) || (data === null || data === void 0 ? void 0 : data.message) || response.statusText || '响应结构异常';
+                if (status === -1935 || /未登[录陆]|登录.*失效/.test(message)) {
+                    throw new common_1.InternalServerErrorException('爱问财登录已失效，请重新登录');
+                }
                 lastError = new Error(`爱问财接口请求失败(${status}): ${message}`);
             }
             catch (error) {
+                if (error instanceof common_1.InternalServerErrorException)
+                    throw error;
                 lastError = error instanceof Error ? error : new Error(String(error));
             }
             if (attempt < iwencaiMaxAttempts) {
@@ -46,20 +55,20 @@ async function fetchIwencaiJson(resource, options, isValidResponse) {
         throw lastError;
     });
 }
-async function fetchIwencaiApi(question, pageSize = 5) {
-    const result = await fetchIwencai(question, pageSize, true);
+async function fetchIwencaiApi(question, pageSize = 5, cookie = '') {
+    const result = await fetchIwencai(question, pageSize, true, cookie);
     return (0, commonUtil_1.getIwencaiData)(result);
 }
 exports.fetchIwencaiApi = fetchIwencaiApi;
-async function fetchAllStocksByIwencai(question, limit = null) {
+async function fetchAllStocksByIwencai(question, limit = null, cookie = '') {
     let pageNum = 1;
     const maxRequestTimes = 20;
     let data;
-    let result = await fetchIwencai(question, limit ? limit : maxPageSize, false);
+    let result = await fetchIwencai(question, limit ? limit : maxPageSize, false, cookie);
     const iwencaiStockResult = (0, commonUtil_1.getStocksDataByIwencai)(result);
     if (iwencaiStockResult.length > iwencaiStockResult.data.length && !limit) {
         while (true) {
-            result = await fetchStockPagingDataList(question, maxPageSize, ++pageNum, iwencaiStockResult.condition, iwencaiStockResult.compId, iwencaiStockResult.uuid);
+            result = await fetchStockPagingDataList(question, maxPageSize, ++pageNum, iwencaiStockResult.condition, iwencaiStockResult.compId, iwencaiStockResult.uuid, cookie);
             data = (0, commonUtil_1.getStocksPagingDataByIwencai)(result);
             iwencaiStockResult.data.push(...data);
             if (data.length === 0 ||
@@ -73,7 +82,7 @@ async function fetchAllStocksByIwencai(question, limit = null) {
     return iwencaiStockResult;
 }
 exports.fetchAllStocksByIwencai = fetchAllStocksByIwencai;
-async function fetchIwencai(question, pageSize = 5, isPlate = false) {
+async function fetchIwencai(question, pageSize = 5, isPlate = false, cookie = '') {
     const body = {
         source: 'Ths_iwencai_Xuangu',
         version: '2.0',
@@ -84,7 +93,7 @@ async function fetchIwencai(question, pageSize = 5, isPlate = false) {
         add_info: '{"urp":{"scene":1,"company":1,"business":1},"contentType":"json","searchInfo":true}',
     };
     return fetchIwencaiJson('https://www.iwencai.com/customized/chart/get-robot-data', {
-        headers: Object.assign(Object.assign({}, iwencaiBrowserHeaders), { accept: 'application/json, text/plain, */*', 'accept-language': 'zh-CN,zh;q=0.9', 'cache-control': 'no-cache', 'content-type': 'application/json', 'hexin-v': (0, pay_back_core_1.createV)(), pragma: 'no-cache' }),
+        headers: Object.assign(Object.assign(Object.assign({}, iwencaiBrowserHeaders), { accept: 'application/json, text/plain, */*', 'accept-language': 'zh-CN,zh;q=0.9', 'cache-control': 'no-cache', 'content-type': 'application/json', 'hexin-v': (0, pay_back_core_1.createV)(), pragma: 'no-cache' }), (cookie && { cookie })),
         body: JSON.stringify(body),
         referrerPolicy: 'strict-origin-when-cross-origin',
         method: 'POST',
@@ -93,7 +102,7 @@ async function fetchIwencai(question, pageSize = 5, isPlate = false) {
     }, data => { var _a; return (data === null || data === void 0 ? void 0 : data.status_code) === 0 && Array.isArray((_a = data === null || data === void 0 ? void 0 : data.data) === null || _a === void 0 ? void 0 : _a.answer); });
 }
 exports.fetchIwencai = fetchIwencai;
-async function fetchStockPagingDataList(question, pageSize = 5, pageNum = 1, condition, compId, uuid) {
+async function fetchStockPagingDataList(question, pageSize = 5, pageNum = 1, condition, compId, uuid, cookie = '') {
     const body = {
         urp_sort_way: 'desc',
         query: question,
@@ -106,7 +115,7 @@ async function fetchStockPagingDataList(question, pageSize = 5, pageNum = 1, con
         condition,
     };
     return fetchIwencaiJson('https://www.iwencai.com/gateway/urp/v7/landing/getDataList', {
-        headers: Object.assign(Object.assign({}, iwencaiBrowserHeaders), { accept: 'application/json, text/plain, */*', 'accept-language': 'zh-CN,zh;q=0.9', 'cache-control': 'no-cache', 'content-type': 'application/x-www-form-urlencoded', 'hexin-v': (0, pay_back_core_1.createV)(), pragma: 'no-cache' }),
+        headers: Object.assign(Object.assign(Object.assign({}, iwencaiBrowserHeaders), { accept: 'application/json, text/plain, */*', 'accept-language': 'zh-CN,zh;q=0.9', 'cache-control': 'no-cache', 'content-type': 'application/x-www-form-urlencoded', 'hexin-v': (0, pay_back_core_1.createV)(), pragma: 'no-cache' }), (cookie && { cookie })),
         body: (0, qs_1.stringify)(body),
         referrerPolicy: 'strict-origin-when-cross-origin',
         method: 'POST',

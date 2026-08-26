@@ -9,13 +9,17 @@ import * as dayjs from 'dayjs';
 import { iWencaiDateFormat } from 'pay-back-core';
 import { ThsService } from './ths.service';
 import { ThsOprate } from '../core/fetchUtil';
+import { toTradeDate } from '../utils/tradeDateUtil';
+import { UsersService } from '@/users/users.service';
+import { getIwencaiCookie } from '../utils/thsUtils';
 
 @Injectable()
 export class SpecialStockService {
   constructor(
     @InjectRepository(specialStock) private readonly specialStockRp: Repository<specialStock>,
     private readonly thsService: ThsService,
-  ) { }
+    private readonly usersService: UsersService,
+  ) {}
 
   private readonly logger = new Logger(SpecialStockService.name);
 
@@ -36,7 +40,7 @@ export class SpecialStockService {
   async crawlBinddingData(isRemoveIncompatible = 0, account) {
     this.logger.debug('crawlBinddingData is Begining!');
 
-    const todayDateStr = new Date().toLocaleDateString();
+    const todayDateStr = toTradeDate();
     let todayDataFromDB: any = null;
     const specialStockDto: SpecialStockDto = {
       biddingData: '',
@@ -49,13 +53,15 @@ export class SpecialStockService {
       createTime: new Date(),
       // 更新时间
       updatedTime: new Date(),
+      tradeDate: todayDateStr,
     };
     try {
       // 获取最新的交易日期
       const yesterdayDateStr = await this.getLastTradingDayByDB(todayDateStr);
 
       // 获取竞价情况
-      const dailyLimitYesterdayBidding = await fetchLastdayDailyLimitBinddingData(todayDateStr, yesterdayDateStr);
+      const cookie = getIwencaiCookie(await this.usersService.getUserByAccount(account));
+      const dailyLimitYesterdayBidding = await fetchLastdayDailyLimitBinddingData(todayDateStr, yesterdayDateStr, cookie);
       // 处理不及预期个股
       isRemoveIncompatible && this.dealIncompatibleExpectStocks(dailyLimitYesterdayBidding, account);
 
@@ -76,7 +82,7 @@ export class SpecialStockService {
       this.logger.debug('crawlBinddingData is success!');
     } catch (e) {
       this.logger.error('出错啦！！！', e);
-      throw new Error(e);
+      throw e;
     }
 
     return todayDataFromDB ? todayDataFromDB : specialStockDto;
@@ -89,7 +95,7 @@ export class SpecialStockService {
     this.logger.debug('crawlSpecialStockData is Begining!');
 
     let todayDataFromDB: any = null;
-    const todayDateStr = new Date().toLocaleDateString();
+    const todayDateStr = toTradeDate();
     const specialStockDto: SpecialStockDto = {
       biddingData: '',
       newStock: '',
@@ -101,13 +107,15 @@ export class SpecialStockService {
       createTime: new Date(),
       // 更新时间
       updatedTime: new Date(),
+      tradeDate: todayDateStr,
     };
     try {
       // 获取最新的交易日期
       const yesterdayDateStr = await this.getLastTradingDayByDB(todayDateStr);
 
       // 获取竞价情况
-      const { newStocks, chooseStock1Expected } = await fetchSpecialStockBinddingData(todayDateStr, yesterdayDateStr);
+      const cookie = getIwencaiCookie(await this.usersService.getUserByAccount(account));
+      const { newStocks, chooseStock1Expected } = await fetchSpecialStockBinddingData(todayDateStr, yesterdayDateStr, cookie);
 
       // 如果当日有新股数据，则自动加入自选 2025-04-28 18:19:15、
       if (newStocks && newStocks.length > 0) {
@@ -174,8 +182,9 @@ export class SpecialStockService {
   getTodayData(todayDateStr: string) {
     return this.specialStockRp
       .createQueryBuilder('special_stock')
-      .where('special_stock.createTime like :createTime', {
-        createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%',
+      .where('special_stock.tradeDate = :tradeDate', { tradeDate: toTradeDate(todayDateStr) })
+      .orWhere('special_stock.tradeDate IS NULL AND DATE(special_stock.createTime) = :tradeDate', {
+        tradeDate: toTradeDate(todayDateStr),
       })
       .getOne();
   }
@@ -205,7 +214,6 @@ export class SpecialStockService {
       .select(['special_stock.createTime'])
       .orderBy('createTime', 'DESC')
       .getMany();
-
 
     const currentDate = dayjs(todayDateStr).format(iWencaiDateFormat);
     let lastTradingDay = dayjs(dateArr[0]?.createTime).format(iWencaiDateFormat);

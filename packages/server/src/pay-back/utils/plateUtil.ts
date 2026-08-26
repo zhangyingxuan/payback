@@ -19,13 +19,15 @@ export default {
   /**
    * 获取 板块数据
    */
-  async getPlateData(dateStr): Promise<CreatePlateDataDto> {
+  async getPlateData(dateStr, cookie: string): Promise<CreatePlateDataDto> {
     const createPlateDataDto: CreatePlateDataDto = new CreatePlateDataDto();
 
     const gainianDailyLimit = fetchIwencaiApi(
       params.gainianPlateOrderByDailyLimitNum + commonUtil.ignoreGainianPlateStr,
+      5,
+      cookie,
     );
-    const hangyeDailyLimit = fetchIwencaiApi(params.hangyePlateOrderByDailyLimitNum);
+    const hangyeDailyLimit = fetchIwencaiApi(params.hangyePlateOrderByDailyLimitNum, 5, cookie);
     const [gainianDailyLimitData, hangyeDailyLimitData] = await Promise.all([gainianDailyLimit, hangyeDailyLimit]);
 
     const gainianDailyLimitDataTop = getPlateTop(gainianDailyLimitData, dateStr);

@@ -1,10 +1,18 @@
 import { ThsOprate } from '../core/fetchUtil';
+import { InternalServerErrorException } from '@nestjs/common';
 
 // 投资日历 http://stock.10jqka.com.cn/fincalendar.shtml
 // 交易提醒 http://stock.10jqka.com.cn/jyts_list/
 // 四大证券 文章精华 http://stock.10jqka.com.cn/bktt_list/
 export function atob(a) {
   return Buffer.from(a, 'base64').toString('binary');
+}
+
+export function getIwencaiCookie(user) {
+  if (!user?.user || !user?.ticket) {
+    throw new InternalServerErrorException('当前用户缺少爱问财登录信息');
+  }
+  return `user=${user.user}; ticket=${user.ticket}${user.userid ? `; userid=${atob(user.userid)}` : ''}`;
 }
 
 export function dealResultIsLogin(result, userServiceCtx, account) {

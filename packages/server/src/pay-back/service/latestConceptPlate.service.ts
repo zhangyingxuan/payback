@@ -3,11 +3,14 @@ import { Repository } from 'typeorm';
 import { latestConceptPlate } from '../entities/latestConceptPlate.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getLatestConceptPlate } from '../utils/latestConceptPlateUtil';
+import { UsersService } from '@/users/users.service';
+import { getIwencaiCookie } from '../utils/thsUtils';
 
 @Injectable()
 export class LatestConceptPlateService {
   constructor(
     @InjectRepository(latestConceptPlate) private readonly latestConceptPlateRp: Repository<latestConceptPlate>,
+    private readonly usersService: UsersService,
   ) { }
 
   private readonly logger = new Logger(LatestConceptPlateService.name);
@@ -30,13 +33,16 @@ export class LatestConceptPlateService {
   //   return await this.crawlLatestConceptPlateData();
   // }
 
-  async crawlLatestConceptPlateData() {
+  async crawlLatestConceptPlateData(account = 'admin') {
     this.logger.debug('crawlLatestConceptPlateData is Begining!');
     const conceptPlate = await this.findLatestOne();
     let latestConceptPlates;
     try {
       // 爬取最新概念板块，若果有的话 则保存 近5日新增概念
-      latestConceptPlates = await getLatestConceptPlate(conceptPlate);
+      latestConceptPlates = await getLatestConceptPlate(
+        conceptPlate,
+        getIwencaiCookie(await this.usersService.getUserByAccount(account)),
+      );
       if (latestConceptPlates) {
         // 多个概念同时添加时，倒序插入，避免次日重复添加BUG
         latestConceptPlates.forEach(async latestConceptPlate => {
@@ -46,7 +52,7 @@ export class LatestConceptPlateService {
       this.logger.debug('crawlLatestConceptPlateData is success!');
     } catch (e) {
       this.logger.error('出错啦！！！', e);
-      throw new Error(e);
+      throw e;
     }
     // 深圳 还是 上海涨停的多 SZ. SH
     return latestConceptPlates;

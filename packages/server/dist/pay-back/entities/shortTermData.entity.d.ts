@@ -1,6 +1,7 @@
 import { Timestamp } from 'typeorm';
 export declare class shortTermData {
     id: number;
+    tradeDate: string;
     dailyLimitQuantity: number;
     dailyLimitOpenQuantity: number;
     dailyLimitReturnSealQuantity: number;

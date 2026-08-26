@@ -18,8 +18,8 @@
         <el-tag
           size="small"
           style="margin: 0 2px 1px 0; padding: 0 2px; height: 14px"
-          v-for="(gainian, index) in stock.gainian"
-          :key="index"
+          v-for="gainian in stock.gainian"
+          :key="gainian.code || gainian.name"
         >
           <Plate :name="gainian.name" :code="gainian.code" />
         </el-tag>

@@ -18,6 +18,10 @@ __decorate([
     __metadata("design:type", Number)
 ], plateData.prototype, "id", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ type: 'date', nullable: true, comment: '交易日期' }),
+    __metadata("design:type", String)
+], plateData.prototype, "tradeDate", void 0);
+__decorate([
     (0, typeorm_1.Column)({ comment: '涨停家数最多的概念板块个数', type: 'float', default: 0 }),
     __metadata("design:type", Number)
 ], plateData.prototype, "gainianDailyLimitNum", void 0);
@@ -38,7 +42,8 @@ __decorate([
     __metadata("design:type", typeorm_1.Timestamp)
 ], plateData.prototype, "createTime", void 0);
 plateData = __decorate([
-    (0, typeorm_1.Entity)()
+    (0, typeorm_1.Entity)(),
+    (0, typeorm_1.Index)('IDX_plate_trade_date', ['tradeDate'], { unique: true })
 ], plateData);
 exports.plateData = plateData;
 //# sourceMappingURL=plateData.entity.js.map

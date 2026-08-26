@@ -16,7 +16,6 @@ exports.ThsTradeController = void 0;
 const common_1 = require("@nestjs/common");
 const shortTerm_service_1 = require("./service/shortTerm.service");
 const ths_service_1 = require("./service/ths.service");
-const public_decorator_1 = require("../decorator/public.decorator");
 const fetchUtil_1 = require("./core/fetchUtil");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 let ThsTradeController = class ThsTradeController {
@@ -55,7 +54,6 @@ let ThsTradeController = class ThsTradeController {
     }
 };
 __decorate([
-    (0, public_decorator_1.Public)(),
     (0, common_1.Get)('modifyThsSelfStocks'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Request)()),

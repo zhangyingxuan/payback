@@ -7,14 +7,18 @@ import { getShortTermData, mergeExtra2ShortTermData, getShortTermDataByDate } fr
 import { ThsService } from './ths.service';
 import * as dayjs from 'dayjs';
 import { SpecialStockService } from './specialStock.service';
+import { UsersService } from '@/users/users.service';
+import { getIwencaiCookie } from '../utils/thsUtils';
+import { toIwencaiDate, toTradeDate } from '../utils/tradeDateUtil';
 
 @Injectable()
 export class ShorTermService {
   constructor(
     private readonly thsService: ThsService,
     private readonly specialStockService: SpecialStockService,
+    private readonly usersService: UsersService,
     @InjectRepository(shortTermData) private readonly shortTermDataRp: Repository<shortTermData>,
-  ) { }
+  ) {}
 
   private readonly logger = new Logger(ShorTermService.name);
 
@@ -22,14 +26,17 @@ export class ShorTermService {
    * 爬取短线数据，如果已存在则更新
    * @returns
    */
-  async crawlShortTermData() {
+  async crawlShortTermData(account = 'admin') {
     this.logger.debug('crawlShortTermData is Begining!');
-    const todayDateStr = new Date().toLocaleDateString();
+    const todayDateStr = toTradeDate();
 
     let createPayBackDto: CreatePayBackDto;
     try {
       const lastTradingDayData = await this.getLastTradingDayData(todayDateStr);
-      createPayBackDto = await getShortTermData(todayDateStr, lastTradingDayData);
+      const user = await this.usersService.getUserByAccount(account);
+      const cookie = getIwencaiCookie(user);
+      createPayBackDto = await getShortTermData(todayDateStr, lastTradingDayData, cookie);
+      createPayBackDto.tradeDate = todayDateStr;
 
       // 如果存在数据，则返回已有该数据
       const todayDataFromDB = await this.getTodayData(todayDateStr);
@@ -44,7 +51,7 @@ export class ShorTermService {
       this.logger.debug('crawlShortTermData is success!');
     } catch (e) {
       this.logger.error('出错啦！！！', e);
-      throw new Error(e);
+      throw e;
     }
 
     return createPayBackDto;
@@ -55,12 +62,15 @@ export class ShorTermService {
    * @param todayDateStr
    * @returns
    */
-  async crawlShortTermDataByDate(todayDateStr) {
+  async crawlShortTermDataByDate(todayDateStr, account = 'admin') {
     this.logger.debug('crawlShortTermDataByDate is Begining!');
+    todayDateStr = toTradeDate(todayDateStr);
     let createPayBackDto: CreatePayBackDto;
     try {
       const lastTradingDayData = await this.getLastTradingDayData(todayDateStr);
-      createPayBackDto = await getShortTermDataByDate(todayDateStr, lastTradingDayData);
+      const cookie = getIwencaiCookie(await this.usersService.getUserByAccount(account));
+      createPayBackDto = await getShortTermDataByDate(todayDateStr, lastTradingDayData, cookie);
+      createPayBackDto.tradeDate = todayDateStr;
       const dateTime = new Date(todayDateStr);
       dateTime.setHours(15);
       dateTime.setMinutes(55);
@@ -78,8 +88,8 @@ export class ShorTermService {
 
       this.logger.debug('crawlShortTermData is success!');
     } catch (e) {
-      this.logger.error('出错啦！！！', e); 
-      throw new Error(e);
+      this.logger.error('出错啦！！！', e);
+      throw e;
     }
 
     return createPayBackDto;
@@ -93,8 +103,9 @@ export class ShorTermService {
   getTodayData(todayDateStr: string) {
     return this.shortTermDataRp
       .createQueryBuilder('short_term_data')
-      .where('short_term_data.createTime like :createTime', {
-        createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%',
+      .where('short_term_data.tradeDate = :tradeDate', { tradeDate: toTradeDate(todayDateStr) })
+      .orWhere('short_term_data.tradeDate IS NULL AND DATE(short_term_data.createTime) = :tradeDate', {
+        tradeDate: toTradeDate(todayDateStr),
       })
       .getOne();
   }
@@ -105,7 +116,7 @@ export class ShorTermService {
    * @returns
    */
   async getLastTradingDayData(todayDateStr: string) {
-    const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
+    const currentDate = toIwencaiDate(todayDateStr);
     const dataList = await this.findByLimit(2);
     // 取出第一个不是今日的数据
     const lastTradingDayData = dataList.find(item => {
@@ -127,10 +138,12 @@ export class ShorTermService {
       .limit(len)
       .select([
         'short_term_data.dailyLimitQuantity',
+        'short_term_data.tradeDate',
         'short_term_data.downLimitQuantity',
         'short_term_data.marketHeight',
         'short_term_data.evenBoardAmount',
         'short_term_data.createTime',
+        'short_term_data.tradeDate',
       ])
       .orderBy('createTime', 'DESC')
       .getMany();

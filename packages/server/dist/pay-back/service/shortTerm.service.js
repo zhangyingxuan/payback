@@ -22,20 +22,27 @@ const shortTermUtil_1 = require("../utils/shortTermUtil");
 const ths_service_1 = require("./ths.service");
 const dayjs = require("dayjs");
 const specialStock_service_1 = require("./specialStock.service");
+const users_service_1 = require("../../users/users.service");
+const thsUtils_1 = require("../utils/thsUtils");
+const tradeDateUtil_1 = require("../utils/tradeDateUtil");
 let ShorTermService = ShorTermService_1 = class ShorTermService {
-    constructor(thsService, specialStockService, shortTermDataRp) {
+    constructor(thsService, specialStockService, usersService, shortTermDataRp) {
         this.thsService = thsService;
         this.specialStockService = specialStockService;
+        this.usersService = usersService;
         this.shortTermDataRp = shortTermDataRp;
         this.logger = new common_1.Logger(ShorTermService_1.name);
     }
-    async crawlShortTermData() {
+    async crawlShortTermData(account = 'admin') {
         this.logger.debug('crawlShortTermData is Begining!');
-        const todayDateStr = new Date().toLocaleDateString();
+        const todayDateStr = (0, tradeDateUtil_1.toTradeDate)();
         let createPayBackDto;
         try {
             const lastTradingDayData = await this.getLastTradingDayData(todayDateStr);
-            createPayBackDto = await (0, shortTermUtil_1.getShortTermData)(todayDateStr, lastTradingDayData);
+            const user = await this.usersService.getUserByAccount(account);
+            const cookie = (0, thsUtils_1.getIwencaiCookie)(user);
+            createPayBackDto = await (0, shortTermUtil_1.getShortTermData)(todayDateStr, lastTradingDayData, cookie);
+            createPayBackDto.tradeDate = todayDateStr;
             const todayDataFromDB = await this.getTodayData(todayDateStr);
             if (todayDataFromDB) {
                 this.logger.log('crawlShortTermData 更新数据');
@@ -49,16 +56,19 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
         }
         catch (e) {
             this.logger.error('出错啦！！！', e);
-            throw new Error(e);
+            throw e;
         }
         return createPayBackDto;
     }
-    async crawlShortTermDataByDate(todayDateStr) {
+    async crawlShortTermDataByDate(todayDateStr, account = 'admin') {
         this.logger.debug('crawlShortTermDataByDate is Begining!');
+        todayDateStr = (0, tradeDateUtil_1.toTradeDate)(todayDateStr);
         let createPayBackDto;
         try {
             const lastTradingDayData = await this.getLastTradingDayData(todayDateStr);
-            createPayBackDto = await (0, shortTermUtil_1.getShortTermDataByDate)(todayDateStr, lastTradingDayData);
+            const cookie = (0, thsUtils_1.getIwencaiCookie)(await this.usersService.getUserByAccount(account));
+            createPayBackDto = await (0, shortTermUtil_1.getShortTermDataByDate)(todayDateStr, lastTradingDayData, cookie);
+            createPayBackDto.tradeDate = todayDateStr;
             const dateTime = new Date(todayDateStr);
             dateTime.setHours(15);
             dateTime.setMinutes(55);
@@ -76,20 +86,21 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
         }
         catch (e) {
             this.logger.error('出错啦！！！', e);
-            throw new Error(e);
+            throw e;
         }
         return createPayBackDto;
     }
     getTodayData(todayDateStr) {
         return this.shortTermDataRp
             .createQueryBuilder('short_term_data')
-            .where('short_term_data.createTime like :createTime', {
-            createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%',
+            .where('short_term_data.tradeDate = :tradeDate', { tradeDate: (0, tradeDateUtil_1.toTradeDate)(todayDateStr) })
+            .orWhere('short_term_data.tradeDate IS NULL AND DATE(short_term_data.createTime) = :tradeDate', {
+            tradeDate: (0, tradeDateUtil_1.toTradeDate)(todayDateStr),
         })
             .getOne();
     }
     async getLastTradingDayData(todayDateStr) {
-        const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
+        const currentDate = (0, tradeDateUtil_1.toIwencaiDate)(todayDateStr);
         const dataList = await this.findByLimit(2);
         const lastTradingDayData = dataList.find(item => {
             return currentDate !== dayjs(item.createTime.toString()).format('YYYYMMDD');
@@ -106,10 +117,12 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
             .limit(len)
             .select([
             'short_term_data.dailyLimitQuantity',
+            'short_term_data.tradeDate',
             'short_term_data.downLimitQuantity',
             'short_term_data.marketHeight',
             'short_term_data.evenBoardAmount',
             'short_term_data.createTime',
+            'short_term_data.tradeDate',
         ])
             .orderBy('createTime', 'DESC')
             .getMany();
@@ -147,9 +160,10 @@ let ShorTermService = ShorTermService_1 = class ShorTermService {
 };
 ShorTermService = ShorTermService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __param(2, (0, typeorm_2.InjectRepository)(shortTermData_entity_1.shortTermData)),
+    __param(3, (0, typeorm_2.InjectRepository)(shortTermData_entity_1.shortTermData)),
     __metadata("design:paramtypes", [ths_service_1.ThsService,
         specialStock_service_1.SpecialStockService,
+        users_service_1.UsersService,
         typeorm_1.Repository])
 ], ShorTermService);
 exports.ShorTermService = ShorTermService;

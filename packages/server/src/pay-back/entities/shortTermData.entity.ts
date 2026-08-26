@@ -1,9 +1,13 @@
-import { PrimaryGeneratedColumn, Column, Entity, Timestamp } from 'typeorm';
+import { PrimaryGeneratedColumn, Column, Entity, Timestamp, Index } from 'typeorm';
 
 @Entity()
+@Index('IDX_short_term_trade_date', ['tradeDate'], { unique: true })
 export class shortTermData {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({ type: 'date', nullable: true, comment: '交易日期' })
+  tradeDate: string;
 
   @Column({ comment: '涨停数量', type: 'smallint', default: 0 })
   dailyLimitQuantity: number;

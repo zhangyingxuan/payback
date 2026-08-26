@@ -213,7 +213,12 @@ export class ThsService {
 
     try {
       // 先根据中文 获取 板块code
-      const plateInfo = await fetchIwencai(plateNameCn, 1, true);
+      const plateInfo = await fetchIwencai(
+        plateNameCn,
+        1,
+        true,
+        `user=${user}; ticket=${ticket}; userid=${userid}`,
+      );
       // 获取code 
       const code = plateInfo?.data.answer[0]?.txt[0]?.content?.page?.more?.codes[0] || '';
       const result = await modifyThsSelfRequest(code, userid, ticket, user, type, true);

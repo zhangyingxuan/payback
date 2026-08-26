@@ -18,6 +18,10 @@ __decorate([
     __metadata("design:type", Number)
 ], shortTermData.prototype, "id", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ type: 'date', nullable: true, comment: '交易日期' }),
+    __metadata("design:type", String)
+], shortTermData.prototype, "tradeDate", void 0);
+__decorate([
     (0, typeorm_1.Column)({ comment: '涨停数量', type: 'smallint', default: 0 }),
     __metadata("design:type", Number)
 ], shortTermData.prototype, "dailyLimitQuantity", void 0);
@@ -70,7 +74,8 @@ __decorate([
     __metadata("design:type", typeorm_1.Timestamp)
 ], shortTermData.prototype, "createTime", void 0);
 shortTermData = __decorate([
-    (0, typeorm_1.Entity)()
+    (0, typeorm_1.Entity)(),
+    (0, typeorm_1.Index)('IDX_short_term_trade_date', ['tradeDate'], { unique: true })
 ], shortTermData);
 exports.shortTermData = shortTermData;
 //# sourceMappingURL=shortTermData.entity.js.map

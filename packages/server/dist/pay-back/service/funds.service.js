@@ -19,22 +19,27 @@ const typeorm_1 = require("typeorm");
 const fundsData_entity_1 = require("../entities/fundsData.entity");
 const typeorm_2 = require("@nestjs/typeorm");
 const fundsUtil_1 = require("../utils/fundsUtil");
-const dayjs = require("dayjs");
+const tradeDateUtil_1 = require("../utils/tradeDateUtil");
+const users_service_1 = require("../../users/users.service");
+const thsUtils_1 = require("../utils/thsUtils");
 let FundsService = FundsService_1 = class FundsService {
-    constructor(fundsDataRp) {
+    constructor(fundsDataRp, usersService) {
         this.fundsDataRp = fundsDataRp;
+        this.usersService = usersService;
         this.logger = new common_1.Logger(FundsService_1.name);
     }
-    async crawlfundsData() {
+    async crawlfundsData(account = 'admin') {
         this.logger.debug('crawlfundsData is Begining!');
-        const todayDateStr = new Date().toLocaleDateString();
+        const todayDateStr = (0, tradeDateUtil_1.toTradeDate)();
         let fundsData;
         try {
-            fundsData = await fundsUtil_1.default.getFundsData(dayjs(todayDateStr).format('YYYYMMDD'));
+            fundsData = await fundsUtil_1.default.getFundsData((0, tradeDateUtil_1.toIwencaiDate)(todayDateStr), (0, thsUtils_1.getIwencaiCookie)(await this.usersService.getUserByAccount(account)));
+            fundsData.tradeDate = todayDateStr;
             const todayDataFromDB = await this.fundsDataRp
                 .createQueryBuilder('market_data')
-                .where('market_data.createTime like :createTime', {
-                createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%',
+                .where('market_data.tradeDate = :tradeDate', { tradeDate: todayDateStr })
+                .orWhere('market_data.tradeDate IS NULL AND DATE(market_data.createTime) = :tradeDate', {
+                tradeDate: todayDateStr,
             })
                 .getOne();
             if (todayDataFromDB) {
@@ -49,7 +54,7 @@ let FundsService = FundsService_1 = class FundsService {
         }
         catch (e) {
             this.logger.error('出错啦！！！', e);
-            throw new Error(e);
+            throw e;
         }
         return fundsData;
     }
@@ -75,7 +80,8 @@ let FundsService = FundsService_1 = class FundsService {
 FundsService = FundsService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_2.InjectRepository)(fundsData_entity_1.fundsData)),
-    __metadata("design:paramtypes", [typeorm_1.Repository])
+    __metadata("design:paramtypes", [typeorm_1.Repository,
+        users_service_1.UsersService])
 ], FundsService);
 exports.FundsService = FundsService;
 //# sourceMappingURL=funds.service.js.map

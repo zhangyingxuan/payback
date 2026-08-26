@@ -10,7 +10,7 @@ export default {
   /**
    * 获取 资金数据
    */
-  async getFundsData(dateStr: string) {
+  async getFundsData(dateStr: string, cookie: string) {
     // 北向资金、南向资金 获取
     // const responseForeignFunds = await fetchNorhFunds();
     // 更新数据获取接口 2024-05-15 21:26:00
@@ -21,10 +21,10 @@ export default {
       `https://push2.eastmoney.com/api/qt/kamt/get?fields1=f1,f2,f3,f4&fields2=f51,f52,f53,f54,f56,f60,f62,f63,f65,f66&ut=fa5fd1943c7b386f172d6893dbfba10b&cb=jQuery1123049543730033209155_${dateTime}&_=${dateTime}`,
     );
 
-    const hangyeFundsInflow = fetchIwencaiApi(params.hangyeFundsInflow);
-    const hangyeFundsOutflow = fetchIwencaiApi(params.hangyeFundsOutflow);
-    const gaiNianFundsInflow = fetchIwencaiApi(params.gainianFundsInflow + ignoreGainianPlateStr);
-    const gaiNianFundsOutflow = fetchIwencaiApi(params.gainianFundsOutflow + ignoreGainianPlateStr);
+    const hangyeFundsInflow = fetchIwencaiApi(params.hangyeFundsInflow, 5, cookie);
+    const hangyeFundsOutflow = fetchIwencaiApi(params.hangyeFundsOutflow, 5, cookie);
+    const gaiNianFundsInflow = fetchIwencaiApi(params.gainianFundsInflow + ignoreGainianPlateStr, 5, cookie);
+    const gaiNianFundsOutflow = fetchIwencaiApi(params.gainianFundsOutflow + ignoreGainianPlateStr, 5, cookie);
 
     const [
       responseForeignFundsData,

@@ -13,7 +13,7 @@ export class ThsTradeController {
    * 同步自选
    * @returns
    */
-  @Public()
+  // @Public()
   @Get('modifyThsSelfStocks')
   @UseGuards(JwtAuthGuard)
   async modifyThsSelfStocks(@Request() req) {

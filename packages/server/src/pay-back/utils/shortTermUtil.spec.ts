@@ -18,4 +18,13 @@ describe('mergeExtra2ShortTermData', () => {
     expect(result[0].newStock).toBe('["新"]');
     expect(result[1].newStock).toBe('["旧"]');
   });
+
+  it('优先按 tradeDate 合并数据', () => {
+    const result = mergeExtra2ShortTermData(
+      [{ createTime: '2026-08-26', evenBoardData: '{}' }],
+      [{ tradeDate: '2026-08-26', createTime: '2026-08-25', newStock: '["新"]' }],
+    );
+
+    expect(result[0].newStock).toBe('["新"]');
+  });
 });

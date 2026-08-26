@@ -33,22 +33,22 @@ async function fetchDailyLimitGroupByGainian(todayDateStr) {
     }
     throw lastError;
 }
-async function getShortTermData(todayDateStr, lastTradingDayData) {
-    const dailyLimit = (0, fetchUtil_1.fetchAllStocksByIwencai)(isBefore930() ? '今日涨停；非st；非退市；行业' : config_1.params.dailyLimitMoreThan1);
-    const downLimit = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.downLimit, downLimitNum);
-    const dailyLimitOpen = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.dailyLimitOpen);
-    const hugeFall = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.hugeFall, otherNum);
+async function getShortTermData(todayDateStr, lastTradingDayData, cookie = '') {
+    const dailyLimit = (0, fetchUtil_1.fetchAllStocksByIwencai)(isBefore930() ? '今日涨停；非st；非退市；行业' : config_1.params.dailyLimitMoreThan1, null, cookie);
+    const downLimit = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.downLimit, downLimitNum, cookie);
+    const dailyLimitOpen = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.dailyLimitOpen, null, cookie);
+    const hugeFall = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.hugeFall, otherNum, cookie);
     const dailyLimitGroupByGainain = fetchDailyLimitGroupByGainian(todayDateStr);
     const [dailyLimitData, downLimitData, dailyLimitOpenData, hugeFallData, dailyLimitGroupByGainainD] = await Promise.all([dailyLimit, downLimit, dailyLimitOpen, hugeFall, dailyLimitGroupByGainain]);
     const dailyLimitGroupByGainainData = dailyLimitGroupByGainainD;
     return prepareShortTermDto(dailyLimitData, dailyLimitOpenData, downLimitData, hugeFallData, lastTradingDayData, dailyLimitGroupByGainainData, todayDateStr);
 }
 exports.getShortTermData = getShortTermData;
-async function getShortTermDataByDate(todayDateStr, lastTradingDayData) {
-    const dailyLimit = (0, fetchUtil_1.fetchAllStocksByIwencai)((isBefore930() ? config_1.params.binddingDailyLimitMoreThan1ByDate : config_1.params.dailyLimitMoreThan1ByDate).replace('${date}', todayDateStr));
-    const downLimit = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.downLimitByDate.replace('${date}', todayDateStr), downLimitNum);
-    const dailyLimitOpen = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.dailyLimitOpenByDate.replace('${date}', todayDateStr));
-    const hugeFall = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.hugeFallByDate.replace('${date}', todayDateStr), otherNum);
+async function getShortTermDataByDate(todayDateStr, lastTradingDayData, cookie = '') {
+    const dailyLimit = (0, fetchUtil_1.fetchAllStocksByIwencai)((isBefore930() ? config_1.params.binddingDailyLimitMoreThan1ByDate : config_1.params.dailyLimitMoreThan1ByDate).replace('${date}', todayDateStr), null, cookie);
+    const downLimit = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.downLimitByDate.replace('${date}', todayDateStr), downLimitNum, cookie);
+    const dailyLimitOpen = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.dailyLimitOpenByDate.replace('${date}', todayDateStr), null, cookie);
+    const hugeFall = (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.hugeFallByDate.replace('${date}', todayDateStr), otherNum, cookie);
     const dailyLimitGroupByGainain = fetchDailyLimitGroupByGainian(todayDateStr);
     const [dailyLimitData, downLimitData, dailyLimitOpenData, hugeFallData, dailyLimitGroupByGainainD] = await Promise.all([dailyLimit, downLimit, dailyLimitOpen, hugeFall, dailyLimitGroupByGainain]);
     const dailyLimitGroupByGainainData = dailyLimitGroupByGainainD;
@@ -80,17 +80,17 @@ function mergeExtra2ShortTermData(shortTermData, specialStocks) {
     if (shortTermData.length === 0 || specialStocks.length === 0)
         return shortTermData;
     const shortTermDataLen = shortTermData.length;
-    for (let i = 0; i < shortTermDataLen - 1; i++) {
+    for (let i = 0; i < shortTermDataLen; i++) {
         const currentDate = dayjs(shortTermData[i].createTime).format(pay_back_core_1.iWencaiDateFormat);
         const currentSpecialStock = findBiddingDataByCreateTime(specialStocks, currentDate);
-        if (currentSpecialStock && currentSpecialStock.biddingData) {
+        if (i < shortTermDataLen - 1 && (currentSpecialStock === null || currentSpecialStock === void 0 ? void 0 : currentSpecialStock.biddingData)) {
             const evenBoardData = prepareEvenBoardData(JSON.parse(shortTermData[i + 1].evenBoardData), JSON.parse(currentSpecialStock.biddingData));
             shortTermData[i + 1].evenBoardData = JSON.stringify(evenBoardData);
         }
-        if (specialStocks[i]) {
-            shortTermData[i].newStock = specialStocks[i].newStock;
-            shortTermData[i].chooseStock = specialStocks[i].chooseStock;
-            shortTermData[i].biddingDataUpdateTime = specialStocks[i].updatedTime;
+        if (currentSpecialStock) {
+            shortTermData[i].newStock = currentSpecialStock.newStock;
+            shortTermData[i].chooseStock = currentSpecialStock.chooseStock;
+            shortTermData[i].biddingDataUpdateTime = currentSpecialStock.updatedTime;
         }
     }
     return shortTermData;
@@ -98,7 +98,7 @@ function mergeExtra2ShortTermData(shortTermData, specialStocks) {
 exports.mergeExtra2ShortTermData = mergeExtra2ShortTermData;
 function findBiddingDataByCreateTime(biddingDatas, createDate) {
     return biddingDatas.find(item => {
-        return dayjs(item.createTime).format(pay_back_core_1.iWencaiDateFormat) === createDate;
+        return dayjs(item.tradeDate || item.createTime).format(pay_back_core_1.iWencaiDateFormat) === createDate;
     });
 }
 function prepareEvenBoardData(evenBoardData, currentBiddingData) {

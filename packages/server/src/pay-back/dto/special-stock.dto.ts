@@ -1,5 +1,6 @@
 // 特殊个股
 export class SpecialStockDto {
+  tradeDate: string;
   // 昨日涨停今日集合竞价情况
   biddingData: string;
   // 新股数据

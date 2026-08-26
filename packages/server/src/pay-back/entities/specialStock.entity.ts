@@ -1,9 +1,13 @@
 // 特殊股票
-import { PrimaryGeneratedColumn, Column, Entity, Timestamp } from 'typeorm';
+import { PrimaryGeneratedColumn, Column, Entity, Timestamp, Index } from 'typeorm';
 @Entity()
+@Index('IDX_special_stock_trade_date', ['tradeDate'], { unique: true })
 export class specialStock {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({ type: 'date', nullable: true, comment: '交易日期' })
+  tradeDate: string;
 
   @Column({ comment: '昨日涨停今日集合竞价情况', type: 'mediumtext', nullable: true })
   biddingData: string;

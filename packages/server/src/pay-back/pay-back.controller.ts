@@ -23,6 +23,7 @@ import { schedulerTaskList, newsPushSchedulerTask } from '../scheduler-task/conf
 import { SystemConfigService } from './service/systemConfig.service';
 import { ClientProxy } from '@nestjs/microservices';
 import { executeTaskFunc } from './utils/schedulerUtil';
+import { createDataHealth, getExpectedTradeDate, jsonLength } from './utils/dataHealthUtil';
 
 class CrawlTodayDataDto {
   fetchTodayDataType: number;
@@ -48,7 +49,7 @@ export class PayBackController {
     private readonly systemConfigService: SystemConfigService,
     private readonly consulService: ConsulService,
     @Inject('PUSH_SERVER') private pushServer: ClientProxy,
-  ) { }
+  ) {}
 
   private readonly logger = new Logger(PayBackController.name);
 
@@ -128,27 +129,27 @@ export class PayBackController {
     const account = req.user?.account || 'admin';
     switch (body.fetchTodayDataType) {
       case 0:
-        short = this.shorTermService.crawlShortTermData();
-        funds = this.fundsService.crawlfundsData();
-        market = this.marketService.crawlMarketData();
+        short = this.shorTermService.crawlShortTermData(account);
+        funds = this.fundsService.crawlfundsData(account);
+        market = this.marketService.crawlMarketData(account);
         bindding = this.specialStockService.crawlBinddingData(0, account);
         specialStock = this.specialStockService.crawlSpecialStockData(account);
-        plate = this.plateService.crawlPlateData();
+        plate = this.plateService.crawlPlateData(account);
         resultData = {};
         await Promise.all([short, funds, market, bindding, specialStock, plate]);
         // resultData = { shortData, fundsData, marketData, binddingData, plateData };
         break;
       case 1:
-        resultData = await this.shorTermService.crawlShortTermData();
+        resultData = await this.shorTermService.crawlShortTermData(account);
         break;
       case 2:
         // 更新板块数据涨停家数排序 & 市场数据（行业、概念涨跌幅）
-        plate = this.plateService.crawlPlateData();
-        market = this.marketService.crawlMarketData();
+        plate = this.plateService.crawlPlateData(account);
+        market = this.marketService.crawlMarketData(account);
         await Promise.all([plate, market]);
         break;
       case 3:
-        resultData = await this.fundsService.crawlfundsData();
+        resultData = await this.fundsService.crawlfundsData(account);
         break;
       case 4:
         // 获取竞价数据
@@ -193,7 +194,7 @@ export class PayBackController {
     return {
       code,
       data: result,
-      message
+      message,
     };
   }
 
@@ -260,9 +261,10 @@ export class PayBackController {
   // 示例：http://localhost:3000/blowsysun/pay-back/crawlShortTermByDate?date=2023-06-26
   // @Public()
   @Get('/crawlShortTermByDate')
-  crawlShortTermByDate(@Query() query) {
+  @UseGuards(JwtAuthGuard)
+  crawlShortTermByDate(@Query() query, @Request() req) {
     const date = query.date || new Date();
-    return this.shorTermService.crawlShortTermDataByDate(date);
+    return this.shorTermService.crawlShortTermDataByDate(date, req.user?.account);
   }
   /**
    * 爬取最新 涨停家数较多的 板块数据
@@ -270,8 +272,9 @@ export class PayBackController {
    */
   // @Public()
   @Get('/crawlPlateData')
-  async crawlPlateData() {
-    const data = await this.plateService.crawlPlateData();
+  @UseGuards(JwtAuthGuard)
+  async crawlPlateData(@Request() req) {
+    const data = await this.plateService.crawlPlateData(req.user?.account);
     return {
       code: 0,
       data,
@@ -308,6 +311,33 @@ export class PayBackController {
     return {
       code: 0,
       data: shortTermData,
+    };
+  }
+
+  @Get('fetchDataHealth')
+  async fetchDataHealth() {
+    const [[shortTerm], [specialStock], [market], [funds], [plate]] = await Promise.all([
+      this.shorTermService.findByLimit(1),
+      this.specialStockService.findByLimit(1),
+      this.marketService.findByLimit(1),
+      this.fundsService.findByLimit(1),
+      this.plateService.findByLimit(1),
+    ]);
+    const expectedDate = getExpectedTradeDate(shortTerm?.tradeDate || shortTerm?.createTime);
+
+    return {
+      code: 0,
+      data: {
+        expectedDate,
+        sources: [
+          createDataHealth('短线', shortTerm, expectedDate, shortTerm?.dailyLimitQuantity),
+          createDataHealth('竞价', specialStock, expectedDate, jsonLength(specialStock?.biddingData)),
+          createDataHealth('新股', specialStock, expectedDate, jsonLength(specialStock?.newStock)),
+          createDataHealth('市场', market, expectedDate, market ? 1 : 0),
+          createDataHealth('资金', funds, expectedDate, funds ? 1 : 0),
+          createDataHealth('板块', plate, expectedDate, plate ? 1 : 0),
+        ],
+      },
     };
   }
 

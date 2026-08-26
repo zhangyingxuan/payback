@@ -19,21 +19,28 @@ const typeorm_1 = require("typeorm");
 const plateData_entity_1 = require("../entities/plateData.entity");
 const typeorm_2 = require("@nestjs/typeorm");
 const plateUtil_1 = require("../utils/plateUtil");
-const dayjs = require("dayjs");
+const tradeDateUtil_1 = require("../utils/tradeDateUtil");
+const users_service_1 = require("../../users/users.service");
+const thsUtils_1 = require("../utils/thsUtils");
 let PlateService = PlateService_1 = class PlateService {
-    constructor(plateDataRp) {
+    constructor(plateDataRp, usersService) {
         this.plateDataRp = plateDataRp;
+        this.usersService = usersService;
         this.logger = new common_1.Logger(PlateService_1.name);
     }
-    async crawlPlateData() {
+    async crawlPlateData(account = 'admin') {
         this.logger.debug('crawlPlateData is Begining!');
-        const todayDateStr = new Date().toLocaleDateString();
+        const todayDateStr = (0, tradeDateUtil_1.toTradeDate)();
         let plateData;
         try {
-            plateData = await plateUtil_1.default.getPlateData(dayjs(todayDateStr).format('YYYYMMDD'));
+            plateData = await plateUtil_1.default.getPlateData((0, tradeDateUtil_1.toIwencaiDate)(todayDateStr), (0, thsUtils_1.getIwencaiCookie)(await this.usersService.getUserByAccount(account)));
+            plateData.tradeDate = todayDateStr;
             const todayDataFromDB = await this.plateDataRp
                 .createQueryBuilder('plate_data')
-                .where('plate_data.createTime like :createTime', { createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%' })
+                .where('plate_data.tradeDate = :tradeDate', { tradeDate: todayDateStr })
+                .orWhere('plate_data.tradeDate IS NULL AND DATE(plate_data.createTime) = :tradeDate', {
+                tradeDate: todayDateStr,
+            })
                 .getOne();
             if (todayDataFromDB) {
                 this.logger.log('crawlPlateData 更新数据');
@@ -47,7 +54,7 @@ let PlateService = PlateService_1 = class PlateService {
         }
         catch (e) {
             this.logger.error('出错啦！！！', e);
-            throw new Error(e);
+            throw e;
         }
         return plateData;
     }
@@ -60,6 +67,7 @@ let PlateService = PlateService_1 = class PlateService {
             .offset(0)
             .limit(len)
             .select([
+            'plate_data.tradeDate',
             'plate_data.createTime',
             'plate_data.gainianDailyLimitData',
             'plate_data.gainianDailyLimitNum',
@@ -80,7 +88,8 @@ let PlateService = PlateService_1 = class PlateService {
 PlateService = PlateService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_2.InjectRepository)(plateData_entity_1.plateData)),
-    __metadata("design:paramtypes", [typeorm_1.Repository])
+    __metadata("design:paramtypes", [typeorm_1.Repository,
+        users_service_1.UsersService])
 ], PlateService);
 exports.PlateService = PlateService;
 //# sourceMappingURL=plate.service.js.map

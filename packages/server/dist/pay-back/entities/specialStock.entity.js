@@ -18,6 +18,10 @@ __decorate([
     __metadata("design:type", Number)
 ], specialStock.prototype, "id", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ type: 'date', nullable: true, comment: '交易日期' }),
+    __metadata("design:type", String)
+], specialStock.prototype, "tradeDate", void 0);
+__decorate([
     (0, typeorm_1.Column)({ comment: '昨日涨停今日集合竞价情况', type: 'mediumtext', nullable: true }),
     __metadata("design:type", String)
 ], specialStock.prototype, "biddingData", void 0);
@@ -46,7 +50,8 @@ __decorate([
     __metadata("design:type", typeorm_1.Timestamp)
 ], specialStock.prototype, "updatedTime", void 0);
 specialStock = __decorate([
-    (0, typeorm_1.Entity)()
+    (0, typeorm_1.Entity)(),
+    (0, typeorm_1.Index)('IDX_special_stock_trade_date', ['tradeDate'], { unique: true })
 ], specialStock);
 exports.specialStock = specialStock;
 //# sourceMappingURL=specialStock.entity.js.map

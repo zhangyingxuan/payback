@@ -20,6 +20,7 @@ const hotList_entity_1 = require("../entities/hotList.entity");
 const typeorm_2 = require("@nestjs/typeorm");
 const hotListUtil_1 = require("../utils/hotListUtil");
 const dayjs = require("dayjs");
+const tradeDateUtil_1 = require("../utils/tradeDateUtil");
 let HotListService = HotListService_1 = class HotListService {
     constructor(hotListRp) {
         this.hotListRp = hotListRp;
@@ -27,7 +28,7 @@ let HotListService = HotListService_1 = class HotListService {
     }
     async crawlHotListData() {
         this.logger.debug('crawlHotListData is Begining!');
-        const todayDateStr = new Date().toLocaleDateString();
+        const todayDateStr = (0, tradeDateUtil_1.toTradeDate)();
         let hotListData;
         try {
             hotListData = await (0, hotListUtil_1.getHotListData)();

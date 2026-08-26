@@ -6,9 +6,9 @@ import { iwencaiUrl, params } from '../core/config';
  * 通过接口方式获取热门数据
  * @returns
  */
-export async function getLatestConceptPlate(currentLatestConceptPlate) {
+export async function getLatestConceptPlate(currentLatestConceptPlate, cookie: string) {
   let createLatestConceptPlateArr = [];
-  const latestConceptPlates: any = await fetchIwencaiApi(iwencaiUrl + params.gainianPlate);
+  const latestConceptPlates: any = await fetchIwencaiApi(iwencaiUrl + params.gainianPlate, 5, cookie);
 
   // 与最新板块比较，判断是否 有新增的概念板块，如有 则返回
   if (currentLatestConceptPlate?.code === latestConceptPlates?.[0]['code']) {

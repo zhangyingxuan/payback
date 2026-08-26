@@ -1,4 +1,5 @@
 export declare class CreateMarketDataDto {
+    tradeDate: string;
     marketPoint: number;
     marketScore: number;
     riseAmount: number;

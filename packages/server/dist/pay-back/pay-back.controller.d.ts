@@ -66,8 +66,8 @@ export declare class PayBackController {
         code: number;
         data: import("./dto/create-hot-list.dto").CreateHotListDto;
     }>;
-    crawlShortTermByDate(query: any): Promise<import("./dto/create-pay-back.dto").CreatePayBackDto>;
-    crawlPlateData(): Promise<{
+    crawlShortTermByDate(query: any, req: any): Promise<import("./dto/create-pay-back.dto").CreatePayBackDto>;
+    crawlPlateData(req: any): Promise<{
         code: number;
         data: import("./dto/create-plate-data.dto").CreatePlateDataDto;
     }>;
@@ -82,6 +82,25 @@ export declare class PayBackController {
     fetchEvenBoardData(query: any): Promise<{
         code: number;
         data: any[];
+    }>;
+    fetchDataHealth(): Promise<{
+        code: number;
+        data: {
+            expectedDate: string;
+            sources: ({
+                name: string;
+                status: import("./utils/dataHealthUtil").DataHealthStatus;
+                tradeDate: string;
+                count: number;
+                updatedTime?: undefined;
+            } | {
+                name: string;
+                status: "empty" | "fresh" | "stale";
+                tradeDate: string;
+                updatedTime: any;
+                count: number;
+            })[];
+        };
     }>;
     fetchHostListData(query: any): Promise<{
         code: number;

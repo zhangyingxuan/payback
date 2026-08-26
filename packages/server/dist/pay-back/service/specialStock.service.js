@@ -24,15 +24,19 @@ const dayjs = require("dayjs");
 const pay_back_core_1 = require("pay-back-core");
 const ths_service_1 = require("./ths.service");
 const fetchUtil_1 = require("../core/fetchUtil");
+const tradeDateUtil_1 = require("../utils/tradeDateUtil");
+const users_service_1 = require("../../users/users.service");
+const thsUtils_1 = require("../utils/thsUtils");
 let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
-    constructor(specialStockRp, thsService) {
+    constructor(specialStockRp, thsService, usersService) {
         this.specialStockRp = specialStockRp;
         this.thsService = thsService;
+        this.usersService = usersService;
         this.logger = new common_1.Logger(SpecialStockService_1.name);
     }
     async crawlBinddingData(isRemoveIncompatible = 0, account) {
         this.logger.debug('crawlBinddingData is Begining!');
-        const todayDateStr = new Date().toLocaleDateString();
+        const todayDateStr = (0, tradeDateUtil_1.toTradeDate)();
         let todayDataFromDB = null;
         const specialStockDto = {
             biddingData: '',
@@ -42,10 +46,12 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
             heightestStock: '',
             createTime: new Date(),
             updatedTime: new Date(),
+            tradeDate: todayDateStr,
         };
         try {
             const yesterdayDateStr = await this.getLastTradingDayByDB(todayDateStr);
-            const dailyLimitYesterdayBidding = await (0, specialStockUtil_1.fetchLastdayDailyLimitBinddingData)(todayDateStr, yesterdayDateStr);
+            const cookie = (0, thsUtils_1.getIwencaiCookie)(await this.usersService.getUserByAccount(account));
+            const dailyLimitYesterdayBidding = await (0, specialStockUtil_1.fetchLastdayDailyLimitBinddingData)(todayDateStr, yesterdayDateStr, cookie);
             isRemoveIncompatible && this.dealIncompatibleExpectStocks(dailyLimitYesterdayBidding, account);
             todayDataFromDB = await this.getTodayData(todayDateStr);
             if (todayDataFromDB) {
@@ -65,14 +71,14 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
         }
         catch (e) {
             this.logger.error('出错啦！！！', e);
-            throw new Error(e);
+            throw e;
         }
         return todayDataFromDB ? todayDataFromDB : specialStockDto;
     }
     async crawlSpecialStockData(account) {
         this.logger.debug('crawlSpecialStockData is Begining!');
         let todayDataFromDB = null;
-        const todayDateStr = new Date().toLocaleDateString();
+        const todayDateStr = (0, tradeDateUtil_1.toTradeDate)();
         const specialStockDto = {
             biddingData: '',
             newStock: '',
@@ -81,10 +87,12 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
             heightestStock: '',
             createTime: new Date(),
             updatedTime: new Date(),
+            tradeDate: todayDateStr,
         };
         try {
             const yesterdayDateStr = await this.getLastTradingDayByDB(todayDateStr);
-            const { newStocks, chooseStock1Expected } = await (0, specialStockUtil_1.fetchSpecialStockBinddingData)(todayDateStr, yesterdayDateStr);
+            const cookie = (0, thsUtils_1.getIwencaiCookie)(await this.usersService.getUserByAccount(account));
+            const { newStocks, chooseStock1Expected } = await (0, specialStockUtil_1.fetchSpecialStockBinddingData)(todayDateStr, yesterdayDateStr, cookie);
             if (newStocks && newStocks.length > 0) {
                 try {
                     this.thsService.batchUpdateThsSelfStock(newStocks, fetchUtil_1.ThsOprate.add, account);
@@ -132,8 +140,9 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
     getTodayData(todayDateStr) {
         return this.specialStockRp
             .createQueryBuilder('special_stock')
-            .where('special_stock.createTime like :createTime', {
-            createTime: dayjs(todayDateStr).format('YYYY-MM-DD') + '%',
+            .where('special_stock.tradeDate = :tradeDate', { tradeDate: (0, tradeDateUtil_1.toTradeDate)(todayDateStr) })
+            .orWhere('special_stock.tradeDate IS NULL AND DATE(special_stock.createTime) = :tradeDate', {
+            tradeDate: (0, tradeDateUtil_1.toTradeDate)(todayDateStr),
         })
             .getOne();
     }
@@ -176,7 +185,8 @@ SpecialStockService = SpecialStockService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_2.InjectRepository)(specialStock_entity_1.specialStock)),
     __metadata("design:paramtypes", [typeorm_1.Repository,
-        ths_service_1.ThsService])
+        ths_service_1.ThsService,
+        users_service_1.UsersService])
 ], SpecialStockService);
 exports.SpecialStockService = SpecialStockService;
 //# sourceMappingURL=specialStock.service.js.map

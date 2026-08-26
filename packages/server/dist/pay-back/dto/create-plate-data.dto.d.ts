@@ -1,4 +1,5 @@
 export declare class CreatePlateDataDto {
+    tradeDate: string;
     gainianDailyLimitData: string;
     gainianDailyLimitNum: number;
     hangyeDailyLimitData: string;

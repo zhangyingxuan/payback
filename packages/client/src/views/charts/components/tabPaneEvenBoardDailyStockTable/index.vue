@@ -241,8 +241,8 @@
     <div
       v-show="data.isShowContent"
       class="table-row"
-      v-for="(item, key) in stockGroupByPlateByFilter.plates"
-      :key="key"
+      v-for="item in stockGroupByPlateByFilter.plates"
+      :key="item.key"
     >
       <div class="col1">
         <ColsPlateInfo
@@ -255,8 +255,8 @@
       <div class="col2">
         <div
           class="dailyLimit__row"
-          v-for="(stock, index) in item.value"
-          :key="'stock' + index"
+          v-for="stock in item.value"
+          :key="stock.code"
         >
           <ColsStockInfo
             :stock="stock"

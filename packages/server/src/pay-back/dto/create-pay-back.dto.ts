@@ -1,4 +1,5 @@
 export class CreatePayBackDto {
+  tradeDate: string;
   // 涨停数量
   dailyLimitQuantity: number;
   // 涨停打开数量

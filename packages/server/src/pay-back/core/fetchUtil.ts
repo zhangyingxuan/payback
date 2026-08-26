@@ -3,6 +3,7 @@ import fetch from 'node-fetch';
 import { getIwencaiData, getStocksDataByIwencai, getStocksPagingDataByIwencai } from '../utils/commonUtil';
 import { stringify } from 'qs';
 import { createFetch } from '@/utils/abortFetch';
+import { InternalServerErrorException } from '@nestjs/common';
 
 // 爱问财最大分页码为100
 const maxPageSize = 100;
@@ -41,6 +42,9 @@ async function fetchIwencaiJson(
     for (let attempt = 1; attempt <= iwencaiMaxAttempts; attempt++) {
       try {
         const response = await createFetch()(resource, options);
+        if (response.status === 401 || response.status === 403) {
+          throw new InternalServerErrorException('爱问财登录已失效，请重新登录');
+        }
         const data = await response.json();
         if (response.ok && isValidResponse(data)) {
           return data;
@@ -48,8 +52,12 @@ async function fetchIwencaiJson(
 
         const status = data?.status_code ?? response.status;
         const message = data?.status_msg || data?.message || response.statusText || '响应结构异常';
+        if (status === -1935 || /未登[录陆]|登录.*失效/.test(message)) {
+          throw new InternalServerErrorException('爱问财登录已失效，请重新登录');
+        }
         lastError = new Error(`爱问财接口请求失败(${status}): ${message}`);
       } catch (error) {
+        if (error instanceof InternalServerErrorException) throw error;
         lastError = error instanceof Error ? error : new Error(String(error));
       }
 
@@ -69,8 +77,8 @@ async function fetchIwencaiJson(
  * @param isPlate
  * @returns
  */
-export async function fetchIwencaiApi(question, pageSize = 5) {
-  const result = await fetchIwencai(question, pageSize, true);
+export async function fetchIwencaiApi(question, pageSize = 5, cookie = '') {
+  const result = await fetchIwencai(question, pageSize, true, cookie);
 
   // const text = await result.text();
   // return getIwencaiData(JSON.parse(text));
@@ -91,13 +99,13 @@ interface IwencaiStockResult {
  * @param isPlate
  * @returns
  */
-export async function fetchAllStocksByIwencai(question, limit = null) {
+export async function fetchAllStocksByIwencai(question, limit = null, cookie = '') {
   // 设置强制 终止死循环次数，最多20页，意味着 2000条数据 2024-02-20 15:08:36
   let pageNum = 1;
   const maxRequestTimes = 20;
   let data;
 
-  let result = await fetchIwencai(question, limit ? limit : maxPageSize, false);
+  let result = await fetchIwencai(question, limit ? limit : maxPageSize, false, cookie);
   const iwencaiStockResult: IwencaiStockResult = getStocksDataByIwencai(result);
   // 需要分页：还有多余数据未查出，且需要查更多
   if (iwencaiStockResult.length > iwencaiStockResult.data.length && !limit) {
@@ -109,6 +117,7 @@ export async function fetchAllStocksByIwencai(question, limit = null) {
         iwencaiStockResult.condition,
         iwencaiStockResult.compId,
         iwencaiStockResult.uuid,
+        cookie,
       );
       // 分页数据 第二页开始，临时数据
       data = getStocksPagingDataByIwencai(result);
@@ -139,7 +148,7 @@ export async function fetchAllStocksByIwencai(question, limit = null) {
  * @param isPlate
  * @returns
  */
-export async function fetchIwencai(question, pageSize = 5, isPlate = false) {
+export async function fetchIwencai(question, pageSize = 5, isPlate = false, cookie = '') {
   const body = {
     source: 'Ths_iwencai_Xuangu',
     version: '2.0',
@@ -159,6 +168,7 @@ export async function fetchIwencai(question, pageSize = 5, isPlate = false) {
       'content-type': 'application/json',
       'hexin-v': createV(),
       pragma: 'no-cache',
+      ...(cookie && { cookie }),
     },
     body: JSON.stringify(body),
     referrerPolicy: 'strict-origin-when-cross-origin',
@@ -175,7 +185,7 @@ export async function fetchIwencai(question, pageSize = 5, isPlate = false) {
  * @param isPlate
  * @returns
  */
-export async function fetchStockPagingDataList(question, pageSize = 5, pageNum = 1, condition, compId, uuid) {
+export async function fetchStockPagingDataList(question, pageSize = 5, pageNum = 1, condition, compId, uuid, cookie = '') {
   const body = {
     urp_sort_way: 'desc',
     query: question,
@@ -198,6 +208,7 @@ export async function fetchStockPagingDataList(question, pageSize = 5, pageNum =
       'content-type': 'application/x-www-form-urlencoded',
       'hexin-v': createV(),
       pragma: 'no-cache',
+      ...(cookie && { cookie }),
     },
     body: stringify(body),
     referrerPolicy: 'strict-origin-when-cross-origin',

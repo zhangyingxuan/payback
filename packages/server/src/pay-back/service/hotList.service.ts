@@ -5,10 +5,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { getHotListData } from '../utils/hotListUtil';
 import { CreateHotListDto } from '../dto/create-hot-list.dto';
 import * as dayjs from 'dayjs';
+import { toTradeDate } from '../utils/tradeDateUtil';
 
 @Injectable()
 export class HotListService {
-  constructor(@InjectRepository(hotList) private readonly hotListRp: Repository<hotList>) { }
+  constructor(@InjectRepository(hotList) private readonly hotListRp: Repository<hotList>) {}
 
   private readonly logger = new Logger(HotListService.name);
 
@@ -19,7 +20,7 @@ export class HotListService {
   // @Cron('0 */30 7-23 * * *') // 每小时执行一次，30分钟开始
   async crawlHotListData() {
     this.logger.debug('crawlHotListData is Begining!');
-    const todayDateStr = new Date().toLocaleDateString();
+    const todayDateStr = toTradeDate();
     let hotListData: CreateHotListDto;
     try {
       hotListData = await getHotListData();

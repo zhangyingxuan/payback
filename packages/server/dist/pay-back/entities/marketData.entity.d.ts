@@ -1,6 +1,7 @@
 import { Timestamp } from 'typeorm';
 export declare class marketData {
     id: number;
+    tradeDate: string;
     marketScore: number;
     riseAmount: number;
     fallAmount: number;

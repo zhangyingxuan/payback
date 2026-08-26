@@ -38,11 +38,7 @@
         </div>
       </div>
 
-      <div
-        class="table-row"
-        v-for="(item, key) in stockGroupByPlate"
-        :key="key"
-      >
+      <div class="table-row" v-for="item in stockGroupByPlate" :key="item.key">
         <div class="col1">
           <div>
             <Plate class="zise" :name="item.key" />
@@ -53,7 +49,7 @@
           </div>
         </div>
         <div class="col2">
-          <div v-for="(stock, index) in item.value" :key="'stock' + index">
+          <div v-for="stock in item.value" :key="stock.code">
             <Stock :name="stock.name" :code="stock.code" />
             <template v-if="isDownLimitMode">
               &nbsp;[&nbsp;<span class="orange">{{ stock.reason }}</span>

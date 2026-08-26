@@ -50,8 +50,8 @@
     <div
       v-show="data.isShowContent"
       class="table-row"
-      v-for="(item, key) in stockGroupByPlate"
-      :key="key"
+      v-for="item in stockGroupByPlate"
+      :key="item.key"
     >
       <div class="col1">
         <div>
@@ -63,7 +63,7 @@
         </div>
       </div>
       <div :class="`col2 ${isMobile ? 'isMobile' : ''}`">
-        <div v-for="(stock, index) in item.value" :key="'stock' + index">
+        <div v-for="stock in item.value" :key="stock.code">
           <Stock class="large" :name="stock.name" :code="stock.code" />
           [ &nbsp;<span
             class="small"

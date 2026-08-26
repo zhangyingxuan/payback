@@ -37,6 +37,7 @@ const config_1 = require("../scheduler-task/config");
 const systemConfig_service_1 = require("./service/systemConfig.service");
 const microservices_1 = require("@nestjs/microservices");
 const schedulerUtil_1 = require("./utils/schedulerUtil");
+const dataHealthUtil_1 = require("./utils/dataHealthUtil");
 class CrawlTodayDataDto {
 }
 let PayBackController = PayBackController_1 = class PayBackController {
@@ -78,25 +79,25 @@ let PayBackController = PayBackController_1 = class PayBackController {
         const account = ((_a = req.user) === null || _a === void 0 ? void 0 : _a.account) || 'admin';
         switch (body.fetchTodayDataType) {
             case 0:
-                short = this.shorTermService.crawlShortTermData();
-                funds = this.fundsService.crawlfundsData();
-                market = this.marketService.crawlMarketData();
+                short = this.shorTermService.crawlShortTermData(account);
+                funds = this.fundsService.crawlfundsData(account);
+                market = this.marketService.crawlMarketData(account);
                 bindding = this.specialStockService.crawlBinddingData(0, account);
                 specialStock = this.specialStockService.crawlSpecialStockData(account);
-                plate = this.plateService.crawlPlateData();
+                plate = this.plateService.crawlPlateData(account);
                 resultData = {};
                 await Promise.all([short, funds, market, bindding, specialStock, plate]);
                 break;
             case 1:
-                resultData = await this.shorTermService.crawlShortTermData();
+                resultData = await this.shorTermService.crawlShortTermData(account);
                 break;
             case 2:
-                plate = this.plateService.crawlPlateData();
-                market = this.marketService.crawlMarketData();
+                plate = this.plateService.crawlPlateData(account);
+                market = this.marketService.crawlMarketData(account);
                 await Promise.all([plate, market]);
                 break;
             case 3:
-                resultData = await this.fundsService.crawlfundsData();
+                resultData = await this.fundsService.crawlfundsData(account);
                 break;
             case 4:
                 const crawlBindding = this.specialStockService.crawlBinddingData(body.isRemoveIncompatible, (_b = req.user) === null || _b === void 0 ? void 0 : _b.account);
@@ -132,7 +133,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
         return {
             code,
             data: result,
-            message
+            message,
         };
     }
     async crawlSpecialStockData(req) {
@@ -182,12 +183,14 @@ let PayBackController = PayBackController_1 = class PayBackController {
             data,
         };
     }
-    crawlShortTermByDate(query) {
+    crawlShortTermByDate(query, req) {
+        var _a;
         const date = query.date || new Date();
-        return this.shorTermService.crawlShortTermDataByDate(date);
+        return this.shorTermService.crawlShortTermDataByDate(date, (_a = req.user) === null || _a === void 0 ? void 0 : _a.account);
     }
-    async crawlPlateData() {
-        const data = await this.plateService.crawlPlateData();
+    async crawlPlateData(req) {
+        var _a;
+        const data = await this.plateService.crawlPlateData((_a = req.user) === null || _a === void 0 ? void 0 : _a.account);
         return {
             code: 0,
             data,
@@ -213,6 +216,30 @@ let PayBackController = PayBackController_1 = class PayBackController {
         return {
             code: 0,
             data: shortTermData,
+        };
+    }
+    async fetchDataHealth() {
+        const [[shortTerm], [specialStock], [market], [funds], [plate]] = await Promise.all([
+            this.shorTermService.findByLimit(1),
+            this.specialStockService.findByLimit(1),
+            this.marketService.findByLimit(1),
+            this.fundsService.findByLimit(1),
+            this.plateService.findByLimit(1),
+        ]);
+        const expectedDate = (0, dataHealthUtil_1.getExpectedTradeDate)((shortTerm === null || shortTerm === void 0 ? void 0 : shortTerm.tradeDate) || (shortTerm === null || shortTerm === void 0 ? void 0 : shortTerm.createTime));
+        return {
+            code: 0,
+            data: {
+                expectedDate,
+                sources: [
+                    (0, dataHealthUtil_1.createDataHealth)('短线', shortTerm, expectedDate, shortTerm === null || shortTerm === void 0 ? void 0 : shortTerm.dailyLimitQuantity),
+                    (0, dataHealthUtil_1.createDataHealth)('竞价', specialStock, expectedDate, (0, dataHealthUtil_1.jsonLength)(specialStock === null || specialStock === void 0 ? void 0 : specialStock.biddingData)),
+                    (0, dataHealthUtil_1.createDataHealth)('新股', specialStock, expectedDate, (0, dataHealthUtil_1.jsonLength)(specialStock === null || specialStock === void 0 ? void 0 : specialStock.newStock)),
+                    (0, dataHealthUtil_1.createDataHealth)('市场', market, expectedDate, market ? 1 : 0),
+                    (0, dataHealthUtil_1.createDataHealth)('资金', funds, expectedDate, funds ? 1 : 0),
+                    (0, dataHealthUtil_1.createDataHealth)('板块', plate, expectedDate, plate ? 1 : 0),
+                ],
+            },
         };
     }
     async fetchHostListData(query) {
@@ -339,15 +366,19 @@ __decorate([
 ], PayBackController.prototype, "crawlHotListData", null);
 __decorate([
     (0, common_1.Get)('/crawlShortTermByDate'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Query)()),
+    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
 ], PayBackController.prototype, "crawlShortTermByDate", null);
 __decorate([
     (0, common_1.Get)('/crawlPlateData'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "crawlPlateData", null);
 __decorate([
@@ -364,6 +395,12 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "fetchEvenBoardData", null);
+__decorate([
+    (0, common_1.Get)('fetchDataHealth'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], PayBackController.prototype, "fetchDataHealth", null);
 __decorate([
     (0, common_1.Get)('fetchHostListData'),
     __param(0, (0, common_1.Query)()),
