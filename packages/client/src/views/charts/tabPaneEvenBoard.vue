@@ -484,9 +484,9 @@ async function refreshBinddingData(isRemoveIncompatible = 0) {
     // 更新新股 和 强势股 2024-01-07
     data.currentDateData.newStock = JSON.parse(specialStockData.newStock);
     data.currentDateData.chooseStock = JSON.parse(specialStockData.chooseStock);
-    data.currentDateData.specialDataUpdateTime = dayjs(res.updateTime).format(
-      'MM/DD HH:mm',
-    );
+    data.currentDateData.specialDataUpdateTime = dayjs(
+      specialStockData.updatedTime,
+    ).format('MM/DD HH:mm');
   });
 }
 /**

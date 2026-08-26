@@ -176,11 +176,11 @@ export function mergeExtra2ShortTermData(shortTermData: Array<any>, specialStock
   if (shortTermData.length === 0 || specialStocks.length === 0) return shortTermData;
   // 1. 合并竞价数据到短线数据中的 连板数据中
   const shortTermDataLen = shortTermData.length;
-  for (let i = 0; i < shortTermDataLen - 1; i++) {
+  for (let i = 0; i < shortTermDataLen; i++) {
     const currentDate = dayjs(shortTermData[i].createTime).format(iWencaiDateFormat);
     // 今天的竞价数据，与昨天的涨停数据进行组装
     const currentSpecialStock = findBiddingDataByCreateTime(specialStocks, currentDate);
-    if (currentSpecialStock && currentSpecialStock.biddingData) {
+    if (i < shortTermDataLen - 1 && currentSpecialStock?.biddingData) {
       // 将今天的竞价数据，装载入昨日涨停数据中
       // TODO 这里的数据装载，缺少日期判断，特别是昨日日期判断
       const evenBoardData = prepareEvenBoardData(
@@ -190,12 +190,12 @@ export function mergeExtra2ShortTermData(shortTermData: Array<any>, specialStock
       shortTermData[i + 1].evenBoardData = JSON.stringify(evenBoardData);
     }
 
-    if (specialStocks[i]) {
+    if (currentSpecialStock) {
       // 2. 合并新股数据
-      shortTermData[i].newStock = specialStocks[i].newStock;
+      shortTermData[i].newStock = currentSpecialStock.newStock;
       // 3. 合并选股数据
-      shortTermData[i].chooseStock = specialStocks[i].chooseStock;
-      shortTermData[i].biddingDataUpdateTime = specialStocks[i].updatedTime;
+      shortTermData[i].chooseStock = currentSpecialStock.chooseStock;
+      shortTermData[i].biddingDataUpdateTime = currentSpecialStock.updatedTime;
     }
   }
 
