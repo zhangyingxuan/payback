@@ -19,20 +19,17 @@ const typeorm_1 = require("typeorm");
 const latestConceptPlate_entity_1 = require("../entities/latestConceptPlate.entity");
 const typeorm_2 = require("@nestjs/typeorm");
 const latestConceptPlateUtil_1 = require("../utils/latestConceptPlateUtil");
-const users_service_1 = require("../../users/users.service");
-const thsUtils_1 = require("../utils/thsUtils");
 let LatestConceptPlateService = LatestConceptPlateService_1 = class LatestConceptPlateService {
-    constructor(latestConceptPlateRp, usersService) {
+    constructor(latestConceptPlateRp) {
         this.latestConceptPlateRp = latestConceptPlateRp;
-        this.usersService = usersService;
         this.logger = new common_1.Logger(LatestConceptPlateService_1.name);
     }
-    async crawlLatestConceptPlateData(account = 'admin') {
+    async crawlLatestConceptPlateData() {
         this.logger.debug('crawlLatestConceptPlateData is Begining!');
         const conceptPlate = await this.findLatestOne();
         let latestConceptPlates;
         try {
-            latestConceptPlates = await (0, latestConceptPlateUtil_1.getLatestConceptPlate)(conceptPlate, (0, thsUtils_1.getIwencaiCookie)(await this.usersService.getUserByAccount(account)));
+            latestConceptPlates = await (0, latestConceptPlateUtil_1.getLatestConceptPlate)(conceptPlate);
             if (latestConceptPlates) {
                 latestConceptPlates.forEach(async (latestConceptPlate) => {
                     await this.latestConceptPlateRp.save(latestConceptPlate);
@@ -78,8 +75,7 @@ let LatestConceptPlateService = LatestConceptPlateService_1 = class LatestConcep
 LatestConceptPlateService = LatestConceptPlateService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_2.InjectRepository)(latestConceptPlate_entity_1.latestConceptPlate)),
-    __metadata("design:paramtypes", [typeorm_1.Repository,
-        users_service_1.UsersService])
+    __metadata("design:paramtypes", [typeorm_1.Repository])
 ], LatestConceptPlateService);
 exports.LatestConceptPlateService = LatestConceptPlateService;
 //# sourceMappingURL=latestConceptPlate.service.js.map

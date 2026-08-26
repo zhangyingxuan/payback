@@ -1,4 +1,4 @@
-export declare function fetchIwencaiApi(question: any, pageSize?: number, cookie?: string): Promise<any[]>;
+export declare function fetchIwencaiApi(question: any, pageSize?: number): Promise<any[]>;
 interface IwencaiStockResult {
     data: any;
     length: number;
@@ -6,9 +6,9 @@ interface IwencaiStockResult {
     compId: number;
     uuid: number;
 }
-export declare function fetchAllStocksByIwencai(question: any, limit?: any, cookie?: string): Promise<IwencaiStockResult>;
-export declare function fetchIwencai(question: any, pageSize?: number, isPlate?: boolean, cookie?: string): Promise<any>;
-export declare function fetchStockPagingDataList(question: any, pageSize: number, pageNum: number, condition: any, compId: any, uuid: any, cookie?: string): Promise<any>;
+export declare function fetchAllStocksByIwencai(question: any, limit?: any): Promise<IwencaiStockResult>;
+export declare function fetchIwencai(question: any, pageSize?: number, isPlate?: boolean): Promise<any>;
+export declare function fetchStockPagingDataList(question: any, pageSize: number, pageNum: number, condition: any, compId: any, uuid: any): Promise<any>;
 export declare function fetchMarketData(): Promise<any>;
 export declare function clearThsSelfStocks(user: any): Promise<any>;
 export declare function fetchMarketPointFromEastmoney(): Promise<any>;

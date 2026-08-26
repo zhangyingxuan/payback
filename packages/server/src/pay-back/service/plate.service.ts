@@ -5,15 +5,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import plateUtil from '../utils/plateUtil';
 import { CreatePlateDataDto } from '../dto/create-plate-data.dto';
 import { toIwencaiDate, toTradeDate } from '../utils/tradeDateUtil';
-import { UsersService } from '@/users/users.service';
-import { getIwencaiCookie } from '../utils/thsUtils';
 
 @Injectable()
 export class PlateService {
-  constructor(
-    @InjectRepository(plateData) private readonly plateDataRp: Repository<plateData>,
-    private readonly usersService: UsersService,
-  ) {}
+  constructor(@InjectRepository(plateData) private readonly plateDataRp: Repository<plateData>) {}
 
   private readonly logger = new Logger(PlateService.name);
 
@@ -28,16 +23,13 @@ export class PlateService {
   //   this.crawlPlateData();
   // }
 
-  async crawlPlateData(account = 'admin') {
+  async crawlPlateData() {
     this.logger.debug('crawlPlateData is Begining!');
     const todayDateStr = toTradeDate();
 
     let plateData: CreatePlateDataDto;
     try {
-      plateData = await plateUtil.getPlateData(
-        toIwencaiDate(todayDateStr),
-        getIwencaiCookie(await this.usersService.getUserByAccount(account)),
-      );
+      plateData = await plateUtil.getPlateData(toIwencaiDate(todayDateStr));
       plateData.tradeDate = todayDateStr;
       // console.log(plateData);
 

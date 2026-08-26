@@ -16,7 +16,7 @@ export default {
   /**
    * 获取 市场数据，指数数据 + 板块涨跌排行
    */
-  async getMarketData(dateStr, cookie: string): Promise<CreateMarketDataDto> {
+  async getMarketData(dateStr): Promise<CreateMarketDataDto> {
     const createMarketDataDto: CreateMarketDataDto = new CreateMarketDataDto();
     // 获取市场指数
     const index = fetchMarketPointFromEastmoney();
@@ -24,10 +24,10 @@ export default {
     // 获取同花顺分数、涨跌家数
     const market = fetchMarketData();
     // 板块涨跌排行
-    const gainianRiseFloat = fetchIwencaiApi(params.gainianRiseFloat + ignoreGainianPlateStr, 5, cookie);
-    const gainianFallFloat = fetchIwencaiApi(params.gainianFallFloat + ignoreGainianPlateStr, 5, cookie);
-    const hangyeRiseFloat = fetchIwencaiApi(params.hangyeRiseFloat, 5, cookie);
-    const hangyeFallFloat = fetchIwencaiApi(params.hangyeFallFloat, 5, cookie);
+    const gainianRiseFloat = fetchIwencaiApi(params.gainianRiseFloat + ignoreGainianPlateStr);
+    const gainianFallFloat = fetchIwencaiApi(params.gainianFallFloat + ignoreGainianPlateStr);
+    const hangyeRiseFloat = fetchIwencaiApi(params.hangyeRiseFloat);
+    const hangyeFallFloat = fetchIwencaiApi(params.hangyeFallFloat);
     const abortFetch = createFetch();
     // 成交量，涨幅数据
     const responseMarketTurnover = abortFetch(

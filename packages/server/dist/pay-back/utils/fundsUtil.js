@@ -8,14 +8,14 @@ const commonUtil_2 = require("./commonUtil");
 const transformDataUtil_1 = require("./transformDataUtil");
 const abortFetch_1 = require("../../utils/abortFetch");
 exports.default = {
-    async getFundsData(dateStr, cookie) {
+    async getFundsData(dateStr) {
         const dateTime = new Date().getTime();
         const abortFetch = (0, abortFetch_1.createFetch)();
         const responseForeignFunds = abortFetch(`https://push2.eastmoney.com/api/qt/kamt/get?fields1=f1,f2,f3,f4&fields2=f51,f52,f53,f54,f56,f60,f62,f63,f65,f66&ut=fa5fd1943c7b386f172d6893dbfba10b&cb=jQuery1123049543730033209155_${dateTime}&_=${dateTime}`);
-        const hangyeFundsInflow = (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.hangyeFundsInflow, 5, cookie);
-        const hangyeFundsOutflow = (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.hangyeFundsOutflow, 5, cookie);
-        const gaiNianFundsInflow = (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.gainianFundsInflow + commonUtil_2.ignoreGainianPlateStr, 5, cookie);
-        const gaiNianFundsOutflow = (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.gainianFundsOutflow + commonUtil_2.ignoreGainianPlateStr, 5, cookie);
+        const hangyeFundsInflow = (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.hangyeFundsInflow);
+        const hangyeFundsOutflow = (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.hangyeFundsOutflow);
+        const gaiNianFundsInflow = (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.gainianFundsInflow + commonUtil_2.ignoreGainianPlateStr);
+        const gaiNianFundsOutflow = (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.gainianFundsOutflow + commonUtil_2.ignoreGainianPlateStr);
         const [responseForeignFundsData, hangyeFundsInflowData, hangyeFundsOutflowData, gaiNianFundsInflowData, gaiNianFundsOutflowData,] = await Promise.all([
             responseForeignFunds,
             hangyeFundsInflow,

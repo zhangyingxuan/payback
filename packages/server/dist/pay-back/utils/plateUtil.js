@@ -16,10 +16,10 @@ function getPlateTop(platesData, dateStr, len = 5) {
     });
 }
 exports.default = {
-    async getPlateData(dateStr, cookie) {
+    async getPlateData(dateStr) {
         const createPlateDataDto = new create_plate_data_dto_1.CreatePlateDataDto();
-        const gainianDailyLimit = (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.gainianPlateOrderByDailyLimitNum + commonUtil_1.default.ignoreGainianPlateStr, 5, cookie);
-        const hangyeDailyLimit = (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.hangyePlateOrderByDailyLimitNum, 5, cookie);
+        const gainianDailyLimit = (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.gainianPlateOrderByDailyLimitNum + commonUtil_1.default.ignoreGainianPlateStr);
+        const hangyeDailyLimit = (0, fetchUtil_1.fetchIwencaiApi)(config_1.params.hangyePlateOrderByDailyLimitNum);
         const [gainianDailyLimitData, hangyeDailyLimitData] = await Promise.all([gainianDailyLimit, hangyeDailyLimit]);
         const gainianDailyLimitDataTop = getPlateTop(gainianDailyLimitData, dateStr);
         const hangyeDailyLimitDataTop = getPlateTop(hangyeDailyLimitData, dateStr);

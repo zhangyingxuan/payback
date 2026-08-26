@@ -20,20 +20,17 @@ const fundsData_entity_1 = require("../entities/fundsData.entity");
 const typeorm_2 = require("@nestjs/typeorm");
 const fundsUtil_1 = require("../utils/fundsUtil");
 const tradeDateUtil_1 = require("../utils/tradeDateUtil");
-const users_service_1 = require("../../users/users.service");
-const thsUtils_1 = require("../utils/thsUtils");
 let FundsService = FundsService_1 = class FundsService {
-    constructor(fundsDataRp, usersService) {
+    constructor(fundsDataRp) {
         this.fundsDataRp = fundsDataRp;
-        this.usersService = usersService;
         this.logger = new common_1.Logger(FundsService_1.name);
     }
-    async crawlfundsData(account = 'admin') {
+    async crawlfundsData() {
         this.logger.debug('crawlfundsData is Begining!');
         const todayDateStr = (0, tradeDateUtil_1.toTradeDate)();
         let fundsData;
         try {
-            fundsData = await fundsUtil_1.default.getFundsData((0, tradeDateUtil_1.toIwencaiDate)(todayDateStr), (0, thsUtils_1.getIwencaiCookie)(await this.usersService.getUserByAccount(account)));
+            fundsData = await fundsUtil_1.default.getFundsData((0, tradeDateUtil_1.toIwencaiDate)(todayDateStr));
             fundsData.tradeDate = todayDateStr;
             const todayDataFromDB = await this.fundsDataRp
                 .createQueryBuilder('market_data')
@@ -80,8 +77,7 @@ let FundsService = FundsService_1 = class FundsService {
 FundsService = FundsService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_2.InjectRepository)(fundsData_entity_1.fundsData)),
-    __metadata("design:paramtypes", [typeorm_1.Repository,
-        users_service_1.UsersService])
+    __metadata("design:paramtypes", [typeorm_1.Repository])
 ], FundsService);
 exports.FundsService = FundsService;
 //# sourceMappingURL=funds.service.js.map

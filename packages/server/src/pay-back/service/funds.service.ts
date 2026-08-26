@@ -5,15 +5,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import fundsUtil from '../utils/fundsUtil';
 import { CreateFundsDataDto } from '../dto/create-funds-data.dto';
 import { toIwencaiDate, toTradeDate } from '../utils/tradeDateUtil';
-import { UsersService } from '@/users/users.service';
-import { getIwencaiCookie } from '../utils/thsUtils';
 
 @Injectable()
 export class FundsService {
-  constructor(
-    @InjectRepository(fundsData) private readonly fundsDataRp: Repository<fundsData>,
-    private readonly usersService: UsersService,
-  ) {}
+  constructor(@InjectRepository(fundsData) private readonly fundsDataRp: Repository<fundsData>) {}
 
   private readonly logger = new Logger(FundsService.name);
 
@@ -40,15 +35,12 @@ export class FundsService {
   // * 10 * * * *：每小时一次，十分钟开始
   // 0 */30 9-17 * * *：上午九时至下午五时，每三十分钟一次
   // 0 30 11 * * 1-5：星期一至星期五上午11:30
-  async crawlfundsData(account = 'admin') {
+  async crawlfundsData() {
     this.logger.debug('crawlfundsData is Begining!');
     const todayDateStr = toTradeDate();
     let fundsData: CreateFundsDataDto;
     try {
-      fundsData = await fundsUtil.getFundsData(
-        toIwencaiDate(todayDateStr),
-        getIwencaiCookie(await this.usersService.getUserByAccount(account)),
-      );
+      fundsData = await fundsUtil.getFundsData(toIwencaiDate(todayDateStr));
       fundsData.tradeDate = todayDateStr;
       // 如果存在数据，则返回已有该数据
       const todayDataFromDB = await this.fundsDataRp

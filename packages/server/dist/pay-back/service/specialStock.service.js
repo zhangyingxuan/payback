@@ -25,13 +25,10 @@ const pay_back_core_1 = require("pay-back-core");
 const ths_service_1 = require("./ths.service");
 const fetchUtil_1 = require("../core/fetchUtil");
 const tradeDateUtil_1 = require("../utils/tradeDateUtil");
-const users_service_1 = require("../../users/users.service");
-const thsUtils_1 = require("../utils/thsUtils");
 let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
-    constructor(specialStockRp, thsService, usersService) {
+    constructor(specialStockRp, thsService) {
         this.specialStockRp = specialStockRp;
         this.thsService = thsService;
-        this.usersService = usersService;
         this.logger = new common_1.Logger(SpecialStockService_1.name);
     }
     async crawlBinddingData(isRemoveIncompatible = 0, account) {
@@ -50,8 +47,7 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
         };
         try {
             const yesterdayDateStr = await this.getLastTradingDayByDB(todayDateStr);
-            const cookie = (0, thsUtils_1.getIwencaiCookie)(await this.usersService.getUserByAccount(account));
-            const dailyLimitYesterdayBidding = await (0, specialStockUtil_1.fetchLastdayDailyLimitBinddingData)(todayDateStr, yesterdayDateStr, cookie);
+            const dailyLimitYesterdayBidding = await (0, specialStockUtil_1.fetchLastdayDailyLimitBinddingData)(todayDateStr, yesterdayDateStr);
             isRemoveIncompatible && this.dealIncompatibleExpectStocks(dailyLimitYesterdayBidding, account);
             todayDataFromDB = await this.getTodayData(todayDateStr);
             if (todayDataFromDB) {
@@ -91,8 +87,7 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
         };
         try {
             const yesterdayDateStr = await this.getLastTradingDayByDB(todayDateStr);
-            const cookie = (0, thsUtils_1.getIwencaiCookie)(await this.usersService.getUserByAccount(account));
-            const { newStocks, chooseStock1Expected } = await (0, specialStockUtil_1.fetchSpecialStockBinddingData)(todayDateStr, yesterdayDateStr, cookie);
+            const { newStocks, chooseStock1Expected } = await (0, specialStockUtil_1.fetchSpecialStockBinddingData)(todayDateStr, yesterdayDateStr);
             if (newStocks && newStocks.length > 0) {
                 try {
                     this.thsService.batchUpdateThsSelfStock(newStocks, fetchUtil_1.ThsOprate.add, account);
@@ -185,8 +180,7 @@ SpecialStockService = SpecialStockService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_2.InjectRepository)(specialStock_entity_1.specialStock)),
     __metadata("design:paramtypes", [typeorm_1.Repository,
-        ths_service_1.ThsService,
-        users_service_1.UsersService])
+        ths_service_1.ThsService])
 ], SpecialStockService);
 exports.SpecialStockService = SpecialStockService;
 //# sourceMappingURL=specialStock.service.js.map

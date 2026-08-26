@@ -129,27 +129,27 @@ export class PayBackController {
     const account = req.user?.account || 'admin';
     switch (body.fetchTodayDataType) {
       case 0:
-        short = this.shorTermService.crawlShortTermData(account);
-        funds = this.fundsService.crawlfundsData(account);
-        market = this.marketService.crawlMarketData(account);
+        short = this.shorTermService.crawlShortTermData();
+        funds = this.fundsService.crawlfundsData();
+        market = this.marketService.crawlMarketData();
         bindding = this.specialStockService.crawlBinddingData(0, account);
         specialStock = this.specialStockService.crawlSpecialStockData(account);
-        plate = this.plateService.crawlPlateData(account);
+        plate = this.plateService.crawlPlateData();
         resultData = {};
         await Promise.all([short, funds, market, bindding, specialStock, plate]);
         // resultData = { shortData, fundsData, marketData, binddingData, plateData };
         break;
       case 1:
-        resultData = await this.shorTermService.crawlShortTermData(account);
+        resultData = await this.shorTermService.crawlShortTermData();
         break;
       case 2:
         // 更新板块数据涨停家数排序 & 市场数据（行业、概念涨跌幅）
-        plate = this.plateService.crawlPlateData(account);
-        market = this.marketService.crawlMarketData(account);
+        plate = this.plateService.crawlPlateData();
+        market = this.marketService.crawlMarketData();
         await Promise.all([plate, market]);
         break;
       case 3:
-        resultData = await this.fundsService.crawlfundsData(account);
+        resultData = await this.fundsService.crawlfundsData();
         break;
       case 4:
         // 获取竞价数据
@@ -261,10 +261,9 @@ export class PayBackController {
   // 示例：http://localhost:3000/blowsysun/pay-back/crawlShortTermByDate?date=2023-06-26
   // @Public()
   @Get('/crawlShortTermByDate')
-  @UseGuards(JwtAuthGuard)
-  crawlShortTermByDate(@Query() query, @Request() req) {
+  crawlShortTermByDate(@Query() query) {
     const date = query.date || new Date();
-    return this.shorTermService.crawlShortTermDataByDate(date, req.user?.account);
+    return this.shorTermService.crawlShortTermDataByDate(date);
   }
   /**
    * 爬取最新 涨停家数较多的 板块数据
@@ -272,9 +271,8 @@ export class PayBackController {
    */
   // @Public()
   @Get('/crawlPlateData')
-  @UseGuards(JwtAuthGuard)
-  async crawlPlateData(@Request() req) {
-    const data = await this.plateService.crawlPlateData(req.user?.account);
+  async crawlPlateData() {
+    const data = await this.plateService.crawlPlateData();
     return {
       code: 0,
       data,

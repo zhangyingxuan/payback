@@ -5,15 +5,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import marketUtil from '../utils/marketUtil';
 import { CreateMarketDataDto } from '../dto/create-market-data.dto';
 import { toIwencaiDate, toTradeDate } from '../utils/tradeDateUtil';
-import { UsersService } from '@/users/users.service';
-import { getIwencaiCookie } from '../utils/thsUtils';
 
 @Injectable()
 export class MarketService {
-  constructor(
-    @InjectRepository(marketData) private readonly marketDataRp: Repository<marketData>,
-    private readonly usersService: UsersService,
-  ) {}
+  constructor(@InjectRepository(marketData) private readonly marketDataRp: Repository<marketData>) {}
 
   private readonly logger = new Logger(MarketService.name);
 
@@ -28,16 +23,13 @@ export class MarketService {
   //   this.crawlMarketData();
   // }
 
-  async crawlMarketData(account = 'admin') {
+  async crawlMarketData() {
     this.logger.debug('crawlMarketData is Begining!');
     const todayDateStr = toTradeDate();
 
     let marketData: CreateMarketDataDto;
     try {
-      marketData = await marketUtil.getMarketData(
-        toIwencaiDate(todayDateStr),
-        getIwencaiCookie(await this.usersService.getUserByAccount(account)),
-      );
+      marketData = await marketUtil.getMarketData(toIwencaiDate(todayDateStr));
       marketData.tradeDate = todayDateStr;
 
       // 如果存在数据，则返回已有该数据

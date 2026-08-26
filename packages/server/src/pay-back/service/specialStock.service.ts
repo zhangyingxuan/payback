@@ -10,15 +10,12 @@ import { iWencaiDateFormat } from 'pay-back-core';
 import { ThsService } from './ths.service';
 import { ThsOprate } from '../core/fetchUtil';
 import { toTradeDate } from '../utils/tradeDateUtil';
-import { UsersService } from '@/users/users.service';
-import { getIwencaiCookie } from '../utils/thsUtils';
 
 @Injectable()
 export class SpecialStockService {
   constructor(
     @InjectRepository(specialStock) private readonly specialStockRp: Repository<specialStock>,
     private readonly thsService: ThsService,
-    private readonly usersService: UsersService,
   ) {}
 
   private readonly logger = new Logger(SpecialStockService.name);
@@ -60,8 +57,7 @@ export class SpecialStockService {
       const yesterdayDateStr = await this.getLastTradingDayByDB(todayDateStr);
 
       // 获取竞价情况
-      const cookie = getIwencaiCookie(await this.usersService.getUserByAccount(account));
-      const dailyLimitYesterdayBidding = await fetchLastdayDailyLimitBinddingData(todayDateStr, yesterdayDateStr, cookie);
+      const dailyLimitYesterdayBidding = await fetchLastdayDailyLimitBinddingData(todayDateStr, yesterdayDateStr);
       // 处理不及预期个股
       isRemoveIncompatible && this.dealIncompatibleExpectStocks(dailyLimitYesterdayBidding, account);
 
@@ -114,8 +110,7 @@ export class SpecialStockService {
       const yesterdayDateStr = await this.getLastTradingDayByDB(todayDateStr);
 
       // 获取竞价情况
-      const cookie = getIwencaiCookie(await this.usersService.getUserByAccount(account));
-      const { newStocks, chooseStock1Expected } = await fetchSpecialStockBinddingData(todayDateStr, yesterdayDateStr, cookie);
+      const { newStocks, chooseStock1Expected } = await fetchSpecialStockBinddingData(todayDateStr, yesterdayDateStr);
 
       // 如果当日有新股数据，则自动加入自选 2025-04-28 18:19:15、
       if (newStocks && newStocks.length > 0) {

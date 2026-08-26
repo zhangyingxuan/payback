@@ -20,20 +20,17 @@ const plateData_entity_1 = require("../entities/plateData.entity");
 const typeorm_2 = require("@nestjs/typeorm");
 const plateUtil_1 = require("../utils/plateUtil");
 const tradeDateUtil_1 = require("../utils/tradeDateUtil");
-const users_service_1 = require("../../users/users.service");
-const thsUtils_1 = require("../utils/thsUtils");
 let PlateService = PlateService_1 = class PlateService {
-    constructor(plateDataRp, usersService) {
+    constructor(plateDataRp) {
         this.plateDataRp = plateDataRp;
-        this.usersService = usersService;
         this.logger = new common_1.Logger(PlateService_1.name);
     }
-    async crawlPlateData(account = 'admin') {
+    async crawlPlateData() {
         this.logger.debug('crawlPlateData is Begining!');
         const todayDateStr = (0, tradeDateUtil_1.toTradeDate)();
         let plateData;
         try {
-            plateData = await plateUtil_1.default.getPlateData((0, tradeDateUtil_1.toIwencaiDate)(todayDateStr), (0, thsUtils_1.getIwencaiCookie)(await this.usersService.getUserByAccount(account)));
+            plateData = await plateUtil_1.default.getPlateData((0, tradeDateUtil_1.toIwencaiDate)(todayDateStr));
             plateData.tradeDate = todayDateStr;
             const todayDataFromDB = await this.plateDataRp
                 .createQueryBuilder('plate_data')
@@ -88,8 +85,7 @@ let PlateService = PlateService_1 = class PlateService {
 PlateService = PlateService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_2.InjectRepository)(plateData_entity_1.plateData)),
-    __metadata("design:paramtypes", [typeorm_1.Repository,
-        users_service_1.UsersService])
+    __metadata("design:paramtypes", [typeorm_1.Repository])
 ], PlateService);
 exports.PlateService = PlateService;
 //# sourceMappingURL=plate.service.js.map

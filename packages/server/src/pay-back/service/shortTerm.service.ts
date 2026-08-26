@@ -7,8 +7,6 @@ import { getShortTermData, mergeExtra2ShortTermData, getShortTermDataByDate } fr
 import { ThsService } from './ths.service';
 import * as dayjs from 'dayjs';
 import { SpecialStockService } from './specialStock.service';
-import { UsersService } from '@/users/users.service';
-import { getIwencaiCookie } from '../utils/thsUtils';
 import { toIwencaiDate, toTradeDate } from '../utils/tradeDateUtil';
 
 @Injectable()
@@ -16,7 +14,6 @@ export class ShorTermService {
   constructor(
     private readonly thsService: ThsService,
     private readonly specialStockService: SpecialStockService,
-    private readonly usersService: UsersService,
     @InjectRepository(shortTermData) private readonly shortTermDataRp: Repository<shortTermData>,
   ) {}
 
@@ -26,16 +23,14 @@ export class ShorTermService {
    * 爬取短线数据，如果已存在则更新
    * @returns
    */
-  async crawlShortTermData(account = 'admin') {
+  async crawlShortTermData() {
     this.logger.debug('crawlShortTermData is Begining!');
     const todayDateStr = toTradeDate();
 
     let createPayBackDto: CreatePayBackDto;
     try {
       const lastTradingDayData = await this.getLastTradingDayData(todayDateStr);
-      const user = await this.usersService.getUserByAccount(account);
-      const cookie = getIwencaiCookie(user);
-      createPayBackDto = await getShortTermData(todayDateStr, lastTradingDayData, cookie);
+      createPayBackDto = await getShortTermData(todayDateStr, lastTradingDayData);
       createPayBackDto.tradeDate = todayDateStr;
 
       // 如果存在数据，则返回已有该数据
@@ -62,14 +57,13 @@ export class ShorTermService {
    * @param todayDateStr
    * @returns
    */
-  async crawlShortTermDataByDate(todayDateStr, account = 'admin') {
+  async crawlShortTermDataByDate(todayDateStr) {
     this.logger.debug('crawlShortTermDataByDate is Begining!');
     todayDateStr = toTradeDate(todayDateStr);
     let createPayBackDto: CreatePayBackDto;
     try {
       const lastTradingDayData = await this.getLastTradingDayData(todayDateStr);
-      const cookie = getIwencaiCookie(await this.usersService.getUserByAccount(account));
-      createPayBackDto = await getShortTermDataByDate(todayDateStr, lastTradingDayData, cookie);
+      createPayBackDto = await getShortTermDataByDate(todayDateStr, lastTradingDayData);
       createPayBackDto.tradeDate = todayDateStr;
       const dateTime = new Date(todayDateStr);
       dateTime.setHours(15);

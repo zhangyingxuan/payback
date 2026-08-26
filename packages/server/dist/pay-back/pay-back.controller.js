@@ -79,25 +79,25 @@ let PayBackController = PayBackController_1 = class PayBackController {
         const account = ((_a = req.user) === null || _a === void 0 ? void 0 : _a.account) || 'admin';
         switch (body.fetchTodayDataType) {
             case 0:
-                short = this.shorTermService.crawlShortTermData(account);
-                funds = this.fundsService.crawlfundsData(account);
-                market = this.marketService.crawlMarketData(account);
+                short = this.shorTermService.crawlShortTermData();
+                funds = this.fundsService.crawlfundsData();
+                market = this.marketService.crawlMarketData();
                 bindding = this.specialStockService.crawlBinddingData(0, account);
                 specialStock = this.specialStockService.crawlSpecialStockData(account);
-                plate = this.plateService.crawlPlateData(account);
+                plate = this.plateService.crawlPlateData();
                 resultData = {};
                 await Promise.all([short, funds, market, bindding, specialStock, plate]);
                 break;
             case 1:
-                resultData = await this.shorTermService.crawlShortTermData(account);
+                resultData = await this.shorTermService.crawlShortTermData();
                 break;
             case 2:
-                plate = this.plateService.crawlPlateData(account);
-                market = this.marketService.crawlMarketData(account);
+                plate = this.plateService.crawlPlateData();
+                market = this.marketService.crawlMarketData();
                 await Promise.all([plate, market]);
                 break;
             case 3:
-                resultData = await this.fundsService.crawlfundsData(account);
+                resultData = await this.fundsService.crawlfundsData();
                 break;
             case 4:
                 const crawlBindding = this.specialStockService.crawlBinddingData(body.isRemoveIncompatible, (_b = req.user) === null || _b === void 0 ? void 0 : _b.account);
@@ -183,14 +183,12 @@ let PayBackController = PayBackController_1 = class PayBackController {
             data,
         };
     }
-    crawlShortTermByDate(query, req) {
-        var _a;
+    crawlShortTermByDate(query) {
         const date = query.date || new Date();
-        return this.shorTermService.crawlShortTermDataByDate(date, (_a = req.user) === null || _a === void 0 ? void 0 : _a.account);
+        return this.shorTermService.crawlShortTermDataByDate(date);
     }
-    async crawlPlateData(req) {
-        var _a;
-        const data = await this.plateService.crawlPlateData((_a = req.user) === null || _a === void 0 ? void 0 : _a.account);
+    async crawlPlateData() {
+        const data = await this.plateService.crawlPlateData();
         return {
             code: 0,
             data,
@@ -366,19 +364,15 @@ __decorate([
 ], PayBackController.prototype, "crawlHotListData", null);
 __decorate([
     (0, common_1.Get)('/crawlShortTermByDate'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, common_1.Query)()),
-    __param(1, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], PayBackController.prototype, "crawlShortTermByDate", null);
 __decorate([
     (0, common_1.Get)('/crawlPlateData'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    __param(0, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], PayBackController.prototype, "crawlPlateData", null);
 __decorate([
