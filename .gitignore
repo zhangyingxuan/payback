@@ -1,6 +1,7 @@
 # compiled output
 .DS_Store
 node_modules
+.worktrees/
 
 # local env files
 .env.local
