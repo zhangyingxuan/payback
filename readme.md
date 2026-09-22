@@ -272,11 +272,4 @@ docker-compose -f docker-compose-consul.yml up -d
 
 本项目采用 ISC 许可证 - 查看 [LICENSE](packages/client/LICENSE) 文件了解详情。
 
-## 📞 联系方式
-
-- 项目维护者: yxuanzhang@tencent.com
-- 项目仓库: [Gitee](https://gitee.com/chongqing-woteng/pay-back.git)
-
----
-
 **无限未来 (Infinite Future) | 数字前沿 (Digital Frontier) | 云端智造 (Cloud Smart Manufacturing)**
