@@ -37,8 +37,18 @@ const plugins = [
   resolve(), // 查找和打包node_modules中的第三方模块
   json(), // 	将 .json 文件转换为 ES6 模块
   typescript({
+    tsconfig: false,
     compilerOptions: {
-      emitDeclarationOnly: false
+      target: 'es2016',
+      module: 'esnext',
+      emitDeclarationOnly: false,
+      declaration: false,
+      esModuleInterop: true,
+      allowSyntheticDefaultImports: true,
+      skipLibCheck: true,
+      isolatedModules: true,
+      noImplicitAny: false,
+      strictNullChecks: false
     }
   }), // 解析TypeScript
   commonjs(), // 将 CommonJS 转换成 ES2015 模块供 Rollup 处理

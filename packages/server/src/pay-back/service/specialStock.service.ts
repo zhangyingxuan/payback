@@ -3,8 +3,14 @@ import { SpecialStockDto } from '../dto/special-stock.dto';
 import { Repository } from 'typeorm';
 import { specialStock } from '../entities/specialStock.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ExpectEnum } from '../utils/transformDataUtil';
+import {
+  ExpectEnum,
+  transformMorningAuctionLimitUpData,
+  transformNewStockData,
+} from '../utils/transformDataUtil';
 import { fetchLastdayDailyLimitBinddingData, fetchSpecialStockBinddingData } from '../utils/specialStockUtil';
+import { params } from '../core/config';
+import { fetchAllStocksByIwencai } from '../core/fetchUtil';
 import * as dayjs from 'dayjs';
 import { iWencaiDateFormat } from 'pay-back-core';
 import { ThsService } from './ths.service';
@@ -147,6 +153,23 @@ export class SpecialStockService {
     }
 
     return todayDataFromDB ? todayDataFromDB : specialStockDto;
+  }
+
+  /**
+   * 早盘 9:25 采集：今日上市新股 + 集合竞价涨停（按封单量降序）
+   * 供飞书卡片推送使用
+   */
+  async crawlMorningLimitUpData() {
+    const todayDateStr = toTradeDate();
+    const [newStocksRs, auctionLimitUpRs] = await Promise.all([
+      fetchAllStocksByIwencai(params.chooseStockNewStock),
+      fetchAllStocksByIwencai(params.auctionLimitUpBySealVolume),
+    ]);
+
+    const newStocks = transformNewStockData(newStocksRs.data, todayDateStr);
+    const auctionLimitUp = transformMorningAuctionLimitUpData(auctionLimitUpRs.data, todayDateStr);
+
+    return { newStocks, auctionLimitUp };
   }
 
   /**

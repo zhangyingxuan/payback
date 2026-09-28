@@ -131,6 +131,99 @@ export class PushService {
     return results;
   }
 
+  /**
+   * 早盘推送：今日新股 + 集合竞价涨停（按封单量排序）到飞书卡片/企微
+   * @param payload { newStocks, auctionLimitUp }
+   */
+  async pushMorningMessage(payload) {
+    const todayDateStr = dayjs().format('YYYY-MM-DD');
+    const { newStocks = [], auctionLimitUp = [] } = payload || {};
+
+    // 封单量默认单位为亿（原始单位为手）
+    const formatSeal = (item) => `${((item.sealQuantity || 0) / 1e8).toFixed(2)}亿`;
+    // 6位编码（去掉交易所后缀）
+    const code6 = (item) => String(item.code || '').split('.')[0];
+    // 二级板块（取第二个层级，如 传媒-文化传媒-出版 → 文化传媒）
+    const plate2 = (item) => String(item.plateLevel2 || '').split('-')[1] || item.plateLevel2 || '';
+
+    // 个股行：名称(带链接) + 6位编码 + 封单 + 二级板块，不展示涨幅
+    const stockLine = (item, index, showSeal) => {
+      const code = code6(item);
+      const seal = showSeal ? ` ｜ 封单 <font color="red">${formatSeal(item)}</font>` : '';
+      return `${index + 1}. [${item.name}](${thsStockBaseUrl + code})(${code})${seal} | ${plate2(item)}`;
+    };
+
+    // 飞书富文本卡片（带 header，渲染为真正卡片）
+    const elements = [];
+    elements.push({
+      tag: 'div',
+      text: { tag: 'lark_md', content: `**集合竞价涨停（${auctionLimitUp.length}，按封单量）**` },
+    });
+    if (auctionLimitUp.length > 0) {
+      auctionLimitUp.slice(0, 20).forEach((item, index) => {
+        elements.push({ tag: 'div', text: { tag: 'lark_md', content: stockLine(item, index, true) } });
+      });
+    } else {
+      elements.push({ tag: 'div', text: { tag: 'lark_md', content: '> 无' } });
+    }
+    elements.push({ tag: 'hr' });
+    elements.push({
+      tag: 'div',
+      text: { tag: 'lark_md', content: `**今日上市新股（${newStocks.length}）**` },
+    });
+    if (newStocks.length > 0) {
+      newStocks.forEach((item, index) => {
+        elements.push({ tag: 'div', text: { tag: 'lark_md', content: stockLine(item, index, false) } });
+      });
+    } else {
+      elements.push({ tag: 'div', text: { tag: 'lark_md', content: '> 无' } });
+    }
+
+    const card = {
+      msg_type: 'interactive',
+      card: {
+        config: { wide_screen_mode: true },
+        header: {
+          title: { tag: 'plain_text', content: `早盘 集合竞价 ${todayDateStr}` },
+          template: 'blue',
+        },
+        elements,
+      },
+    };
+
+    // 企微 markdown（同格式，无链接）
+    const content = [];
+    content.push(`**【早盘 集合竞价】** ${todayDateStr}\n`);
+    content.push(`**集合竞价涨停（${auctionLimitUp.length}，按封单量）**\n`);
+    if (auctionLimitUp.length > 0) {
+      auctionLimitUp.slice(0, 20).forEach((item, index) => {
+        content.push(
+          `${index + 1}. ${item.name}(${code6(item)}) 封单 ${formatSeal(item)} | ${plate2(item)}\n`,
+        );
+      });
+    } else {
+      content.push(`> 无\n`);
+    }
+    content.push(`**今日上市新股（${newStocks.length}）**\n`);
+    if (newStocks.length > 0) {
+      newStocks.forEach((item, index) => {
+        content.push(`${index + 1}. ${item.name}(${code6(item)}) | ${plate2(item)}\n`);
+      });
+    } else {
+      content.push(`> 无\n`);
+    }
+
+    const results = await Promise.allSettled([
+      this.sendFeishu(feishuWebhookUrls[0], feishuSigningSecrets[0], card),
+      this.pushMsg2Robot({
+        msgtype: 'markdown',
+        markdown: { content: content.join('') },
+      }),
+    ]);
+    this.logRejectedChannels(results);
+    return results;
+  }
+
   pushMsg2Robot(body) {
     return Promise.allSettled(this.robotList.map((robotKey) => this.qyapi(robotKey, body)));
   }

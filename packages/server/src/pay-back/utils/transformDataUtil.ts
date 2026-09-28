@@ -289,6 +289,47 @@ export function transformNewStockData(stocks, todayDateStr): Array<NewStockDto> 
   return newStockDtos;
 }
 /**
+ * 封单量 文本转手数，支持 手/万手/亿手，用于比较大小
+ */
+function parseSealVolume(value): number {
+  if (value === undefined || value === null) return 0;
+  const str = String(value);
+  const num = parseFloat(str);
+  if (isNaN(num)) return 0;
+  const unit = str.replace(/[0-9.,\-\s]/g, '');
+  if (unit.includes('亿')) return num * 1e8;
+  if (unit.includes('万')) return num * 1e4;
+  return num;
+}
+
+/**
+ * 转换早盘 集合竞价涨停 数据（按封单量降序）
+ * @param stocks 问财返回的股票列表
+ * @param todayDateStr 交易日，用于读取日期后缀字段（如 涨停封单量[20260928]）
+ */
+export function transformMorningAuctionLimitUpData(stocks, todayDateStr) {
+  if (!stocks) return [];
+  const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
+  const list = stocks.map(item => {
+    const bid = parseFloat(String(item[`竞价涨幅[${currentDate}]`] ?? ''));
+    return {
+      name: item['股票简称'],
+      code: item['股票代码'],
+      plateLevel2: item['所属同花顺行业'],
+      // 竞价涨幅（%，保留2位）
+      bidIncreaseT: isNaN(bid) ? 0 : +bid.toFixed(2),
+      // 封单量原始值（含单位）
+      sealVolume: item[`涨停封单量[${currentDate}]`] ?? '-',
+      // 排序用封单手数
+      sealQuantity: parseSealVolume(item[`涨停封单量[${currentDate}]`]),
+      circulationValue: item[`a股市值(不含限售股)[${currentDate}]`],
+    };
+  });
+  list.sort((a, b) => b.sealQuantity - a.sealQuantity);
+  return list;
+}
+
+/**
  * 转换早盘 强势股竞价数据
  * @param downLimitData
  * @param todayDateStr

@@ -9,6 +9,13 @@ export const executeTaskFunc = async (self, task, retryTime) => {
       return;
     }
 
+    // 早盘 9:25 推送：采集新股 + 集合竞价涨停（按封单量排序），发飞书卡片
+    if (task.taskName === 'autoPushMorningLimitUpMessage') {
+      const result = await self[task.service][task.func]();
+      self.pushServer.emit('pushMorningMessage', result);
+      return;
+    }
+
     await self[task.service][task.func]();
   } catch (e) {
     // 报错后 通知企微

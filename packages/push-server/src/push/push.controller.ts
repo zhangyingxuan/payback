@@ -15,4 +15,9 @@ export class PushController {
   notice(serviceName, msgContent): any {
     return this.pushService.notice(serviceName, msgContent);
   }
+
+  @EventPattern('pushMorningMessage')
+  pushMorningMessage(payload): any {
+    return this.pushService.pushMorningMessage(payload);
+  }
 }
