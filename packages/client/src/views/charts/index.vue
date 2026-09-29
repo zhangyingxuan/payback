@@ -26,12 +26,15 @@
   </div>
   <el-tabs type="border-card" :class="['reviewBoard__tabs', { isMobile }]">
     <!-- <el-tabs type="border-card" class="reviewBoard__tabs" @tab-change="tabChange"> -->
+    <el-tab-pane label="短线">
+      <TabPaneEvenBoard ref="evenBoard" />
+    </el-tab-pane>    
     <el-tab-pane label="图表复盘">
       <TabPaneCharts ref="charts" />
     </el-tab-pane>
-    <el-tab-pane label="短线">
-      <TabPaneEvenBoard ref="evenBoard" />
-    </el-tab-pane>
+
+
+    
     <el-tab-pane label="板块">
       <TabPanePlates ref="plates" />
     </el-tab-pane>

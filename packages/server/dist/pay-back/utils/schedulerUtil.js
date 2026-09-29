@@ -11,6 +11,11 @@ const executeTaskFunc = async (self, task, retryTime) => {
                 (await self.thsService.autoModifyThsSelfStocks(JSON.parse(result.evenBoardData), 'admin'));
             return;
         }
+        if (task.taskName === 'autoPushMorningLimitUpMessage') {
+            const result = await self[task.service][task.func]();
+            self.pushServer.emit('pushMorningMessage', result);
+            return;
+        }
         await self[task.service][task.func]();
     }
     catch (e) {

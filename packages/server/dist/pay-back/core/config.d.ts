@@ -10,6 +10,7 @@ export declare const params: {
     binddingDailyLimit: string;
     binddingDailyLimitMoreThan1: string;
     binddingDailyLimitMoreThan1ByDate: string;
+    auctionLimitUpBySealVolume: string;
     dailyLimitYesterday: string;
     chooseStock1to2: string;
     chooseStock1Expected: string;

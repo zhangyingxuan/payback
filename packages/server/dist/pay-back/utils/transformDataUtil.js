@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.transformForeignFundsNew = exports.transformForeignFunds = exports.transformShortTermSourceData = exports.transformStrongStockData = exports.transformNewStockData = exports.transformBidData = exports.transformPlateData = exports.transformStockData = exports.ExpectEnum = void 0;
+exports.transformForeignFundsNew = exports.transformForeignFunds = exports.transformShortTermSourceData = exports.transformStrongStockData = exports.transformMorningAuctionLimitUpData = exports.transformNewStockData = exports.transformBidData = exports.transformPlateData = exports.transformStockData = exports.ExpectEnum = void 0;
 const daily_limit_stock_dto_1 = require("../dto/daily-limit-stock.dto");
 const down_limit_stock_dto_1 = require("../dto/down-limit-stock.dto");
 const strong_stock_dto_1 = require("../dto/strong-stock.dto");
@@ -191,6 +191,41 @@ function transformNewStockData(stocks, todayDateStr) {
     return newStockDtos;
 }
 exports.transformNewStockData = transformNewStockData;
+function parseSealVolume(value) {
+    if (value === undefined || value === null)
+        return 0;
+    const str = String(value);
+    const num = parseFloat(str);
+    if (isNaN(num))
+        return 0;
+    const unit = str.replace(/[0-9.,\-\s]/g, '');
+    if (unit.includes('亿'))
+        return num * 1e8;
+    if (unit.includes('万'))
+        return num * 1e4;
+    return num;
+}
+function transformMorningAuctionLimitUpData(stocks, todayDateStr) {
+    if (!stocks)
+        return [];
+    const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
+    const list = stocks.map(item => {
+        var _a, _b;
+        const bid = parseFloat(String((_a = item[`竞价涨幅[${currentDate}]`]) !== null && _a !== void 0 ? _a : ''));
+        return {
+            name: item['股票简称'],
+            code: item['股票代码'],
+            plateLevel2: item['所属同花顺行业'],
+            bidIncreaseT: isNaN(bid) ? 0 : +bid.toFixed(2),
+            sealVolume: (_b = item[`涨停封单量[${currentDate}]`]) !== null && _b !== void 0 ? _b : '-',
+            sealQuantity: parseSealVolume(item[`涨停封单量[${currentDate}]`]),
+            circulationValue: item[`a股市值(不含限售股)[${currentDate}]`],
+        };
+    });
+    list.sort((a, b) => b.sealQuantity - a.sealQuantity);
+    return list;
+}
+exports.transformMorningAuctionLimitUpData = transformMorningAuctionLimitUpData;
 function transformStrongStockData(stocks, todayDateStr, yesterdayDate) {
     const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
     const strongStockDtos = [];

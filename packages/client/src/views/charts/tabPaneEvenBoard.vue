@@ -35,7 +35,11 @@
         "
       >
         {{ data.isShowContent ? '收起' : '展开' }}
-        <el-checkbox v-if="!isMobile" v-model="data.showOp"></el-checkbox>
+        <el-checkbox
+          v-if="!isMobile"
+          v-model="data.showOp"
+          @click.stop
+        ></el-checkbox>
       </div>
       <div v-show="data.isShowContent" class="dynamic__col">
         <div class="table-col height1">周期</div>

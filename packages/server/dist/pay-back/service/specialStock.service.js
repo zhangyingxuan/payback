@@ -20,10 +20,12 @@ const specialStock_entity_1 = require("../entities/specialStock.entity");
 const typeorm_2 = require("@nestjs/typeorm");
 const transformDataUtil_1 = require("../utils/transformDataUtil");
 const specialStockUtil_1 = require("../utils/specialStockUtil");
+const config_1 = require("../core/config");
+const fetchUtil_1 = require("../core/fetchUtil");
 const dayjs = require("dayjs");
 const pay_back_core_1 = require("pay-back-core");
 const ths_service_1 = require("./ths.service");
-const fetchUtil_1 = require("../core/fetchUtil");
+const fetchUtil_2 = require("../core/fetchUtil");
 const tradeDateUtil_1 = require("../utils/tradeDateUtil");
 let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
     constructor(specialStockRp, thsService) {
@@ -90,7 +92,7 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
             const { newStocks, chooseStock1Expected } = await (0, specialStockUtil_1.fetchSpecialStockBinddingData)(todayDateStr, yesterdayDateStr);
             if (newStocks && newStocks.length > 0) {
                 try {
-                    this.thsService.batchUpdateThsSelfStock(newStocks, fetchUtil_1.ThsOprate.add, account);
+                    this.thsService.batchUpdateThsSelfStock(newStocks, fetchUtil_2.ThsOprate.add, account);
                 }
                 catch (error) {
                     this.logger.error('自动加入新股到自选股失败', error);
@@ -120,6 +122,16 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
         }
         return todayDataFromDB ? todayDataFromDB : specialStockDto;
     }
+    async crawlMorningLimitUpData() {
+        const todayDateStr = (0, tradeDateUtil_1.toTradeDate)();
+        const [newStocksRs, auctionLimitUpRs] = await Promise.all([
+            (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.chooseStockNewStock),
+            (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.auctionLimitUpBySealVolume),
+        ]);
+        const newStocks = (0, transformDataUtil_1.transformNewStockData)(newStocksRs.data, todayDateStr);
+        const auctionLimitUp = (0, transformDataUtil_1.transformMorningAuctionLimitUpData)(auctionLimitUpRs.data, todayDateStr);
+        return { newStocks, auctionLimitUp };
+    }
     async dealIncompatibleExpectStocks(dailyLimitYesterdayBidding, account) {
         this.logger.log('dealIncompatibleExpectStocks 删除不及预期个股');
         const incompatibleExpectStocks = [];
@@ -130,7 +142,7 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
                 }
             });
         incompatibleExpectStocks.length > 0 &&
-            this.thsService.batchUpdateThsSelfStock(incompatibleExpectStocks, fetchUtil_1.ThsOprate.del, account);
+            this.thsService.batchUpdateThsSelfStock(incompatibleExpectStocks, fetchUtil_2.ThsOprate.del, account);
     }
     getTodayData(todayDateStr) {
         return this.specialStockRp
