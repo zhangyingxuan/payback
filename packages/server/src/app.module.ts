@@ -46,7 +46,8 @@ function atob(a) {
           password,
           database,
           entities: [__dirname + '/**/*.entity{.ts,.js}'],
-          synchronize: true,
+          // 恢复历史数据库时可关闭自动同步，避免启动时改写现有表结构。
+          synchronize: process.env.DB_SYNCHRONIZE !== 'false',
           // timezone: 'Z',
         } as TypeOrmModuleOptions;
       },

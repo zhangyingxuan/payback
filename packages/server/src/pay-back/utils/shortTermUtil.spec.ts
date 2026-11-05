@@ -28,3 +28,19 @@ describe('mergeExtra2ShortTermData', () => {
     expect(result[0].newStock).toBe('["新"]');
   });
 });
+
+describe('题材聚合请求', () => {
+  it('携带浏览器标识访问同花顺接口', async () => {
+    const { createFetch } = require('@/utils/abortFetch');
+    const fetch = jest.fn().mockResolvedValue({ ok: true, json: async () => ({ data: [] }) });
+    createFetch.mockReturnValue(fetch);
+    const fetchAllStocksByIwencai = jest.spyOn(require('../core/fetchUtil'), 'fetchAllStocksByIwencai')
+      .mockRejectedValue(new Error('停止后续处理'));
+
+    await expect(require('./shortTermUtil').getShortTermData('2026-11-04', null)).rejects.toThrow('停止后续处理');
+    expect(fetch).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({
+      headers: expect.objectContaining({ 'User-Agent': expect.stringContaining('Mozilla/5.0') }),
+    }));
+    fetchAllStocksByIwencai.mockRestore();
+  });
+});

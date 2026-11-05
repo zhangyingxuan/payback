@@ -23,6 +23,9 @@ let PushController = class PushController {
     notice(serviceName, msgContent) {
         return this.pushService.notice(serviceName, msgContent);
     }
+    pushMorningMessage(payload) {
+        return this.pushService.pushMorningMessage(payload);
+    }
 };
 __decorate([
     (0, microservices_1.EventPattern)('noticeNews'),
@@ -36,6 +39,12 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Object)
 ], PushController.prototype, "notice", null);
+__decorate([
+    (0, microservices_1.EventPattern)('pushMorningMessage'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Object)
+], PushController.prototype, "pushMorningMessage", null);
 PushController = __decorate([
     (0, common_1.Controller)('push'),
     __metadata("design:paramtypes", [push_service_1.PushService])

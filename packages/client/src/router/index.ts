@@ -57,6 +57,15 @@ const routes: RouteRecordRaw[] = [
         component: () => import(/* webpackChunkName: "charts" */ '../views/charts/index.vue'),
       },
       {
+        path: '/chat',
+        name: 'chat',
+        meta: {
+          title: '智能复盘',
+          permiss: '11',
+        },
+        component: () => import(/* webpackChunkName: "chat" */ '../views/chat/index.vue'),
+      },
+      {
         path: '/shortTerm',
         name: 'shortTerm',
         meta: {

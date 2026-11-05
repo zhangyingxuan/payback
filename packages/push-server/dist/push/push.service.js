@@ -89,6 +89,84 @@ let PushService = PushService_1 = class PushService {
         this.logRejectedChannels(results);
         return results;
     }
+    async pushMorningMessage(payload) {
+        const todayDateStr = dayjs().format('YYYY-MM-DD');
+        const { newStocks = [], auctionLimitUp = [] } = payload || {};
+        const formatSeal = (item) => `${((item.sealQuantity || 0) / 1e8).toFixed(2)}亿`;
+        const code6 = (item) => String(item.code || '').split('.')[0];
+        const plate2 = (item) => String(item.plateLevel2 || '').split('-')[1] || item.plateLevel2 || '';
+        const stockLine = (item, index, showSeal) => {
+            const code = code6(item);
+            const seal = showSeal ? ` ｜ 封单 <font color="red">${formatSeal(item)}</font>` : '';
+            return `${index + 1}. [${item.name}](${thsStockBaseUrl + code})(${code})${seal} | ${plate2(item)}`;
+        };
+        const elements = [];
+        elements.push({
+            tag: 'div',
+            text: { tag: 'lark_md', content: `**集合竞价涨停（${auctionLimitUp.length}，按封单量）**` },
+        });
+        if (auctionLimitUp.length > 0) {
+            auctionLimitUp.slice(0, 20).forEach((item, index) => {
+                elements.push({ tag: 'div', text: { tag: 'lark_md', content: stockLine(item, index, true) } });
+            });
+        }
+        else {
+            elements.push({ tag: 'div', text: { tag: 'lark_md', content: '> 无' } });
+        }
+        elements.push({ tag: 'hr' });
+        elements.push({
+            tag: 'div',
+            text: { tag: 'lark_md', content: `**今日上市新股（${newStocks.length}）**` },
+        });
+        if (newStocks.length > 0) {
+            newStocks.forEach((item, index) => {
+                elements.push({ tag: 'div', text: { tag: 'lark_md', content: stockLine(item, index, false) } });
+            });
+        }
+        else {
+            elements.push({ tag: 'div', text: { tag: 'lark_md', content: '> 无' } });
+        }
+        const card = {
+            msg_type: 'interactive',
+            card: {
+                config: { wide_screen_mode: true },
+                header: {
+                    title: { tag: 'plain_text', content: `早盘 集合竞价 ${todayDateStr}` },
+                    template: 'blue',
+                },
+                elements,
+            },
+        };
+        const content = [];
+        content.push(`**【早盘 集合竞价】** ${todayDateStr}\n`);
+        content.push(`**集合竞价涨停（${auctionLimitUp.length}，按封单量）**\n`);
+        if (auctionLimitUp.length > 0) {
+            auctionLimitUp.slice(0, 20).forEach((item, index) => {
+                content.push(`${index + 1}. ${item.name}(${code6(item)}) 封单 ${formatSeal(item)} | ${plate2(item)}\n`);
+            });
+        }
+        else {
+            content.push(`> 无\n`);
+        }
+        content.push(`**今日上市新股（${newStocks.length}）**\n`);
+        if (newStocks.length > 0) {
+            newStocks.forEach((item, index) => {
+                content.push(`${index + 1}. ${item.name}(${code6(item)}) | ${plate2(item)}\n`);
+            });
+        }
+        else {
+            content.push(`> 无\n`);
+        }
+        const results = await Promise.allSettled([
+            this.sendFeishu(feishuWebhookUrls[0], feishuSigningSecrets[0], card),
+            this.pushMsg2Robot({
+                msgtype: 'markdown',
+                markdown: { content: content.join('') },
+            }),
+        ]);
+        this.logRejectedChannels(results);
+        return results;
+    }
     pushMsg2Robot(body) {
         return Promise.allSettled(this.robotList.map((robotKey) => this.qyapi(robotKey, body)));
     }

@@ -23,7 +23,10 @@ async function fetchDailyLimitGroupByGainian(todayDateStr) {
 
   for (let attempt = 1; attempt <= 3; attempt++) {
     try {
-      const response = await createFetch()(url);
+      // 同花顺会拒绝没有浏览器标识的请求。
+      const response = await createFetch()(url, {
+        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36' },
+      });
       if (!response.ok) throw new Error(`题材聚合接口请求失败: HTTP ${response.status}`);
       return await response.json();
     } catch (error) {

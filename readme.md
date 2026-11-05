@@ -1,5 +1,7 @@
 # Pay-Back 项目
 
+数据库备份地址：/usr/local/mysql/backup
+
 一个基于微服务架构的综合性管理系统，采用 Lerna Monorepo 模式进行项目管理。
 
 ## 📋 项目概述

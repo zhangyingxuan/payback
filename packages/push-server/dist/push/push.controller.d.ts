@@ -4,4 +4,5 @@ export declare class PushController {
     constructor(pushService: PushService);
     noticeNews(newsTitle: any, msgContent: string, newsUrl: any, news?: any): any;
     notice(serviceName: any, msgContent: any): any;
+    pushMorningMessage(payload: any): any;
 }

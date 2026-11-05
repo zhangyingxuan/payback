@@ -113,7 +113,8 @@ export function getChartStyle(isMobile: boolean) {
  * @param stockCode  个股代码
  * @param increaseDecline  涨跌幅
  */
-export function isDailyLimit(stockCode: string, increaseDecline: number) {
+export function isDailyLimit(stockCode: string | null | undefined, increaseDecline: number) {
+  if (!stockCode) return false;
   // 涨停判断：主板大于 9.5；其他需大于19；京 29
   let dailyLimitIncrease = 9.5;
   if (

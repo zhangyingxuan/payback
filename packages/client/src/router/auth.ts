@@ -19,7 +19,10 @@ export function setRefreshToken(token: string, expire: number) {
 }
 
 export function clearLogin() {
+  // 退出时清除登录数据，但保留用户选择的界面主题。
+  const theme = localStorage.getItem('payback-theme');
   localStorage.clear();
+  if (theme) localStorage.setItem('payback-theme', theme);
   // 删除用户信息
   Cookies.remove(TokenKey);
   return Cookies.remove(RefreshTokenKey);

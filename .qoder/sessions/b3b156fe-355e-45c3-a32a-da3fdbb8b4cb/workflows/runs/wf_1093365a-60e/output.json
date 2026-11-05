@@ -1,0 +1,371 @@
+{
+  "runId": "wf_1093365a-60e",
+  "taskId": "wf-f87d0337-6d2",
+  "workflowName": "deep-research",
+  "status": "completed",
+  "result": {
+    "question": "为一个中国市场的 A 股短线交易辅助工具（NestJS + Vue3 自建服务，计划走订阅制 SaaS 商业化，用户为个人投资者）梳理合适的支付方案，输出中文调研报告。需要覆盖：1) 主体资质要求（个人/个体工商户/企业）下可用的支付渠道：微信支付（Native/JSAPI/小程序）、支付宝（电脑网站/手机网站）、聚合支付服务商；2) 各渠道费率、到账周期、退款规则；3) 虚拟商品/订阅制类目政策与风控限制（证券信息服务类目的特殊要求）；4) 订阅扣款实现方式：自动续费（微信委托代扣/支付宝周期扣款）的资质门槛 vs 手动续费；5) 海外渠道（Stripe/Paddle）是否适用；6) 给出推荐的落地路径（MVP 人工收款验证 → 正式商户接入）与技术接入要点（订单/回调/对账/幂等）。调研时间以 2026 年最新政策为准。",
+    "caveats": "时效性极强：微信自动续费新规为 2025-07-28/30 公告且按月动态考核，支付宝门槛 2025 下半年仍有效，2026 年内随时可能调整，正式接入前须重新核对官方当日口径，本报告不可作为签约依据。取证限制：pay.wechatpay.cn?id=136005、b.alipay.com 产品页与部分 developers.weixin.qq.com 页面为 JS 动态渲染，WebFetch 取不到正文，结论依赖搜索引擎快照原文 + 微信开发者社区/ykapay/mpaypass 等逐字复述交叉印证。已被推翻、不可写入结论的 4 条：A) '在线资讯可归入微信自动续费小额便民费用缴纳开放场景'（0-3）；B) '支付宝商家扣款单笔限额 100 元'（1-2）；C) '微信会员订阅仅安卓/鸿蒙开放、iOS 完全不支持'（1-2）；D) '个人开发者用支付宝AI收 0 费率至 2026-12-31'（1-2）。口径分歧：小程序会员订阅 DAU 门槛存在 ≥1000 与 ≥1万 两种官方页面表述；微信费率存在 0.38%（小微）/0.6%（标准）/1%（部分类目）与虚拟支付 10% 多套口径，'证券信息服务'实际落入哪一档未经证实。证据空白：研究问题的第 5 项（Stripe/Paddle 是否适用）、聚合支付服务商（含微信 2401 小微、2500 个人卖家通道）的费率与二清风险、第 6 项技术接入细节（回调验签/对账/幂等/发票），均无通过三票验证的来源，报告中只能作为待验证项。云财经为 2023 年结案的处罚，属风险先例而非 2026 年新规。支付宝'预授权支付'仅企业（不含个体工商户）与本题订阅场景关系较弱，不应与周期扣款混淆。本次为结构化结论，未生成 Markdown 报告文件。",
+    "findings": [
+      {
+        "claim": "主体资质：微信支付直连仅面向个体工商户、企业、党政机关/事业单位/社会组织等主体，申请材料一律要求营业执照 + 法人身份证 + 银行账户，纯自然人（个人）不在可申请范围内；个人开发者必须至少注册个体工商户才能直接开通商户号并申请 JSAPI/Native 权限。",
+        "confidence": "high",
+        "evidence": "官方接入指引逐字列出个体工商户/企业/党政、机关、事业单位、民办非企业、社会团体、基金会的申请材料（均需营业执照+法人身份证），未列任何自然人类别；JSAPI 支付准入文档明确'个体工商户、企业、事业单位、政府机关、社会组织'五类；APP 支付主体口径同为不含个人。微信开放社区官方答复与 2025–2026 开发者材料一致（'个人主体无微信支付功能''要么个体工商户要么公司'）。服务商模式下的 2401 小微商户/2500 个人卖家属代开通道且限线下行业，不构成直连反例。",
+        "vote": "3-0 / 2-1（三条同义 claim 合并）",
+        "sources": [
+          "https://pay.weixin.qq.com/guide/qrcode_payment.shtml",
+          "https://pay.weixin.qq.com/static/applyment_guide/applyment_detail_app.shtml",
+          "https://pay.weixin.qq.com/doc/v3/merchant/4012062524",
+          "https://m.sohu.com/a/1082426777_123018319/?pvid=000115_3w_a"
+        ]
+      },
+      {
+        "claim": "ICP 备案是技术前置：自建 NestJS+Vue3 网站的域名必须完成 ICP 备案并绑定为商户私有域名，才能接入微信支付 PC 网站（Native 扫码 / JSAPI）；Native 支付由商户系统自行生成二维码、用户微信扫码完成付款。",
+        "confidence": "high",
+        "evidence": "官方扫码支付指引：'微信支付支持完成域名ICP备案的网站接入支付功能…自行开发生成二维码，用户使用微信扫码完成支付'；开发者配置文档以'注意 域名必须通过ICP备案'给出硬性要求，2026 年商户平台提交流程亦要求填报 ICP 备案号否则无法开通接口。细微纠正：PC 扫码对应 Native，JSAPI 用于微信内浏览器且需已认证服务号 + 备案授权目录，两者均需 ICP，不影响结论；境外（如港澳）商户号部分场景可豁免，与本项目无关。",
+        "vote": "3-0",
+        "sources": [
+          "https://pay.weixin.qq.com/guide/qrcode_payment.shtml",
+          "https://pay.weixin.qq.com/wiki/doc/apiv3_partner/open/devguidelines/chapter3_3_5.shtml"
+        ]
+      },
+      {
+        "claim": "微信费率与费用：接入不收任何申请费用，交易按费率收取服务费，费率与所选经营类目相关，官方口径 0.6%–1% 不等（非统一固定）；主流类目/个体工商户通常约 0.6%，退款按规则退还手续费，T+1 结算至商户基本账户（提现到银行卡需另行开通自动提现）。具体类目费率与结算周期须按经营类目另行查询。",
+        "confidence": "high",
+        "evidence": "同一句官方文案出现在 pay.weixin.qq.com 扫码/APP/小程序多个接入指引页（2026-09/10 缓存），逐字为'申请接入微信支付不收取任何申请费用；商户交易按费率收取服务费，一般与商家选择的经营类目有关，为0.6%-1%不等'。0.38% 等更低费率属小微/活动折扣，2% 等更高费率属特殊类目，均为限定而非矛盾。'约0.6% + 资金直达商户账户'来自 2-1 票博客，但与其官方客服 FAQ（0.6% 示例、T+1 实时结算至基本账户、提现不二次收费）及 2026-09 媒体（小微/个体户 0.54%、退款退费）一致。",
+        "vote": "3-0 / 3-0 / 2-1（合并）",
+        "sources": [
+          "https://pay.weixin.qq.com/guide/qrcode_payment.shtml",
+          "https://pay.weixin.qq.com/static/applyment_guide/applyment_detail_app.shtml",
+          "https://m.sohu.com/a/1082426777_123018319/?pvid=000115_3w_a"
+        ]
+      },
+      {
+        "claim": "自动续费主体门槛（核心结论）：财付通《微信支付自动续费管理规则调整公告》（2025-07-28 发布、2025-07-30 生效，2026 年现行）将委托代扣/自动续费收缩为'仅支持主体类型为企业、政府机构、事业单位、社会组织类型的特约商户及为其提供技术服务的服务商'，个体工商户被明确排除。订阅制 SaaS 要用微信自动续费，主体必须是公司，不能停留在个体工商户。",
+        "confidence": "high",
+        "evidence": "一手公告条款被 mpaypass、腾讯新闻、网易/支付之家（2025-07-30，标题即'个体工商户出局'）、百家号（2025-10）逐字复述，2026-05 行业讨论仍作为现行规则引用；微信官方客服 FAQ 重复同一主体限制。另有行业场景与经营数据门槛叠加（注意'在线资讯可归入小额便民缴费场景'的说法已被 0-3 票推翻，不可采信）。",
+        "vote": "3-0 / 3-0（合并）",
+        "sources": [
+          "https://pay.wechatpay.cn/index.php/public/cms/content_detail?id=136005&lang=zh&platformType=0",
+          "https://m.163.com/dy/article/K5M0D1QT0519BND1.html"
+        ]
+      },
+      {
+        "claim": "自动续费经营规模与到账周期挂钩：最近 4 个自然周有效订单去重用户数 ≥300 且升级投诉率 ≤0.05% → 维持原结算周期（T+0/T+1）；用户数 20–300 → 开通后结算周期调整为 T+7；新主体/用户数不足 20 → T+14。微信支付按月考核并动态调整档位，若商户号已有延长结算周期设置则按较长周期执行。",
+        "confidence": "high",
+        "evidence": "三档规则在微信开发者社区《商户自动续费（原委托代扣）后台自助申请指引-2025》及 ykapay、whkakaxi 镜像逐字复现，2026-05/09 的律师解读与媒体报道沿用同一分档。细节偏差：20–300 档另有升级投诉率 ≤0.1% 前置条件，主张未提及但不矛盾；官方措辞为'产生有效订单的去重用户数'。对初创工具的实际含义：即使主体升级为企业，前期用户量不足也会被动接受 T+7/T+14 长账期。",
+        "vote": "3-0 / 3-0（合并）",
+        "sources": [
+          "https://pay.wechatpay.cn/index.php/public/cms/content_detail?id=136005&lang=zh&platformType=0",
+          "https://developers.weixin.qq.com/community/pay/article/doc/0004c22aed8588ca99b3c846866413",
+          "https://m.163.com/dy/article/K5M0D1QT0519BND1.html"
+        ]
+      },
+      {
+        "claim": "支付宝自动续费（商家扣款/周期扣款）门槛更高：仅支持经过认证的支付宝企业账号，且需同时满足企业注册资本 ≥2000 万元人民币、已开通支付宝收单产品且近半年每月主动支付用户数 ≥300 人（同一工商主体下任一支付宝账号，不含收钱码交易）——小型创业团队走支付宝自动续费基本不可行。旁证：支付宝预授权支付亦仅面向认证企业账号并明确'不含个体工商户'。",
+        "confidence": "high",
+        "evidence": "b.alipay.com 产品页（I1080300001000066811）2025-07-21 快照逐字包含上述条件；2025-09 知乎、2025-12 B 站开发频道、2025-07 行业站均复述 ≥2000 万 + ≥300 人。已核查的矛盾说法：CSDN '≥100 万'（无来源、与官方页冲突）、2023 页面 '≥1000 万 + 合作满 1 年'（旧规则已被取代）。预授权为押金冻结类产品，与周期扣款是不同产品，结论已按产品正确限定。",
+        "vote": "3-0 / 3-0（合并）",
+        "sources": [
+          "https://b.alipay.com/page/product-mall/product-detail/I1080300001000066811",
+          "https://b.alipay.com/page/product-mall/product-detail/I1080300001000065324"
+        ]
+      },
+      {
+        "claim": "微信生态内证券信息服务的类目与牌照硬门槛：公众号/小程序开放服务类目中金融业一级类目下含'证券/期货'及'证券/期货投资咨询'子类目，适用于证券资讯、证券咨询、证券期货经营等在线服务；申请需《经营证券期货业务许可证》，个人与个体工商户通常无法取得，构成 A 股工具商业化（尤其走微信内容/订阅消息推送）的核心资质障碍。",
+        "confidence": "high",
+        "evidence": "developers.weixin.qq.com 订阅/服务号/小程序三套类目文档均列明该许可要求，并明确证券资讯/荐股类内容需补充金融-证券/期货类目；该证仅核发给证券公司、期货公司及证券投资咨询机构，个人/个体户无法取得。微信运营中心 2025-03-18 公告确认对涉股内容按资质强约束、处罚可至封号。轻微修正：子类目官方名为'证券/期货投资咨询'；纯行情展示可尝试'股票信息服务平台'类目（需 ICP 许可 + 交易所信息经营授权），形态不同但个人同样难以满足。",
+        "vote": "3-0 / 3-0（合并）",
+        "sources": [
+          "https://developers.weixin.qq.com/doc/subscription/guide/product/subscription_messages/category.html",
+          "https://developers.weixin.qq.com/minigame/product/material"
+        ]
+      },
+      {
+        "claim": "无证经营的真实执法风险：深圳证监局行政处罚决定书〔2023〕4号认定云财经在未取得证券投资咨询业务资格的情况下，于 2016–2019 年通过网站/APP/公众号销售'涨停先驱者''早盘捉妖''N型反转大师'等具备荐股软件特征的产品，没收违法所得 548.61 万元并处同等罚款（罚没合计近 1100 万元）。启示：功能边界（是否给出个股选择/买卖时点建议）先于支付通道决定合规性，支付打通不等于经营合法。",
+        "confidence": "high",
+        "evidence": "已核对一手监管文书（csrc.gov.cn 深圳局）：金额（各 5,486,080.06 元）、期间、产品名称、定性依据（2005 年《证券法》第122条、第197条非法经营证券业务；证监会公告〔2012〕40号'荐股软件'暂行规定）与证券时报报道完全一致，每经/新浪/界面/东方财富多路印证。时效注意：2023 年结案，作为风险先例而非 2026 年新规。",
+        "vote": "3-0 / 3-0（合并）",
+        "sources": [
+          "http://stcn.com/article/detail/919113.html",
+          "https://www.csrc.gov.cn/shenzhen/c104320/c7419426/content.shtml"
+        ]
+      },
+      {
+        "claim": "微信小程序'会员订阅'（虚拟支付自动续费）不适合初创期：要求已接入小程序虚拟支付、首次发布满 90 天、完成认证备案、仅支持企业/政府/事业单位/社会组织主体（不支持个人和个体工商户）、近 30 天日均 DAU ≥1000，并需缴纳交易保证金；费率显著高于普通微信支付——首笔 1% 或 10%（视行业/限时激励），第二笔及后续周期扣款均为 10%。",
+        "confidence": "high",
+        "evidence": "官方 vips.html（2026-08-24 更新）逐字列出四项前置与主体限制，并额外说明 iOS 端不支持开发者发起扣款；费率由 industry/vip.html '订阅型支付=10%' 及 2026-03/05 官方与社区答复印证（Android 主动支付 1% 为限时激励、标准 10%）。分歧：部分官方页面/社区写 DAU ≥1万，只会强化'高门槛'结论。'iOS 完全未开放'为 1-2 票未通过，不可直接引用。",
+        "vote": "3-0 / 3-0（合并）",
+        "sources": [
+          "https://developers.weixin.qq.com/miniprogram/dev/platform-capabilities/business-capabilities/vips.html"
+        ]
+      },
+      {
+        "claim": "个人主体的新增合规收款选项：支付宝 2026-04-28 上线'支付宝AI收'，明确面向商家和个人开发者，通过 AI Agent（如 OpenClaw）场景按调用/按量即时收款、自动结算，支持 X402 协议，个人实名账号可签约入驻（实操报道称不需营业执照）。可作为个人阶段观察项，但适用场景限于 AI Agent 按调用计费，不等同于通用 SaaS 网站收银台。",
+        "confidence": "medium",
+        "evidence": "支付宝自营 A2A 交易专区（a2a.alipay.com）将其列为在售收款产品并描述'按量计费、自动结算'；36氪（2026-04-28 11:16）、智东西、北京商报等独立报道确认日期与'商家/个人开发者三步接入'。2-1 票通过：'0 费率至 2026-12-31'细节已被 1-2 推翻；官网挂牌另有 4-29 说法；能否承接本项目'订阅制网页产品'收款无一手依据。",
+        "vote": "2-1",
+        "sources": [
+          "https://www.xkb.com.cn/articleDetail/489844",
+          "https://a2a.alipay.com/",
+          "https://m.zhidx.com/news?id=7673",
+          "https://baike.baidu.com/item/支付宝AI收/67702205"
+        ]
+      },
+      {
+        "claim": "落地路径结论（由上述门槛组合推出）：MVP 阶段以人工/对公收款或 AI收类轻量通道验证付费意愿，不在个人主体下强接自动续费；正式商业化需先注册有限公司（而非个体工商户）+ 完成域名 ICP 备案 + 划清'非荐股/非投资建议'的功能与文案边界，再以 Native 扫码 + 电脑/手机网站支付做手动续费下单，用户规模与投诉率达标后再申请微信委托代扣；技术侧以自建订单表 + 幂等回调 + 官方对账单核对为主线。",
+        "confidence": "medium",
+        "evidence": "主体/备案/费率/自动续费门槛/类目牌照五组一手结论共同排除其他选项：个人无法直连、个体户可用但无法开自动续费、企业门槛又高（注册资本 2000 万、发布天数/DAU/保证金、10% 虚拟支付费率）。其中手动续费的技术细节、海外渠道与聚合支付服务商部分未取得通过三票验证的来源，属基于已验证约束的方案推演而非事实结论。",
+        "vote": "综合推演（基于多条 3-0 结论）",
+        "sources": [
+          "https://pay.weixin.qq.com/guide/qrcode_payment.shtml",
+          "https://pay.weixin.qq.com/static/applyment_guide/applyment_detail_app.shtml",
+          "https://b.alipay.com/page/product-mall/product-detail/I1080300001000066811",
+          "https://pay.wechatpay.cn/index.php/public/cms/content_detail?id=136005&lang=zh&platformType=0",
+          "https://developers.weixin.qq.com/doc/subscription/guide/product/subscription_messages/category.html"
+        ]
+      }
+    ],
+    "openQuestions": [
+      "Stripe / Paddle / Lemon Squeezy 等海外渠道对中国大陆个人投资者的 A 股资讯订阅是否可用：跨境收单合规、结汇、能否开具增值税发票、用海外通道规避国内类目资质是否会被认定非法经营或导致封禁？",
+      "聚合支付/服务商模式（易宝、汇付天下、Ping++ 类，以及微信 2401 小微商户、2500 个人卖家通道）在'证券信息服务/金融资讯'类目的实际进件政策、费率、到账周期与二清（无证归集资金）风险？",
+      "'荐股软件'暂行规定与现行产品边界：不含个股推荐、不含买卖时点信号的纯行情/复盘/数据工具，是否仍需《经营证券期货业务许可证》，或可用 ICP 许可 + 交易所信息授权走'股票信息服务平台'类目？",
+      "手动续费（用户每期主动支付）是否会被微信/支付宝风控认定为变相自动续费或规避监管？订阅状态如何与平台风控指标（去重用户数、升级投诉率）联动？",
+      "NestJS 侧技术接入细节无通过验证来源：Native/JSAPI/电脑与手机网站下单与回调验签（V3 平台证书 vs 微信支付公钥）、异步通知重试与幂等键、订单号与对账单下载/核对、退款退费、发票开具、沙箱与灰度条件。",
+      "证券信息服务在微信/支付宝经营类目费率表中的实际档位（0.6% 还是 1% 或特殊/受限类目），以及对应结算周期？"
+    ],
+    "summary": "对面向中国大陆个人投资者的 A 股短线辅助工具（NestJS + Vue3 自建站、订阅制），微信支付与支付宝的官方直连通道均不向纯自然人开放：至少需注册个体工商户（营业执照 + 法人身份证 + 银行账户），且自建网站域名必须完成 ICP 备案，才能开通 Native/JSAPI 与电脑/手机网站支付；直连不收申请费，交易费率按经营类目 0.6%–1%（主流类目约 0.6%），资金按 T+1 结算至商户账户。真正的门槛在自动续费：2025 年 7 月底财付通公告后，委托代扣/自动续费仅向企业、政府机构、事业单位、社会组织开放，个体工商户被明确排除，并叠加最近 4 周去重有效用户 ≥300、升级投诉率 ≤0.05% 的考核（不达标则结算周期被拉长至 T+7/T+14 且按月动态调整）；支付宝\"商家扣款\"另要求认证企业账号 + 注册资本 ≥2000 万元 + 近半年每月主动支付用户 ≥300 人，微信小程序会员订阅还需发布满 90 天、DAU ≥1000、限企业主体且周期扣款费率高达 10%。更硬的风险是类目合规：证券/期货及投资咨询类目需《经营证券期货业务许可证》，个人与个体工商户无法取得，深圳证监局对无证券投资咨询资格销售荐股软件的云财经罚没合计近 1100 万元，说明支付通道打通并不消除无证经营风险。至于海外渠道（Stripe/Paddle）与聚合支付服务商、以及订单/回调/对账/幂等的技术细节，本次未获得通过三票验证的可靠来源，只能列为待验证项。推荐路径：MVP 用人工/对公收款（或 2026-04 新上线、面向个人开发者的\"支付宝AI收\"等轻量方式）验证付费意愿，正式商业化前先注册有限公司 + ICP 备案并划清\"非荐股/非投资建议\"的功能边界，按手动续费优先、规模达标后再申请自动续费的顺序落地。",
+    "refuted": [
+      {
+        "claim": "在线资讯等周期性扣费的线上业务属于自动续费开放场景（'小额便民费用缴纳'类目），该 A 股资讯订阅工具可归入此场景申请。",
+        "source": "https://pay.wechatpay.cn/index.php/public/cms/content_detail?id=136005&lang=zh&platformType=0",
+        "vote": "0-3"
+      },
+      {
+        "claim": "支付宝商家扣款存在单笔扣款限额：单个商家对单个签约协议的单笔扣款限额为100元，意味着订阅制自动续费单期定价需控制在100元以内。",
+        "source": "https://b.alipay.com/page/product-mall/product-detail/I1080300001000066811",
+        "vote": "1-2"
+      },
+      {
+        "claim": "微信小程序会员订阅（虚拟支付自动续费）能力仅支持安卓和鸿蒙设备调用，苹果 iOS 设备暂未开放订阅制自动续费，这意味着走微信生态做订阅扣款时 iOS 用户只能采用手动续费或其他方式。",
+        "source": "https://developers.weixin.qq.com/miniprogram/dev/platform-capabilities/business-capabilities/vips.html",
+        "vote": "1-2"
+      },
+      {
+        "claim": "个人开发者使用'支付宝AI收'可享受 0 费率，该免费政策截至 2026 年 12 月 31 日，对 MVP 阶段低成本验证收款具有直接参考意义。",
+        "source": "https://www.xkb.com.cn/articleDetail/489844",
+        "vote": "1-2"
+      }
+    ],
+    "unverified": [],
+    "sources": [
+      {
+        "url": "https://pay.weixin.qq.com/guide/qrcode_payment.shtml",
+        "quality": "primary",
+        "angle": "渠道准入与费率/结算/退款（主体资质维度）",
+        "claimCount": 5
+      },
+      {
+        "url": "https://pay.weixin.qq.com/static/applyment_guide/applyment_detail_app.shtml",
+        "quality": "primary",
+        "angle": "渠道准入与费率/结算/退款（主体资质维度）",
+        "claimCount": 4
+      },
+      {
+        "url": "https://pay.weixin.qq.com/doc/v3/merchant/4012062524",
+        "quality": "primary",
+        "angle": "渠道准入与费率/结算/退款（主体资质维度）",
+        "claimCount": 4
+      },
+      {
+        "url": "https://b.alipay.com/page/product-mall/product-detail/I1080300001000065324",
+        "quality": "primary",
+        "angle": "渠道准入与费率/结算/退款（主体资质维度）",
+        "claimCount": 5
+      },
+      {
+        "url": "https://page.sm.cn/blm/video-page-710/video?h=www.bilibili.com&id=26_68b1c4368953dac2a134ed9c4ad391d7",
+        "quality": "unreliable",
+        "angle": "渠道准入与费率/结算/退款（主体资质维度）",
+        "claimCount": 0
+      },
+      {
+        "url": "https://quaily.com/v2ex-daily/p/daily-20260315",
+        "quality": "forum",
+        "angle": "渠道准入与费率/结算/退款（主体资质维度）",
+        "claimCount": 5
+      },
+      {
+        "url": "https://pay.wechatpay.cn/index.php/public/cms/content_detail?id=136005&lang=zh&platformType=0",
+        "quality": "primary",
+        "angle": "订阅自动续费代扣的资质门槛对比",
+        "claimCount": 5
+      },
+      {
+        "url": "https://b.alipay.com/page/product-mall/product-detail/I1080300001000066811",
+        "quality": "primary",
+        "angle": "订阅自动续费代扣的资质门槛对比",
+        "claimCount": 5
+      },
+      {
+        "url": "https://m.163.com/dy/article/K5M0D1QT0519BND1.html",
+        "quality": "secondary",
+        "angle": "订阅自动续费代扣的资质门槛对比",
+        "claimCount": 5
+      },
+      {
+        "url": "https://developers.weixin.qq.com/community/pay/article/doc/0004c22aed8588ca99b3c846866413",
+        "quality": "forum",
+        "angle": "订阅自动续费代扣的资质门槛对比",
+        "claimCount": 5
+      },
+      {
+        "url": "https://developers.weixin.qq.com/community/develop/doc/0006ee8d744e409909f381e4366400?commentid=000e427bcd05a85909f38d29a664?source=indexmixflow&jumpto=comment",
+        "quality": "unreliable",
+        "angle": "证券信息服务类目的类目政策与风控",
+        "claimCount": 0
+      },
+      {
+        "url": "https://developers.weixin.qq.com/doc/subscription/guide/product/subscription_messages/category.html",
+        "quality": "primary",
+        "angle": "证券信息服务类目的类目政策与风控",
+        "claimCount": 4
+      },
+      {
+        "url": "https://developer.huawei.com/consumer/cn/doc/harmonyos-center-guides/50111-102",
+        "quality": "unreliable",
+        "angle": "证券信息服务类目的类目政策与风控",
+        "claimCount": 0
+      },
+      {
+        "url": "http://stcn.com/article/detail/919113.html",
+        "quality": "secondary",
+        "angle": "证券信息服务类目的类目政策与风控",
+        "claimCount": 5
+      },
+      {
+        "url": "https://m.sohu.com/a/1082426777_123018319/?pvid=000115_3w_a",
+        "quality": "blog",
+        "angle": "第三方与海外替代通道的可行性（聚合支付 / MoR）",
+        "claimCount": 5
+      },
+      {
+        "url": "https://baijiahao.baidu.com/s?id=1873740613506939343",
+        "quality": "blog",
+        "angle": "第三方与海外替代通道的可行性（聚合支付 / MoR）",
+        "claimCount": 4
+      },
+      {
+        "url": "https://www.ai138.com/ai-guide/independent-developer-payment-mor-vs-psp-guide",
+        "quality": "blog",
+        "angle": "第三方与海外替代通道的可行性（聚合支付 / MoR）",
+        "claimCount": 5
+      },
+      {
+        "url": "https://zhuanlan.zhihu.com/p/2005225449480020773",
+        "quality": "blog",
+        "angle": "第三方与海外替代通道的可行性（聚合支付 / MoR）",
+        "claimCount": 5
+      },
+      {
+        "url": "https://www.w3cschool.cn/article/58606153.html",
+        "quality": "blog",
+        "angle": "MVP 落地路径与技术接入要点",
+        "claimCount": 5
+      },
+      {
+        "url": "https://www.chenxutan.com/d/6830.html",
+        "quality": "blog",
+        "angle": "MVP 落地路径与技术接入要点",
+        "claimCount": 5
+      },
+      {
+        "url": "https://blog.csdn.net/jingli9/article/details/166850324",
+        "quality": "blog",
+        "angle": "MVP 落地路径与技术接入要点",
+        "claimCount": 5
+      },
+      {
+        "url": "https://developers.weixin.qq.com/miniprogram/dev/platform-capabilities/business-capabilities/vips.html",
+        "quality": "primary",
+        "angle": "MVP 落地路径与技术接入要点",
+        "claimCount": 5
+      },
+      {
+        "url": "http://www.chenxutan.com/d/6291.html",
+        "quality": "blog",
+        "angle": "MVP 落地路径与技术接入要点",
+        "claimCount": 5
+      },
+      {
+        "url": "https://www.xkb.com.cn/articleDetail/489844",
+        "quality": "secondary",
+        "angle": "MVP 落地路径与技术接入要点",
+        "claimCount": 5
+      }
+    ],
+    "stats": {
+      "angles": 5,
+      "sourcesFetched": 24,
+      "claimsExtracted": 101,
+      "claimsVerified": 25,
+      "confirmed": 21,
+      "killed": 4,
+      "unverified": 0,
+      "afterSynthesis": 11,
+      "urlDupes": 1,
+      "budgetDropped": 5,
+      "agentCalls": 106
+    }
+  },
+  "logs": [
+    "Question: 为一个中国市场的 A 股短线交易辅助工具（NestJS + Vue3 自建服务，计划走订阅制 SaaS 商业化，用户为个人投资者）梳理合适的支付方案，输出中文调…",
+    "Decomposed into 5 angles: 渠道准入与费率/结算/退款（主体资质维度）, 订阅自动续费代扣的资质门槛对比, 证券信息服务类目的类目政策与风控, 第三方与海外替代通道的可行性（聚合支付 / MoR）, MVP 落地路径与技术接入要点",
+    "渠道准入与费率/结算/退款（主体资质维度）: 6 search results",
+    "MVP 落地路径与技术接入要点: 6 search results",
+    "订阅自动续费代扣的资质门槛对比: 6 search results",
+    "订阅自动续费代扣的资质门槛对比: 4 novel (2 filtered)",
+    "第三方与海外替代通道的可行性（聚合支付 / MoR）: 6 search results",
+    "第三方与海外替代通道的可行性（聚合支付 / MoR）: 4 novel (2 filtered)",
+    "证券信息服务类目的类目政策与风控: 6 search results",
+    "证券信息服务类目的类目政策与风控: 4 novel (2 filtered)",
+    "Fetched 24 sources -> 101 claims -> verifying top 25",
+    "confirmed: 微信支付接入不收取申请费用，交易按费率收取服务费，费率与所选经营类目相关，官方指引口径为 0.6%-1% 不等，具体费率/结算周期须按经营类",
+    "confirmed: 微信支付委托代扣（自动续费）仅向企业、政府机构、事业单位、社会组织类型的特约商户及为其提供技术服务的服务商开放，个人或个体工商户无法申请自动",
+    "confirmed: 微信支付 PC 网站接入（JSAPI/Native 扫码支付）要求网站域名已完成 ICP 备案，接入后商户可自行开发生成二维码、用户扫码完成",
+    "confirmed: 微信支付 JSAPI 支付仅支持个体工商户、企业、事业单位、政府机关、社会组织五类主体，个人（自然人）主体不在准入列表内，意味着以个人身份无",
+    "confirmed: 微信支付的申请材料仅按个体工商户、企业及党政/机关/事业单位等非营利组织分类列出，均要求提供营业执照和法人身份证，纯自然人（个人）主体不在此",
+    "confirmed: 微信支付 APP 支付的接入主体仅限个体工商户、企业、党政机关等组织类主体，不含自然人个人，因此个人开发者无法直接申请微信支付商户号，必须先",
+    "confirmed: 支付宝\"商家扣款\"（周期扣款/自动续费代扣）产品有明确的资质门槛：仅支持经过认证的支付宝企业账号，且要求企业注册资本≥2000万元人民币、已",
+    "confirmed: 微信支付按交易收取费率化服务费，费率与所选经营类目挂钩，官方给出的区间为 0.6%-1%不等，并非统一固定费率。",
+    "refuted: 在线资讯等周期性扣费的线上业务属于自动续费开放场景（'小额便民费用缴纳'类目），该 A 股资讯订阅工具可归入此场景申请。",
+    "confirmed: 自动续费权限开通设有经营规模门槛：最近4个自然周有效订单去重用户数≥300 且升级投诉率≤0.05% 可正常结算；20–300 用户开通后结",
+    "confirmed: 微信公众平台开放的服务类目中，金融业一级类目下包含\"证券/期货\"及\"投资咨询\"等子类目，公众号提供证券信息服务必须选择对应金融类目。",
+    "confirmed: 支付宝预授权支付产品仅向经过认证的企业支付宝账号开放，明确不含个体工商户，即该产品的主体资质门槛为企业法人，个人和个体工商户无法直接签约。",
+    "confirmed: 在微信生态内运营证券/期货类信息服务（含订阅消息推送等内容能力）需持有《经营证券期货业务许可证》，个人投资者工具运营方（个人或个体工商户）通",
+    "refuted: 支付宝商家扣款存在单笔扣款限额：单个商家对单个签约协议的单笔扣款限额为100元，意味着订阅制自动续费单期定价需控制在100元以内。",
+    "refuted: 微信小程序会员订阅（虚拟支付自动续费）能力仅支持安卓和鸿蒙设备调用，苹果 iOS 设备暂未开放订阅制自动续费，这意味着走微信生态做订阅扣款时",
+    "confirmed: 微信支付（财付通）发布《微信支付自动续费管理规则调整公告》，委托代扣/自动续费能力自公告起仅向企业、政府机构、事业单位及社会组织开放，个体工",
+    "confirmed: 深圳证监局对云财经作出罚没合计近1100万元的行政处罚：没收违法所得548.61万元，并处以同等金额548.61万元罚款，理由是非法经营证券",
+    "confirmed: 微信自动续费商户的结算周期与考核指标挂钩：按最近 4 个自然周有效订单去重活跃用户数和升级投诉率，将商户划入原周期（T+0/T+1）、T+7",
+    "confirmed: 处罚认定的违法事实是：云财经在未取得证券投资咨询业务资格的情况下对外销售软件产品（即2016-2019年间销售'荐股软件'）。这直接对应研究",
+    "confirmed: 微信虚拟支付/会员订阅的费率为首笔 1% 或 10%（视行业而定），第二笔及后续周期扣款费率均为 10%（部分行业），显著高于普通微信支付 ",
+    "confirmed: 微信会员订阅自动续费的准入门槛较高：小程序必须已接入虚拟支付、发布满 90 天以上、完成认证备案，且近 30 天日均 DAU 不低于 100",
+    "confirmed: 微信支付/支付宝等官方直连渠道要求企业或个体工商户主体，个人开发者无法直接接入（受合规与风控限制）。",
+    "confirmed: 注册个体工商户后可申请正式商户接入，费率约为 0.6%，且资金直达商户账户。",
+    "confirmed: 支付宝于 2026 年 4 月 28 日正式上线'支付宝AI收'产品，明确面向商家和个人开发者（即无需企业主体即可收款），通过 AI Age",
+    "refuted: 个人开发者使用'支付宝AI收'可享受 0 费率，该免费政策截至 2026 年 12 月 31 日，对 MVP 阶段低成本验证收款具有直接参考",
+    "Verified 25 claims; confirmed 21, refuted 4, unverified 0"
+  ],
+  "failures": [],
+  "agentCount": 106,
+  "totalToolCalls": 428,
+  "durationMs": 636764,
+  "usage": {
+    "agents": 106,
+    "toolCalls": 428,
+    "durationMs": 636764
+  },
+  "transcriptDir": "D:\\workspace\\github\\payback\\.qoder\\sessions\\b3b156fe-355e-45c3-a32a-da3fdbb8b4cb\\workflows\\runs\\wf_1093365a-60e",
+  "scriptPath": "D:\\workspace\\github\\payback\\.qoder\\sessions\\b3b156fe-355e-45c3-a32a-da3fdbb8b4cb\\workflows\\scripts\\deep-research-wf_1093365a-60e.js"
+}

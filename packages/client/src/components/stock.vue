@@ -8,8 +8,8 @@
   >
     {{ superData.name }}
     <template v-if="superData.showCode">&nbsp;{{ superData.code }}</template>
-    <el-tag v-if="code.startsWith('30')" size="small" round>创</el-tag>
-    <el-tag v-else-if="code.startsWith('68')" size="small" type="warning" round>
+    <el-tag v-if="code?.startsWith('30')" size="small" round>创</el-tag>
+    <el-tag v-else-if="code?.startsWith('68')" size="small" type="warning" round>
       科
     </el-tag>
     <!-- 北交所为了提升上市公司辨识度，方便投资者搜索和交易，于2024年4月22日启用了920代码号段功能。 2024-10-08 17:24:16 -->
@@ -17,7 +17,7 @@
     <!-- 以400开头的股票代码表示从沪深两市退出到三板的A股股票，以420开头的股票代码表示从沪深两市退出到三板的B股股票，以430开头的股票代码表示做市商改革前的股票，相当于老的新三板股票。 -->
     <el-tag
       v-else-if="
-        code.startsWith('8') || code.startsWith('4') || code.startsWith('92')
+        code?.startsWith('8') || code?.startsWith('4') || code?.startsWith('92')
       "
       size="small"
       type="info"
@@ -70,6 +70,7 @@ const iwencaiUrl =
   'https://www.iwencai.com/unifiedwap/result?w=${code}%20&querytype=stock';
 
 function handleClick() {
+  if (!superData.code) return;
   if (timer) {
     window.clearTimeout(timer);
     timer = null;
@@ -80,6 +81,7 @@ function handleClick() {
   }
 }
 function handleDblClick() {
+  if (!superData.code) return;
   if (timer) {
     window.clearTimeout(timer);
     timer = null;

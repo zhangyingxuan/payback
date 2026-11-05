@@ -2,3 +2,63 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 # npx lint-staged
+
+# BEGIN doc-check
+doc_check() {
+  local changed_files
+  changed_files=$(git diff --cached --name-only --diff-filter=ACMR 2>/dev/null)
+  [ -z "$changed_files" ] && return
+
+  local reminders=""
+
+  # server controller 变更 → API 文档
+  if echo "$changed_files" | grep -qE 'packages/server/src/.*controller\.ts$'; then
+    reminders="$reminders\n  → 05-API文档/接口文档.md"
+  fi
+
+  # TypeORM entity 变更 → 数据库设计
+  if echo "$changed_files" | grep -qE 'packages/server/src/.*entities/.*\.entity\.ts$'; then
+    reminders="$reminders\n  → 05-API文档/数据库设计.md"
+  fi
+
+  # 定时任务清单变更 → 后端技术方案 + 业务流程
+  if echo "$changed_files" | grep -qE 'packages/server/src/scheduler-task/'; then
+    reminders="$reminders\n  → 04-技术方案/后端技术方案.md"
+    reminders="$reminders\n  → 02-业务梳理/业务流程.md"
+  fi
+
+  # core 问财查询语句变更 → 术语表
+  if echo "$changed_files" | grep -qE 'packages/core/src/config/'; then
+    reminders="$reminders\n  → 02-业务梳理/术语表.md"
+    reminders="$reminders\n  → 04-技术方案/后端技术方案.md"
+  fi
+
+  # 前端页面/路由变更
+  if echo "$changed_files" | grep -qE 'packages/client/src/(views|router)/'; then
+    reminders="$reminders\n  → 04-技术方案/前端技术方案.md"
+    reminders="$reminders\n  → 01-需求分析/功能需求清单.md"
+  fi
+
+  # 推送事件 / webhook 部署链路变更
+  if echo "$changed_files" | grep -qE 'packages/(push-server|webhook-server)/src/'; then
+    reminders="$reminders\n  → 04-技术方案/推送与部署方案.md"
+  fi
+
+  # 依赖变更 → 技术栈
+  if echo "$changed_files" | grep -qE 'package\.json$|pnpm-workspace\.yaml$|pnpm-lock\.yaml$'; then
+    reminders="$reminders\n  → 06-开发规范/技术栈.md"
+  fi
+  # 配置文件变更
+  if echo "$changed_files" | grep -qE 'application.*\.(yml|properties)|\.env(\.|$)|docker-compose.*\.yml|nginx\.conf|config/.+\.(yml|yaml|json|toml)'; then
+    reminders="$reminders\n  → 04-技术方案/环境配置.md"
+  fi
+
+  if [ -n "$reminders" ]; then
+    echo ""
+    echo "[doc-check] 检测到代码变更，请检查以下文档是否需要更新："
+    echo -e "$reminders"
+    echo ""
+  fi
+}
+doc_check
+# END doc-check

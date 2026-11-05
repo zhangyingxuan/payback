@@ -25,8 +25,11 @@ const alias: Record<string, string> = {
 };
 
 export default ({ command, mode }: ConfigEnv): UserConfigExport => {
+	const env = loadEnv(mode, process.cwd());
 	const { VITE_CDN, VITE_PORT, VITE_BASE_API_THS_NEWS, VITE_BASE_API_THS, VITE_BASE_API_THS_DQ, VITE_BASE_API } =
-		warpperEnv(loadEnv(mode, process.cwd()));
+		warpperEnv(env);
+	// payback-agent 是本地 Python 服务，不在 warpperEnv 的类型里；缺省即默认端口 8300
+	const VITE_BASE_API_AGENT = env.VITE_BASE_API_AGENT || 'http://localhost:8300/';
 	return {
 		base: './',
 		resolve: {
@@ -45,6 +48,12 @@ export default ({ command, mode }: ConfigEnv): UserConfigExport => {
 				'/blowsysun': {
 					target: VITE_BASE_API,
 					changeOrigin: false,
+				},
+				// payback-agent 的 HTTP+SSE 服务：/agentApi/chat -> POST SSE 流
+				'/agentApi': {
+					target: VITE_BASE_API_AGENT,
+					changeOrigin: true,
+					rewrite: (path) => path.replace(/^\/agentApi/, ''),
 				},
 				'/tonghuashun': {
 					target: VITE_BASE_API_THS,

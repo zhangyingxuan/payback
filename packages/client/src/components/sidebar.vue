@@ -4,9 +4,9 @@
       class="sidebar-el-menu"
       :default-active="onRoutes"
       :collapse="sidebar.collapse"
-      background-color="#324157"
-      text-color="#bfcbd9"
-      active-text-color="#20a0ff"
+      :background-color="theme === 'bull' ? '#672d2b' : '#324157'"
+      :text-color="theme === 'bull' ? '#f0d5cd' : '#bfcbd9'"
+      :active-text-color="theme === 'bull' ? '#ffd3b6' : '#20a0ff'"
       unique-opened
       router
     >
@@ -69,6 +69,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { theme } from '@/core/theme';
 import { useSidebarStore } from '../store/sidebar';
 import { useRoute } from 'vue-router';
 
@@ -77,6 +78,12 @@ const items: any = [
     icon: 'PieChart',
     index: '/charts',
     title: '图表',
+    permiss: '11',
+  },
+  {
+    icon: 'ChatDotRound',
+    index: '/chat',
+    title: '智能复盘',
     permiss: '11',
   },
   {

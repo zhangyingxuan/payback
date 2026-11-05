@@ -69,7 +69,7 @@ AppModule = __decorate([
                         password,
                         database,
                         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-                        synchronize: true,
+                        synchronize: process.env.DB_SYNCHRONIZE !== 'false',
                     };
                 },
             }),

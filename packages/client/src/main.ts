@@ -3,6 +3,7 @@ import { createPinia } from 'pinia';
 // 引入pinia 持久化插件
 import piniaPersist from 'pinia-plugin-persist'
 import App from './App.vue';
+import './core/theme';
 import router from './router';
 import 'element-plus/dist/index.css';
 import './assets/css/icon.css';

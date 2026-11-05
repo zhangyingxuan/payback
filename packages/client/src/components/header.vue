@@ -12,6 +12,7 @@
     </template>
     <div :class="isMobile ? 'mobile-right' : 'header-right'">
       <div class="header-user-con">
+        <button class="theme-switch" type="button" :aria-label="theme === 'bull' ? '切换至经典主题' : '切换至牛市红主题'" @click="toggleTheme"><span class="theme-switch-dot" aria-hidden="true"></span>{{ theme === 'bull' ? '牛市红' : '经典主题' }}</button>
         <el-button type="primary" @click="switchDrawerVisible" size="small">
           我的收藏
         </el-button>
@@ -156,6 +157,7 @@ import dayjs from 'dayjs';
 import Calendar from './calendar/index.vue';
 import { usePermissStore } from '../store/permiss';
 import { updateNavThemeColor } from '@/core/util';
+import { theme, toggleTheme } from '@/core/theme';
 
 // 当前日期大于20号，则提示
 const monthEnd = dayjs().date() >= 20;
@@ -257,6 +259,9 @@ const handleCommand = (command: string) => {
     background-color: #224c15;
   }
 }
+.theme-switch { display: inline-flex; align-items: center; flex-shrink: 0; gap: 6px; min-height: 30px; margin-right: 10px; padding: 0 10px; border: 1px solid rgba(255,255,255,.3); border-radius: 15px; background: transparent; color: #fff; font-size: 12px; cursor: pointer; }
+.theme-switch:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.theme-switch-dot { width: 7px; height: 7px; border-radius: 50%; background: #efb2a3; }
 .mobile-right {
   padding: 0 5px;
   overflow: auto;
