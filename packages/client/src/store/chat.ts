@@ -6,6 +6,7 @@
  * 一个四级复盘的 JSON 有 ~2.9 万字符，存下来 localStorage 很快就爆。
  */
 import { defineStore } from 'pinia';
+import type { AgentStoredSession } from '@/api/agent';
 
 const STORAGE_KEY = 'payback-agent-chats';
 const MAX_CONVERSATIONS = 50;
@@ -21,6 +22,7 @@ export interface ChatMessage {
   id: string;
   role: 'user' | 'assistant';
   content: string;
+  reasoning?: string;
   toolCalls: ToolCallChip[];
   /** 本轮失败（网关/服务错误），content 可能为空 */
   error?: string;
@@ -31,7 +33,7 @@ export interface ChatMessage {
 
 export interface Conversation {
   id: string;
-  /** agent 服务端的会话 id；服务重启后失效，agent 会当新会话处理 */
+  /** agent 服务端的持久化会话 id */
   sessionId?: string;
   title: string;
   messages: ChatMessage[];
@@ -83,6 +85,24 @@ export const useChatStore = defineStore('agentChat', {
       [...state.conversations].sort((a, b) => b.updatedAt - a.updatedAt),
   },
   actions: {
+    restoreSessions(sessions: AgentStoredSession[]) {
+      // 保留本机已有的展示状态，避免服务端恢复覆盖未完成或失败的消息。
+      for (const session of sessions.slice().reverse()) {
+        if (this.conversations.some(conv => conv.sessionId === session.id)) continue;
+        const now = Date.now();
+        this.conversations.unshift({
+          id: uuid(), sessionId: session.id,
+          title: session.messages[0]?.content.trim().slice(0, 24) || '新对话',
+          createdAt: now, updatedAt: now,
+          messages: session.messages.map(message => ({
+            id: uuid(), role: message.role, content: message.content,
+            toolCalls: [], createdAt: now,
+          })),
+        });
+      }
+      if (!this.activeId && this.conversations.length) this.activeId = this.conversations[0].id;
+      this.persist();
+    },
     persist() {
       try {
         localStorage.setItem(

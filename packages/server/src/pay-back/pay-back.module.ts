@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 // service
 import { ShorTermService } from './service/shortTerm.service';
+import { LiveMarketService } from './service/liveMarket.service';
 import { MarketService } from './service/market.service';
 import { PlateService } from './service/plate.service';
 import { FundsService } from './service/funds.service';
@@ -47,6 +48,7 @@ import { SchedulerTaskModule } from '../scheduler-task/scheduler-task.module';
   ],
   controllers: [PayBackController, ThsTradeController, SystemConfigController],
   providers: [
+    LiveMarketService,
     ShorTermService,
     SpecialStockService,
     MarketService,

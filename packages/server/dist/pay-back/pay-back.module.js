@@ -9,6 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PayBackModule = void 0;
 const common_1 = require("@nestjs/common");
 const shortTerm_service_1 = require("./service/shortTerm.service");
+const liveMarket_service_1 = require("./service/liveMarket.service");
 const market_service_1 = require("./service/market.service");
 const plate_service_1 = require("./service/plate.service");
 const funds_service_1 = require("./service/funds.service");
@@ -54,6 +55,7 @@ PayBackModule = __decorate([
         ],
         controllers: [pay_back_controller_1.PayBackController, ths_trade_controller_1.ThsTradeController, systemConfig_controller_1.SystemConfigController],
         providers: [
+            liveMarket_service_1.LiveMarketService,
             shortTerm_service_1.ShorTermService,
             specialStock_service_1.SpecialStockService,
             market_service_1.MarketService,

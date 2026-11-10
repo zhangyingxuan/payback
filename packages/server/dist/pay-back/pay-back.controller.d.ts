@@ -1,3 +1,4 @@
+import { LiveMarketService, LiveSection } from './service/liveMarket.service';
 import { ShorTermService } from './service/shortTerm.service';
 import { SpecialStockService } from './service/specialStock.service';
 import { MarketService } from './service/market.service';
@@ -19,6 +20,7 @@ declare class CrawlTodayDataDto {
     isRemoveIncompatible: number;
 }
 export declare class PayBackController {
+    private readonly liveMarketService;
     private readonly shorTermService;
     private readonly specialStockService;
     private readonly fundsService;
@@ -35,8 +37,12 @@ export declare class PayBackController {
     private readonly systemConfigService;
     private readonly consulService;
     private pushServer;
-    constructor(shorTermService: ShorTermService, specialStockService: SpecialStockService, fundsService: FundsService, hotListService: HotListService, reviewService: ReviewService, thsService: ThsService, apiTestService: ApiTestService, latestConceptPlateService: LatestConceptPlateService, usersService: UsersService, marketService: MarketService, plateService: PlateService, schedulerTaskService: SchedulerTaskService, qyWechatNotice: QyWechatNotice, systemConfigService: SystemConfigService, consulService: ConsulService, pushServer: ClientProxy);
+    constructor(liveMarketService: LiveMarketService, shorTermService: ShorTermService, specialStockService: SpecialStockService, fundsService: FundsService, hotListService: HotListService, reviewService: ReviewService, thsService: ThsService, apiTestService: ApiTestService, latestConceptPlateService: LatestConceptPlateService, usersService: UsersService, marketService: MarketService, plateService: PlateService, schedulerTaskService: SchedulerTaskService, qyWechatNotice: QyWechatNotice, systemConfigService: SystemConfigService, consulService: ConsulService, pushServer: ClientProxy);
     private readonly logger;
+    liveMarket(section: LiveSection): Promise<{
+        code: number;
+        data: unknown;
+    }>;
     testApi(query: any): Promise<void>;
     autoCrawlTodayDataAM(): Promise<void>;
     autoCrawlTodayDataPM(): Promise<void>;

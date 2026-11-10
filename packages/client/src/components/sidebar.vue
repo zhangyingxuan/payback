@@ -74,6 +74,8 @@ import { useSidebarStore } from '../store/sidebar';
 import { useRoute } from 'vue-router';
 
 const items: any = [
+  { icon: 'DataAnalysis', index: '/daily-panorama', title: '每日 AI 全景复盘', permiss: '11' },
+  { icon: 'DataAnalysis', index: '/market-overview', title: '盘面观察', permiss: '11' },
   {
     icon: 'PieChart',
     index: '/charts',

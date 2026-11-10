@@ -1,4 +1,5 @@
-import { Controller, Get, Logger, Query, Post, Body, UseGuards, Request, Inject } from '@nestjs/common';
+import { Controller, Get, Logger, Query, Post, Body, UseGuards, Request, Inject, Param, BadRequestException } from '@nestjs/common';
+import { LiveMarketService, LiveSection } from './service/liveMarket.service';
 import { ShorTermService } from './service/shortTerm.service';
 import { SpecialStockService } from './service/specialStock.service';
 import { MarketService } from './service/market.service';
@@ -33,6 +34,7 @@ class CrawlTodayDataDto {
 @Controller('pay-back')
 export class PayBackController {
   constructor(
+    private readonly liveMarketService: LiveMarketService,
     private readonly shorTermService: ShorTermService,
     private readonly specialStockService: SpecialStockService,
     private readonly fundsService: FundsService,
@@ -52,6 +54,12 @@ export class PayBackController {
   ) {}
 
   private readonly logger = new Logger(PayBackController.name);
+
+  @Get('live-market/:section')
+  async liveMarket(@Param('section') section: LiveSection) {
+    if (!['market', 'funds', 'shortTerm', 'global'].includes(section)) throw new BadRequestException('无效的行情模块');
+    return { code: 0, data: await this.liveMarketService.get(section) };
+  }
 
   @Public()
   @Get('testApi')

@@ -10,6 +10,8 @@ PayBack 是一个个人 A 股短线交易复盘/盯盘系统：定时爬取同�
 
 ---
 
+工作区还包含同级的 `payback-agent` 与 `payback-mcp`；跨项目链路和当前工具清单见 `03-架构设计/三项目协作与AI复盘.md`。
+
 ## 2. 代码结构（文件在哪）
 
 ```
@@ -109,6 +111,7 @@ payback/
 | `packages/server/src/scheduler-task/config.ts` | `04-技术方案/后端技术方案.md`、`02-业务梳理/业务流程.md` |
 | `packages/core/src/config/index.ts`（问财查询语句） | `02-业务梳理/术语表.md`、`04-技术方案/后端技术方案.md` |
 | `packages/client/src/views/**` 新增页面/路由 | `04-技术方案/前端技术方案.md`、`01-需求分析/功能需求清单.md` |
+| 同级 `payback-agent`、`payback-mcp` 的接口、工具或数据口径变更 | `03-架构设计/三项目协作与AI复盘.md`，并核对相关客户端和各仓库 README |
 | `packages/*/package.json` 依赖变更 | `06-开发规范/技术栈.md` |
 | `docker-compose*.yml`、`.env*`、`nginx.conf` | `04-技术方案/环境配置.md` |
 | push-server `@EventPattern` / webhook 流程 | `04-技术方案/推送与部署方案.md` |

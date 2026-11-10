@@ -17,6 +17,12 @@ export interface AgentDeltaEvent {
   text: string;
 }
 
+export interface AgentReasoningDeltaEvent {
+  type: 'reasoning_delta';
+  iteration: number;
+  text: string;
+}
+
 export interface AgentToolCallEvent {
   type: 'tool_call';
   iteration: number;
@@ -50,6 +56,7 @@ export interface AgentErrorEvent {
 export type AgentEvent =
   | AgentSessionEvent
   | AgentDeltaEvent
+  | AgentReasoningDeltaEvent
   | AgentToolCallEvent
   | AgentToolResultEvent
   | AgentDoneEvent
@@ -106,4 +113,54 @@ export async function chatWithAgent(
       }
     }
   }
+}
+
+export interface AgentMemory {
+  id: string;
+  content: string;
+}
+
+export async function fetchMemories(): Promise<AgentMemory[]> {
+  const response = await fetch('/agentApi/memories');
+  if (!response.ok) throw new Error('无法读取记忆');
+  return response.json();
+}
+
+export async function addMemory(content: string): Promise<AgentMemory> {
+  const response = await fetch('/agentApi/memories', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ content }),
+  });
+  if (!response.ok) throw new Error('保存失败，请检查内容和记忆数量');
+  return response.json();
+}
+
+export async function deleteMemory(id: string): Promise<void> {
+  const response = await fetch('/agentApi/memories/' + encodeURIComponent(id), { method: 'DELETE' });
+  if (!response.ok) throw new Error('无法删除记忆');
+}
+
+export async function deleteAgentSession(id: string): Promise<void> {
+  const response = await fetch('/agentApi/sessions/' + encodeURIComponent(id), { method: 'DELETE' });
+  if (!response.ok) throw new Error('无法删除服务端会话');
+}
+
+export interface AgentStoredSession {
+  id: string;
+  messages: { role: 'user' | 'assistant'; content: string }[];
+}
+
+export async function fetchAgentSessions(): Promise<AgentStoredSession[]> {
+  const response = await fetch('/agentApi/sessions');
+  if (!response.ok) throw new Error('无法读取服务端会话');
+  return response.json();
+}
+
+export async function updateMemory(id: string, content: string): Promise<AgentMemory> {
+  const response = await fetch('/agentApi/memories/' + encodeURIComponent(id), {
+    method: 'PUT', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ content }),
+  });
+  if (!response.ok) throw new Error('无法修改记忆');
+  return response.json();
 }

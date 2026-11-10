@@ -15,6 +15,7 @@ var PayBackController_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PayBackController = void 0;
 const common_1 = require("@nestjs/common");
+const liveMarket_service_1 = require("./service/liveMarket.service");
 const shortTerm_service_1 = require("./service/shortTerm.service");
 const specialStock_service_1 = require("./service/specialStock.service");
 const market_service_1 = require("./service/market.service");
@@ -41,7 +42,8 @@ const dataHealthUtil_1 = require("./utils/dataHealthUtil");
 class CrawlTodayDataDto {
 }
 let PayBackController = PayBackController_1 = class PayBackController {
-    constructor(shorTermService, specialStockService, fundsService, hotListService, reviewService, thsService, apiTestService, latestConceptPlateService, usersService, marketService, plateService, schedulerTaskService, qyWechatNotice, systemConfigService, consulService, pushServer) {
+    constructor(liveMarketService, shorTermService, specialStockService, fundsService, hotListService, reviewService, thsService, apiTestService, latestConceptPlateService, usersService, marketService, plateService, schedulerTaskService, qyWechatNotice, systemConfigService, consulService, pushServer) {
+        this.liveMarketService = liveMarketService;
         this.shorTermService = shorTermService;
         this.specialStockService = specialStockService;
         this.fundsService = fundsService;
@@ -59,6 +61,11 @@ let PayBackController = PayBackController_1 = class PayBackController {
         this.consulService = consulService;
         this.pushServer = pushServer;
         this.logger = new common_1.Logger(PayBackController_1.name);
+    }
+    async liveMarket(section) {
+        if (!['market', 'funds', 'shortTerm', 'global'].includes(section))
+            throw new common_1.BadRequestException('无效的行情模块');
+        return { code: 0, data: await this.liveMarketService.get(section) };
     }
     async testApi(query) {
     }
@@ -316,6 +323,13 @@ let PayBackController = PayBackController_1 = class PayBackController {
     }
 };
 __decorate([
+    (0, common_1.Get)('live-market/:section'),
+    __param(0, (0, common_1.Param)('section')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PayBackController.prototype, "liveMarket", null);
+__decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.Get)('testApi'),
     __param(0, (0, common_1.Query)()),
@@ -461,8 +475,9 @@ __decorate([
 ], PayBackController.prototype, "initSchedulerTask", null);
 PayBackController = PayBackController_1 = __decorate([
     (0, common_1.Controller)('pay-back'),
-    __param(15, (0, common_1.Inject)('PUSH_SERVER')),
-    __metadata("design:paramtypes", [shortTerm_service_1.ShorTermService,
+    __param(16, (0, common_1.Inject)('PUSH_SERVER')),
+    __metadata("design:paramtypes", [liveMarket_service_1.LiveMarketService,
+        shortTerm_service_1.ShorTermService,
         specialStock_service_1.SpecialStockService,
         funds_service_1.FundsService,
         hotList_service_1.HotListService,

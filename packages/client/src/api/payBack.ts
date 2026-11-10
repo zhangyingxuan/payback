@@ -11,6 +11,17 @@ export interface ChartResult {
   fundsData: FundsModel[];
 }
 
+export interface GlobalQuote {
+  code: string;
+  name: string;
+  price: number | null;
+  change: number | null;
+  quoteTime: string | null;
+}
+
+export const fetchLiveMarket = <T>(section: 'market' | 'funds' | 'shortTerm' | 'global') =>
+  http.request<T>('get', `${baseUrl}/live-market/${section}`, { timeout: 30000 });
+
 /**
  * 获取图表数据
  * @param params

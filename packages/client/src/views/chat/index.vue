@@ -1,21 +1,35 @@
 <template>
   <div class="chat-page">
-    <!-- 会话列表（ChatGPT 式左侧栏，移动端抽屉） -->
-    <aside :class="['conv-panel', { open: panelOpen }]">
-      <div class="panel-head">
-        <el-button class="new-conv" type="primary" plain @click="onNewConversation">
-          <el-icon><Plus /></el-icon>&nbsp;新对话
-        </el-button>
+    <!-- 会话侧栏在窄屏下切换为抽屉。 -->
+    <aside id="chat-conversations" :class="['conv-panel', { open: panelOpen }]" aria-label="对话列表">
+      <div class="panel-brand">
+        <span class="brand-mark"><el-icon><DataAnalysis /></el-icon></span>
+        <span><strong>智能复盘</strong><small>PAYBACK · MARKET INSIGHTS</small></span>
       </div>
+      <div class="panel-head">
+        <el-button
+          class="new-conv"
+          type="primary"
+          plain
+          @click="onNewConversation"
+        >
+          <el-icon><Plus /></el-icon><span>新建对话</span>
+        </el-button>
+        <el-input v-model="searchQuery" class="conv-search" clearable placeholder="搜索对话" aria-label="搜索对话">
+          <template #prefix><el-icon><Search /></el-icon></template>
+        </el-input>
+      </div>
+      <div class="list-label">最近对话 <span>{{ filteredConversations.length }}</span></div>
       <div class="conv-list">
         <div
-          v-for="conv in store.sorted"
+          v-for="conv in filteredConversations"
           :key="conv.id"
           :class="['conv-item', { active: conv.id === store.activeId }]"
-          @click="onSelect(conv.id)"
         >
-          <el-icon class="conv-icon"><ChatDotRound /></el-icon>
-          <span class="conv-title">{{ conv.title }}</span>
+          <button type="button" class="conv-select" :aria-current="conv.id === store.activeId ? 'page' : undefined" @click="onSelect(conv.id)">
+            <el-icon class="conv-icon"><ChatDotRound /></el-icon>
+            <span class="conv-title">{{ conv.title }}</span>
+          </button>
           <el-popconfirm
             title="删除这个对话？"
             confirm-button-text="删除"
@@ -23,51 +37,57 @@
             @confirm="onDelete(conv.id)"
           >
             <template #reference>
-              <el-icon class="conv-delete" @click.stop><Delete /></el-icon>
+              <button type="button" class="conv-delete" :aria-label="'删除对话：' + conv.title" @click.stop><el-icon><Delete /></el-icon></button>
             </template>
           </el-popconfirm>
         </div>
-        <div v-if="!store.conversations.length" class="conv-empty">
-          还没有对话，点上面「新对话」开始
+        <div v-if="!filteredConversations.length" class="conv-empty">
+          {{ searchQuery.trim() ? '没有找到相关对话' : '还没有对话，开始一个新的复盘吧' }}
         </div>
       </div>
-      <div class="panel-foot">数据源：payback-mcp（只读）</div>
+      <div class="panel-foot">
+        <button type="button" class="memory-button" @click="openMemories"><el-icon><Collection /></el-icon><span>长期记忆</span><el-icon class="memory-arrow"><ArrowRight /></el-icon></button>
+        <div class="source-label"><span class="source-dot" />行情数据 · payback-mcp</div>
+      </div>
     </aside>
     <div v-if="panelOpen" class="panel-mask" @click="panelOpen = false" />
 
+    <el-dialog v-model="memoriesOpen" title="长期记忆" width="min(90%, 520px)">
+      <p>添加希望跨会话保留的偏好；行情数据仍会重新查询。</p>
+      <div v-for="item in memories" :key="item.id">
+        <span>{{ item.content }}</span>
+        <el-button text @click="editMemory(item)">编辑</el-button>
+        <el-button text type="danger" @click="removeMemory(item.id)">删除</el-button>
+      </div>
+      <el-input v-model="memoryDraft" maxlength="500" show-word-limit placeholder="例如：先展示风险，再展开数据" />
+      <template #footer>
+        <el-button type="primary" :disabled="!memoryDraft.trim()" @click="saveMemory">保存记忆</el-button>
+      </template>
+    </el-dialog>
+
     <!-- 主区 -->
-    <main class="chat-main">
+    <main :class="['chat-main', { 'is-empty': !messages.length }]">
       <header class="chat-head">
-        <el-button class="head-menu" text @click="panelOpen = !panelOpen">
+        <el-button class="head-menu" text aria-label="打开对话列表" aria-controls="chat-conversations" :aria-expanded="panelOpen" @click="panelOpen = !panelOpen">
           <el-icon><Operation /></el-icon>
         </el-button>
-        <span class="head-title">{{ store.active?.title || '智能复盘' }}</span>
-        <span v-if="streaming && streamingConvId !== store.activeId" class="head-busy">
-          <el-icon class="is-loading"><Loading /></el-icon>&nbsp;另一对话正在生成…
+        <div class="head-context"><span class="head-eyebrow">市场研究 / 对话</span><span class="head-title">{{ store.active?.title || '新对话' }}</span></div>
+        <span
+          v-if="streaming && streamingConvId !== store.activeId"
+          class="head-busy"
+        >
+          <el-icon class="is-loading"><Loading /></el-icon
+          >&nbsp;另一对话正在生成…
         </span>
-        <span class="head-hint">内容由 AI 生成，不构成投资建议</span>
+        <span class="head-hint"><span class="source-dot" />数据驱动的市场复盘</span>
       </header>
 
       <div ref="messagesEl" class="messages" @scroll="onMessagesScroll">
         <!-- 空状态：建议问题 -->
         <div v-if="!messages.length" class="empty-state">
-          <div class="empty-logo">
-            <el-icon :size="42"><DataAnalysis /></el-icon>
-          </div>
-          <h2>四级短线复盘助手</h2>
-          <p class="empty-sub">
-            市场环境 → 生态阶段 → 出手机会 → 买卖点结构。每个数字都实时取自数据库，不凭记忆回答。
-          </p>
-          <div class="suggestions">
-            <div
-              v-for="prompt in SUGGESTIONS"
-              :key="prompt"
-              class="suggestion-card"
-              @click="onSend(prompt)"
-            >
-              {{ prompt }}
-            </div>
-          </div>
+          <div class="empty-kicker"><span /> PAYBACK MARKET ASSISTANT</div>
+          <h1>让每一次复盘，<br /><em>都有据可依。</em></h1>
+          <p class="empty-sub">从市场环境到短线生态，用数据梳理每一个判断。</p>
         </div>
 
         <div v-else class="message-list">
@@ -76,7 +96,9 @@
             :key="msg.id"
             :message="msg"
             :streaming="streaming && msg.id === streamingMessageId"
+            :busy="streaming"
             @retry="onRetry"
+            @resend="onResend(msg.content)"
           />
         </div>
       </div>
@@ -88,7 +110,8 @@
             ref="inputEl"
             v-model="draft"
             rows="1"
-            placeholder="问点什么，比如：复盘一下昨天的市场（Enter 发送，Shift+Enter 换行）"
+            aria-label="输入复盘问题"
+            placeholder="问问今天的市场，或输入你的复盘问题…"
             @input="autoGrow"
             @focus="inputFocused = true"
             @blur="inputFocused = false"
@@ -99,6 +122,7 @@
             class="send-btn stop"
             circle
             title="停止生成"
+            aria-label="停止生成"
             @click="onStop"
           >
             <el-icon><VideoPause /></el-icon>
@@ -110,13 +134,19 @@
             circle
             :disabled="!draft.trim()"
             title="发送"
+            aria-label="发送消息"
             @click="onSend()"
           >
             <el-icon><Promotion /></el-icon>
           </el-button>
         </div>
+        <div v-if="!messages.length" class="suggestions" aria-label="推荐问题">
+          <button v-for="prompt in SUGGESTIONS" :key="prompt" type="button" class="suggestion-card" :disabled="streaming" @click="onSend(prompt)">
+            <el-icon><TrendCharts /></el-icon><span>{{ prompt }}</span><el-icon class="suggestion-arrow"><ArrowRight /></el-icon>
+          </button>
+        </div>
         <div class="composer-foot">
-          回答基于 payback-mcp 实时查询的行情数据；不推荐个股、不给仓位建议。
+          内容由 AI 生成，仅供参考，不构成投资建议
         </div>
       </div>
     </main>
@@ -124,7 +154,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, ref } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import {
   Plus,
   Delete,
@@ -134,20 +164,29 @@ import {
   Promotion,
   VideoPause,
   Loading,
+  Search,
+  Collection,
+  ArrowRight,
+  TrendCharts,
 } from '@element-plus/icons-vue';
-import { chatWithAgent, type AgentEvent } from '@/api/agent';
+import { chatWithAgent, fetchAgentSessions, fetchMemories, addMemory, updateMemory, deleteMemory, deleteAgentSession, type AgentEvent, type AgentMemory } from '@/api/agent';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import { useChatStore, type Conversation } from '@/store/chat';
 import ChatMessage from './components/ChatMessage.vue';
 
 const SUGGESTIONS = [
-  '复盘一下昨天的市场',
+  '复盘一下今日的市场',
   '现在短线生态处于什么阶段？',
-  '昨天的连板梯队和晋级率怎么样？',
+  '今日的连板梯队和晋级率怎么样？',
   '最近的市场有出手机会吗？',
 ];
 
 const store = useChatStore();
 const draft = ref('');
+const searchQuery = ref('');
+const memoriesOpen = ref(false);
+const memories = ref<AgentMemory[]>([]);
+const memoryDraft = ref('');
 const streaming = ref(false);
 const streamingMessageId = ref('');
 const streamingConvId = ref('');
@@ -164,6 +203,10 @@ let stickToBottom = true;
 const FLUSH_MS = 80;
 
 const messages = computed(() => store.active?.messages ?? []);
+const filteredConversations = computed(() => {
+  const query = searchQuery.value.trim().toLocaleLowerCase();
+  return query ? store.sorted.filter(conv => conv.title.toLocaleLowerCase().includes(query)) : store.sorted;
+});
 
 function ensureConversation(): Conversation {
   return store.active ?? store.newConversation();
@@ -171,7 +214,8 @@ function ensureConversation(): Conversation {
 
 function onNewConversation() {
   // 已有空对话就直接选中，不堆重复的「新对话」
-  const empty = store.conversations.find((c) => !c.messages.length);
+  searchQuery.value = '';
+  const empty = store.conversations.find(c => !c.messages.length);
   store.select(empty ? empty.id : store.newConversation().id);
   panelOpen.value = false;
   inputEl.value?.focus();
@@ -185,9 +229,53 @@ function onSelect(id: string) {
   scrollToBottom(true);
 }
 
-function onDelete(id: string) {
-  if (streaming.value && streamingConvId.value === id) onStop();
-  store.deleteConversation(id);
+async function onDelete(id: string) {
+  if (streaming.value && streamingConvId.value === id) {
+    ElMessage.warning('请先停止生成，完成后再删除会话');
+    return;
+  }
+  const conv = store.conversations.find(c => c.id === id);
+  try {
+    if (conv?.sessionId) await deleteAgentSession(conv.sessionId);
+    store.deleteConversation(id);
+  } catch {
+    ElMessage.error('删除失败，请检查 Agent 服务');
+  }
+}
+
+async function openMemories() {
+  try {
+    memories.value = await fetchMemories();
+    memoriesOpen.value = true;
+  } catch { ElMessage.error('无法读取长期记忆'); }
+}
+
+async function saveMemory() {
+  try {
+    memories.value.push(await addMemory(memoryDraft.value.trim()));
+    memoryDraft.value = '';
+  } catch { ElMessage.error('保存失败，请检查内容和记忆数量'); }
+}
+
+async function editMemory(item: AgentMemory) {
+  try {
+    const result = await ElMessageBox.prompt('修改长期记忆', '编辑记忆', {
+      inputValue: item.content,
+      inputValidator: value => !!value.trim() && value.trim().length <= 500,
+      inputErrorMessage: '请输入 1–500 个字符',
+    });
+    const updated = await updateMemory(item.id, result.value.trim());
+    item.content = updated.content;
+  } catch (error) {
+    if (error !== 'cancel' && error !== 'close') ElMessage.error('修改记忆失败');
+  }
+}
+
+async function removeMemory(id: string) {
+  try {
+    await deleteMemory(id);
+    memories.value = memories.value.filter(item => item.id !== id);
+  } catch { ElMessage.error('删除记忆失败'); }
 }
 
 function autoGrow() {
@@ -232,6 +320,15 @@ function onSend(preset?: string) {
   runTurn(conv, text);
 }
 
+// 重新发送历史问题时保留输入框中的草稿和已有对话。
+function onResend(text: string) {
+  const conv = store.active;
+  if (!conv || !text.trim() || streaming.value) return;
+  store.addMessage(conv, 'user', text);
+  scrollToBottom(true);
+  runTurn(conv, text);
+}
+
 function onRetry() {
   const conv = store.active;
   if (!conv || streaming.value) return;
@@ -262,6 +359,7 @@ async function runTurn(conv: Conversation, question: string) {
   abortController = new AbortController();
 
   let pending = '';
+  let pendingReasoning = '';
   let flushTimer: ReturnType<typeof setTimeout> | null = null;
   function flushPending() {
     if (flushTimer !== null) {
@@ -271,6 +369,11 @@ async function runTurn(conv: Conversation, question: string) {
     if (pending) {
       assistant.content += pending;
       pending = '';
+      scrollToBottom();
+    }
+    if (pendingReasoning) {
+      assistant.reasoning = (assistant.reasoning || '') + pendingReasoning;
+      pendingReasoning = '';
       scrollToBottom();
     }
   }
@@ -291,6 +394,10 @@ async function runTurn(conv: Conversation, question: string) {
         pending += event.text;
         scheduleFlush();
         break;
+      case 'reasoning_delta':
+        pendingReasoning += event.text;
+        scheduleFlush();
+        break;
       case 'tool_call':
         assistant.toolCalls.push({
           name: event.name,
@@ -303,7 +410,10 @@ async function runTurn(conv: Conversation, question: string) {
         const chip = [...assistant.toolCalls]
           .reverse()
           .find(
-            (c) => c.state === 'running' && c.name === event.name && c.iteration === event.iteration
+            c =>
+              c.state === 'running' &&
+              c.name === event.name &&
+              c.iteration === event.iteration,
           );
         if (chip) {
           chip.state = event.error ? 'error' : 'done';
@@ -330,12 +440,14 @@ async function runTurn(conv: Conversation, question: string) {
     await chatWithAgent(
       { message: question, session_id: conv.sessionId },
       onEvent,
-      abortController.signal
+      abortController.signal,
     );
   } catch (error: any) {
     flushPending();
     if (error?.name === 'AbortError') {
-      assistant.content += assistant.content ? '\n\n（已停止生成）' : '（已停止生成）';
+      assistant.content += assistant.content
+        ? '\n\n（已停止生成）'
+        : '（已停止生成）';
     } else {
       // fetch 的网络层失败是 TypeError；serve 挂掉/代理不通是 HTTP 5xx
       const raw: string = error?.message || '';
@@ -360,6 +472,14 @@ async function runTurn(conv: Conversation, question: string) {
   }
 }
 
+onMounted(async () => {
+  try {
+    store.restoreSessions(await fetchAgentSessions());
+  } catch {
+    ElMessage.warning('无法读取服务端会话，暂时显示本机记录');
+  }
+});
+
 onBeforeUnmount(() => {
   abortController?.abort();
 });
@@ -367,309 +487,278 @@ onBeforeUnmount(() => {
 
 <style scoped lang="less">
 .chat-page {
+  --chat-ink: #172338;
+  --chat-muted: #6e7d90;
+  --chat-line: #e3eaf1;
+  --chat-accent: #1e6f78;
   display: flex;
   height: 100%;
+  min-height: 0;
   overflow: hidden;
   background: #fff;
+  color: var(--chat-ink);
 }
 
-// ---------- 会话列表 ----------
 .conv-panel {
   display: flex;
+  flex: 0 0 264px;
   flex-direction: column;
-  width: 240px;
-  flex-shrink: 0;
-  background: #f7f8fa;
-  border-right: 1px solid #e5e7eb;
-
-  .panel-head {
-    padding: 12px;
-
-    .new-conv {
-      width: 100%;
-    }
-  }
-
-  .conv-list {
-    flex: 1;
-    overflow-y: auto;
-    padding: 0 8px;
-  }
-
-  .conv-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 9px 10px;
-    margin-bottom: 2px;
-    border-radius: 8px;
-    cursor: pointer;
-    color: #374151;
-    font-size: 13px;
-
-    &:hover {
-      background: #eceef1;
-
-      .conv-delete {
-        opacity: 1;
-      }
-    }
-
-    &.active {
-      background: #e3e9f7;
-      color: #1d4ed8;
-    }
-
-    .conv-icon {
-      flex-shrink: 0;
-      font-size: 15px;
-      opacity: 0.6;
-    }
-
-    .conv-title {
-      flex: 1;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .conv-delete {
-      opacity: 0;
-      font-size: 14px;
-      color: #9ca3af;
-      transition: opacity 0.15s;
-
-      &:hover {
-        color: #ef4444;
-      }
-    }
-  }
-
-  .conv-empty {
-    padding: 24px 12px;
-    text-align: center;
-    color: #9ca3af;
-    font-size: 12px;
-  }
-
-  .panel-foot {
-    padding: 10px 14px;
-    border-top: 1px solid #e5e7eb;
-    color: #9ca3af;
-    font-size: 11px;
-  }
+  min-height: 0;
+  background: #f6f8fa;
+  border-right: 1px solid var(--chat-line);
 }
-
-.panel-mask {
-  display: none;
-}
-
-// ---------- 主区 ----------
-.chat-main {
-  flex: 1;
+.panel-brand {
   display: flex;
-  flex-direction: column;
-  min-width: 0;
+  align-items: center;
+  gap: 11px;
+  padding: 24px 18px 20px;
+  strong, small { display: block; }
+  strong { font-size: 15px; letter-spacing: .04em; }
+  small { margin-top: 3px; color: #80909f; font-size: 9px; font-weight: 700; letter-spacing: .075em; }
 }
-
-.chat-head {
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  border-radius: 12px;
+  color: #fff;
+  background: #216f78;
+  font-size: 20px;
+  box-shadow: 0 6px 14px rgba(30, 111, 120, .17);
+}
+.panel-head {
+  display: grid;
+  gap: 9px;
+  padding: 0 14px;
+  .new-conv {
+    justify-content: flex-start;
+    gap: 9px;
+    width: 100%;
+    height: 42px;
+    margin: 0;
+    border-color: #c8dedd;
+    border-radius: 10px;
+    color: #17656e;
+    background: #eaf5f3;
+    font-weight: 600;
+  }
+  .conv-search :deep(.el-input__wrapper) {
+    min-height: 42px;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 0 0 1px #e2e9ee inset;
+  }
+  .conv-search :deep(.el-input__wrapper.is-focus) { box-shadow: 0 0 0 1px #59999d inset; }
+}
+.list-label {
+  display: flex;
+  justify-content: space-between;
+  padding: 25px 19px 9px;
+  color: #8492a0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  span { font-variant-numeric: tabular-nums; }
+}
+.conv-list { flex: 1; min-height: 0; overflow-y: auto; padding: 0 10px; }
+.conv-item {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  margin-bottom: 3px;
+  border-radius: 10px;
+  &:hover, &:focus-within { background: #eaf0f2; }
+  &.active { background: #e4f0ef; color: #17656e; }
+  &:hover .conv-delete, &:focus-within .conv-delete, &.active .conv-delete { opacity: 1; }
+}
+.conv-select {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 10px;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+.conv-icon { flex-shrink: 0; color: #82939f; font-size: 16px; }
+.active .conv-icon { color: #287d82; }
+.conv-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.conv-delete {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 44px;
+  flex: 0 0 auto;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  color: #82909d;
+  background: transparent;
+  opacity: 0;
+  cursor: pointer;
+  &:hover { color: #c45656; }
+}
+.conv-select:focus-visible, .conv-delete:focus-visible, .memory-button:focus-visible, .suggestion-card:focus-visible {
+  outline: 2px solid #1e6f78;
+  outline-offset: -2px;
+}
+.conv-empty { padding: 18px 10px; color: #8492a0; font-size: 12px; line-height: 1.6; }
+.panel-foot { padding: 10px 14px 18px; border-top: 1px solid var(--chat-line); }
+.memory-button {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 0 16px;
-  height: 46px;
-  flex-shrink: 0;
-  border-bottom: 1px solid #f0f1f3;
-
-  .head-menu {
-    display: none;
-  }
-
-  .head-title {
-    font-size: 14px;
-    font-weight: 600;
-    color: #1f2937;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .head-busy {
-    display: inline-flex;
-    align-items: center;
-    font-size: 11px;
-    color: #2f6fed;
-    flex-shrink: 0;
-  }
-
-  .head-hint {
-    margin-left: auto;
-    font-size: 11px;
-    color: #9ca3af;
-    flex-shrink: 0;
-  }
+  width: 100%;
+  min-height: 44px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 9px;
+  color: #526477;
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  &:hover { background: #eaf0f2; }
+  span { flex: 1; }
+  .memory-arrow { color: #91a0aa; }
 }
+.source-label { padding: 8px 8px 0; color: #8b99a6; font-size: 11px; }
+.source-dot { display: inline-block; width: 6px; height: 6px; margin-right: 7px; border-radius: 50%; background: #51a592; vertical-align: middle; }
+.panel-mask { display: none; }
 
-.messages {
-  flex: 1;
+.chat-main { display: flex; flex: 1; flex-direction: column; min-width: 0; min-height: 0; background: #fff; }
+.chat-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  padding: 10px 25px;
+  border-bottom: 1px solid #edf1f4;
+  .head-menu { display: none; }
+  .head-context { display: flex; flex: 1; flex-direction: column; gap: 4px; min-width: 0; }
+  .head-eyebrow { color: #94a1ae; font-size: 10px; letter-spacing: .06em; }
+  .head-title { overflow: hidden; color: #273549; font-size: 14px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+  .head-busy { color: #277a83; font-size: 12px; white-space: nowrap; }
+  .head-hint { color: #82919e; font-size: 12px; white-space: nowrap; }
+}
+.messages { flex: 1; min-height: 0; overflow-y: auto; scroll-behavior: smooth; }
+.message-list { max-width: 820px; margin: 0 auto; padding: 24px 28px 28px; }
+
+// 欢迎页与对话页共用输入框，避免切换状态时丢失草稿和焦点。
+.is-empty {
   overflow-y: auto;
-  scroll-behavior: smooth;
+  background: radial-gradient(ellipse at 50% 28%, #edf7f5 0%, #f8fafb 38%, #fff 72%);
+  .chat-head { background: rgba(255, 255, 255, .72); }
+  .messages { flex: 0 0 auto; margin-top: auto; overflow: visible; }
+  .composer { margin-bottom: auto; }
 }
-
-.message-list {
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 16px 24px 24px;
-}
-
-// ---------- 空状态 ----------
 .empty-state {
   max-width: 720px;
   margin: 0 auto;
-  padding: 8vh 24px 24px;
+  padding: 42px 24px 28px;
   text-align: center;
-
-  .empty-logo {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 72px;
-    height: 72px;
-    border-radius: 20px;
-    background: linear-gradient(135deg, #2f6fed, #7c3aed);
-    color: #fff;
-    margin-bottom: 18px;
-  }
-
-  h2 {
-    font-size: 22px;
-    color: #111827;
-    margin-bottom: 8px;
-  }
-
-  .empty-sub {
-    font-size: 13px;
-    color: #6b7280;
-    margin-bottom: 28px;
-  }
-
-  .suggestions {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
-
-  .suggestion-card {
-    padding: 14px 16px;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    font-size: 13px;
-    color: #374151;
-    cursor: pointer;
-    text-align: left;
-    transition: all 0.15s;
-
-    &:hover {
-      border-color: #2f6fed;
-      color: #2f6fed;
-      background: rgba(47, 111, 237, 0.04);
-    }
-  }
+  .empty-kicker { color: #388b87; font-size: 10px; font-weight: 700; letter-spacing: .18em; }
+  .empty-kicker span { display: inline-block; width: 22px; height: 1px; margin: 0 7px 3px 0; background: #65aaa2; }
+  h1 { margin: 19px 0 14px; color: #20364a; font-family: Georgia, 'Songti SC', 'SimSun', serif; font-size: clamp(30px, 3.2vw, 43px); font-weight: 600; letter-spacing: .035em; line-height: 1.35; }
+  h1 em { color: #25837d; font-style: normal; }
+  .empty-sub { margin: 0; color: #7a8b97; font-size: 14px; line-height: 1.7; }
 }
-
-// ---------- 输入区 ----------
-.composer {
-  flex-shrink: 0;
-  padding: 8px 24px 12px;
-  background: linear-gradient(transparent, #fff 30%);
-
-  .composer-box {
-    display: flex;
-    align-items: flex-end;
-    gap: 10px;
-    max-width: 820px;
-    margin: 0 auto;
-    padding: 10px 12px;
-    border: 1px solid #d8dce3;
-    border-radius: 16px;
-    background: #fff;
-    transition: border-color 0.15s, box-shadow 0.15s;
-
-    &.focused {
-      border-color: #2f6fed;
-      box-shadow: 0 0 0 3px rgba(47, 111, 237, 0.12);
-    }
-
-    textarea {
-      flex: 1;
-      border: none;
-      outline: none;
-      resize: none;
-      font-size: 14px;
-      line-height: 1.6;
-      font-family: inherit;
-      color: #1f2937;
-      max-height: 160px;
-      background: transparent;
-
-      &::placeholder {
-        color: #b0b6bf;
-      }
-    }
-
-    .send-btn {
-      flex-shrink: 0;
-      margin-bottom: 1px;
-    }
+.composer { flex-shrink: 0; padding: 8px 28px 18px; }
+.composer-box {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  max-width: 764px;
+  min-height: 76px;
+  margin: 0 auto;
+  padding: 15px;
+  border: 1px solid #dce5e9;
+  border-radius: 17px;
+  background: #fff;
+  box-shadow: 0 9px 30px rgba(34, 67, 77, .06);
+  transition: border-color .15s, box-shadow .15s;
+  &.focused { border-color: #5fa29d; box-shadow: 0 0 0 3px rgba(42, 134, 128, .1), 0 9px 30px rgba(34, 67, 77, .06); }
+  textarea {
+    flex: 1;
+    min-width: 0;
+    max-height: 160px;
+    padding: 7px 3px;
+    border: 0;
+    outline: 0;
+    color: #273549;
+    background: transparent;
+    font: inherit;
+    font-size: 14px;
+    line-height: 1.6;
+    resize: none;
+    &::placeholder { color: #9aaab3; }
   }
-
-  .composer-foot {
-    max-width: 820px;
-    margin: 8px auto 0;
-    text-align: center;
-    font-size: 11px;
-    color: #9ca3af;
-  }
+  .send-btn { width: 42px; height: 42px; flex-shrink: 0; margin: 0; border-color: #237b78; background: #237b78; }
+  .send-btn:disabled { border-color: #d8e5e3; background: #d8e5e3; }
+  .send-btn.stop { color: #fff; }
 }
+.suggestions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  max-width: 764px;
+  margin: 16px auto 0;
+}
+.suggestion-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 10px 14px;
+  border: 1px solid #e2eae9;
+  border-radius: 11px;
+  color: #526a75;
+  background: rgba(255, 255, 255, .78);
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color .15s, background .15s, transform .15s;
+  > .el-icon:first-child { color: #62a29c; font-size: 16px; }
+  span { flex: 1; }
+  .suggestion-arrow { color: #a6b7b8; }
+  &:hover:not(:disabled) { transform: translateY(-1px); border-color: #b8d9d3; background: #fff; }
+  &:disabled { cursor: not-allowed; opacity: .6; }
+}
+.composer-foot { max-width: 764px; margin: 12px auto 0; color: #9aa8b0; font-size: 11px; text-align: center; }
 
-// ---------- 窄屏：会话列表变抽屉 ----------
 @media (max-width: 768px) {
-  .conv-panel {
-    position: fixed;
-    left: 0;
-    top: 40px;
-    bottom: 0;
-    z-index: 1001;
-    transform: translateX(-100%);
-    transition: transform 0.2s ease-in-out;
-
-    &.open {
-      transform: translateX(0);
-    }
-  }
-
-  .panel-mask {
-    display: block;
-    position: fixed;
-    inset: 40px 0 0 0;
-    z-index: 1000;
-    background: rgba(0, 0, 0, 0.3);
-  }
-
-  .chat-head .head-menu {
-    display: inline-flex;
-  }
-
-  .empty-state .suggestions {
-    grid-template-columns: 1fr;
-  }
-
-  .message-list {
-    padding: 12px 14px 20px;
-  }
-
-  .composer {
-    padding: 6px 12px 10px;
-  }
+  .conv-panel { position: fixed; inset: 0 auto 0 0; z-index: 1001; width: 264px; visibility: hidden; transform: translateX(-100%); transition: transform .2s ease, visibility .2s; }
+  .conv-panel.open { visibility: visible; transform: translateX(0); }
+  .conv-delete { opacity: 1; }
+  .panel-mask { display: block; position: fixed; inset: 0; z-index: 1000; background: rgba(18, 35, 48, .38); }
+  .chat-head { min-height: 58px; padding: 8px 12px; }
+  .chat-head .head-menu { display: inline-flex; width: 44px; height: 44px; }
+  .chat-head .head-hint { display: none; }
+  .message-list { padding: 14px 18px 20px; }
+  .composer { padding: 8px 16px 14px; }
+  .empty-state { padding: 30px 20px 22px; }
+  .suggestions { gap: 8px; }
+  .suggestion-card { min-height: 56px; padding: 8px 10px; font-size: 12px; }
+}
+@media (max-width: 420px) {
+  .suggestions { grid-template-columns: 1fr; }
+  .suggestion-card { min-height: 44px; }
+  .empty-state h1 { font-size: 29px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .messages { scroll-behavior: auto; }
+  .conv-panel, .suggestion-card, .composer-box { transition: none; }
 }
 </style>

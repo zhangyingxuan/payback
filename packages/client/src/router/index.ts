@@ -48,6 +48,18 @@ const routes: RouteRecordRaw[] = [
         component: () => import(/* webpackChunkName: "article" */ '../views/article/detail.vue'),
       },
       {
+        path: '/daily-panorama',
+        name: 'dailyPanorama',
+        meta: { title: '每日 AI 全景复盘', permiss: '11' },
+        component: () => import('../views/dailyPanorama/index.vue'),
+      },
+      {
+        path: '/market-overview',
+        name: 'marketOverview',
+        meta: { title: '盘面观察', permiss: '11' },
+        component: () => import('../views/marketOverview/index.vue'),
+      },
+      {
         path: '/charts',
         name: 'basecharts',
         meta: {
