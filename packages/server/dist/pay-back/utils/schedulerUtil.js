@@ -20,7 +20,10 @@ const executeTaskFunc = async (self, task, retryTime) => {
     }
     catch (e) {
         self.qyWechatNotice.notice(task.service, `[${task.func}]出错了：${e}`);
-        (0, exports.executeTaskFunc)(self, task, --retryTime);
+        if (task.taskName === 'autoPushReviewCharts' && retryTime > 1) {
+            await new Promise(resolve => setTimeout(resolve, 30000));
+        }
+        return (0, exports.executeTaskFunc)(self, task, --retryTime);
     }
 };
 exports.executeTaskFunc = executeTaskFunc;

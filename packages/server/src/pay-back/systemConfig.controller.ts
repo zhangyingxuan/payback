@@ -68,7 +68,7 @@ export class SystemConfigController {
             this.logger.debug('执行定时任务 fetchNewsTask');
             // this[newsPushSchedulerTask.service][newsPushSchedulerTask.func]();
             this[newsPushSchedulerTask.service].emit(newsPushSchedulerTask.func, {});
-          });
+          }, false, newsPushSchedulerTask.tradingDaysOnly);
       } else {
         doesExist && this.schedulerTaskService.deleteCron(newsPushSchedulerTask.taskName);
       }

@@ -275,7 +275,13 @@ export function transformNewStockData(stocks, todayDateStr): Array<NewStockDto> 
   const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
   const newStockDtos: NewStockDto[] = [];
 
-  stocks.forEach(item => {
+  (stocks || []).forEach(item => {
+    // 无结果时可能返回非股票记录，缺少名称或代码的数据不能进入推送、自选股和持久化。
+    if (
+      typeof item?.['股票简称'] !== 'string' || !item['股票简称'].trim() ||
+      typeof item?.code !== 'string' || !item.code.trim()
+    ) return;
+
     const newStock = new NewStockDto();
     // 个股基础信息
     loadStockBaseData(newStock, item, currentDate);

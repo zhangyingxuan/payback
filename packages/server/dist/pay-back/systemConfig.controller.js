@@ -53,7 +53,7 @@ let SystemConfigController = SystemConfigController_1 = class SystemConfigContro
                     this.schedulerTaskService.executeTask(config_1.newsPushSchedulerTask.taskName, config_1.newsPushSchedulerTask.cron, () => {
                         this.logger.debug('执行定时任务 fetchNewsTask');
                         this[config_1.newsPushSchedulerTask.service].emit(config_1.newsPushSchedulerTask.func, {});
-                    });
+                    }, false, config_1.newsPushSchedulerTask.tradingDaysOnly);
             }
             else {
                 doesExist && this.schedulerTaskService.deleteCron(config_1.newsPushSchedulerTask.taskName);

@@ -10,12 +10,13 @@ exports.PushModule = void 0;
 const common_1 = require("@nestjs/common");
 const push_controller_1 = require("./push.controller");
 const push_service_1 = require("./push.service");
+const review_charts_service_1 = require("./review-charts.service");
 let PushModule = class PushModule {
 };
 PushModule = __decorate([
     (0, common_1.Module)({
         controllers: [push_controller_1.PushController],
-        providers: [push_service_1.PushService],
+        providers: [push_service_1.PushService, review_charts_service_1.ReviewChartsPushService],
         exports: [push_service_1.PushService],
     })
 ], PushModule);

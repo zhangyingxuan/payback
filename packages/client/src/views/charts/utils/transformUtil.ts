@@ -173,7 +173,7 @@ export function transformEvenBoardData(shortTermData: ShortTermModel[]): any[] {
       item.hugeFallData && (itemData.hugeFallData = JSON.parse(item.hugeFallData));
       item.newStock && (itemData.newStock = JSON.parse(item.newStock));
       item.chooseStock && (itemData.chooseStock = JSON.parse(item.chooseStock));
-      !itemData.cycle && (itemData.cycle = getCurrentCycle(itemData));
+      !itemData.cycle && (itemData.cycle = getCurrentCycle(itemData, undefined));
 
       evenBoardList.push(itemData);
     }

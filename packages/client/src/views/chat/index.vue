@@ -15,12 +15,12 @@
         >
           <el-icon><Plus /></el-icon><span>新建对话</span>
         </el-button>
-        <el-input v-model="searchQuery" class="conv-search" clearable placeholder="搜索对话" aria-label="搜索对话">
+        <el-input v-model="searchQuery" class="conv-search" clearable maxlength="200" placeholder="搜索标题和正文" aria-label="搜索全部历史对话">
           <template #prefix><el-icon><Search /></el-icon></template>
         </el-input>
       </div>
-      <div class="list-label">最近对话 <span>{{ filteredConversations.length }}</span></div>
-      <div class="conv-list">
+      <div class="list-label">{{ searchQuery.trim() ? '搜索结果' : '最近对话' }} <span>{{ filteredConversations.length }}</span></div>
+      <div class="conv-list" :aria-busy="listLoading" @scroll="onListScroll">
         <div
           v-for="conv in filteredConversations"
           :key="conv.id"
@@ -28,7 +28,10 @@
         >
           <button type="button" class="conv-select" :aria-current="conv.id === store.activeId ? 'page' : undefined" @click="onSelect(conv.id)">
             <el-icon class="conv-icon"><ChatDotRound /></el-icon>
-            <span class="conv-title">{{ conv.title }}</span>
+            <span class="conv-text">
+              <span class="conv-title">{{ conv.title }}</span>
+              <small v-if="searchQuery.trim() && conv.sessionId && snippets[conv.sessionId]" class="conv-snippet">{{ snippets[conv.sessionId] }}</small>
+            </span>
           </button>
           <el-popconfirm
             title="删除这个对话？"
@@ -41,9 +44,15 @@
             </template>
           </el-popconfirm>
         </div>
-        <div v-if="!filteredConversations.length" class="conv-empty">
+        <div v-if="!filteredConversations.length && !listLoading && !listError" class="conv-empty">
           {{ searchQuery.trim() ? '没有找到相关对话' : '还没有对话，开始一个新的复盘吧' }}
         </div>
+        <div v-if="listLoading" class="conv-empty" role="status">正在加载对话…</div>
+        <div v-else-if="listError" class="conv-empty" role="status">
+          {{ listError }}
+          <el-button text @click="loadPage(!nextCursor)">重试</el-button>
+        </div>
+        <el-button v-else-if="nextCursor" class="load-more" text @click="loadPage()">加载更多对话</el-button>
       </div>
       <div class="panel-foot">
         <button type="button" class="memory-button" @click="openMemories"><el-icon><Collection /></el-icon><span>长期记忆</span><el-icon class="memory-arrow"><ArrowRight /></el-icon></button>
@@ -66,7 +75,7 @@
     </el-dialog>
 
     <!-- 主区 -->
-    <main :class="['chat-main', { 'is-empty': !messages.length }]">
+    <main :class="['chat-main', { 'is-empty': !messages.length && !detailUnavailable }]" data-page-scroll>
       <header class="chat-head">
         <el-button class="head-menu" text aria-label="打开对话列表" aria-controls="chat-conversations" :aria-expanded="panelOpen" @click="panelOpen = !panelOpen">
           <el-icon><Operation /></el-icon>
@@ -79,18 +88,27 @@
           <el-icon class="is-loading"><Loading /></el-icon
           >&nbsp;另一对话正在生成…
         </span>
-        <span class="head-hint"><span class="source-dot" />数据驱动的市场复盘</span>
+        <el-select v-model="selectedModel" class="model-select" aria-label="选择模型" placeholder="选择模型">
+          <el-option label="默认模型" value="" />
+          <el-option label="DeepSeek / 网关" value="gateway" />
+          <el-option label="Codex CLI" value="codex" />
+        </el-select>
       </header>
 
-      <div ref="messagesEl" class="messages" @scroll="onMessagesScroll">
+      <div ref="messagesEl" class="messages" data-page-scroll @scroll="onMessagesScroll">
+        <div v-if="store.active?.loading" class="conv-empty" role="status">正在加载会话内容…</div>
+        <div v-else-if="store.active?.loadError" class="conv-empty" role="status">
+          {{ store.active.loadError }}
+          <el-button text @click="loadActiveMessages()">重试</el-button>
+        </div>
         <!-- 空状态：建议问题 -->
-        <div v-if="!messages.length" class="empty-state">
+        <div v-else-if="!messages.length && !detailUnavailable" class="empty-state">
           <div class="empty-kicker"><span /> PAYBACK MARKET ASSISTANT</div>
           <h1>让每一次复盘，<br /><em>都有据可依。</em></h1>
           <p class="empty-sub">从市场环境到短线生态，用数据梳理每一个判断。</p>
         </div>
 
-        <div v-else class="message-list">
+        <div v-else-if="messages.length" class="message-list">
           <ChatMessage
             v-for="msg in messages"
             :key="msg.id"
@@ -105,11 +123,13 @@
 
       <!-- 输入区 -->
       <div class="composer">
+        <el-alert v-if="store.storageError" title="本机记录保存失败，未同步内容暂留在当前页面，请勿关闭页面。" type="warning" :closable="false" />
         <div class="composer-box" :class="{ focused: inputFocused }">
           <textarea
             ref="inputEl"
             v-model="draft"
             rows="1"
+            :disabled="detailUnavailable"
             aria-label="输入复盘问题"
             placeholder="问问今天的市场，或输入你的复盘问题…"
             @input="autoGrow"
@@ -132,7 +152,7 @@
             class="send-btn"
             type="primary"
             circle
-            :disabled="!draft.trim()"
+            :disabled="!draft.trim() || detailUnavailable"
             title="发送"
             aria-label="发送消息"
             @click="onSend()"
@@ -140,7 +160,7 @@
             <el-icon><Promotion /></el-icon>
           </el-button>
         </div>
-        <div v-if="!messages.length" class="suggestions" aria-label="推荐问题">
+        <div v-if="!messages.length && !detailUnavailable" class="suggestions" aria-label="推荐问题">
           <button v-for="prompt in SUGGESTIONS" :key="prompt" type="button" class="suggestion-card" :disabled="streaming" @click="onSend(prompt)">
             <el-icon><TrendCharts /></el-icon><span>{{ prompt }}</span><el-icon class="suggestion-arrow"><ArrowRight /></el-icon>
           </button>
@@ -154,7 +174,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import {
   Plus,
   Delete,
@@ -169,21 +189,27 @@ import {
   ArrowRight,
   TrendCharts,
 } from '@element-plus/icons-vue';
-import { chatWithAgent, fetchAgentSessions, fetchMemories, addMemory, updateMemory, deleteMemory, deleteAgentSession, type AgentEvent, type AgentMemory } from '@/api/agent';
+import { chatWithAgent, fetchMemories, addMemory, updateMemory, deleteMemory, deleteAgentSession, type AgentEvent, type AgentMemory } from '@/api/agent';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { useChatStore, type Conversation } from '@/store/chat';
 import ChatMessage from './components/ChatMessage.vue';
+import { useSessionList } from './useSessionList';
 
 const SUGGESTIONS = [
-  '复盘一下今日的市场',
+  '生成今日复盘全景图',
   '现在短线生态处于什么阶段？',
-  '今日的连板梯队和晋级率怎么样？',
-  '最近的市场有出手机会吗？',
+  '分析 000001 的次日应对预案',
+  '总结今日整体盘面',
 ];
 
 const store = useChatStore();
 const draft = ref('');
-const searchQuery = ref('');
+const selectedModel = ref<'' | 'gateway' | 'codex'>('');
+const {
+  query: searchQuery, conversations: filteredConversations, snippets,
+  loading: listLoading, error: listError, nextCursor, loadPage, onScroll: onListScroll,
+  dispose: disposeSessionList,
+} = useSessionList(store);
 const memoriesOpen = ref(false);
 const memories = ref<AgentMemory[]>([]);
 const memoryDraft = ref('');
@@ -203,10 +229,22 @@ let stickToBottom = true;
 const FLUSH_MS = 80;
 
 const messages = computed(() => store.active?.messages ?? []);
-const filteredConversations = computed(() => {
-  const query = searchQuery.value.trim().toLocaleLowerCase();
-  return query ? store.sorted.filter(conv => conv.title.toLocaleLowerCase().includes(query)) : store.sorted;
-});
+const detailUnavailable = computed(() => !!store.active && !store.active.messagesLoaded);
+
+// 切换时只加载当前正文；晚到的请求不会切换活动会话或拉动其他会话的滚动条。
+async function loadActiveMessages() {
+  const id = store.activeId;
+  if (!id) return;
+  try {
+    await store.loadMessages(id);
+    if (store.activeId === id) scrollToBottom(true);
+  } catch {
+    // 具体错误保留在会话内，用户可原位重试。
+  }
+}
+watch([() => store.activeId, () => store.active?.messagesLoaded], () => {
+  void loadActiveMessages();
+}, { immediate: true });
 
 function ensureConversation(): Conversation {
   return store.active ?? store.newConversation();
@@ -215,7 +253,7 @@ function ensureConversation(): Conversation {
 function onNewConversation() {
   // 已有空对话就直接选中，不堆重复的「新对话」
   searchQuery.value = '';
-  const empty = store.conversations.find(c => !c.messages.length);
+  const empty = store.conversations.find(c => c.messagesLoaded && !c.messages.length && !c.sessionId);
   store.select(empty ? empty.id : store.newConversation().id);
   panelOpen.value = false;
   inputEl.value?.focus();
@@ -295,9 +333,12 @@ function onKeydown(event: KeyboardEvent) {
 
 function scrollToBottom(force = false) {
   if (!force && !stickToBottom) return;
+  const id = store.activeId;
   requestAnimationFrame(() => {
+    if (store.activeId !== id) return;
     const el = messagesEl.value;
-    if (el) el.scrollTop = el.scrollHeight;
+    // 强制定位需覆盖容器的平滑滚动，避免切换长会话时从顶部滚到底部。
+    if (el) el.scrollTo({ top: el.scrollHeight, behavior: force ? 'instant' : 'auto' });
   });
 }
 
@@ -310,7 +351,7 @@ function onMessagesScroll() {
 
 function onSend(preset?: string) {
   const text = (preset ?? draft.value).trim();
-  if (!text || streaming.value) return;
+  if (!text || streaming.value || detailUnavailable.value) return;
   draft.value = '';
   nextTick(autoGrow);
   const conv = ensureConversation();
@@ -351,6 +392,12 @@ function onStop() {
 }
 
 async function runTurn(conv: Conversation, question: string) {
+  const preserveLocal = !!conv.localOnly;
+  let saved = false;
+  // 后台生成只更新对应会话，不能滚动用户当前正在查看的另一段历史。
+  const scrollActiveToBottom = () => {
+    if (store.activeId === conv.id) scrollToBottom();
+  };
   const assistant = store.addMessage(conv, 'assistant');
   streaming.value = true;
   streamingMessageId.value = assistant.id;
@@ -369,12 +416,12 @@ async function runTurn(conv: Conversation, question: string) {
     if (pending) {
       assistant.content += pending;
       pending = '';
-      scrollToBottom();
+      scrollActiveToBottom();
     }
     if (pendingReasoning) {
       assistant.reasoning = (assistant.reasoning || '') + pendingReasoning;
       pendingReasoning = '';
-      scrollToBottom();
+      scrollActiveToBottom();
     }
   }
   function scheduleFlush() {
@@ -404,7 +451,7 @@ async function runTurn(conv: Conversation, question: string) {
           iteration: event.iteration,
           state: 'running',
         });
-        scrollToBottom();
+        scrollActiveToBottom();
         break;
       case 'tool_result': {
         const chip = [...assistant.toolCalls]
@@ -419,7 +466,7 @@ async function runTurn(conv: Conversation, question: string) {
           chip.state = event.error ? 'error' : 'done';
           chip.error = event.error ?? undefined;
         }
-        scrollToBottom();
+        scrollActiveToBottom();
         break;
       }
       case 'done':
@@ -428,6 +475,7 @@ async function runTurn(conv: Conversation, question: string) {
         assistant.content = event.content;
         assistant.truncated = event.truncated;
         assistant.usage = event.usage;
+        saved = !!event.content.trim();
         break;
       case 'error':
         flushPending();
@@ -438,11 +486,12 @@ async function runTurn(conv: Conversation, question: string) {
 
   try {
     await chatWithAgent(
-      { message: question, session_id: conv.sessionId },
+      { message: question, session_id: conv.sessionId, model: selectedModel.value || undefined },
       onEvent,
       abortController.signal,
     );
   } catch (error: any) {
+    saved = false;
     flushPending();
     if (error?.name === 'AbortError') {
       assistant.content += assistant.content
@@ -467,21 +516,22 @@ async function runTurn(conv: Conversation, question: string) {
       assistant.content = '（模型没有给出正文）';
     }
     store.touch(conv);
+    // done 在服务端落盘后才发送；失败/停止以及旧本地内容继续保留本地快照。
+    conv.localOnly = preserveLocal || !saved || !!assistant.error;
+    conv.dirty = conv.localOnly;
     store.persist();
-    scrollToBottom();
+    store.trimCache();
+    scrollActiveToBottom();
   }
 }
 
-onMounted(async () => {
-  try {
-    store.restoreSessions(await fetchAgentSessions());
-  } catch {
-    ElMessage.warning('无法读取服务端会话，暂时显示本机记录');
-  }
+onMounted(() => {
+  void loadPage(true);
 });
 
 onBeforeUnmount(() => {
   abortController?.abort();
+  disposeSessionList();
 });
 </script>
 
@@ -592,7 +642,10 @@ onBeforeUnmount(() => {
 }
 .conv-icon { flex-shrink: 0; color: #82939f; font-size: 16px; }
 .active .conv-icon { color: #287d82; }
-.conv-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.conv-text { display: flex; flex: 1; flex-direction: column; min-width: 0; padding: 6px 0; gap: 4px; }
+.conv-title, .conv-snippet { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.conv-snippet { color: var(--chat-muted); font-size: 11px; }
+.load-more { width: 100%; min-height: 44px; }
 .conv-delete {
   display: grid;
   place-items: center;
@@ -638,6 +691,7 @@ onBeforeUnmount(() => {
 .panel-mask { display: none; }
 
 .chat-main { display: flex; flex: 1; flex-direction: column; min-width: 0; min-height: 0; background: #fff; }
+.model-select { width: 160px; flex: 0 0 160px; margin-left: auto; }
 .chat-head {
   display: flex;
   align-items: center;
@@ -653,7 +707,7 @@ onBeforeUnmount(() => {
   .head-hint { color: #82919e; font-size: 12px; white-space: nowrap; }
 }
 .messages { flex: 1; min-height: 0; overflow-y: auto; scroll-behavior: smooth; }
-.message-list { max-width: 820px; margin: 0 auto; padding: 24px 28px 28px; }
+.message-list { box-sizing: border-box; width: 85%; margin: 0 auto; padding: 24px 28px 28px; }
 
 // 欢迎页与对话页共用输入框，避免切换状态时丢失草稿和焦点。
 .is-empty {

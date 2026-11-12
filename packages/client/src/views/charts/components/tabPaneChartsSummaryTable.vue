@@ -41,6 +41,11 @@ let superData = defineProps({
 
 <style scoped lang="less">
 .reviewTable__container {
-  margin: 0 15px 20px 15px;
+  margin: 0 0 16px;
+  overflow: hidden;
+  border-radius: 8px;
+  :deep(.el-descriptions__label) { background: #f5f8fb; color: #687b90; font-weight: 500; }
+  :deep(.el-descriptions__content) { color: #233b56; font-weight: 600; }
+  :deep(.el-descriptions__cell) { border-color: #e8edf3 !important; }
 }
 </style>

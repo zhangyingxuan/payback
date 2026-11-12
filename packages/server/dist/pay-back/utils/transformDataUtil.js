@@ -181,7 +181,10 @@ exports.transformBidData = transformBidData;
 function transformNewStockData(stocks, todayDateStr) {
     const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
     const newStockDtos = [];
-    stocks.forEach(item => {
+    (stocks || []).forEach(item => {
+        if (typeof (item === null || item === void 0 ? void 0 : item['股票简称']) !== 'string' || !item['股票简称'].trim() ||
+            typeof (item === null || item === void 0 ? void 0 : item.code) !== 'string' || !item.code.trim())
+            return;
         const newStock = new new_stock_dto_1.NewStockDto();
         loadStockBaseData(newStock, item, currentDate);
         loadBiddingBaseData(newStock, item, currentDate);

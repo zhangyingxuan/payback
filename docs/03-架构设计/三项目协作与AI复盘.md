@@ -1,6 +1,6 @@
 # 三项目协作与 AI 复盘现状
 
-> 最后验证：2026-11-10
+> 最后验证：2026-11-12
 
 本文依据工作区三个项目的源码与配置整理，不代表当前线上部署状态。
 
@@ -16,7 +16,13 @@
 
 ## Agent 接口与行为
 
+思考摘要通过 `reasoning_delta` SSE 事件追加到聊天页。Codex 独立进程显式请求详细摘要，但实际是否返回仍取决于模型；前端始终显示“思考过程”入口，无摘要时展示等待或未提供提示。摘要目前不随服务端历史正文持久化，重新加载历史后可能只显示未提供提示。
+
 `serve.py` 注册 `GET /healthz`、`POST /chat`、`DELETE /sessions/{session_id}` 和 `GET/POST /daily-reports/{trade_date}`。聊天响应使用 SSE；客户端实现见 `packages/client/src/api/agent.ts`。Agent 默认用同级 `payback-mcp` 目录和 `uv` 启动工具服务，可通过 `PAYBACK_MCP_DIR`、`PAYBACK_MCP_COMMAND` 覆盖。两个 Python 项目均要求 Python >= 3.11，使用 uv 管理依赖。
+
+聊天历史使用 `GET /sessions?view=summary&limit=30&cursor=...&q=...` 获取 `{items,nextCursor}`，条目为 `id/title/lastTurnId/snippet`；完整问答通过 `GET /sessions/{session_id}` 按需获取（缺失返回 404）。`q` 搜索全历史问答并返回片段；游标按最后消息递增 ID 降序，字符串传输，无历史日期分组和数据库迁移。旧 `GET /sessions` 的最近 50 条完整会话响应仍兼容。
+
+客户端保留 5 个可重新获取的正文缓存，生成中、失败以及旧本机未同步内容不参与淘汰；localStorage 保存最近摘要、活动入口和未同步内容，不随新增会话截断历史。摘要触底分页、搜索防抖并取消过期请求，详情失败可重试。当前正文搜索扫描文本，尚未接全文索引或列表虚拟化；前端升级须配合 Agent 重启。
 
 四级复盘按市场整体、短线阶段、出手机会、买卖条件组织证据；工具失败、数据日期或时效不足时应按实际返回说明。每日全景复盘使用同日市场与短线数据并生成归档；调度、收盘数据判断和外围行情限制见 `payback-agent/README.md` 与 `daily_report.py`。
 

@@ -40,6 +40,7 @@ const plugins = [
     tsconfig: false,
     compilerOptions: {
       target: 'es2016',
+      lib: ['es2017', 'dom'],
       module: 'esnext',
       emitDeclarationOnly: false,
       declaration: false,

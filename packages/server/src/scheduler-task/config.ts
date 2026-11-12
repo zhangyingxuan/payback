@@ -4,16 +4,26 @@ const newsPushSchedulerTask = {
   service: 'pushServer',
   func: 'fetchNewsTask',
   cron: '*/2 * 7-23 * * *',
+  tradingDaysOnly: true,
 };
 
 // 定时任务列表
 const schedulerTaskList = [
+  // 收盘双图经 Agent 绘制，复用交易日过滤后同时推送飞书和企微。
+  {
+    taskName: 'autoPushReviewCharts',
+    service: 'reviewChartsService',
+    func: 'pushDailyCharts',
+    cron: '0 38 15 * * 1-5',
+    tradingDaysOnly: true,
+  },
   // 资金相关 === start
   {
     taskName: 'autoCrawlfundsDataLateSession',
     service: 'fundsService',
     func: 'crawlfundsData',
-    cron: '0 45 15 * * 1-5',
+    // 给 15:38 双图推送预留资金采集时间，避免沿用午盘记录。
+    cron: '0 32 15 * * 1-5',
   },
   // {
   //   // 更新北向资金 - 北向已不出具体流入金额，暂时不启用 2024-11-11
@@ -33,6 +43,7 @@ const schedulerTaskList = [
   {
     // 热榜相关
     taskName: 'autoCrawlHotListData',
+    tradingDaysOnly: false,
     service: 'hotListService',
     func: 'crawlHotListData',
     cron: '0 */30 7-23 * * *',

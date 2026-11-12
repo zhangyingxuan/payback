@@ -5,10 +5,10 @@ import { createHmac } from 'crypto';
 
 const thsPlateBaseUrl = 'http://q.10jqka.com.cn/thshy/detail/code/';
 const thsStockBaseUrl = 'https://stockpage.10jqka.com.cn/';
-const feishuWebhookUrls = [
+export const feishuWebhookUrls = [
   'https://open.feishu.cn/open-apis/bot/v2/hook/d3876526-1889-44de-a2fc-3df92f1c0442',
 ];
-const feishuSigningSecrets: string[] = [];
+export const feishuSigningSecrets: string[] = [];
 
 /**
  * 企微机器人 通知
@@ -16,7 +16,7 @@ const feishuSigningSecrets: string[] = [];
 @Injectable()
 export class PushService {
   private readonly logger = new Logger(PushService.name);
-  private readonly robotList = [
+  readonly robotList = [
     'ddbae7ea-7496-4cd8-97c5-c0b195d9609b',
     '474f2a05-c848-4049-b7f0-90630374a408',
   ];
@@ -257,16 +257,17 @@ export class PushService {
     );
   }
 
-  private async sendFeishu(webhookUrl: string, secret: string, card: any) {
+  async sendFeishu(webhookUrl: string, secret: string, card: any) {
     const body = secret ? { ...card, ...this.createFeishuSignature(secret) } : card;
     const response = await fetch(webhookUrl, {
+      timeout: 15000,
       headers: { 'content-type': 'application/json; charset=utf-8' },
       body: JSON.stringify(body),
       method: 'POST',
     });
     const result: any = await response.json();
 
-    if (!response.ok || (result.code !== undefined && result.code !== 0)) {
+    if (!response.ok || (result.code !== 0 && result.StatusCode !== 0)) {
       const error = new Error(
         `飞书机器人推送失败: HTTP ${response.status}, code=${result.code}, msg=${result.msg || ''}`,
       );
@@ -294,6 +295,7 @@ export class PushService {
   async qyapi(robotKey, body) {
     try {
       const response = await fetch(`https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${robotKey}`, {
+      timeout: 15000,
       headers: {
         accept: 'application/json, text/plain, */*',
         'accept-language': 'zh-CN,zh;q=0.9',
@@ -307,7 +309,12 @@ export class PushService {
       mode: 'cors',
       credentials: 'include',
       });
-      return await response.json();
+      const result = await response.json();
+      // HTTP 与业务回执都必须成功，避免图片失败后被记录为已送达。
+      if (!response.ok || result.errcode !== 0) {
+        throw new Error(`企微机器人推送失败: HTTP ${response.status}, code=${result.errcode}`);
+      }
+      return result;
     } catch (e) {
       this.logger.error(e);
       throw e;

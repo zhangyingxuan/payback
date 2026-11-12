@@ -16,6 +16,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PayBackController = void 0;
 const common_1 = require("@nestjs/common");
 const liveMarket_service_1 = require("./service/liveMarket.service");
+const reviewCharts_service_1 = require("./service/reviewCharts.service");
 const shortTerm_service_1 = require("./service/shortTerm.service");
 const specialStock_service_1 = require("./service/specialStock.service");
 const market_service_1 = require("./service/market.service");
@@ -42,8 +43,9 @@ const dataHealthUtil_1 = require("./utils/dataHealthUtil");
 class CrawlTodayDataDto {
 }
 let PayBackController = PayBackController_1 = class PayBackController {
-    constructor(liveMarketService, shorTermService, specialStockService, fundsService, hotListService, reviewService, thsService, apiTestService, latestConceptPlateService, usersService, marketService, plateService, schedulerTaskService, qyWechatNotice, systemConfigService, consulService, pushServer) {
+    constructor(liveMarketService, reviewChartsService, shorTermService, specialStockService, fundsService, hotListService, reviewService, thsService, apiTestService, latestConceptPlateService, usersService, marketService, plateService, schedulerTaskService, qyWechatNotice, systemConfigService, consulService, pushServer) {
         this.liveMarketService = liveMarketService;
+        this.reviewChartsService = reviewChartsService;
         this.shorTermService = shorTermService;
         this.specialStockService = specialStockService;
         this.fundsService = fundsService;
@@ -310,7 +312,10 @@ let PayBackController = PayBackController_1 = class PayBackController {
     }
     async initSchedulerTask() {
         this.logger.debug('initSchedulerTask初始化定时任务');
-        await Promise.all(config_1.schedulerTaskList.map(task => this.schedulerTaskService.executeTask(task.taskName, task.cron, () => (0, schedulerUtil_1.executeTaskFunc)(this, task, Number(process.env.TASK_RETRY_TIME) || 3))));
+        await Promise.all(config_1.schedulerTaskList.map(task => {
+            var _a;
+            return this.schedulerTaskService.executeTask(task.taskName, task.cron, () => (0, schedulerUtil_1.executeTaskFunc)(this, task, Number(process.env.TASK_RETRY_TIME) || 3), false, (_a = task.tradingDaysOnly) !== null && _a !== void 0 ? _a : true);
+        }));
         const config = await this.systemConfigService.findLatestOne();
         const { isAutoPushNews } = config;
         if (isAutoPushNews && process.env.NODE_ENV !== 'dev') {
@@ -318,7 +323,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
             this.schedulerTaskService.executeTask(config_1.newsPushSchedulerTask.taskName, config_1.newsPushSchedulerTask.cron, () => {
                 this.logger.debug('执行定时任务 fetchNewsTask');
                 this[config_1.newsPushSchedulerTask.service].emit(config_1.newsPushSchedulerTask.func, {});
-            });
+            }, false, config_1.newsPushSchedulerTask.tradingDaysOnly);
         }
     }
 };
@@ -475,8 +480,9 @@ __decorate([
 ], PayBackController.prototype, "initSchedulerTask", null);
 PayBackController = PayBackController_1 = __decorate([
     (0, common_1.Controller)('pay-back'),
-    __param(16, (0, common_1.Inject)('PUSH_SERVER')),
+    __param(17, (0, common_1.Inject)('PUSH_SERVER')),
     __metadata("design:paramtypes", [liveMarket_service_1.LiveMarketService,
+        reviewCharts_service_1.ReviewChartsService,
         shortTerm_service_1.ShorTermService,
         specialStock_service_1.SpecialStockService,
         funds_service_1.FundsService,

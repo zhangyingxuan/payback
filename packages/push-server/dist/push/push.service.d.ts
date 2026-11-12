@@ -1,6 +1,8 @@
+export declare const feishuWebhookUrls: string[];
+export declare const feishuSigningSecrets: string[];
 export declare class PushService {
     private readonly logger;
-    private readonly robotList;
+    readonly robotList: string[];
     notice(serviceName: any, msgContent?: string): Promise<[PromiseSettledResult<PromiseSettledResult<any>[]>, PromiseSettledResult<PromiseSettledResult<any>[]>]>;
     prepareTagContent(tags: any, baseUrl: any): string;
     prepareMsgWord(newsTitle: any): any;
@@ -9,7 +11,7 @@ export declare class PushService {
     pushMsg2Robot(body: any): Promise<PromiseSettledResult<any>[]>;
     private logRejectedChannels;
     private pushFeishuMarkdown;
-    private sendFeishu;
+    sendFeishu(webhookUrl: string, secret: string, card: any): Promise<any>;
     private createFeishuSignature;
     qyapi(robotKey: any, body: any): Promise<any>;
 }

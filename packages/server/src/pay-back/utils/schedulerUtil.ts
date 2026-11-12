@@ -20,8 +20,11 @@ export const executeTaskFunc = async (self, task, retryTime) => {
   } catch (e) {
     // 报错后 通知企微
     self.qyWechatNotice.notice(task.service, `[${task.func}]出错了：${e}`);
-    // 重试
-    executeTaskFunc(self, task, --retryTime);
+    // 双图的数据或通道可能尚未就绪，间隔重试并等待完成，防止调度锁提前释放。
+    if (task.taskName === 'autoPushReviewCharts' && retryTime > 1) {
+      await new Promise(resolve => setTimeout(resolve, 30000));
+    }
+    return executeTaskFunc(self, task, --retryTime);
   }
 };
 

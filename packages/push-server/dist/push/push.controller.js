@@ -13,9 +13,14 @@ exports.PushController = void 0;
 const common_1 = require("@nestjs/common");
 const push_service_1 = require("./push.service");
 const microservices_1 = require("@nestjs/microservices");
+const review_charts_service_1 = require("./review-charts.service");
 let PushController = class PushController {
-    constructor(pushService) {
+    constructor(pushService, reviewCharts) {
         this.pushService = pushService;
+        this.reviewCharts = reviewCharts;
+    }
+    pushReviewCharts(payload) {
+        return this.reviewCharts.push(payload);
     }
     noticeNews(newsTitle, msgContent = '哎哟，不错哦', newsUrl, news) {
         return this.pushService.noticeNews(newsTitle, msgContent, newsUrl, news);
@@ -27,6 +32,12 @@ let PushController = class PushController {
         return this.pushService.pushMorningMessage(payload);
     }
 };
+__decorate([
+    (0, microservices_1.MessagePattern)('pushReviewCharts'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], PushController.prototype, "pushReviewCharts", null);
 __decorate([
     (0, microservices_1.EventPattern)('noticeNews'),
     __metadata("design:type", Function),
@@ -47,7 +58,7 @@ __decorate([
 ], PushController.prototype, "pushMorningMessage", null);
 PushController = __decorate([
     (0, common_1.Controller)('push'),
-    __metadata("design:paramtypes", [push_service_1.PushService])
+    __metadata("design:paramtypes", [push_service_1.PushService, review_charts_service_1.ReviewChartsPushService])
 ], PushController);
 exports.PushController = PushController;
 //# sourceMappingURL=push.controller.js.map

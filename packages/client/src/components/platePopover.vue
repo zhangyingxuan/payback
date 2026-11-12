@@ -70,6 +70,8 @@ async function handleDel() {
 </style>
 <style scoped lang="less">
 .op__btnGroup {
+  display: inline-flex;
+  width: max-content;
   margin: 0;
 }
 </style>

@@ -7,17 +7,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 var PushService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PushService = void 0;
+exports.PushService = exports.feishuSigningSecrets = exports.feishuWebhookUrls = void 0;
 const common_1 = require("@nestjs/common");
 const node_fetch_1 = require("node-fetch");
 const dayjs = require("dayjs");
 const crypto_1 = require("crypto");
 const thsPlateBaseUrl = 'http://q.10jqka.com.cn/thshy/detail/code/';
 const thsStockBaseUrl = 'https://stockpage.10jqka.com.cn/';
-const feishuWebhookUrls = [
+exports.feishuWebhookUrls = [
     'https://open.feishu.cn/open-apis/bot/v2/hook/d3876526-1889-44de-a2fc-3df92f1c0442',
 ];
-const feishuSigningSecrets = [];
+exports.feishuSigningSecrets = [];
 let PushService = PushService_1 = class PushService {
     constructor() {
         this.logger = new common_1.Logger(PushService_1.name);
@@ -158,7 +158,7 @@ let PushService = PushService_1 = class PushService {
             content.push(`> 无\n`);
         }
         const results = await Promise.allSettled([
-            this.sendFeishu(feishuWebhookUrls[0], feishuSigningSecrets[0], card),
+            this.sendFeishu(exports.feishuWebhookUrls[0], exports.feishuSigningSecrets[0], card),
             this.pushMsg2Robot({
                 msgtype: 'markdown',
                 markdown: { content: content.join('') },
@@ -190,17 +190,18 @@ let PushService = PushService_1 = class PushService {
                 ],
             },
         };
-        return Promise.allSettled(feishuWebhookUrls.map((webhookUrl, index) => this.sendFeishu(webhookUrl, feishuSigningSecrets[index], card)));
+        return Promise.allSettled(exports.feishuWebhookUrls.map((webhookUrl, index) => this.sendFeishu(webhookUrl, exports.feishuSigningSecrets[index], card)));
     }
     async sendFeishu(webhookUrl, secret, card) {
         const body = secret ? Object.assign(Object.assign({}, card), this.createFeishuSignature(secret)) : card;
         const response = await (0, node_fetch_1.default)(webhookUrl, {
+            timeout: 15000,
             headers: { 'content-type': 'application/json; charset=utf-8' },
             body: JSON.stringify(body),
             method: 'POST',
         });
         const result = await response.json();
-        if (!response.ok || (result.code !== undefined && result.code !== 0)) {
+        if (!response.ok || (result.code !== 0 && result.StatusCode !== 0)) {
             const error = new Error(`飞书机器人推送失败: HTTP ${response.status}, code=${result.code}, msg=${result.msg || ''}`);
             this.logger.error(error.message);
             throw error;
@@ -218,6 +219,7 @@ let PushService = PushService_1 = class PushService {
     async qyapi(robotKey, body) {
         try {
             const response = await (0, node_fetch_1.default)(`https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${robotKey}`, {
+                timeout: 15000,
                 headers: {
                     accept: 'application/json, text/plain, */*',
                     'accept-language': 'zh-CN,zh;q=0.9',
@@ -231,7 +233,11 @@ let PushService = PushService_1 = class PushService {
                 mode: 'cors',
                 credentials: 'include',
             });
-            return await response.json();
+            const result = await response.json();
+            if (!response.ok || result.errcode !== 0) {
+                throw new Error(`企微机器人推送失败: HTTP ${response.status}, code=${result.errcode}`);
+            }
+            return result;
         }
         catch (e) {
             this.logger.error(e);

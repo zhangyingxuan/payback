@@ -646,12 +646,17 @@ defineExpose({
 </script>
 
 <style scoped lang="less">
-@tableColumsBorderColor: #dcdcdc;
+@tableColumsBorderColor: #e8edf3;
 .data-health {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 4px 8px;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  border: 1px solid #e8edf3;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #64748b;
   overflow-x: auto;
   white-space: nowrap;
   font-size: 12px;
@@ -686,7 +691,8 @@ defineExpose({
 }
 
 .evenBoard__table {
-  margin: 0 5px 5px 5px;
+  margin: 0 0 5px;
+  border-radius: 8px;
   overflow-x: auto;
   overflow-y: hidden;
   display: flex;
@@ -719,7 +725,8 @@ defineExpose({
       font-weight: 500;
       position: sticky;
       left: 0;
-      background-color: #fff;
+      background-color: #f8fafc;
+      z-index: 1;
     }
     &.isMobile {
       width: 62px;
@@ -732,18 +739,20 @@ defineExpose({
     }
 
     &.isMonday {
-      border-right: 2px double #5a9cf8;
+      border-right: 2px solid #cbdcf0;
       .table__header {
-        background-color: #5a9cf8;
-        color: #fff !important;
+        background-color: #e8f0fa;
+        color: #315f97 !important;
       }
     }
   }
 
   .table__header {
-    background-color: #dcdcdc;
+    background-color: #f1f5f9;
+    color: #52677e;
+    font-weight: 600;
     width: 100%;
-    padding: 5px;
+    padding: 8px 5px;
     cursor: pointer;
     .tableColumsBorder();
 

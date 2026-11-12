@@ -505,7 +505,7 @@ const stockGroupByPlateByFilter = computed(() => {
         isAdd = evenBoardHeight != 1;
       }
       if (data.myStrategyChecked && isAdd) {
-        isAdd = dailyLimitOptionalStrategy(item, item.evenBoardHeight);
+        isAdd = dailyLimitOptionalStrategy(item, evenBoardHeight);
       }
       if (data.evenBoardHeight != -1 && isAdd) {
         isAdd = data.evenBoardHeight == evenBoardHeight;

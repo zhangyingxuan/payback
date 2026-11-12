@@ -20,27 +20,21 @@
       <div class="assistant-avatar" aria-hidden="true"><el-icon><DataAnalysis /></el-icon></div>
       <div class="assistant-body">
         <div class="assistant-heading"><strong>智能复盘</strong><span>PAYBACK ASSISTANT</span></div>
-        <div
-          v-if="
-            streaming &&
-            !message.reasoning &&
-            !message.content &&
-            !message.toolCalls.length
-          "
-          class="thinking-status"
-          role="status"
-        >
-          <el-icon class="is-loading"><Loading /></el-icon>
-          正在分析问题
-        </div>
-        <details v-if="message.reasoning" class="reasoning" :open="streaming">
+        <!-- 模型可能不提供摘要，保留入口并明确空状态，避免误以为页面没有接入。 -->
+        <details class="reasoning" :open="streaming">
           <summary>
-            {{ streaming && !message.content ? '正在分析' : '查看思考过程' }}
+            {{ streaming ? '思考过程 · 生成中' : '查看思考过程' }}
           </summary>
           <v-md-preview
+            v-if="message.reasoning"
             class="md-body reasoning-content"
             :text="message.reasoning"
+            @image-click="openPreview"
           />
+          <p v-else class="thinking-status" role="status">
+            <el-icon v-if="streaming" class="is-loading"><Loading /></el-icon>
+            {{ streaming ? '等待模型返回思考摘要…' : '暂无思考摘要（模型未提供思考摘要或历史未保存）' }}
+          </p>
         </details>
         <div v-if="message.toolCalls.length" class="tool-chips">
           <span
@@ -72,7 +66,18 @@
         </div>
 
         <template v-if="message.content || streaming">
-          <v-md-preview class="md-body" :text="message.content || ' '" />
+          <v-md-preview class="md-body" :text="visibleContent || ' '" @image-click="openPreview" />
+          <figure v-for="(image, index) in chartImages" :key="index" class="panorama-figure">
+            <div class="panorama-scroll">
+              <button class="chart-preview" type="button" :aria-label="`预览${image.title}`" @click="openPreview(chartImages.map(chart => chart.src), index)">
+                <img :src="image.src" :alt="image.title" />
+              </button>
+            </div>
+            <figcaption>
+              <span>点击图片可放大预览；数据完整性及实时性未核实</span>
+              <a :href="image.src" :download="`${image.title}.svg`">下载{{ image.title }}</a>
+            </figcaption>
+          </figure>
           <span v-if="streaming" class="cursor" />
         </template>
 
@@ -85,10 +90,12 @@
         </el-button>
       </div>
     </template>
+    <el-image-viewer v-if="previewImages.length" :url-list="previewImages" :initial-index="previewIndex" teleported @close="previewImages = []" />
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue';
 import type { ChatMessage, ToolCallChip } from '@/store/chat';
 import { ElMessage } from 'element-plus';
 import {
@@ -112,10 +119,26 @@ defineEmits<{
   (e: 'resend'): void;
 }>();
 
+// 只识别服务端生成的固定图片格式，避免把长编码交给 Markdown 解析器。
+const chartPattern = /!\[(复盘全景图|涨停梯队图)\]\((data:image\/svg\+xml;base64,[A-Za-z0-9+/=]+)\)/g;
+const chartImages = computed(() => props.message.role === 'assistant'
+  ? Array.from(props.message.content.matchAll(chartPattern), match => ({ title: match[1], src: match[2] })) : []);
+const visibleContent = computed(() => props.message.role === 'assistant'
+  ? props.message.content.replace(chartPattern, '').trim() : props.message.content);
+
+const previewImages = ref<string[]>([]);
+const previewIndex = ref(0);
+
+// 复用同一预览器承接 Markdown 和工具图片，保留点击位置及同组图片切换。
+function openPreview(images: string[], index: number) {
+  previewIndex.value = index;
+  previewImages.value = images;
+}
+
 // 复制正文原文，保留 Markdown 和换行，失败时提示用户手动复制。
 async function copyMessage() {
   try {
-    await navigator.clipboard.writeText(props.message.content);
+    await navigator.clipboard.writeText(visibleContent.value);
     ElMessage.success('复制成功');
   } catch {
     ElMessage.error('复制失败，请手动选择文本复制');
@@ -129,6 +152,8 @@ const TOOL_NAMES: Record<string, string> = {
   get_market_phase: '生态阶段',
   get_position_outcomes: '位置期望',
   get_similar_days: '相似日检索',
+  get_daily_panorama: '市场全景',
+  get_stock_review: '个股日线',
 };
 
 function chipText(call: ToolCallChip): string {
@@ -211,6 +236,36 @@ function chipText(call: ToolCallChip): string {
     width: 100%;
     min-width: 0;
     font-size: 15px;
+  }
+
+  .panorama-figure {
+    margin: 16px 0;
+    overflow: hidden;
+    border: 1px solid #d8e3df;
+    border-radius: 14px;
+    background: #102623;
+    .panorama-scroll { overflow-x: auto; }
+    .chart-preview {
+      display: block;
+      width: 100%;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      cursor: zoom-in;
+      &:focus-visible { outline: 3px solid #e9ca97; outline-offset: -3px; }
+    }
+    img { display: block; width: 100%; min-width: 600px; height: auto; }
+    figcaption {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 10px 14px;
+      color: #c2d2c9;
+      font-size: 12px;
+      line-height: 1.5;
+      a { color: #e9ca97; text-decoration: underline; text-underline-offset: 2px; }
+    }
   }
 
   .thinking-status {

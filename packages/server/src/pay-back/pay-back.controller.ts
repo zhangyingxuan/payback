@@ -1,5 +1,6 @@
 import { Controller, Get, Logger, Query, Post, Body, UseGuards, Request, Inject, Param, BadRequestException } from '@nestjs/common';
 import { LiveMarketService, LiveSection } from './service/liveMarket.service';
+import { ReviewChartsService } from './service/reviewCharts.service';
 import { ShorTermService } from './service/shortTerm.service';
 import { SpecialStockService } from './service/specialStock.service';
 import { MarketService } from './service/market.service';
@@ -35,6 +36,7 @@ class CrawlTodayDataDto {
 export class PayBackController {
   constructor(
     private readonly liveMarketService: LiveMarketService,
+    private readonly reviewChartsService: ReviewChartsService,
     private readonly shorTermService: ShorTermService,
     private readonly specialStockService: SpecialStockService,
     private readonly fundsService: FundsService,
@@ -442,6 +444,7 @@ export class PayBackController {
       schedulerTaskList.map(task =>
         this.schedulerTaskService.executeTask(task.taskName, task.cron, () =>
           executeTaskFunc(this, task, Number(process.env.TASK_RETRY_TIME) || 3),
+          false, task.tradingDaysOnly ?? true,
         ),
       ),
     );
@@ -454,7 +457,7 @@ export class PayBackController {
         // this[newsPushSchedulerTask.service][newsPushSchedulerTask.func]();
         this.logger.debug('执行定时任务 fetchNewsTask');
         this[newsPushSchedulerTask.service].emit(newsPushSchedulerTask.func, {});
-      });
+      }, false, newsPushSchedulerTask.tradingDaysOnly);
     }
   }
 }

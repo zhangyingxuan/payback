@@ -1,15 +1,12 @@
 /**
- * 会话列表存储：localStorage 持久化，刷新不丢。
- *
- * 只存"可见"内容（用户问题 + 助手正文 + 工具调用状态摘要），
- * 与 agent 端 append_turn 的口径一致——工具结果原文一律不落盘，
- * 一个四级复盘的 JSON 有 ~2.9 万字符，存下来 localStorage 很快就爆。
+ * 会话摘要与按需获取的正文分别管理；本地只保留摘要及未同步内容。
  */
 import { defineStore } from 'pinia';
-import type { AgentStoredSession } from '@/api/agent';
+import { fetchAgentSession, type AgentSessionSummary } from '@/api/agent';
 
 const STORAGE_KEY = 'payback-agent-chats';
-const MAX_CONVERSATIONS = 50;
+const MAX_MESSAGE_CACHE = 5;
+const pendingDetails = new Map<string, Promise<void>>();
 
 export interface ToolCallChip {
   name: string;
@@ -39,6 +36,13 @@ export interface Conversation {
   messages: ChatMessage[];
   createdAt: number;
   updatedAt: number;
+  lastTurnId?: string;
+  messagesLoaded: boolean;
+  loading?: boolean;
+  loadError?: string;
+  dirty?: boolean;
+  localOnly?: boolean;
+  cachedAt?: number;
 }
 
 function uuid(): string {
@@ -50,7 +54,15 @@ function load(): Conversation[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
+    // 旧版本的正文没有同步标记，迁移时保守保留，不能被远端摘要覆盖。
+    return Array.isArray(parsed) ? parsed.filter(item => item && typeof item.id === 'string' &&
+      typeof item.title === 'string' && Array.isArray(item.messages)).map(item => ({
+      ...item,
+      messagesLoaded: item.messagesLoaded ?? true,
+      dirty: item.dirty ?? (item.messagesLoaded === undefined),
+      localOnly: item.localOnly ?? (item.messagesLoaded === undefined),
+      loading: false,
+    })) : [];
   } catch {
     return [];
   }
@@ -75,6 +87,7 @@ export const useChatStore = defineStore('agentChat', {
       conversations,
       // 刷新后回到最近一次会话而不是空态：复盘助手的对话是连续工作流
       activeId: latestId(conversations),
+      storageError: false,
     };
   },
   getters: {
@@ -82,40 +95,99 @@ export const useChatStore = defineStore('agentChat', {
       state.conversations.find((c) => c.id === state.activeId),
     /** 侧栏按最近更新排序，和 ChatGPT 一致 */
     sorted: (state): Conversation[] =>
-      [...state.conversations].sort((a, b) => b.updatedAt - a.updatedAt),
+      [...state.conversations].sort((a, b) => {
+        // 本次本机更新优先；远端 ID 用 BigInt 比较，避免超过安全整数后顺序混乱。
+        if (a.updatedAt !== b.updatedAt) return b.updatedAt - a.updatedAt;
+        const left = BigInt(a.lastTurnId || '0');
+        const right = BigInt(b.lastTurnId || '0');
+        return left === right ? a.id.localeCompare(b.id) : left > right ? -1 : 1;
+      }),
   },
   actions: {
-    restoreSessions(sessions: AgentStoredSession[]) {
-      // 保留本机已有的展示状态，避免服务端恢复覆盖未完成或失败的消息。
-      for (const session of sessions.slice().reverse()) {
-        if (this.conversations.some(conv => conv.sessionId === session.id)) continue;
-        const now = Date.now();
-        this.conversations.unshift({
-          id: uuid(), sessionId: session.id,
-          title: session.messages[0]?.content.trim().slice(0, 24) || '新对话',
-          createdAt: now, updatedAt: now,
-          messages: session.messages.map(message => ({
-            id: uuid(), role: message.role, content: message.content,
-            toolCalls: [], createdAt: now,
-          })),
-        });
+    mergeSummaries(sessions: AgentSessionSummary[]) {
+      for (const session of sessions) {
+        const existing = this.conversations.find(conv => conv.sessionId === session.id);
+        if (existing) {
+          // 其他设备追加了消息时丢弃可重取的旧缓存，本地未同步内容不被覆盖。
+          if (!existing.dirty && existing.lastTurnId !== session.lastTurnId) {
+            existing.messages = [];
+            existing.messagesLoaded = false;
+          }
+          existing.lastTurnId = session.lastTurnId;
+          if (!existing.dirty) {
+            existing.title = session.title;
+            existing.updatedAt = 0;
+          }
+        } else {
+          this.conversations.push({
+            id: uuid(), sessionId: session.id, title: session.title,
+            lastTurnId: session.lastTurnId, createdAt: 0, updatedAt: 0,
+            messages: [], messagesLoaded: false, dirty: false, localOnly: false,
+          });
+        }
       }
-      if (!this.activeId && this.conversations.length) this.activeId = this.conversations[0].id;
+      if (!this.activeId) this.activeId = this.sorted[0]?.id || '';
       this.persist();
+    },
+    async loadMessages(id: string): Promise<void> {
+      const conv = this.conversations.find(item => item.id === id);
+      if (!conv || conv.messagesLoaded || !conv.sessionId) return;
+      const pending = pendingDetails.get(id);
+      if (pending) return pending;
+      conv.loading = true;
+      conv.loadError = '';
+      const request = (async () => {
+        try {
+          const detail = await fetchAgentSession(conv.sessionId!);
+          // 请求返回时会话可能已删除或已写入本地消息，不能覆盖这些变更。
+          if (!this.conversations.includes(conv) || conv.dirty) return;
+          conv.messages = detail.messages.map(message => ({
+            ...message, id: uuid(), toolCalls: [], createdAt: 0,
+          }));
+          conv.messagesLoaded = true;
+          conv.cachedAt = Date.now();
+          this.trimCache();
+        } catch (error) {
+          conv.loadError = error instanceof Error ? error.message : '无法读取会话内容';
+          throw error;
+        } finally {
+          conv.loading = false;
+          pendingDetails.delete(id);
+        }
+      })();
+      pendingDetails.set(id, request);
+      return request;
+    },
+    trimCache() {
+      // 只有可重新获取的正文参与淘汰，活动会话和未同步数据始终保留。
+      const cached = this.conversations.filter(conv => conv.messagesLoaded && conv.sessionId && !conv.dirty)
+        .sort((a, b) => (b.cachedAt || 0) - (a.cachedAt || 0));
+      let count = cached.length;
+      for (const conv of cached.slice().reverse()) {
+        if (count <= MAX_MESSAGE_CACHE) break;
+        if (conv.id === this.activeId) continue;
+        conv.messages = [];
+        conv.messagesLoaded = false;
+        count--;
+      }
     },
     persist() {
       try {
         localStorage.setItem(
           STORAGE_KEY,
-          JSON.stringify(this.conversations.slice(0, MAX_CONVERSATIONS))
+          JSON.stringify(this.sorted.filter((conv, index) => index < 30 || conv.dirty || conv.id === this.activeId)
+            .map(conv => ({ ...conv, messages: conv.dirty || !conv.sessionId ? conv.messages : [],
+              messagesLoaded: conv.dirty || !conv.sessionId ? conv.messagesLoaded : false,
+              dirty: !!conv.dirty, localOnly: !!conv.localOnly, loading: false, loadError: '' })))
         );
+        this.storageError = false;
       } catch {
-        // localStorage 满/隐私模式：丢会话列表不影响当前对话
+        // 写入失败保留旧快照及当前内存，不清空用户数据。
+        this.storageError = true;
       }
     },
     touch(conv: Conversation) {
       conv.updatedAt = Date.now();
-      this.persist();
     },
     newConversation(): Conversation {
       const conv: Conversation = {
@@ -124,11 +196,10 @@ export const useChatStore = defineStore('agentChat', {
         messages: [],
         createdAt: Date.now(),
         updatedAt: Date.now(),
+        messagesLoaded: true,
+        dirty: true,
       };
       this.conversations.unshift(conv);
-      if (this.conversations.length > MAX_CONVERSATIONS) {
-        this.conversations.length = MAX_CONVERSATIONS;
-      }
       this.activeId = conv.id;
       this.persist();
       // 返回数组里的响应式代理而非原始对象：调用方后续直接改它的
@@ -145,6 +216,8 @@ export const useChatStore = defineStore('agentChat', {
     },
     select(id: string) {
       this.activeId = id;
+      const conv = this.active;
+      if (conv) conv.cachedAt = Date.now();
     },
     addMessage(conv: Conversation, role: 'user' | 'assistant', content = ''): ChatMessage {
       const message: ChatMessage = {
@@ -155,6 +228,8 @@ export const useChatStore = defineStore('agentChat', {
         createdAt: Date.now(),
       };
       conv.messages.push(message);
+      conv.dirty = true;
+      this.persist();
       // 同上：必须把 push 进响应式数组后的代理交回给调用方，
       // 流式渲染靠的就是对这个代理做 content += delta
       return conv.messages[conv.messages.length - 1];

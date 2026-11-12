@@ -67,7 +67,7 @@ export type AgentEvent =
  * 网络层失败（代理未启动、502 等）以 reject 抛出，调用方应展示为可重试错误。
  */
 export async function chatWithAgent(
-  params: { message: string; session_id?: string },
+  params: { message: string; session_id?: string; model?: 'gateway' | 'codex' },
   onEvent: (event: AgentEvent) => void,
   signal?: AbortSignal
 ): Promise<void> {
@@ -150,9 +150,32 @@ export interface AgentStoredSession {
   messages: { role: 'user' | 'assistant'; content: string }[];
 }
 
-export async function fetchAgentSessions(): Promise<AgentStoredSession[]> {
-  const response = await fetch('/agentApi/sessions');
+export interface AgentSessionSummary {
+  id: string;
+  title: string;
+  lastTurnId: string;
+  snippet: string;
+}
+
+export interface AgentSessionPage {
+  items: AgentSessionSummary[];
+  nextCursor: string | null;
+}
+
+// 摘要分页不携带消息正文；signal 用于取消已过期的搜索请求。
+export async function fetchAgentSessions(
+  query = '', cursor?: string, signal?: AbortSignal,
+): Promise<AgentSessionPage> {
+  const params = new URLSearchParams({ view: 'summary', limit: '30', q: query });
+  if (cursor) params.set('cursor', cursor);
+  const response = await fetch('/agentApi/sessions?' + params, { signal });
   if (!response.ok) throw new Error('无法读取服务端会话');
+  return response.json();
+}
+
+export async function fetchAgentSession(id: string): Promise<AgentStoredSession> {
+  const response = await fetch('/agentApi/sessions/' + encodeURIComponent(id));
+  if (!response.ok) throw new Error(response.status === 404 ? '会话已不存在' : '无法读取会话内容');
   return response.json();
 }
 

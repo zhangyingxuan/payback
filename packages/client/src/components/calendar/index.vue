@@ -1,53 +1,37 @@
 <template>
   <span class="time">{{ time }}</span>
-  <span v-html="text"></span>
+  <span>{{ calendarText }}</span>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { computed, onUnmounted, ref } from 'vue';
 import dayjs from 'dayjs';
+import { getNextTradingDay, getTradingDayInfo, toShanghaiDate, tradingCalendars } from 'pay-back-core';
 
-const time = ref('');
-const FAVS = ['元旦', '劳动', '国庆', '春节', '清明', '端午', '中秋'];
-const arr = [
-  0, 0, 46, 3, 94, 4, 120, 1, 168, 5, 266, 6, 273, 2, 365, 0, 400, 3, 459, 4,
-  485, 1, 522, 5, 620, 6, 638, 2, 730, 0, 754, 3, 824, 4, 851, 1, 906, 5, 1004,
-  2, 1004, 6, 1096, 0, 1138, 3, 1189, 4, 1216, 1, 1260, 5, 1359, 6, 1369, 2,
-  1461, 0, 1492, 3, 1555, 4, 1581, 1, 1614, 5, 1713, 6, 1734, 2, 1826, 0, 1847,
-  3, 1920, 4, 1946, 1, 1998, 5, 2097, 6, 2099, 2, 2191, 0, 2231, 3, 2285, 4,
-  2312, 1, 2352, 5, 2451, 6, 2465, 2, 2557, 0, 2585, 3, 2650, 4, 2677, 1, 2707,
-  5, 2830, 2, 2835, 6, 2922, 0, 2969, 3, 3016, 4, 3042, 1, 3091, 5, 3189, 6,
-  3195, 2, 3287, 0, 3323, 3, 3381, 4, 3407, 1, 3446, 5, 3544, 6, 3560, 2, 3652,
-  0, 3677, 3, 3746, 4, 3773, 1, 3800, 5, 3926, 2, 3928, 6, 4018, 0, 4061, 3,
-  4111, 4, 4138, 1, 4184, 5, 4282, 6, 4291, 2, 4383, 0, 4416, 3, 4477, 4, 4503,
-  1, 4637, 6, 4656, 2,
-];
-const getResult = (_n: number) => {
-  const n = Math.floor((_n - 1514736000000) / 86400000);
-  for (let i = 0; i < arr.length; i += 2) {
-    if (arr[i] >= n) {
-      const result = [];
-      for (let j = 0; j < 14; j += 2) {
-        const m = arr[i + j];
-        result.push([arr[i + j + 1], m - n]);
-      }
-      return result[0];
-    }
+const now = ref(new Date());
+const time = computed(() => dayjs(now.value).format('MM-DD HH:mm:ss'));
+
+// 日期随时钟更新，跨过上海零点后立即使用新交易日状态。
+const date = computed(() => toShanghaiDate(now.value));
+const calendarText = computed(() => {
+  const today = date.value;
+  const info = getTradingDayInfo(today);
+  if (info.status === 'unknown') return '交易日历待更新';
+  if (info.status === 'closed') {
+    const next = getNextTradingDay(today);
+    return `${info.name || '周末'}休市${next ? `，${next} 开市` : '，后续日历待更新'}`;
   }
-  return [];
-};
+  // 这里只展示休市倒计时，不把休市开始日误称为节日当天。
+  const next = tradingCalendars.flatMap(item => [...item.closures])
+    .filter(item => item.startDate > today)
+    .sort((a, b) => a.startDate.localeCompare(b.startDate))[0];
+  if (!next) return '今日交易日，后续休市安排待更新';
+  const days = (Date.parse(`${next.startDate}T00:00:00Z`) - Date.parse(`${today}T00:00:00Z`)) / 86400000;
+  return `距${next.name}休市 ${days} 天`;
+});
 
-const now = new Date().getTime();
-const latestFestival = getResult(now);
-const text = `${FAVS[latestFestival[0]]}<span class="red bold">${
-  latestFestival[1]
-}</span>天`;
-
-const dateFomart = 'MM-DD HH:mm:ss';
-time.value = dayjs().format(dateFomart);
-// 设置时间
-setInterval(() => {
-  time.value = dayjs().format(dateFomart);
-}, 1000);
+// 卸载时释放计时器，避免页面反复挂载后残留更新任务。
+const timer = setInterval(() => { now.value = new Date(); }, 1000);
+onUnmounted(() => clearInterval(timer));
 </script>
 
 <style scoped lang="less">

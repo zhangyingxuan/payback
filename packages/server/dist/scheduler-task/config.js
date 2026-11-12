@@ -6,14 +6,22 @@ const newsPushSchedulerTask = {
     service: 'pushServer',
     func: 'fetchNewsTask',
     cron: '*/2 * 7-23 * * *',
+    tradingDaysOnly: true,
 };
 exports.newsPushSchedulerTask = newsPushSchedulerTask;
 const schedulerTaskList = [
     {
+        taskName: 'autoPushReviewCharts',
+        service: 'reviewChartsService',
+        func: 'pushDailyCharts',
+        cron: '0 38 15 * * 1-5',
+        tradingDaysOnly: true,
+    },
+    {
         taskName: 'autoCrawlfundsDataLateSession',
         service: 'fundsService',
         func: 'crawlfundsData',
-        cron: '0 45 15 * * 1-5',
+        cron: '0 32 15 * * 1-5',
     },
     {
         taskName: 'autoCrawlfundsDataMidday',
@@ -23,6 +31,7 @@ const schedulerTaskList = [
     },
     {
         taskName: 'autoCrawlHotListData',
+        tradingDaysOnly: false,
         service: 'hotListService',
         func: 'crawlHotListData',
         cron: '0 */30 7-23 * * *',
