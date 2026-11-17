@@ -16,11 +16,15 @@
 
 ## Agent 接口与行为
 
+聊天支持通用问答，普通计算、编程、写作和概念解释无需行情工具；四级复盘仅用于相关市场问题。数据缺失、个股证据不匹配或时效未知时保留回答并追加数据提示，不再用固定拒答覆盖全文；模型仍须说明事实来源、缺失数据和假设。工具保持只读，此变更需重启 Agent 生效。
+
 思考摘要通过 `reasoning_delta` SSE 事件追加到聊天页。Codex 独立进程显式请求详细摘要，但实际是否返回仍取决于模型；前端始终显示“思考过程”入口，无摘要时展示等待或未提供提示。摘要目前不随服务端历史正文持久化，重新加载历史后可能只显示未提供提示。
 
 `serve.py` 注册 `GET /healthz`、`POST /chat`、`DELETE /sessions/{session_id}` 和 `GET/POST /daily-reports/{trade_date}`。聊天响应使用 SSE；客户端实现见 `packages/client/src/api/agent.ts`。Agent 默认用同级 `payback-mcp` 目录和 `uv` 启动工具服务，可通过 `PAYBACK_MCP_DIR`、`PAYBACK_MCP_COMMAND` 覆盖。两个 Python 项目均要求 Python >= 3.11，使用 uv 管理依赖。
 
-聊天历史使用 `GET /sessions?view=summary&limit=30&cursor=...&q=...` 获取 `{items,nextCursor}`，条目为 `id/title/lastTurnId/snippet`；完整问答通过 `GET /sessions/{session_id}` 按需获取（缺失返回 404）。`q` 搜索全历史问答并返回片段；游标按最后消息递增 ID 降序，字符串传输，无历史日期分组和数据库迁移。旧 `GET /sessions` 的最近 50 条完整会话响应仍兼容。
+聊天历史使用 `GET /sessions?view=summary&limit=30&cursor=...&q=...` 获取 `{items,nextCursor}`，条目为 `id/title/lastTurnId/snippet`；完整问答通过 `GET /sessions/{session_id}` 按需获取（缺失返回 404）。`q` 搜索全历史问答并返回片段；游标按最后消息递增 ID 降序，字符串传输，无历史日期分组。旧 `GET /sessions` 的最近 50 条完整会话响应仍兼容。
+
+消息详情新增 `createdAt`（Unix 毫秒）：用户为服务端开始处理时间，助手为回复完成时间；SSE `done` 返回 `questionCreatedAt/createdAt`，客户端同步覆盖本地临时时间。chat 页按浏览器本地时区显示到秒。时间与正文在同一事务中保存，Agent 自动创建独立的 `agent_conversation_turn_time` 表，不需 ALTER 权限；删除会话同时清理时间。旧历史时间为 null，页面显示“时间未知”，不伪造回填。修改后需重启 Agent。
 
 客户端保留 5 个可重新获取的正文缓存，生成中、失败以及旧本机未同步内容不参与淘汰；localStorage 保存最近摘要、活动入口和未同步内容，不随新增会话截断历史。摘要触底分页、搜索防抖并取消过期请求，详情失败可重试。当前正文搜索扫描文本，尚未接全文索引或列表虚拟化；前端升级须配合 Agent 重启。
 

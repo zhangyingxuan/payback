@@ -59,7 +59,7 @@ export class PayBackController {
 
   @Get('live-market/:section')
   async liveMarket(@Param('section') section: LiveSection) {
-    if (!['market', 'funds', 'shortTerm', 'global'].includes(section)) throw new BadRequestException('无效的行情模块');
+    if (!['market', 'funds', 'shortTerm', 'global', 'turnover', 'stocks', 'commodities'].includes(section)) throw new BadRequestException('无效的行情模块');
     return { code: 0, data: await this.liveMarketService.get(section) };
   }
 

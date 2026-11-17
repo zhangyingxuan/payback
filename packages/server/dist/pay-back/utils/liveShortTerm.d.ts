@@ -2,6 +2,8 @@ interface PoolStock {
     code: string;
     name: string;
     is_again_limit?: number;
+    turnover_rate?: number | string | null;
+    order_amount?: number | string | null;
 }
 interface BoardGroup {
     height: number;

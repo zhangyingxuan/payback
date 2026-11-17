@@ -19,7 +19,7 @@ export interface GlobalQuote {
   quoteTime: string | null;
 }
 
-export const fetchLiveMarket = <T>(section: 'market' | 'funds' | 'shortTerm' | 'global') =>
+export const fetchLiveMarket = <T>(section: 'market' | 'funds' | 'shortTerm' | 'global' | 'turnover' | 'stocks' | 'commodities') =>
   http.request<T>('get', `${baseUrl}/live-market/${section}`, { timeout: 30000 });
 
 /**

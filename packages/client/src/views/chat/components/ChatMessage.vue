@@ -3,6 +3,7 @@
     <!-- 用户：右侧气泡，纯文本（保留换行） -->
     <template v-if="message.role === 'user'">
       <div class="user-content">
+        <time class="message-time" :datetime="messageDateTime">{{ messageTime }}</time>
         <div class="user-bubble">{{ message.content }}</div>
         <div v-if="message.content" class="message-actions">
           <el-button class="copy-button" text title="复制消息" aria-label="复制消息" @click="copyMessage">
@@ -20,6 +21,7 @@
       <div class="assistant-avatar" aria-hidden="true"><el-icon><DataAnalysis /></el-icon></div>
       <div class="assistant-body">
         <div class="assistant-heading"><strong>智能复盘</strong><span>PAYBACK ASSISTANT</span></div>
+        <time class="message-time" :datetime="messageDateTime">{{ messageTime }}</time>
         <!-- 模型可能不提供摘要，保留入口并明确空状态，避免误以为页面没有接入。 -->
         <details class="reasoning" :open="streaming">
           <summary>
@@ -96,6 +98,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import dayjs from 'dayjs';
 import type { ChatMessage, ToolCallChip } from '@/store/chat';
 import { ElMessage } from 'element-plus';
 import {
@@ -118,6 +121,12 @@ defineEmits<{
   (e: 'retry'): void;
   (e: 'resend'): void;
 }>();
+
+// 统一按浏览器本地时区展示到秒；缺失时间的旧消息不能显示为 1970 年。
+const messageTime = computed(() => props.message.createdAt > 0 && dayjs(props.message.createdAt).isValid()
+  ? dayjs(props.message.createdAt).format('YYYY-MM-DD HH:mm:ss') : '时间未知');
+const messageDateTime = computed(() => props.message.createdAt > 0 && dayjs(props.message.createdAt).isValid()
+  ? dayjs(props.message.createdAt).toISOString() : undefined);
 
 // 只识别服务端生成的固定图片格式，避免把长编码交给 Markdown 解析器。
 const chartPattern = /!\[(复盘全景图|涨停梯队图)\]\((data:image\/svg\+xml;base64,[A-Za-z0-9+/=]+)\)/g;
@@ -167,6 +176,14 @@ function chipText(call: ToolCallChip): string {
 <style scoped lang="less">
 .chat-message {
   padding: 20px 0;
+
+  .message-time {
+    display: block;
+    margin-bottom: 6px;
+    color: #667085;
+    font-size: 12px;
+    line-height: 1.5;
+  }
 
   &.user {
     display: flex;

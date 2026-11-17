@@ -1,6 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.buildLiveShortTerm = void 0;
+function nonNegativeNumber(value) {
+    if (value == null || (typeof value === 'string' && !value.trim()))
+        return null;
+    const number = Number(value);
+    return Number.isFinite(number) && number >= 0 ? number : null;
+}
 function buildLiveShortTerm(stocks, boards, blocks, counts) {
     var _a, _b, _c;
     const levels = new Map();
@@ -23,7 +29,9 @@ function buildLiveShortTerm(stocks, boards, blocks, counts) {
             timeZone: 'Asia/Shanghai', hour12: false,
         }) : undefined;
         const group = (evenBoardData[level] || (evenBoardData[level] = []));
-        group.push({ code: stock.code, name: stock.name, plateLevel2: detail === null || detail === void 0 ? void 0 : detail.blockName, reason: detail === null || detail === void 0 ? void 0 : detail.reason_type, dailyTime });
+        const orderAmount = nonNegativeNumber(stock.order_amount);
+        group.push({ code: stock.code, name: stock.name, plateLevel2: detail === null || detail === void 0 ? void 0 : detail.blockName, reason: detail === null || detail === void 0 ? void 0 : detail.reason_type, dailyTime,
+            turnoverRate: nonNegativeNumber(stock.turnover_rate), closingFunds: orderAmount == null ? null : orderAmount / 1e8, });
     });
     const heights = stocks.map(stock => levels.get(stock.code) || 1);
     return {

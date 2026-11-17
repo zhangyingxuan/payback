@@ -142,7 +142,7 @@ export const useChatStore = defineStore('agentChat', {
           // 请求返回时会话可能已删除或已写入本地消息，不能覆盖这些变更。
           if (!this.conversations.includes(conv) || conv.dirty) return;
           conv.messages = detail.messages.map(message => ({
-            ...message, id: uuid(), toolCalls: [], createdAt: 0,
+            ...message, id: uuid(), toolCalls: [], createdAt: message.createdAt ?? 0,
           }));
           conv.messagesLoaded = true;
           conv.cachedAt = Date.now();

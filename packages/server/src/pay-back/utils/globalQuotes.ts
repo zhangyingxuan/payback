@@ -14,3 +14,19 @@ export function parseGlobalQuotes(text: string) {
     };
   });
 }
+
+// 日韩指数由东方财富补充，Unix 时间统一显示为交易所当地时间（两地均为 UTC+9）。
+export function parseAsiaQuotes(rows: { f12?: string; f2?: unknown; f3?: unknown; f124?: unknown }[]) {
+  const names = { KS11: '韩国 KOSPI', N225: '日经 225' };
+  return Object.entries(names).map(([code, name]) => {
+    const row = rows.find(item => item.f12 === code);
+    const stamp = row?.f124;
+    return {
+      code, name,
+      price: typeof row?.f2 === 'number' && Number.isFinite(row.f2) ? row.f2 : null,
+      change: typeof row?.f3 === 'number' && Number.isFinite(row.f3) ? row.f3 : null,
+      quoteTime: typeof stamp === 'number' && Number.isFinite(stamp) && stamp > 0 && Number.isFinite(new Date(stamp * 1000).getTime())
+        ? new Date(stamp * 1000).toLocaleString('sv-SE', { timeZone: 'Asia/Tokyo' }).replace(/-/g, '/') : null,
+    };
+  });
+}

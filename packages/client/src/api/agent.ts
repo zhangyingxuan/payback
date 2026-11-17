@@ -42,6 +42,8 @@ export interface AgentToolResultEvent {
 
 export interface AgentDoneEvent {
   type: 'done';
+  createdAt?: number;
+  questionCreatedAt?: number;
   content: string;
   iterations: number;
   truncated: boolean;
@@ -147,7 +149,7 @@ export async function deleteAgentSession(id: string): Promise<void> {
 
 export interface AgentStoredSession {
   id: string;
-  messages: { role: 'user' | 'assistant'; content: string }[];
+  messages: { role: 'user' | 'assistant'; content: string; createdAt?: number | null }[];
 }
 
 export interface AgentSessionSummary {

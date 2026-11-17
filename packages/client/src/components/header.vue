@@ -248,6 +248,8 @@ const handleCommand = (command: string) => {
 </script>
 <style scoped lang="less">
 .header {
+  display: flex;
+  align-items: center;
   position: relative;
   box-sizing: border-box;
   width: 100%;
@@ -277,11 +279,16 @@ const handleCommand = (command: string) => {
 }
 .header .logo {
   display: flex;
-  float: left;
-  width: 330px;
-  line-height: 40px;
+  flex: 1;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 12px;
+  font-size: 12px;
+  line-height: 18px;
 }
 .header-right {
+  flex-shrink: 0;
   float: right;
   padding-right: 20px;
 }

@@ -7,27 +7,61 @@
     <div v-if="error" class="notice" role="alert">{{ error }}</div>
     <section class="hero panel">
       <div class="hero-main"><div class="heading"><div><div class="eyebrow"><em>01</em> / MARKET PULSE</div><h2>市场脉搏 <small>一眼看懂当下的市场</small></h2></div><span class="timestamp">获取 {{ time(market?.createTime) }}</span></div>
-        <div class="indices"><div class="primary-index"><label>上证指数 <small>SHANGHAI</small></label><strong>{{ value(market?.shangzhengPoint) }}</strong><b :class="color(market?.shangzhengRiseAndFall)">{{ percent(market?.shangzhengRiseAndFall) }}</b></div><div class="minor-index"><div><label>深证成指</label><strong>{{ value(market?.shenzhengPoint) }}</strong><small>点位</small></div><div><label>创业板指</label><strong>{{ value(market?.chuangyePoint) }}</strong><small>点位</small></div></div></div>
+        <div class="indices"><div class="primary-index"><label>上证指数 <small>SHANGHAI</small></label><strong>{{ value(market?.shangzhengPoint) }}</strong><b :class="color(market?.shangzhengRiseAndFall)">{{ percent(market?.shangzhengRiseAndFall) }}</b></div><div class="minor-index"><div><label>深证成指</label><strong>{{ value(market?.shenzhengPoint) }}</strong><b :class="color(market?.shenzhengRiseAndFall)">{{ percent(market?.shenzhengRiseAndFall) }}</b></div><div><label>创业板指</label><strong>{{ value(market?.chuangyePoint) }}</strong><b :class="color(market?.chuangyeRiseAndFall)">{{ percent(market?.chuangyeRiseAndFall) }}</b></div></div></div>
+
       </div>
-      <div class="breadth"><label>市场宽度 <small>MARKET BREADTH</small></label><div class="breadth-visual"><div class="donut"><MarketChart v-if="breadthTotal" :option="breadthOption" label="上涨与下跌家数占比环形图" /><div class="donut-center"><strong>{{ breadthRatio }}</strong><span>上涨占比</span></div></div><div class="breadth-values"><div><strong class="up">{{ value(market?.riseAmount) }}</strong><span>上涨家数</span></div><div><strong class="down">{{ value(market?.fallAmount) }}</strong><span>下跌家数</span></div></div></div><div class="turnover"><span>两市成交额 <small>TURNOVER</small></span><strong>{{ value(market?.marketTurnover) }} <small>亿元</small></strong></div></div>
+      <div class="breadth"><label>市场宽度 <small>沪深 · 东方财富</small></label><div class="breadth-visual"><div class="donut"><MarketChart v-if="breadthTotal" :option="breadthOption" label="上涨与下跌家数占比环形图" /><div class="donut-center"><strong>{{ breadthRatio }}</strong><span>{{ breadthTotal ? '上涨占比' : '暂无宽度数据' }}</span></div></div><div class="breadth-values"><div><strong class="up">{{ value(market?.riseAmount) }}</strong><span>上涨家数</span></div><div><strong class="down">{{ value(market?.fallAmount) }}</strong><span>下跌家数</span></div></div></div></div>
+      <!-- 成交额与同期量能使用同一数据源，缺少同期数据时仍保留市场成交额。 -->
+      <div class="volume-pulse">
+        <label>两市成交额 / 量能 <small>{{ turnover ? '同花顺' : '腾讯行情' }}</small></label>
+        <strong class="volume-total">{{ value(turnover?.current ?? market?.marketTurnover) }} <small>亿元</small></strong>
+        <template v-if="turnover">
+          <b :class="color(turnover.change)">{{ turnover.change > 0 ? '放量' : turnover.change < 0 ? '缩量' : '持平' }} {{ value(Math.round(Math.abs(turnover.change))) }} 亿 <small>({{ percent(turnover.changePercent) }})</small></b>
+          <span>昨日同期 {{ value(turnover.previous) }} 亿 · 获取 {{ time(turnover.createTime) }}</span>
+        </template>
+        <span v-else>暂无同期量能数据 · 获取 {{ time(market?.createTime) }}</span>
+      </div>
+      <section class="panel commodity-panel"><div class="heading"><div><div class="eyebrow">COMMODITY SECTORS</div><h2>黄金 / 原油 <small>A股行业板块 · 东方财富</small></h2></div></div><div class="commodity-grid"><div v-for="sector in commoditySectors" :key="sector.code"><label>{{ sector.name }}</label><strong :class="color(sector.change)">{{ percent(sector.change) }}</strong></div></div><div class="note">固定观察黄金、石油行业板块涨跌幅</div></section>
     </section>
     <div class="dashboard">
+      <section class="panel turnover-panel">
+        <div class="heading"><div><div class="eyebrow">TURNOVER LEADERS</div><h2>成交额 Top 10 <small>沪深 A股 · 东方财富</small></h2></div></div>
+        <div v-if="topStocks.length" class="turnover-groups">
+          <div v-for="group in turnoverGroups" :key="group.label" class="turnover-group">
+            <h3>{{ group.label }}</h3>
+            <div class="stock-table"><table><thead><tr><th>个股 / 行业</th><th>涨跌幅</th><th>成交额<br>（亿）</th></tr></thead>
+              <tbody><tr v-for="(stock, index) in group.items" :key="stock.code"><td><span class="rank-no">{{ group.offset + index + 1 }}</span><Stock :name="stock.name" :code="stock.code" /><small>{{ stock.industry || '行业暂无' }}</small></td><td :class="color(stock.change)">{{ percent(stock.change) }}</td><td>{{ value(stock.turnover) }}</td></tr></tbody>
+            </table></div>
+            <p v-if="!group.items.length" class="empty">暂无排行</p>
+          </div>
+        </div><p v-else class="empty">暂无成交额排行</p>
+      </section>
       <section class="panel sector-panel"><div class="heading"><div><div class="eyebrow"><em>02</em> / SECTOR RADAR</div><h2>涨停题材 <small>样本内涨跌幅排序</small></h2></div><span class="timestamp">获取 {{ time(market?.createTime) }}</span></div>
-        <div v-if="sectorData.length" class="compact-list"><div v-for="item in sectorData" :key="item.name" class="compact-row"><span>{{ item.name }}</span><b :class="color(item.value)">{{ percent(item.value) }}</b></div></div>
+        <div v-if="sectorData.length" class="sector-groups"><div v-for="group in sectorGroups" :key="group.label" class="sector-group"><h3>{{ group.label }} <small>涨停 / 涨幅</small></h3><div v-for="(item, index) in group.items" :key="item.name" class="sector-row"><span class="sector-name"><i>{{ group.offset + index + 1 }}</i>{{ item.name }}</span><span class="sector-count">{{ value(item.limitUpCount) }}家</span><b :class="color(item.value)">{{ percent(item.value) }}</b></div><p v-if="!group.items.length" class="empty">暂无题材</p></div></div>
         <p v-else class="chart-empty">{{ market?.sectorUnavailable ? '题材数据源暂不可用' : '暂无涨停题材数据' }}</p><div class="note">仅涵盖涨停题材，非全市场板块涨跌榜</div>
       </section>
       <section class="panel sentiment-panel"><div class="heading"><div><div class="eyebrow"><em>03</em> / SENTIMENT</div><h2>短线情绪 <small>同花顺涨停池（沪深、创业板、科创板）</small></h2></div><span class="timestamp">{{ time(shortTerm?.createTime) }}</span></div>
         <div class="sentiment"><div><label>涨停家数</label><strong class="up">{{ value(shortTerm?.dailyLimitQuantity) }}</strong><small>LIMIT UP</small></div><div><label>跌停家数</label><strong class="down">{{ value(shortTerm?.downLimitQuantity) }}</strong><small>LIMIT DOWN</small></div></div><div class="seal"><div class="bar-label"><span>封板率</span><strong>{{ percent(shortTerm?.sealingRate, false) }}</strong></div><div class="bar-track"><span class="gold-fill" :style="{ width: sealWidth }"></span></div><div class="scale"><span>0%</span><span>50%</span><span>100%</span></div></div><div class="height-row"><span>市场高度 <small>最高连板</small></span><strong>{{ value(shortTerm?.marketHeight) }} <small>板</small></strong></div><div class="emotion-extra"><span>连板股 <b>{{ value(shortTerm?.evenBoardAmount) }}</b> 只</span><span>开板后回封 <b>{{ value(shortTerm?.dailyLimitReturnSealQuantity) }}</b> 只</span></div><router-link class="detail" to="/charts">查看短线详情 <span>↗</span></router-link>
       </section>
       <section class="panel funds-panel"><div class="heading"><div><div class="eyebrow"><em>04</em> / CAPITAL FLOW</div><h2>资金流向 <small>东方财富行业板块</small></h2></div><span class="timestamp">{{ time(funds?.createTime) }} · 亿元</span></div>
-        <div v-if="capitalData.length" class="compact-list"><div v-for="item in capitalData" :key="item.name" class="compact-row"><span>{{ item.name }}</span><b :class="color(item.value)">{{ signed(item.value) }} 亿</b></div></div>
-        <p v-else class="chart-empty">暂无资金行情</p><div class="note">主力资金为数据源估算值，正值为净流入，负值为净流出</div>
+        <div class="capital-groups"><div v-for="group in capitalGroups" :key="group.label" class="capital-group"><h3 :class="group.tone">{{ group.label }}</h3><div v-for="item in group.items" :key="item.name" class="compact-row"><span>{{ item.name }}</span><b :class="color(item.value)">{{ signed(item.value) }} 亿</b></div><p v-if="!group.items.length" class="empty">暂无{{ group.label }}数据</p></div></div>
+        <div class="note">主力资金为数据源估算值，正值为净流入，负值为净流出</div>
       </section>
       <section class="panel stock-panel"><div class="heading"><div><div class="eyebrow"><em>05</em> / LEADERS</div><h2>连板梯队 <small>按连板高度排序 · 题材信息来自涨停题材样本</small></h2></div><span class="timestamp">{{ time(shortTerm?.createTime) }}</span></div>
-        <div class="stock-table"><table><thead><tr><th>个股</th><th>高度</th><th>换手</th><th>封单</th><th>首次封板</th></tr></thead><tbody><tr v-for="stock in leaderStocks" :key="stock.code"><td><Stock :name="stock.name" :code="stock.code" /><small>{{ stock.plateLevel2 || '—' }}</small></td><td class="up">{{ stock.level }}板</td><td>{{ percent(stock.turnoverRate, false) }}</td><td>{{ value(stock.closingFunds) }}<small v-if="stock.closingFunds != null">亿</small></td><td>{{ stock.dailyTime?.split(',')[0] || '—' }}</td></tr></tbody></table><p v-if="!leaderStocks.length" class="empty">暂无涨停个股数据</p></div>
+        <div class="stock-table"><table><thead><tr><th>个股</th><th>高度</th><th>换手率</th><th>封单（亿）</th><th>首次封板</th></tr></thead><tbody><tr v-for="stock in leaderStocks" :key="stock.code"><td><Stock :name="stock.name" :code="stock.code" /><small>{{ stock.plateLevel2 || '—' }}</small></td><td class="up">{{ stock.level }}板</td><td>{{ percent(stock.turnoverRate, false) }}</td><td>{{ value(stock.closingFunds) }}</td><td>{{ stock.dailyTime?.split(',')[0] || '—' }}</td></tr></tbody></table><p v-if="!leaderStocks.length" class="empty">暂无涨停个股数据</p></div>
         <div class="risk-line"><span>跌停反馈</span><template v-if="downStocks.length"><span v-for="stock in downStocks.slice(0, 4)" :key="stock.code" class="risk-stock"><Stock :name="stock.name" :code="stock.code" /></span><span v-if="downStocks.length > 4">等 {{ downStocks.length }} 只</span></template><span v-else>暂无跌停个股数据</span></div>
       </section>
-      <section class="panel global-panel"><div class="heading"><div><div class="eyebrow"><em>06</em> / GLOBAL MARKETS</div><h2>外围市场 <small>跨市场风险参考</small></h2></div><span class="source">腾讯行情</span></div><div class="global-head"><span>指数 / 行情时间</span><span>最新点位</span><span>涨跌幅</span></div><div v-for="item in globalMarkets" :key="item.code" class="global-row"><div><strong>{{ item.name }}</strong><small>{{ item.quoteTime || '暂无行情时间' }}</small></div><span>{{ value(item.price) }}</span><b :class="color(item.change)">{{ percent(item.change) }}</b></div><p v-if="!globalMarkets.length" class="empty">暂无外围行情</p><div class="note">◷ &nbsp;时间为交易所当地时间，行情可能延迟或处于休市状态</div></section>
+      <section class="panel global-panel">
+        <div class="heading"><div><div class="eyebrow"><em>06</em> / GLOBAL MARKETS</div><h2>外围市场 <small>跨市场风险参考</small></h2></div><span class="source">腾讯 / 东方财富</span></div>
+        <div v-if="globalMarkets.length" class="global-groups">
+          <div v-for="group in globalGroups" :key="group.label" class="global-group">
+            <div class="global-head"><span>指数 / 行情时间</span><span>最新点位</span><span>涨跌幅</span></div>
+            <div v-for="item in group.items" :key="item.code" class="global-row"><div><strong>{{ item.name }}</strong><small>{{ item.quoteTime || '暂无行情时间' }}</small></div><span>{{ value(item.price) }}</span><b :class="color(item.change)">{{ percent(item.change) }}</b></div>
+          </div>
+        </div>
+        <p v-else class="empty">暂无外围行情</p>
+        <div class="note">◷ &nbsp;时间为交易所当地时间，行情可能延迟或处于休市状态</div>
+      </section>
     </div><footer><span>PAYBACK / MARKET MONITOR</span><span>获取时间不等于交易所行情时间 · 市场信息仅供研究参考</span></footer>
   </main>
 </template>
@@ -41,13 +75,33 @@ import type { ShortTermModel } from '@/api/model/ShortTermModel';
 import type { EChartsCoreOption } from 'echarts/core';
 import MarketChart from './MarketChart.vue';
 
-type Plate = { name: string; quoteChange?: number; funds?: number };
-type StockItem = { name: string; code: string; plateLevel2?: string; turnoverRate?: number; closingFunds?: number; dailyTime?: string };
+type Plate = { name: string; quoteChange?: number; funds?: number; limitUpCount?: number | null };
+type StockItem = { name: string; code: string; plateLevel2?: string; turnoverRate?: number | null; closingFunds?: number | null; dailyTime?: string };
 type LiveMarket = MarketModel & { gainianRiseFloat?: string; gainianFallFloat?: string; sectorUnavailable?: boolean };
 const market = ref<LiveMarket>();
 const funds = ref<FundsModel>();
 const shortTerm = ref<ShortTermModel>();
 const globalMarkets = ref<GlobalQuote[]>([]);
+// 用行情代码固定左右列及顺序，避免上游响应排序变化打乱观察位置。
+const globalGroups = computed(() => [
+  { label: 'left', codes: ['KS11', 'hkHSI', 'hkHSTECH'] },
+  { label: 'right', codes: ['N225', 'us.IXIC', 'us.INX'] },
+].map(group => ({
+  label: group.label,
+  items: group.codes.map(code => globalMarkets.value.find(item => item.code === code))
+    .filter((item): item is GlobalQuote => item != null),
+})));
+const turnover = ref<{ current: number; previous: number; change: number; changePercent: number; createTime: string }>();
+const topStocks = ref<{ code: string; name: string; industry: string | null; turnover: number; change: number | null }[]>([]);
+// 保留固定席位，接口失败也不让重点板块消失或显示虚假零涨跌。
+const commoditySectors = ref<{ code: string; name: string; change: number | null }[]>([
+  { code: 'BK0732', name: '黄金', change: null }, { code: 'BK0464', name: '原油（石油行业）', change: null },
+]);
+// 沿用接口的成交额降序，将连续排名分成左右两组，避免第五名重复展示。
+const turnoverGroups = computed(() => [
+  { label: 'TOP 1–5', offset: 0, items: topStocks.value.slice(0, 5) },
+  { label: 'TOP 6–10', offset: 5, items: topStocks.value.slice(5, 10) },
+]);
 const loading = ref(false);
 const error = ref('');
 // 单个字段损坏时保留其他模块，避免整页不可用。
@@ -93,10 +147,20 @@ const breadthOption = computed<EChartsCoreOption>(() => ({
 // 两侧排行可能包含同一板块；按名称去重并过滤缺失数值，避免图表产生虚假零值。
 function chartData(groups: { items: Plate[] }[], key: 'quoteChange' | 'funds') {
   const items = groups.flatMap(group => group.items).filter(item => item.name && item[key] != null && Number.isFinite(Number(item[key])));
-  return Array.from(new Map(items.map(item => [item.name, { name: item.name, value: Number(item[key]) }])).values()).sort((a, b) => b.value - a.value);
+  return Array.from(new Map(items.map(item => [item.name, { name: item.name, value: Number(item[key]), ...(key === 'quoteChange' ? { limitUpCount: item.limitUpCount } : {}) }])).values()).sort((a, b) => b.value - a.value);
 }
 const sectorData = computed(() => chartData(directions.value, 'quoteChange'));
+// 按排名连续分列，避免网格按行排列导致左右列排名交错。
+const sectorGroups = computed(() => [
+  { label: 'TOP 1–10', offset: 0, items: sectorData.value.slice(0, 10) },
+  { label: 'TOP 11–20', offset: 10, items: sectorData.value.slice(10, 20) },
+]);
 const capitalData = computed(() => chartData(fundGroups.value, 'funds'));
+// 按资金正负固定左右列，流出按绝对金额降序，避免两个上游排行交叉时混排。
+const capitalGroups = computed(() => [
+  { label: '净流入', tone: 'up', items: capitalData.value.filter(item => item.value > 0) },
+  { label: '净流出', tone: 'down', items: capitalData.value.filter(item => item.value < 0).reverse() },
+]);
 function value(n: number | undefined | null) { return n == null || !Number.isFinite(Number(n)) ? '—' : Number(n).toLocaleString('zh-CN', { maximumFractionDigits: 2 }); }
 function signed(n: number | undefined) { return n == null || !Number.isFinite(Number(n)) ? '—' : (Number(n) > 0 ? '+' : '') + value(n); }
 function percent(n: number | undefined | null, sign = true) { return n == null || !Number.isFinite(Number(n)) ? '—' : (sign ? signed(n) : value(n)) + '%'; }
@@ -116,6 +180,9 @@ async function refresh() {
     request('资金', fetchLiveMarket<FundsModel>('funds'), data => { funds.value = data; }),
     request('短线', fetchLiveMarket<ShortTermModel>('shortTerm'), data => { shortTerm.value = data; }),
     request('外围', fetchLiveMarket<GlobalQuote[]>('global'), data => { globalMarkets.value = data; }),
+    request('量能', fetchLiveMarket<NonNullable<typeof turnover.value>>('turnover'), data => { turnover.value = data; }),
+    request('成交额排行', fetchLiveMarket<typeof topStocks.value>('stocks'), data => { topStocks.value = data; }),
+    request('黄金原油', fetchLiveMarket<typeof commoditySectors.value>('commodities'), data => { commoditySectors.value = data; }),
   ]);
   error.value = failures.length ? failures.join('、') + '行情获取失败；已保留上次结果。' : '';
   loading.value = false;
@@ -131,46 +198,95 @@ onUnmounted(() => clearInterval(timer));
 .compact-list{min-height:0;overflow:auto;flex:1;margin-top:8px}.compact-row{display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px solid #243a39;font-size:12px}.compact-row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.compact-row b{font:600 13px Georgia,serif;white-space:nowrap}
 @media(max-width:400px){.donut{width:130px;height:130px}.donut :deep(.chart){height:130px}}
 .terminal{--red:#f16e62;--green:#49c3a0;--line:#293e3c;background:#0a1518;color:#e7eeec;min-height:100%;padding:30px 34px 24px;font-family:"Microsoft YaHei",sans-serif;box-sizing:border-box}.terminal *{box-sizing:border-box}.masthead,.identity,.actions,.heading,.group-title,.bar-label,.height-row{display:flex;align-items:center;justify-content:space-between;gap:12px}.masthead{margin-bottom:26px}.identity{justify-content:flex-start;gap:14px}.logo{display:flex;align-items:center;justify-content:center;width:43px;height:43px;border:1px solid #426363;font:700 25px Georgia,serif}.logo span{color:#e6b875}.eyebrow{color:#91a5a0;font:700 10px Georgia,serif;letter-spacing:2px}.eyebrow em{font-style:normal;color:#dfb474}h1,h2,p{margin:0}h1{font-size:22px;letter-spacing:2px;margin-top:6px}h1 small{font:10px Georgia,serif;letter-spacing:1.4px;color:#8a9f98;margin-left:10px}.live{font-size:11px;color:#a3b7ac;white-space:nowrap}.live i,.group-title i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px}.live i{background:#62c8a4;box-shadow:0 0 12px #62c8a4}.actions{gap:20px}.actions button{border:1px solid #516461;background:#1b302f;color:#eef4ed;padding:10px 15px;border-radius:3px;cursor:pointer;min-height:40px}.actions button:disabled{opacity:.6}.actions button:focus-visible,.detail:focus-visible{outline:2px solid #dfb474;outline-offset:3px}.panel{background:#102124;border:1px solid #263b3c;position:relative}.panel:before{content:"";position:absolute;top:-1px;left:22px;width:30px;height:2px;background:#b7905e}.hero{display:grid;grid-template-columns:1.18fr 1fr;margin-bottom:16px;background:linear-gradient(110deg,#142b2c,#102124 70%)}.hero-main,.breadth{padding:25px 28px}.breadth{border-left:1px solid var(--line);background:linear-gradient(145deg,transparent,#122a29)}.heading{align-items:flex-start}.heading h2{font-size:17px;letter-spacing:.5px;margin-top:8px}.heading h2 small{font-size:11px;font-weight:400;color:#91a6a0;margin-left:9px}.timestamp{font-size:11px;color:#91a6a0;white-space:nowrap}.indices{display:grid;grid-template-columns:1.2fr 1fr;gap:20px;margin-top:28px}label{display:block;font-size:12px;color:#a1b3ae}label small{font:9px Georgia,serif;letter-spacing:1px;color:#8aa099;margin-left:7px}.primary-index strong{display:block;font:600 42px/1.1 Georgia,serif;letter-spacing:-1px;margin:12px 0 7px}.primary-index b{font:600 16px Georgia,serif}.minor-index{display:grid;grid-template-columns:1fr 1fr;gap:15px;align-items:end}.minor-index>div{border-left:1px solid #314744;padding-left:18px}.minor-index strong{display:block;font:600 20px Georgia,serif;margin:12px 0 5px}.minor-index small{color:#93a7a0;font-size:11px}.breadth-values{display:flex;justify-content:space-between;margin:23px 0 15px}.breadth-values>div:last-child{text-align:right}.breadth-values strong{display:block;font:600 28px Georgia,serif}.breadth-values span{color:#9eb0aa;font-size:11px}.breadth-bar,.bar-track{display:flex;background:#273c3c;overflow:hidden}.breadth-bar{height:8px;gap:3px}.red-fill{background:linear-gradient(90deg,#ac4a48,#ef7466)}.green-fill{background:linear-gradient(90deg,#287d6a,#55c3a1)}.gold-fill{background:#d0a56d}.scale{display:flex;justify-content:space-between;margin-top:8px;color:#91a6a0;font-size:10px}.turnover{display:flex;justify-content:space-between;align-items:end;border-top:1px solid #304541;margin-top:21px;padding-top:17px;font-size:12px;color:#a5b6b0}.turnover>span small{display:block;font:9px Georgia,serif;letter-spacing:1px;color:#8aa099;margin-top:5px}.turnover strong{font:600 23px Georgia,serif;color:#e8eee9}.turnover strong small,.height-row strong small{font:11px sans-serif;color:#a1b5ae}.dashboard{display:grid;grid-template-columns:1.3fr 1fr;gap:16px}.dashboard>.panel{padding:24px 26px}.two-cols{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:24px}.two-cols>div+div{border-left:1px solid var(--line);padding-left:26px}.group-title{padding-bottom:11px;border-bottom:1px solid #2c403f;font-size:13px;font-weight:700}.group-title small{font-size:10px;color:#91a6a0;font-weight:400}.red-dot{background:var(--red)}.green-dot{background:var(--green)}.bar-row{padding-top:15px}.bar-label{font-size:12px}.bar-label b{font:600 14px Georgia,serif}.bar-label b small{font:10px sans-serif;color:#91a6a0}.rank-no{font:10px Georgia,serif;color:#89a09a;font-style:normal;margin-right:9px}.bar-track{height:4px;margin-top:9px}.bar-track span{display:block}.note{border-top:1px solid #2b403f;margin-top:22px;padding-top:13px;font-size:10px;line-height:1.6;color:#9ab0a8}.up{color:var(--red)!important}.down{color:var(--green)!important}.empty{color:#91a6a0;font-size:12px;padding:24px 0}.sentiment{display:flex;align-items:center;justify-content:space-around;margin:25px 0 20px}.sentiment>div{text-align:center;flex:1}.sentiment>div+div{border-left:1px solid #304541}.sentiment strong{display:block;font:600 38px/1 Georgia,serif;margin:10px 0 5px}.sentiment small{font:9px Georgia,serif;letter-spacing:1px;color:#91a6a0}.seal{background:#172e2e;padding:14px 16px;color:#adbfba}.seal strong{font:600 19px Georgia,serif;color:#e0c18f}.height-row{margin-top:17px;font-size:12px;color:#a6b9b2}.height-row>span small{font-size:10px;color:#91a6a0;margin-left:6px}.height-row strong{font:600 22px Georgia,serif;color:#e8eee9}.detail{display:flex;justify-content:space-between;color:#dfb474;text-decoration:none;font-size:11px;border-top:1px solid #2b403f;padding-top:13px;margin-top:16px}.source{font-size:10px;color:#d5bd95;border:1px solid #615741;padding:5px 8px}.global-head,.global-row{display:grid;grid-template-columns:1fr 90px 68px;align-items:center;gap:8px}.global-head{font-size:10px;color:#91a6a0;border-bottom:1px solid #2c403f;padding:20px 0 10px}.global-head span:not(:first-child),.global-row>span,.global-row>b{text-align:right}.global-row{border-bottom:1px solid #243a39;padding:11px 0;font:13px Georgia,serif}.global-row strong{display:block;font:12px sans-serif}.global-row small{display:block;color:#91a6a0;font:10px Georgia,serif;margin-top:5px}.global-row b{font:600 14px Georgia,serif}footer{display:flex;justify-content:space-between;gap:15px;color:#91a6a0;font-size:10px;margin-top:22px}footer span:first-child{font:10px Georgia,serif;letter-spacing:1px}.notice{padding:12px;margin-bottom:16px;background:#413426;color:#f0c08f;font-size:13px}
-@media(max-width:1100px){.hero{grid-template-columns:1fr}.breadth{border-left:0;border-top:1px solid var(--line)}.dashboard{grid-template-columns:1fr 1fr}.heading h2 small{display:block;margin:6px 0 0}}@media(max-width:760px){.terminal{padding:20px 14px}.masthead{align-items:flex-start;gap:16px;flex-direction:column}.actions{width:100%;justify-content:space-between}.dashboard{grid-template-columns:1fr}.hero-main,.breadth,.dashboard>.panel{padding:21px 18px}.primary-index strong{font-size:34px}.minor-index{gap:8px}.minor-index>div{padding-left:10px}.minor-index strong{font-size:17px}.two-cols{gap:14px}.two-cols>div+div{padding-left:14px}.timestamp{font-size:10px}footer{flex-direction:column}}@media(max-width:400px){h1 small{display:none}.indices{grid-template-columns:1fr}.minor-index>div:first-child{border:0;padding-left:0}.global-head,.global-row{grid-template-columns:1fr 75px 58px}}
-/* 桌面端优先把所有模块放进视口，较矮或较窄屏幕保留自然滚动。 */
-@media(min-width:1000px) and (min-height:700px){
-  .terminal{height:100%;min-height:0;padding:12px 18px 10px;display:flex;flex-direction:column}
-  .masthead{flex:none;margin-bottom:10px}.logo{width:34px;height:34px;font-size:21px}h1{font-size:19px;margin-top:3px}
-  .hero{flex:none;grid-template-columns:1.18fr 1fr;margin-bottom:10px}
-  .hero-main,.breadth{padding:13px 18px}.breadth{border-left:1px solid var(--line);border-top:0}
-  .heading h2{font-size:15px;margin-top:4px}.heading h2 small{display:inline;margin:0 0 0 9px}
-  .indices{margin-top:12px}.primary-index strong{font-size:32px;margin:7px 0 4px}.minor-index strong{font-size:18px;margin:7px 0 4px}
-  .breadth-visual{margin:0}.donut,.donut :deep(.chart){width:92px;height:92px}.donut-center strong{font-size:17px}
-  .breadth-visual .breadth-values{display:flex;gap:22px}.breadth-values strong{font-size:20px}
-  .turnover{margin-top:4px;padding-top:8px}.turnover strong{font-size:19px}
-  .dashboard{flex:1;min-height:0;grid-template-columns:1.3fr 1fr;grid-template-rows:repeat(2,minmax(0,1fr));gap:10px}
-  .dashboard>.panel{min-height:0;padding:12px 16px;display:flex;flex-direction:column}
-  .dashboard :deep(.chart){flex:1;min-height:0;height:0;margin-top:4px}.chart-empty{flex:1;height:auto}
-  .note{margin-top:4px;padding-top:6px;font-size:10px}
-  .sentiment{margin:10px 0}.sentiment strong{font-size:30px;margin:5px 0}
-  .seal{padding:8px 12px}.seal .bar-track{margin-top:5px}.seal .scale{margin-top:4px}
-  .height-row{margin-top:8px}.detail{margin-top:auto;padding-top:7px}
-  .global-head{padding:9px 0 6px}.global-row{padding:5px 0}.global-row small{margin-top:2px}
-  footer{flex:none;margin-top:7px}
+@media(max-width:1100px){.hero{grid-template-columns:1fr}.breadth{border-left:0;border-top:1px solid var(--line)}.dashboard{grid-template-columns:1fr 1fr}.heading h2 small{display:block;margin:6px 0 0}}@media(max-width:760px){.terminal{padding:20px 14px}.masthead{align-items:flex-start;gap:16px;flex-direction:column}.actions{width:100%;justify-content:space-between}.dashboard{grid-template-columns:1fr}.hero-main,.breadth,.dashboard>.panel{padding:21px 18px}.primary-index strong{font-size:34px}.minor-index{gap:8px}.minor-index>div{padding-left:10px}.minor-index strong{font-size:17px}.two-cols{gap:14px}.two-cols>div+div{padding-left:14px}.timestamp{font-size:10px}footer{flex-direction:column}}@media(max-width:400px){.turnover-groups{grid-template-columns:minmax(0,1fr)}h1 small{display:none}.indices{grid-template-columns:1fr}.minor-index>div:first-child{border:0;padding-left:0}.global-head,.global-row{grid-template-columns:1fr 75px 58px}}
+/* 桌面将概览与六个信息区并排，长排行独立滚动，避免数据量撑高整个看板。 */
+.terminal{min-width:0;padding:14px 18px 12px;font-variant-numeric:tabular-nums}
+.masthead{margin-bottom:12px}.actions button{min-height:44px}
+.hero{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) minmax(0,1.15fr) minmax(0,.9fr);margin-bottom:10px}
+.hero-main,.breadth,.hero>.commodity-panel{min-width:0;padding:10px 14px}
+.hero>.commodity-panel{border:0;border-left:1px solid var(--line);background:transparent}
+.hero>.commodity-panel:before{display:none}
+.heading{flex-wrap:wrap;gap:6px}.heading h2{font-size:15px;margin-top:4px}
+.heading h2 small{display:block;margin:4px 0 0;line-height:1.4}
+.eyebrow{font-size:9px;letter-spacing:1.4px}.timestamp{font-size:10px}
+.indices{margin-top:12px;gap:12px}.primary-index strong{font-size:32px;margin:7px 0 4px}
+.minor-index b{font:600 14px Georgia,serif}.minor-index{gap:10px}.minor-index>div{padding-left:10px}.minor-index strong{font-size:19px;margin:8px 0 4px}
+/* 量能独立横排，避免叠在指数下方抬高整个顶部区域。 */
+.volume-pulse{min-width:0;border-left:1px solid var(--line);padding:10px 14px;display:flex;flex-direction:column;justify-content:center;gap:8px}
+.volume-pulse .volume-total{font:600 27px Georgia,serif;color:#e8eee9}
+.volume-pulse .volume-total small{font:11px sans-serif;color:#a1b5ae}
+.volume-pulse b{font-size:13px}.volume-pulse b small{font-size:11px}
+.volume-pulse>span{color:#91a6a0;font-size:10px;line-height:1.5}
+.breadth-visual{gap:12px;margin:4px 0}.donut{width:100px;height:100px}.donut :deep(.chart){height:100px}
+.donut-center strong{font-size:20px}.breadth-visual .breadth-values{gap:10px}.breadth-values strong{font-size:24px}
+.commodity-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.commodity-grid strong{display:block;font:600 25px Georgia,serif;margin-top:10px}
+.dashboard{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:stretch}
+.dashboard>.panel{min-width:0;padding:12px 14px;display:flex;flex-direction:column}
+.turnover-panel{grid-column:1;grid-row:1}.sector-panel{grid-column:2;grid-row:1}.sentiment-panel{grid-column:3;grid-row:1}
+.stock-panel{grid-column:1;grid-row:2}.funds-panel{grid-column:2;grid-row:2}.global-panel{grid-column:3;grid-row:2}
+.stock-table{overflow:auto;min-height:0;max-height:240px;scrollbar-width:thin;scrollbar-color:#516461 #102124}
+/* 题材与资金按行优先双列展开，利用卡片宽度展示全部数据，不受股票表格的限高影响。 */
+.compact-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:16px;align-content:start;overflow:visible;max-height:none}
+.compact-row{min-width:0;align-items:center}.compact-row span{white-space:normal;overflow:visible;overflow-wrap:anywhere}
+.capital-groups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:10px;flex:1;align-content:start}
+.capital-group{min-width:0}.capital-group h3{margin:0 0 5px;font-size:12px}.capital-group .empty{padding:12px 0}
+.sector-groups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:10px;flex:1;align-content:start}
+.sector-group{min-width:0}.sector-group h3{display:flex;justify-content:space-between;gap:6px;margin:0 0 5px;font-size:11px;color:#dfb474}
+.sector-group h3 small{font-size:10px;font-weight:400;color:#91a6a0}
+/* 固定数值列宽，避免涨幅位数变化挤动家数，便于逐行比较。 */
+.sector-row{display:grid;grid-template-columns:minmax(0,1fr) 32px 56px;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid #243a39;font-size:12px}
+.sector-name{overflow-wrap:anywhere}.sector-name i{font:10px Georgia,serif;color:#91a6a0;margin-right:5px}
+.sector-count{font-size:10px;color:#a1b3ae;white-space:nowrap}.sector-row b{font:600 12px Georgia,serif;white-space:nowrap}
+.sector-count,.sector-row b{text-align:right;font-variant-numeric:tabular-nums}
+/* 两张五行表横排，取消该模块内部限高，完整保留每只股票的行业与行情。 */
+.turnover-groups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:10px}
+.turnover-group{min-width:0}.turnover-group h3{margin:0;font-size:11px;color:#dfb474}
+.turnover-groups .stock-table{max-height:none;overflow:visible}
+.turnover-groups .stock-table th:first-child{width:42%}
+.turnover-groups .stock-table th,.turnover-groups .stock-table td{padding:6px 2px;font-size:11px}
+.turnover-groups .rank-no{margin-right:4px}
+.stock-table{margin-top:8px}.stock-table table{table-layout:fixed;white-space:normal}
+.stock-table td{overflow-wrap:anywhere}.stock-table td:first-child small{max-width:none}
+.stock-table th{position:sticky;top:0;background:#102124;z-index:1}
+.stock-table th,.stock-table td{padding:5px 3px}.stock-table th:first-child{width:30%}
+.compact-row{padding:5px 0}.chart-empty{height:auto;min-height:100px;flex:1}
+.note{margin-top:10px;padding-top:7px;line-height:1.4}
+.sentiment{margin:14px 0 12px}.sentiment strong{font-size:30px;margin:7px 0 4px}
+.seal{padding:10px 12px}.scale{margin-top:5px}.height-row{margin-top:10px}
+.detail{margin-top:auto;padding-top:8px;min-height:36px;align-items:center}
+.emotion-extra{margin-bottom:8px}.global-head{padding:10px 0 7px}
+.global-row{padding:7px 0}.global-row small{margin-top:3px}
+.global-groups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.global-group{min-width:0}
+.global-groups .global-head,.global-groups .global-row{grid-template-columns:minmax(0,1fr) 72px 54px;gap:6px}
+.global-groups .global-row>div{min-width:0;overflow-wrap:anywhere}
+.global-groups .global-row>span,.global-groups .global-row>b{font-size:12px;white-space:nowrap;font-variant-numeric:tabular-nums}
+@media(max-width:400px){.global-groups{grid-template-columns:minmax(0,1fr)}}
+footer{margin-top:10px}.notice{margin-bottom:10px;padding:8px}
+@media(min-width:1200px) and (max-height:850px){
+  .stock-table{max-height:180px}
+  .hero-main,.breadth,.hero>.commodity-panel{padding:10px 14px}
+  .dashboard>.panel{padding:10px 12px}.stock-table th,.stock-table td{padding:4px 3px}
 }
-@media(min-width:1300px) and (min-height:700px){
-  .terminal{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,3fr);grid-template-rows:auto auto minmax(0,0.85fr) minmax(0,1.15fr) auto;gap:10px}
-  .masthead{grid-column:1 / -1;margin:0}.notice{grid-column:1 / -1;margin:0}.dashboard{display:contents}
-  .hero{grid-column:1;grid-row:3;display:flex;flex-direction:column;margin:0;min-height:0;overflow:auto}
-  .hero-main,.breadth{padding:12px}.breadth{border-left:0;border-top:1px solid var(--line)}
-  .hero .heading,.global-panel .heading,.sector-panel .heading,.funds-panel .heading{flex-wrap:wrap;gap:4px}
-  .hero .indices{grid-template-columns:1fr;gap:8px;margin-top:10px}
-  .hero .primary-index strong{font-size:26px}.hero .minor-index>div:first-child{padding-left:0;border:0}
-  .breadth-visual{gap:8px}.donut,.donut :deep(.chart){width:64px;height:64px}.donut-center strong{font-size:13px}.donut-center span{font-size:9px}
-  .breadth-visual .breadth-values{gap:10px}.breadth-values strong{font-size:16px}.turnover strong{font-size:16px}
-  .global-panel{grid-column:1;grid-row:4}.sector-panel{grid-column:2;grid-row:3}.funds-panel{grid-column:2;grid-row:4}
-  .sentiment-panel{grid-column:3;grid-row:3}.stock-panel{grid-column:3;grid-row:4}
-  .dashboard>.panel{overflow:hidden}.stock-panel{min-width:0}
-  .stock-table{margin-top:5px}.stock-table th,.stock-table td{padding:6px 8px}.stock-table td:first-child small{max-width:none}
-  .risk-line{padding-top:5px}.compact-list{margin-top:5px}.compact-row{padding:4px 0}
-  .sentiment-panel .sentiment{justify-content:flex-start}.sentiment-panel .sentiment>div{max-width:180px}
-  .sentiment-panel .seal{max-width:480px}.sentiment-panel .height-row,.sentiment-panel .emotion-extra{max-width:480px}
-  footer{grid-column:1 / -1;grid-row:5;margin:0}
+@media(min-width:761px) and (max-width:1199px){
+  .hero{grid-template-columns:1.4fr 1fr}
+  .breadth{border-top:0;border-left:1px solid var(--line)}
+  .hero>.commodity-panel{border-top:1px solid var(--line)}
+  .volume-pulse{border-left:0;border-top:1px solid var(--line)}
+  .commodity-grid{margin-top:10px}.commodity-grid strong{font-size:21px;margin-top:5px}
+  .dashboard{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .dashboard>.panel{grid-column:auto;grid-row:auto}
 }
-@media(min-width:1000px) and (max-width:1299px) and (min-height:700px){.terminal{height:auto;min-height:100%}.dashboard{flex:none;grid-template-rows:none}.dashboard>.panel{min-height:230px}.stock-table{max-height:300px}}
+@media(max-width:760px){
+  /* 小屏恢复自然高度，避免为了同屏压缩表格可读性与触控空间。 */
+  .terminal{padding:14px 10px}.hero{grid-template-columns:minmax(0,1fr)}
+  .breadth,.hero>.commodity-panel,.volume-pulse{border-left:0;border-top:1px solid var(--line)}
+  .dashboard{grid-template-columns:minmax(0,1fr)}.dashboard>.panel{grid-column:auto;grid-row:auto}
+  .stock-table,.compact-list{max-height:none;overflow:visible}
+  .compact-list{grid-template-columns:minmax(0,1fr)}
+  .stock-table th{position:static}.stock-table th,.stock-table td{padding:9px 3px}
+  .commodity-grid{margin-top:12px}.masthead{gap:12px}.actions{gap:10px}
+  .live{font-size:10px}.global-head,.global-row{grid-template-columns:minmax(0,1fr) 85px 65px}
+}
 </style>

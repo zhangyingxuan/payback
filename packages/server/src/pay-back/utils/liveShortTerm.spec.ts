@@ -16,4 +16,18 @@ describe('实时短线行情转换', () => {
   it('空涨停池不虚构市场高度', () => {
     expect(buildLiveShortTerm([], [], [])).toMatchObject({ marketHeight: null, sealingRate: null, downLimitQuantity: null });
   });
+  it('保留换手率并将封单元转换为亿元，缺失与异常值不伪装成零', () => {
+    const stocks = [
+      { code: 'a', name: '甲', turnover_rate: 3.8896, order_amount: 301074020 },
+      { code: 'b', name: '乙', turnover_rate: 0, order_amount: 0 },
+      { code: 'c', name: '丙' },
+      { code: 'd', name: '丁', turnover_rate: '', order_amount: 'invalid' },
+      { code: 'e', name: '戊', turnover_rate: '12.34', order_amount: '50000000' },
+      { code: 'f', name: '己', turnover_rate: -1, order_amount: -10 },
+    ];
+    const items = JSON.parse(buildLiveShortTerm(stocks, [], []).evenBoardData)['1'];
+    expect(items.map(({ turnoverRate, closingFunds }) => [turnoverRate, closingFunds])).toEqual([
+      [3.8896, 3.0107402], [0, 0], [null, null], [null, null], [12.34, 0.5], [null, null],
+    ]);
+  });
 });

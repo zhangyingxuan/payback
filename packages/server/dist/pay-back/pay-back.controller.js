@@ -65,7 +65,7 @@ let PayBackController = PayBackController_1 = class PayBackController {
         this.logger = new common_1.Logger(PayBackController_1.name);
     }
     async liveMarket(section) {
-        if (!['market', 'funds', 'shortTerm', 'global'].includes(section))
+        if (!['market', 'funds', 'shortTerm', 'global', 'turnover', 'stocks', 'commodities'].includes(section))
             throw new common_1.BadRequestException('无效的行情模块');
         return { code: 0, data: await this.liveMarketService.get(section) };
     }

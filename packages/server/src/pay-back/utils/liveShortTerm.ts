@@ -2,6 +2,8 @@ interface PoolStock {
   code: string;
   name: string;
   is_again_limit?: number;
+  turnover_rate?: number | string | null;
+  order_amount?: number | string | null;
 }
 interface BoardGroup {
   height: number;
@@ -15,6 +17,13 @@ interface BlockStock {
 interface Block {
   name: string;
   stock_list?: BlockStock[];
+}
+
+// 上游数值可能为空或字符串，不能把缺失字段和异常负值转换成有效的零。
+function nonNegativeNumber(value: number | string | null | undefined): number | null {
+  if (value == null || (typeof value === 'string' && !value.trim())) return null;
+  const number = Number(value);
+  return Number.isFinite(number) && number >= 0 ? number : null;
 }
 
 // 涨停池是总数的依据，题材数据仅补充个股信息，不能用题材样本推算全市场数据。
@@ -43,7 +52,11 @@ export function buildLiveShortTerm(
       timeZone: 'Asia/Shanghai', hour12: false,
     }) : undefined;
     const group = (evenBoardData[level] ||= []) as unknown[];
-    group.push({ code: stock.code, name: stock.name, plateLevel2: detail?.blockName, reason: detail?.reason_type, dailyTime });
+    // 换手率已是百分数；封单原始单位为元，统一转为现有前端约定的亿元。
+    const orderAmount = nonNegativeNumber(stock.order_amount);
+    group.push({ code: stock.code, name: stock.name, plateLevel2: detail?.blockName, reason: detail?.reason_type, dailyTime,
+      turnoverRate: nonNegativeNumber(stock.turnover_rate), closingFunds: orderAmount == null ? null : orderAmount / 1e8,
+    });
   });
   const heights = stocks.map(stock => levels.get(stock.code) || 1);
   return {

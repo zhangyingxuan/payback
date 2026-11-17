@@ -21,6 +21,18 @@ function setup(initial = [], fetchDetail = async id => ({ id, messages: [{ role:
   return { store: module.exports.useChatStore(), storage };
 }
 
+test('历史消息保留服务端毫秒时间，旧消息不伪造时间', async () => {
+  const { store } = setup([], async id => ({ id, messages: [
+    { role: 'user', content: '问题', createdAt: 1794826801000 },
+    { role: 'assistant', content: '答案', createdAt: 1794826805000 },
+    { role: 'user', content: '旧问题' },
+  ] }));
+  store.mergeSummaries([{ id: 'a', title: 'A', lastTurnId: '1', snippet: '' }]);
+  await store.loadMessages(store.conversations[0].id);
+  assert.deepEqual(store.conversations[0].messages.map(message => message.createdAt),
+    [1794826801000, 1794826805000, 0]);
+});
+
 test('摘要去重且不加载正文，BIGINT 排序不丢精度', () => {
   const { store } = setup();
   store.mergeSummaries([
