@@ -91,14 +91,14 @@ interface IwencaiStockResult {
  * @param isPlate
  * @returns
  */
-export async function fetchAllStocksByIwencai(question, limit = null) {
+export async function fetchAllStocksByIwencai(question, limit = null, requireStockTable = false) {
   // 设置强制 终止死循环次数，最多20页，意味着 2000条数据 2024-02-20 15:08:36
   let pageNum = 1;
   const maxRequestTimes = 20;
   let data;
 
   let result = await fetchIwencai(question, limit ? limit : maxPageSize, false);
-  const iwencaiStockResult: IwencaiStockResult = getStocksDataByIwencai(result);
+  const iwencaiStockResult: IwencaiStockResult = getStocksDataByIwencai(result, requireStockTable);
   // 需要分页：还有多余数据未查出，且需要查更多
   if (iwencaiStockResult.length > iwencaiStockResult.data.length && !limit) {
     while (true) {

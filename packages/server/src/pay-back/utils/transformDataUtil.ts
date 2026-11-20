@@ -295,39 +295,28 @@ export function transformNewStockData(stocks, todayDateStr): Array<NewStockDto> 
   return newStockDtos;
 }
 /**
- * 封单量 文本转手数，支持 手/万手/亿手，用于比较大小
- */
-function parseSealVolume(value): number {
-  if (value === undefined || value === null) return 0;
-  const str = String(value);
-  const num = parseFloat(str);
-  if (isNaN(num)) return 0;
-  const unit = str.replace(/[0-9.,\-\s]/g, '');
-  if (unit.includes('亿')) return num * 1e8;
-  if (unit.includes('万')) return num * 1e4;
-  return num;
-}
-
-/**
  * 转换早盘 集合竞价涨停 数据（按封单量降序）
  * @param stocks 问财返回的股票列表
- * @param todayDateStr 交易日，用于读取日期后缀字段（如 涨停封单量[20260928]）
+ * @param todayDateStr 交易日，用于读取当日竞价快照字段
  */
 export function transformMorningAuctionLimitUpData(stocks, todayDateStr) {
   if (!stocks) return [];
   const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
   const list = stocks.map(item => {
     const bid = parseFloat(String(item[`竞价涨幅[${currentDate}]`] ?? ''));
+    // 问财返回股数和元值，负值表示未匹配卖盘，买单封单记为零。
+    const quantity = Number(item[`竞价未匹配量[${currentDate}]`]);
+    const rawAmount = item[`竞价未匹配金额[${currentDate}]`];
+    const amount = rawAmount == null || String(rawAmount).trim() === '' ? NaN : Number(rawAmount);
     return {
       name: item['股票简称'],
-      code: item['股票代码'],
+      code: item['股票代码'] || item.code,
       plateLevel2: item['所属同花顺行业'],
       // 竞价涨幅（%，保留2位）
       bidIncreaseT: isNaN(bid) ? 0 : +bid.toFixed(2),
-      // 封单量原始值（含单位）
-      sealVolume: item[`涨停封单量[${currentDate}]`] ?? '-',
-      // 排序用封单手数
-      sealQuantity: parseSealVolume(item[`涨停封单量[${currentDate}]`]),
+      // 金额缺失时保留空值，推送端可区分缺数和零封单。
+      sealQuantity: Number.isFinite(quantity) ? Math.max(quantity, 0) : 0,
+      sealAmount: Number.isFinite(amount) ? Math.max(amount, 0) : null,
       circulationValue: item[`a股市值(不含限售股)[${currentDate}]`],
     };
   });

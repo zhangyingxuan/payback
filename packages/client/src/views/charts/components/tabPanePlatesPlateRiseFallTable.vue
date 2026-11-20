@@ -24,7 +24,8 @@
             <span v-if="plate.num" class="zise"> &nbsp;{{ plate.num }} 家</span>
           </div>
           <div :class="{ flexBetween: plate.num }">
-            <span v-if="plate.quoteChange > 0" class="red">
+            <span v-if="plate.quoteChange == null">—</span>
+            <span v-else-if="plate.quoteChange > 0" class="red">
               +{{ plate.quoteChange }}%
             </span>
             <span v-else class="green"> {{ plate.quoteChange }}%</span>

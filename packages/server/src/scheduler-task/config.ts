@@ -127,11 +127,11 @@ const schedulerTaskList = [
   // 昨日涨停竞价数据 === end
   // 新股&强势股 === start
   {
-    // 早盘 9:25 采集新股 + 集合竞价涨停（按封单量排序）并推送飞书卡片
+    // 避开 9:25:00 撮合结束的瞬间，留出一分钟供问财同步竞价结果。
     taskName: 'autoPushMorningLimitUpMessage',
     service: 'specialStockService',
     func: 'crawlMorningLimitUpData',
-    cron: '00 25 9 * * 1-5',
+    cron: '00 26 9 * * 1-5',
   },
   {
     // 9:25 集合竞价结束后，尽早获取今日上市新股并加入自选

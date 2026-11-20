@@ -38,14 +38,14 @@ let PlateService = PlateService_1 = class PlateService {
                 .orWhere('plate_data.tradeDate IS NULL AND DATE(plate_data.createTime) = :tradeDate', {
                 tradeDate: todayDateStr,
             })
+                .orderBy('plate_data.tradeDate', 'DESC')
+                .addOrderBy('plate_data.id', 'DESC')
                 .getOne();
-            if (todayDataFromDB) {
-                this.logger.log('crawlPlateData 更新数据');
-                this.plateDataRp.update(todayDataFromDB.id, plateData);
+            if (todayDataFromDB && !todayDataFromDB.tradeDate) {
+                await this.plateDataRp.save(Object.assign(Object.assign({}, plateData), { id: todayDataFromDB.id }));
             }
             else {
-                this.logger.log('crawlPlateData 新增数据');
-                this.plateDataRp.save(plateData);
+                await this.plateDataRp.upsert(plateData, ['tradeDate']);
             }
             this.logger.debug('crawlPlateData is success!');
         }

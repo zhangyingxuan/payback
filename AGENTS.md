@@ -6,3 +6,7 @@
 
 - 人类入口：[docs/README.md](docs/README.md)
 - 维护制度：[docs/维护制度.md](docs/维护制度.md)
+
+## 发布约束
+
+本项目不走 aiops-cli 或 /mcp 发布流程。处理本项目的发布任务时，禁止调用 aiops-cli 或 /mcp 发布。

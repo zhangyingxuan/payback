@@ -139,8 +139,13 @@ export class PushService {
     const todayDateStr = dayjs().format('YYYY-MM-DD');
     const { newStocks = [], auctionLimitUp = [] } = payload || {};
 
-    // 封单量默认单位为亿（原始单位为手）
-    const formatSeal = (item) => `${((item.sealQuantity || 0) / 1e8).toFixed(2)}亿`;
+    // 小额封单用万元或元显示，避免按亿元四舍五入后显示为零。
+    const formatSeal = ({ sealAmount }) => {
+      if (!Number.isFinite(sealAmount)) return '暂无';
+      if (sealAmount >= 1e8) return `${(sealAmount / 1e8).toFixed(2)}亿元`;
+      if (sealAmount >= 1e4) return `${(sealAmount / 1e4).toFixed(2)}万元`;
+      return `${sealAmount}元`;
+    };
     // 6位编码（去掉交易所后缀）
     const code6 = (item) => String(item.code || '').split('.')[0];
     // 二级板块（取第二个层级，如 传媒-文化传媒-出版 → 文化传媒）
@@ -149,7 +154,7 @@ export class PushService {
     // 个股行：名称(带链接) + 6位编码 + 封单 + 二级板块，不展示涨幅
     const stockLine = (item, index, showSeal) => {
       const code = code6(item);
-      const seal = showSeal ? ` ｜ 封单 <font color="red">${formatSeal(item)}</font>` : '';
+      const seal = showSeal ? ` ｜ 封单金额 <font color="red">${formatSeal(item)}</font>` : '';
       return `${index + 1}. [${item.name}](${thsStockBaseUrl + code})(${code})${seal} | ${plate2(item)}`;
     };
 
@@ -198,7 +203,7 @@ export class PushService {
     if (auctionLimitUp.length > 0) {
       auctionLimitUp.slice(0, 20).forEach((item, index) => {
         content.push(
-          `${index + 1}. ${item.name}(${code6(item)}) 封单 ${formatSeal(item)} | ${plate2(item)}\n`,
+          `${index + 1}. ${item.name}(${code6(item)}) 封单金额 ${formatSeal(item)} | ${plate2(item)}\n`,
         );
       });
     } else {

@@ -238,8 +238,9 @@ function updateDataClass(plates: any[], isHangye: boolean) {
  */
 async function updateData() {
   data.loading = true;
-  const todayPlatesData: any = await crawlPlateData();
-  data.loading = false;
+  const todayPlatesData: any = await crawlPlateData().finally(() => {
+    data.loading = false;
+  });
   const todayDate = dayjs(todayPlatesData.createTime).format('YYYY/MM/DD');
   // 按时间找到 今天的行业 数据，并替换为最新的
   const latestDataIndex = data.plateOrderByDailyLimit.findIndex(

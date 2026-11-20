@@ -156,14 +156,16 @@ export class SpecialStockService {
   }
 
   /**
-   * 早盘 9:25 采集：今日上市新股 + 集合竞价涨停（按封单量降序）
+   * 早盘采集：今日上市新股 + 集合竞价涨停（按封单量降序）
    * 供飞书卡片推送使用
    */
   async crawlMorningLimitUpData() {
     const todayDateStr = toTradeDate();
-    const [newStocksRs, auctionLimitUpRs] = await Promise.all([
+    // 使用交易日的竞价快照，避免连续竞价开始后取到实时封板数据。
+    const auctionQuestion = params.auctionLimitUpBySealVolume.replace(/\$\{date\}/g, todayDateStr.replace(/-/g, ''));
+    const [auctionLimitUpRs, newStocksRs] = await Promise.all([
+      fetchAllStocksByIwencai(auctionQuestion, null, true),
       fetchAllStocksByIwencai(params.chooseStockNewStock),
-      fetchAllStocksByIwencai(params.auctionLimitUpBySealVolume),
     ]);
 
     const newStocks = transformNewStockData(newStocksRs.data, todayDateStr);

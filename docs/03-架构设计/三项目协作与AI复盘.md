@@ -1,6 +1,6 @@
 # 三项目协作与 AI 复盘现状
 
-> 最后验证：2026-11-12
+> 最后验证：2026-11-19
 
 本文依据工作区三个项目的源码与配置整理，不代表当前线上部署状态。
 
@@ -43,6 +43,8 @@
 工具定义及参数以 `payback-mcp/src/payback_mcp/server.py` 为准。普通相对日期查询可能回退到已有交易日，应引用返回的实际数据日期；每日全景对指定日期和跨表日期有更严格的检查。历史数据缺口、统计样本及供应商行情时效会影响结论，具体口径见 `payback-mcp/README.md`。
 
 ## 配置、验证和修改入口
+
+Agent 可选研究工具位于 `payback-agent/src/payback_agent/research*.py` 与 `tools_source.py`，不属于行情 MCP 注册工具。显式启用后增加 `research_sources/start/status/result/cancel/resume/export_tool`；独立有界队列执行搜索、公开读取、只读 API 和可选 Python 容器，默认关闭。研究 runtime 跨 MCP 重连保留任务，重启后可显式恢复、不自动重发。A 股已内置 aiwencai/query，按后端原有协议与 createV 实现；首屏已验证，分页存在上游业务错误，不能声称名单完整或独立历史统计已完成。详见[爱问财接入](../04-技术方案/Agent爱问财接入.md)与[续批实现](../04-技术方案/Agent隔离计算与任务恢复.md)。
 
 - Agent 的 gateway 配置为 `AGENT_LLM_BASE_URL`、`AGENT_LLM_API_KEY`、`AGENT_LLM_MODEL`；`AGENT_LLM_BACKEND` 可选 gateway 或 codex。密钥只放运行环境，不写入文档和日志。
 - MCP 数据库配置使用 `AGENT_MYSQL_HOST`、`AGENT_MYSQL_PORT`、`AGENT_MYSQL_USER`、`AGENT_MYSQL_PASSWORD`、`AGENT_MYSQL_NAME`；外部数据供应商配置和限制见 MCP README。

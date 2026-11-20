@@ -33,22 +33,21 @@ export class PlateService {
       plateData.tradeDate = todayDateStr;
       // console.log(plateData);
 
-      // 如果存在数据，则返回已有该数据
+      // 兼容尚未补齐交易日期的历史行，避免同一天出现两份快照。
       const todayDataFromDB = await this.plateDataRp
         .createQueryBuilder('plate_data')
         .where('plate_data.tradeDate = :tradeDate', { tradeDate: todayDateStr })
         .orWhere('plate_data.tradeDate IS NULL AND DATE(plate_data.createTime) = :tradeDate', {
           tradeDate: todayDateStr,
         })
+        .orderBy('plate_data.tradeDate', 'DESC')
+        .addOrderBy('plate_data.id', 'DESC')
         .getOne();
-      if (todayDataFromDB) {
-        this.logger.log('crawlPlateData 更新数据');
-        // 优化 api 响应，去除 await 先返回再存储
-        this.plateDataRp.update(todayDataFromDB.id, plateData);
+      if (todayDataFromDB && !todayDataFromDB.tradeDate) {
+        await this.plateDataRp.save({ ...plateData, id: todayDataFromDB.id });
       } else {
-        this.logger.log('crawlPlateData 新增数据');
-        // 优化 api 响应，去除 await 先返回再存储
-        this.plateDataRp.save(plateData);
+        // 利用交易日期唯一索引合并并发写入，写入完成后再返回榜单。
+        await this.plateDataRp.upsert(plateData, ['tradeDate']);
       }
 
       this.logger.debug('crawlPlateData is success!');

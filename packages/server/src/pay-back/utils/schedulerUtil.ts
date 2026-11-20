@@ -9,7 +9,7 @@ export const executeTaskFunc = async (self, task, retryTime) => {
       return;
     }
 
-    // 早盘 9:25 推送：采集新股 + 集合竞价涨停（按封单量排序），发飞书卡片
+    // 早盘推送：采集新股和集合竞价涨停，按竞价封单量排序。
     if (task.taskName === 'autoPushMorningLimitUpMessage') {
       const result = await self[task.service][task.func]();
       self.pushServer.emit('pushMorningMessage', result);
@@ -20,8 +20,8 @@ export const executeTaskFunc = async (self, task, retryTime) => {
   } catch (e) {
     // 报错后 通知企微
     self.qyWechatNotice.notice(task.service, `[${task.func}]出错了：${e}`);
-    // 双图的数据或通道可能尚未就绪，间隔重试并等待完成，防止调度锁提前释放。
-    if (task.taskName === 'autoPushReviewCharts' && retryTime > 1) {
+    // 上游数据或通道可能尚未就绪，间隔重试时保持调度锁。
+    if (['autoPushReviewCharts', 'autoPushMorningLimitUpMessage'].includes(task.taskName) && retryTime > 1) {
       await new Promise(resolve => setTimeout(resolve, 30000));
     }
     return executeTaskFunc(self, task, --retryTime);
