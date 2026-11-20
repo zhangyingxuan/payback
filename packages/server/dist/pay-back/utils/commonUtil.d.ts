@@ -3,7 +3,7 @@ export declare const ignoreGainianPlateStr: string;
 export declare function toFixed(num: any, floatLen?: number): number;
 export declare function fundsToFixed(num: any, floatLen?: number): number;
 export declare function getIwencaiData(responseJson: any): any[];
-export declare function getStocksDataByIwencai(responseJson: any): {
+export declare function getStocksDataByIwencai(responseJson: any, requireStockTable?: boolean): {
     data: any[];
     length: number;
     condition: any;

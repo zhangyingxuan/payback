@@ -124,9 +124,10 @@ let SpecialStockService = SpecialStockService_1 = class SpecialStockService {
     }
     async crawlMorningLimitUpData() {
         const todayDateStr = (0, tradeDateUtil_1.toTradeDate)();
-        const [newStocksRs, auctionLimitUpRs] = await Promise.all([
+        const auctionQuestion = config_1.params.auctionLimitUpBySealVolume.replace(/\$\{date\}/g, todayDateStr.replace(/-/g, ''));
+        const [auctionLimitUpRs, newStocksRs] = await Promise.all([
+            (0, fetchUtil_1.fetchAllStocksByIwencai)(auctionQuestion, null, true),
             (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.chooseStockNewStock),
-            (0, fetchUtil_1.fetchAllStocksByIwencai)(config_1.params.auctionLimitUpBySealVolume),
         ]);
         const newStocks = (0, transformDataUtil_1.transformNewStockData)(newStocksRs.data, todayDateStr);
         const auctionLimitUp = (0, transformDataUtil_1.transformMorningAuctionLimitUpData)(auctionLimitUpRs.data, todayDateStr);

@@ -6,7 +6,7 @@ interface IwencaiStockResult {
     compId: number;
     uuid: number;
 }
-export declare function fetchAllStocksByIwencai(question: any, limit?: any): Promise<IwencaiStockResult>;
+export declare function fetchAllStocksByIwencai(question: any, limit?: any, requireStockTable?: boolean): Promise<IwencaiStockResult>;
 export declare function fetchIwencai(question: any, pageSize?: number, isPlate?: boolean): Promise<any>;
 export declare function fetchStockPagingDataList(question: any, pageSize: number, pageNum: number, condition: any, compId: any, uuid: any): Promise<any>;
 export declare function fetchMarketData(): Promise<any>;

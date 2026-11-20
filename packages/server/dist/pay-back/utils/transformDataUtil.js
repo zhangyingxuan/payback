@@ -194,34 +194,23 @@ function transformNewStockData(stocks, todayDateStr) {
     return newStockDtos;
 }
 exports.transformNewStockData = transformNewStockData;
-function parseSealVolume(value) {
-    if (value === undefined || value === null)
-        return 0;
-    const str = String(value);
-    const num = parseFloat(str);
-    if (isNaN(num))
-        return 0;
-    const unit = str.replace(/[0-9.,\-\s]/g, '');
-    if (unit.includes('亿'))
-        return num * 1e8;
-    if (unit.includes('万'))
-        return num * 1e4;
-    return num;
-}
 function transformMorningAuctionLimitUpData(stocks, todayDateStr) {
     if (!stocks)
         return [];
     const currentDate = dayjs(todayDateStr).format('YYYYMMDD');
     const list = stocks.map(item => {
-        var _a, _b;
+        var _a;
         const bid = parseFloat(String((_a = item[`竞价涨幅[${currentDate}]`]) !== null && _a !== void 0 ? _a : ''));
+        const quantity = Number(item[`竞价未匹配量[${currentDate}]`]);
+        const rawAmount = item[`竞价未匹配金额[${currentDate}]`];
+        const amount = rawAmount == null || String(rawAmount).trim() === '' ? NaN : Number(rawAmount);
         return {
             name: item['股票简称'],
-            code: item['股票代码'],
+            code: item['股票代码'] || item.code,
             plateLevel2: item['所属同花顺行业'],
             bidIncreaseT: isNaN(bid) ? 0 : +bid.toFixed(2),
-            sealVolume: (_b = item[`涨停封单量[${currentDate}]`]) !== null && _b !== void 0 ? _b : '-',
-            sealQuantity: parseSealVolume(item[`涨停封单量[${currentDate}]`]),
+            sealQuantity: Number.isFinite(quantity) ? Math.max(quantity, 0) : 0,
+            sealAmount: Number.isFinite(amount) ? Math.max(amount, 0) : null,
             circulationValue: item[`a股市值(不含限售股)[${currentDate}]`],
         };
     });

@@ -51,12 +51,12 @@ async function fetchIwencaiApi(question, pageSize = 5) {
     return (0, commonUtil_1.getIwencaiData)(result);
 }
 exports.fetchIwencaiApi = fetchIwencaiApi;
-async function fetchAllStocksByIwencai(question, limit = null) {
+async function fetchAllStocksByIwencai(question, limit = null, requireStockTable = false) {
     let pageNum = 1;
     const maxRequestTimes = 20;
     let data;
     let result = await fetchIwencai(question, limit ? limit : maxPageSize, false);
-    const iwencaiStockResult = (0, commonUtil_1.getStocksDataByIwencai)(result);
+    const iwencaiStockResult = (0, commonUtil_1.getStocksDataByIwencai)(result, requireStockTable);
     if (iwencaiStockResult.length > iwencaiStockResult.data.length && !limit) {
         while (true) {
             result = await fetchStockPagingDataList(question, maxPageSize, ++pageNum, iwencaiStockResult.condition, iwencaiStockResult.compId, iwencaiStockResult.uuid);

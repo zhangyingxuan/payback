@@ -106,7 +106,7 @@ const schedulerTaskList = [
         taskName: 'autoPushMorningLimitUpMessage',
         service: 'specialStockService',
         func: 'crawlMorningLimitUpData',
-        cron: '00 25 9 * * 1-5',
+        cron: '00 26 9 * * 1-5',
     },
     {
         taskName: 'autoCrawlSpecialStockDataOpening',

@@ -39,21 +39,30 @@ function getIwencaiData(responseJson) {
     return data;
 }
 exports.getIwencaiData = getIwencaiData;
-function getStocksDataByIwencai(responseJson) {
+function getStocksDataByIwencai(responseJson, requireStockTable = false) {
     let data = [];
     let length = 0;
     let extra, condition, compId, uuid;
     try {
-        const component = responseJson.data.answer[0].txt[0].content.components[0];
-        const result = component.data;
-        data = result.datas;
-        extra = result.meta.extra;
-        length = extra.row_count;
-        condition = extra.condition;
-        compId = component.cid;
-        uuid = component.puuid;
+        const content = responseJson.data.answer[0].txt[0].content;
+        if (content !== '没有找到符合条件的结果！' || !requireStockTable) {
+            const component = content.components[0];
+            const result = component.data;
+            data = result.datas;
+            extra = result.meta.extra;
+            length = extra.row_count;
+            if (requireStockTable && (!Array.isArray(data) || !Number.isInteger(length) || length < data.length ||
+                (length > 0 && data.length === 0))) {
+                throw new Error('问财个股列表或结果数量异常');
+            }
+            condition = extra.condition;
+            compId = component.cid;
+            uuid = component.puuid;
+        }
     }
     catch (e) {
+        if (requireStockTable)
+            throw e;
         console.log('[error log] getIwencaiData 数据结构错误！', e);
     }
     return {
