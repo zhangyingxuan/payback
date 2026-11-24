@@ -12,6 +12,8 @@
 
 ## 请求时序
 
+前端对 Chat、会话和长期偏好请求附带 NestJS Bearer token。Agent 先通过 NestJS 校验登录并检查指定账号，再解析请求或查询会话。 [所有者授权](Agent架构审查与LangChain对比.md)
+
 ```mermaid
 sequenceDiagram
     participant UI as Chat 页面
@@ -26,8 +28,11 @@ sequenceDiagram
 
     Note over DB,Server: 行情采集和入库独立于本次 Chat 请求
     Server->>DB: 写入大盘、短线等行情数据
-    UI->>Proxy: POST /agentApi/chat
-    Proxy->>HTTP: POST /chat
+    UI->>Proxy: POST /agentApi/chat + Bearer token
+    Proxy->>HTTP: POST /chat + Bearer token
+    HTTP->>Server: GET /blowsysun/auth/profile
+    Server-->>HTTP: 返回有效登录账号
+    Note right of HTTP: 仅指定所有者继续
     HTTP-->>Proxy: SSE session
     Proxy-->>UI: SSE session
     HTTP->>Worker: 提交会话任务

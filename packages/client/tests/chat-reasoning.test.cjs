@@ -32,12 +32,16 @@ test('未收到摘要也显示思考过程，结束后明确提示未提供', ()
     assert.ok(node, '思考过程不能因没有事件而隐藏');
     assert.equal(node.props.open, streaming);
     const text = JSON.stringify(node.children);
-    assert.match(text, /思考过程/);
+    assert.match(text, /思考摘要/);
     assert.match(text, streaming ? /等待模型返回思考摘要/ : /模型未提供思考摘要/);
   }
 });
 
-test('收到思考增量后交给 Markdown 渲染', () => {
-  const node = reasoningNode(true, '先核对数据');
+test('生成期间显示已收到的摘要增量，结束后按 Markdown 渲染', () => {
+  for (const text of ['先核对', '先核对数据\n再比较口径']) {
+    const node = reasoningNode(true, text);
+    assert.ok(node.children.some(child => child.type === 'p' && child.children === text));
+  }
+  const node = reasoningNode(false, '先核对数据');
   assert.ok(node.children.some(child => child.props?.text === '先核对数据'));
 });

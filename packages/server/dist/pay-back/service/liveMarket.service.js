@@ -81,14 +81,8 @@ let LiveMarketService = class LiveMarketService {
         return (0, globalQuotes_1.parseGlobalQuotes)(await response.text());
     }
     async fetchAsiaGlobal() {
-        var _a;
-        const response = await (0, abortFetch_1.createFetch)(8000, 1)('https://push2.eastmoney.com/api/qt/ulist.np/get?fltt=2&secids=100.KS11,100.N225&fields=f2,f3,f12,f124');
-        if (!response.ok)
-            throw new Error(`日韩行情请求失败: HTTP ${response.status}`);
-        const result = await response.json();
-        if (!Array.isArray((_a = result.data) === null || _a === void 0 ? void 0 : _a.diff))
-            throw new Error('日韩行情响应异常');
-        return (0, globalQuotes_1.parseAsiaQuotes)(result.data.diff);
+        const rows = await this.fetchEastmoney('ulist.np/get?fltt=2&secids=100.KS11,100.N225&fields=f2,f3,f12,f124');
+        return (0, globalQuotes_1.parseAsiaQuotes)(rows);
     }
     async fetchLimitSectors(date) {
         const blocks = await this.fetchBlocks(date);
@@ -98,13 +92,8 @@ let LiveMarketService = class LiveMarketService {
         }));
     }
     async fetchBreadth() {
-        var _a;
-        const response = await (0, abortFetch_1.createFetch)(8000, 1)('https://push2.eastmoney.com/api/qt/ulist.np/get?fltt=2&secids=1.000001,0.399001&fields=f12,f104,f105');
-        if (!response.ok)
-            throw new Error(`市场宽度请求失败: HTTP ${response.status}`);
-        const result = await response.json();
-        const rows = (_a = result.data) === null || _a === void 0 ? void 0 : _a.diff;
-        const markets = ['000001', '399001'].map(code => Array.isArray(rows) ? rows.find(row => row.f12 === code) : undefined);
+        const rows = await this.fetchEastmoney('ulist.np/get?fltt=2&secids=1.000001,0.399001&fields=f12,f104,f105');
+        const markets = ['000001', '399001'].map(code => rows.find(row => row.f12 === code));
         if (markets.some(row => !row || !Number.isInteger(row.f104) || row.f104 < 0 || !Number.isInteger(row.f105) || row.f105 < 0)) {
             throw new Error('沪深市场宽度数据不完整');
         }
@@ -132,23 +121,27 @@ let LiveMarketService = class LiveMarketService {
             throw new Error('量能对比数据缺失');
         return { current: current / 1e8, previous: previous / 1e8, change: (current - previous) / 1e8, changePercent: (current / previous - 1) * 100, createTime: new Date() };
     }
-    async fetchEastmoney(url) {
-        var _a;
-        const response = await (0, abortFetch_1.createFetch)(8000, 1)(url);
-        if (!response.ok)
-            throw new Error(`东方财富请求失败: HTTP ${response.status}`);
-        const result = await response.json();
-        if (!Array.isArray((_a = result.data) === null || _a === void 0 ? void 0 : _a.diff) || !result.data.diff.length)
-            throw new Error('东方财富行情数据缺失');
-        return result.data.diff;
+    async fetchEastmoney(path, allowEmpty = false) {
+        const request = (0, abortFetch_1.createFetch)(8000, 1);
+        const fetchRows = async (host) => {
+            var _a;
+            const response = await request(`https://${host}/api/qt/${path}`);
+            if (!response.ok)
+                throw new Error(`东方财富请求失败: HTTP ${response.status}`);
+            const rows = (_a = (await response.json()).data) === null || _a === void 0 ? void 0 : _a.diff;
+            if (!Array.isArray(rows) || (!allowEmpty && !rows.length))
+                throw new Error('东方财富行情数据缺失');
+            return rows;
+        };
+        return fetchRows('push2.eastmoney.com').catch(() => fetchRows('push2test.eastmoney.com'));
     }
     async fetchTopStocks() {
-        const rows = await this.fetchEastmoney('https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=10&po=1&np=1&fltt=2&invt=2&fid=f6&fs=m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23&fields=f12,f14,f3,f6,f100');
+        const rows = await this.fetchEastmoney('clist/get?pn=1&pz=10&po=1&np=1&fltt=2&invt=2&fid=f6&fs=m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23&fields=f12,f14,f3,f6,f100');
         return rows.filter(item => item.f12 && item.f14 && typeof item.f6 === 'number' && Number.isFinite(item.f6))
             .map(item => ({ code: item.f12, name: item.f14, change: typeof item.f3 === 'number' ? item.f3 : null, turnover: item.f6 / 1e8, industry: typeof item.f100 === 'string' && item.f100 !== '-' ? item.f100 : null }));
     }
     async fetchCommoditySectors() {
-        const rows = await this.fetchEastmoney('https://push2.eastmoney.com/api/qt/ulist.np/get?secids=90.BK0732,90.BK0464&fltt=2&invt=2&fields=f12,f14,f3');
+        const rows = await this.fetchEastmoney('ulist.np/get?secids=90.BK0732,90.BK0464&fltt=2&invt=2&fields=f12,f14,f3');
         return [{ code: 'BK0732', name: '黄金' }, { code: 'BK0464', name: '原油（石油行业）' }].map(sector => {
             const row = rows.find(item => item.f12 === sector.code);
             return Object.assign(Object.assign({}, sector), { change: typeof (row === null || row === void 0 ? void 0 : row.f3) === 'number' && Number.isFinite(row.f3) ? row.f3 : null });
@@ -173,7 +166,7 @@ let LiveMarketService = class LiveMarketService {
     async fetchShortTerm(date) {
         var _a, _b, _c;
         const [first, boards, blocks] = await Promise.all([
-            this.fetchThs('limit_up_pool', date, '&page=1&limit=100'),
+            this.fetchThs('limit_up_pool', date, '&page=1&limit=200'),
             this.fetchThs('continuous_limit_up', date),
             this.fetchBlocks(date).catch(() => []),
         ]);
@@ -201,14 +194,8 @@ let LiveMarketService = class LiveMarketService {
     }
     async fetchFunds() {
         const getRank = async (order) => {
-            var _a;
-            const response = await (0, abortFetch_1.createFetch)(8000, 1)(`https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=5&po=${order}&np=1&fltt=2&invt=2&fid=f62&fs=m:90+t:2&fields=f12,f14,f62`);
-            if (!response.ok)
-                throw new Error(`资金行情请求失败: HTTP ${response.status}`);
-            const result = await response.json();
-            if (!Array.isArray((_a = result.data) === null || _a === void 0 ? void 0 : _a.diff))
-                throw new Error('资金行情响应异常');
-            return result.data.diff.filter(item => item.f14 && item.f62 != null && item.f62 !== '-' && Number.isFinite(Number(item.f62)))
+            const rows = await this.fetchEastmoney(`clist/get?pn=1&pz=5&po=${order}&np=1&fltt=2&invt=2&fid=f62&fs=m:90+t:2&fields=f12,f14,f62`, true);
+            return rows.filter(item => item.f14 && item.f62 != null && item.f62 !== '-' && Number.isFinite(Number(item.f62)))
                 .map(item => ({ name: item.f14, code: item.f12, funds: Number(item.f62) / 100000000 }));
         };
         const [inflow, outflow] = await Promise.all([getRank(1), getRank(0)]);

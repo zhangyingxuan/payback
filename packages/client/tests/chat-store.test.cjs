@@ -7,7 +7,7 @@ const { createPinia, setActivePinia } = require('pinia');
 
 // 执行真实 TS store，使用内存存储和可控接口验证竞态，不复制业务逻辑。
 function setup(initial = [], fetchDetail = async id => ({ id, messages: [{ role: 'user', content: id }] })) {
-  const storage = new Map([['payback-agent-chats', JSON.stringify(initial)]]);
+  const storage = new Map([['payback-agent-chats:owner', JSON.stringify(initial)]]);
   global.localStorage = { getItem: key => storage.get(key), setItem: (key, value) => storage.set(key, value) };
   setActivePinia(createPinia());
   const filename = path.join(__dirname, '../src/store/chat.ts');
@@ -18,8 +18,22 @@ function setup(initial = [], fetchDetail = async id => ({ id, messages: [{ role:
   new Function('require', 'module', 'exports', code)(
     name => name === '@/api/agent' ? { fetchAgentSession: fetchDetail } : require(name), module, module.exports,
   );
-  return { store: module.exports.useChatStore(), storage };
+  const store = module.exports.useChatStore();
+  store.openAccount('owner');
+  return { store, storage };
 }
+
+test('切换账号或退出后不读取其他账号或旧共用键的本地会话', () => {
+  const { store, storage } = setup();
+  store.newConversation();
+  storage.set('payback-agent-chats', storage.get('payback-agent-chats:owner'));
+  store.openAccount('other');
+  assert.equal(store.conversations.length, 0);
+  store.openAccount('owner');
+  assert.equal(store.conversations.length, 1);
+  store.openAccount('');
+  assert.equal(store.conversations.length, 0);
+});
 
 test('历史消息保留服务端毫秒时间，旧消息不伪造时间', async () => {
   const { store } = setup([], async id => ({ id, messages: [
@@ -57,7 +71,7 @@ test('切换后详情回到对应会话，正常远端正文不落本地存储',
   assert.equal(store.activeId, b.id);
   assert.equal(a.messages[0].content, '远端正文');
   store.persist();
-  assert.ok(!storage.get('payback-agent-chats').includes('远端正文'));
+  assert.ok(!storage.get('payback-agent-chats:owner').includes('远端正文'));
 });
 
 test('旧本地正文、失败状态和超过 50 条的未同步会话不被截断', () => {
@@ -68,7 +82,7 @@ test('旧本地正文、失败状态和超过 50 条的未同步会话不被截�
   for (let i = 0; i < 55; i++) store.newConversation();
   store.persist();
   assert.equal(store.conversations.length, 56);
-  assert.ok(storage.get('payback-agent-chats').includes('失败时的正文'));
+  assert.ok(storage.get('payback-agent-chats:owner').includes('失败时的正文'));
 });
 
 test('正文缓存淘汰保留活动会话和未同步数据，详情失败可重试', async () => {
@@ -92,15 +106,15 @@ test('正文缓存淘汰保留活动会话和未同步数据，详情失败可�
 test('摘要快照刷新后仍能按需加载，存储失败不覆盖旧快照', async () => {
   const { store, storage } = setup();
   store.mergeSummaries([{ id: 'a', title: 'A', lastTurnId: '1', snippet: '' }]);
-  const snapshot = JSON.parse(storage.get('payback-agent-chats'));
+  const snapshot = JSON.parse(storage.get('payback-agent-chats:owner'));
   const restored = setup(snapshot).store;
   await restored.loadMessages(restored.conversations[0].id);
   assert.equal(restored.conversations[0].messages[0].content, 'a');
-  const previous = storage.get('payback-agent-chats');
+  const previous = storage.get('payback-agent-chats:owner');
   global.localStorage.setItem = () => { throw new Error('quota'); };
   store.persist();
   assert.equal(store.storageError, true);
-  assert.equal(storage.get('payback-agent-chats'), previous);
+  assert.equal(storage.get('payback-agent-chats:owner'), previous);
 });
 
 test('远端更新使旧正文缓存失效，生成中和本地失败内容不受影响', async () => {

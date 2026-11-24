@@ -332,7 +332,9 @@ import {
   type AgentMemory,
 } from '@/api/agent';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import { getToken } from '@/router/auth';
 import { useChatStore, type Conversation } from '@/store/chat';
+import { usePermissStore } from '@/store/permiss';
 import ChatMessage from './components/ChatMessage.vue';
 import { useSessionList } from './useSessionList';
 
@@ -345,6 +347,8 @@ const SUGGESTIONS = [
 ];
 
 const store = useChatStore();
+// 登录失效或账号切换后，不加载此前账号在本机的会话快照。
+store.openAccount(getToken() ? usePermissStore().account : '');
 const draft = ref('');
 const selectedModel = ref<'' | 'gateway' | 'codex'>('');
 const {
@@ -574,7 +578,6 @@ async function runTurn(conv: Conversation, question: string) {
   abortController = new AbortController();
 
   let pending = '';
-  let pendingReasoning = '';
   let flushTimer: ReturnType<typeof setTimeout> | null = null;
   function flushPending() {
     if (flushTimer !== null) {
@@ -584,11 +587,6 @@ async function runTurn(conv: Conversation, question: string) {
     if (pending) {
       assistant.content += pending;
       pending = '';
-      scrollActiveToBottom();
-    }
-    if (pendingReasoning) {
-      assistant.reasoning = (assistant.reasoning || '') + pendingReasoning;
-      pendingReasoning = '';
       scrollActiveToBottom();
     }
   }
@@ -610,8 +608,9 @@ async function runTurn(conv: Conversation, question: string) {
         scheduleFlush();
         break;
       case 'reasoning_delta':
-        pendingReasoning += event.text;
-        scheduleFlush();
+        // 摘要按上游事件立即更新，保留网关实际提供的增量粒度。
+        assistant.reasoning = (assistant.reasoning || '') + event.text;
+        scrollActiveToBottom();
         break;
       case 'tool_call':
         assistant.toolCalls.push({

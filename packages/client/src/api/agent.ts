@@ -6,6 +6,19 @@
  * 经 vite 代理 /agentApi -> http://localhost:8300（见 vite.config.ts）。
  */
 
+import { getToken } from '../router/auth';
+
+// 与 NestJS API 共用登录凭据，同时保留 fetch 的 SSE 和取消能力。
+async function agentFetch(url: string, options?: RequestInit): Promise<Response> {
+  const headers = new Headers(options?.headers);
+  const token = getToken();
+  if (token) headers.set('Authorization', 'Bearer ' + token);
+  const response = await fetch(url, { ...options, headers });
+  if (response.status === 401) throw new Error('请先登录或重新登录');
+  if (response.status === 403) throw new Error('当前账号无权访问 Agent 会话');
+  return response;
+}
+
 export interface AgentSessionEvent {
   type: 'session';
   session_id: string;
@@ -73,7 +86,7 @@ export async function chatWithAgent(
   onEvent: (event: AgentEvent) => void,
   signal?: AbortSignal
 ): Promise<void> {
-  const response = await fetch('/agentApi/chat', {
+  const response = await agentFetch('/agentApi/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(params),
@@ -123,13 +136,13 @@ export interface AgentMemory {
 }
 
 export async function fetchMemories(): Promise<AgentMemory[]> {
-  const response = await fetch('/agentApi/memories');
+  const response = await agentFetch('/agentApi/memories');
   if (!response.ok) throw new Error('无法读取记忆');
   return response.json();
 }
 
 export async function addMemory(content: string): Promise<AgentMemory> {
-  const response = await fetch('/agentApi/memories', {
+  const response = await agentFetch('/agentApi/memories', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ content }),
   });
@@ -138,12 +151,12 @@ export async function addMemory(content: string): Promise<AgentMemory> {
 }
 
 export async function deleteMemory(id: string): Promise<void> {
-  const response = await fetch('/agentApi/memories/' + encodeURIComponent(id), { method: 'DELETE' });
+  const response = await agentFetch('/agentApi/memories/' + encodeURIComponent(id), { method: 'DELETE' });
   if (!response.ok) throw new Error('无法删除记忆');
 }
 
 export async function deleteAgentSession(id: string): Promise<void> {
-  const response = await fetch('/agentApi/sessions/' + encodeURIComponent(id), { method: 'DELETE' });
+  const response = await agentFetch('/agentApi/sessions/' + encodeURIComponent(id), { method: 'DELETE' });
   if (!response.ok) throw new Error('无法删除服务端会话');
 }
 
@@ -170,19 +183,19 @@ export async function fetchAgentSessions(
 ): Promise<AgentSessionPage> {
   const params = new URLSearchParams({ view: 'summary', limit: '30', q: query });
   if (cursor) params.set('cursor', cursor);
-  const response = await fetch('/agentApi/sessions?' + params, { signal });
+  const response = await agentFetch('/agentApi/sessions?' + params, { signal });
   if (!response.ok) throw new Error('无法读取服务端会话');
   return response.json();
 }
 
 export async function fetchAgentSession(id: string): Promise<AgentStoredSession> {
-  const response = await fetch('/agentApi/sessions/' + encodeURIComponent(id));
+  const response = await agentFetch('/agentApi/sessions/' + encodeURIComponent(id));
   if (!response.ok) throw new Error(response.status === 404 ? '会话已不存在' : '无法读取会话内容');
   return response.json();
 }
 
 export async function updateMemory(id: string, content: string): Promise<AgentMemory> {
-  const response = await fetch('/agentApi/memories/' + encodeURIComponent(id), {
+  const response = await agentFetch('/agentApi/memories/' + encodeURIComponent(id), {
     method: 'PUT', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ content }),
   });

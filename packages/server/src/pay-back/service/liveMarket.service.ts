@@ -74,13 +74,10 @@ export class LiveMarketService {
   }
 
   private async fetchAsiaGlobal() {
-    const response = await createFetch(8000, 1)(
-      'https://push2.eastmoney.com/api/qt/ulist.np/get?fltt=2&secids=100.KS11,100.N225&fields=f2,f3,f12,f124',
+    const rows = await this.fetchEastmoney(
+      'ulist.np/get?fltt=2&secids=100.KS11,100.N225&fields=f2,f3,f12,f124',
     );
-    if (!response.ok) throw new Error(`日韩行情请求失败: HTTP ${response.status}`);
-    const result = await response.json();
-    if (!Array.isArray(result.data?.diff)) throw new Error('日韩行情响应异常');
-    return parseAsiaQuotes(result.data.diff);
+    return parseAsiaQuotes(rows);
   }
 
   private async fetchLimitSectors(date: string) {
@@ -94,14 +91,11 @@ export class LiveMarketService {
 
   // 沪深指数分别提供所在市场的涨跌家数，不能将单一市场或创业板重复计入合计。
   private async fetchBreadth() {
-    const response = await createFetch(8000, 1)(
-      'https://push2.eastmoney.com/api/qt/ulist.np/get?fltt=2&secids=1.000001,0.399001&fields=f12,f104,f105',
+    const rows: { f12: string; f104: number; f105: number }[] = await this.fetchEastmoney(
+      'ulist.np/get?fltt=2&secids=1.000001,0.399001&fields=f12,f104,f105',
     );
-    if (!response.ok) throw new Error(`市场宽度请求失败: HTTP ${response.status}`);
-    const result = await response.json();
-    const rows: { f12: string; f104: number; f105: number }[] = result.data?.diff;
     // 任一市场缺失都不能输出部分合计，缺失值也不能转换为零家数。
-    const markets = ['000001', '399001'].map(code => Array.isArray(rows) ? rows.find(row => row.f12 === code) : undefined);
+    const markets = ['000001', '399001'].map(code => rows.find(row => row.f12 === code));
     if (markets.some(row => !row || !Number.isInteger(row.f104) || row.f104 < 0 || !Number.isInteger(row.f105) || row.f105 < 0)) {
       throw new Error('沪深市场宽度数据不完整');
     }
@@ -132,24 +126,30 @@ export class LiveMarketService {
     return { current: current / 1e8, previous: previous / 1e8, change: (current - previous) / 1e8, changePercent: (current / previous - 1) * 100, createTime: new Date() };
   }
 
-  private async fetchEastmoney(url: string) {
-    const response = await createFetch(8000, 1)(url);
-    if (!response.ok) throw new Error(`东方财富请求失败: HTTP ${response.status}`);
-    const result = await response.json();
-    if (!Array.isArray(result.data?.diff) || !result.data.diff.length) throw new Error('东方财富行情数据缺失');
-    return result.data.diff;
+  private async fetchEastmoney(path: string, allowEmpty = false) {
+    const request = createFetch(8000, 1);
+    const fetchRows = async (host: string) => {
+      const response = await request(`https://${host}/api/qt/${path}`);
+      if (!response.ok) throw new Error(`东方财富请求失败: HTTP ${response.status}`);
+      const rows = (await response.json()).data?.diff;
+      if (!Array.isArray(rows) || (!allowEmpty && !rows.length)) throw new Error('东方财富行情数据缺失');
+      return rows;
+    };
+
+    // 主站断连或响应异常时复用原查询，保留同一行情源的统计口径。
+    return fetchRows('push2.eastmoney.com').catch(() => fetchRows('push2test.eastmoney.com'));
   }
 
   // 按成交额取沪深 A 股前十，行业直接使用同一条行情，避免逐股请求。
   private async fetchTopStocks() {
-    const rows = await this.fetchEastmoney('https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=10&po=1&np=1&fltt=2&invt=2&fid=f6&fs=m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23&fields=f12,f14,f3,f6,f100');
+    const rows = await this.fetchEastmoney('clist/get?pn=1&pz=10&po=1&np=1&fltt=2&invt=2&fid=f6&fs=m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23&fields=f12,f14,f3,f6,f100');
     return rows.filter(item => item.f12 && item.f14 && typeof item.f6 === 'number' && Number.isFinite(item.f6))
       .map(item => ({ code: item.f12, name: item.f14, change: typeof item.f3 === 'number' ? item.f3 : null, turnover: item.f6 / 1e8, industry: typeof item.f100 === 'string' && item.f100 !== '-' ? item.f100 : null }));
   }
 
   // 固定取黄金与石油行业板块，不依赖是否进入当天涨停题材样本。
   private async fetchCommoditySectors() {
-    const rows = await this.fetchEastmoney('https://push2.eastmoney.com/api/qt/ulist.np/get?secids=90.BK0732,90.BK0464&fltt=2&invt=2&fields=f12,f14,f3');
+    const rows = await this.fetchEastmoney('ulist.np/get?secids=90.BK0732,90.BK0464&fltt=2&invt=2&fields=f12,f14,f3');
     return [{ code: 'BK0732', name: '黄金' }, { code: 'BK0464', name: '原油（石油行业）' }].map(sector => {
       const row = rows.find(item => item.f12 === sector.code);
       return { ...sector, change: typeof row?.f3 === 'number' && Number.isFinite(row.f3) ? row.f3 : null };
@@ -177,7 +177,8 @@ export class LiveMarketService {
 
   private async fetchShortTerm(date: string) {
     const [first, boards, blocks] = await Promise.all([
-      this.fetchThs('limit_up_pool', date, '&page=1&limit=100'),
+      // 上游可能对不同页返回不同批次的数据，优先在一页内取齐涨停池。
+      this.fetchThs('limit_up_pool', date, '&page=1&limit=200'),
       this.fetchThs('continuous_limit_up', date),
       this.fetchBlocks(date).catch(() => []),
     ]);
@@ -207,13 +208,11 @@ export class LiveMarketService {
   private async fetchFunds() {
     // 东方财富的板块分类与原问财二级行业口径不同，前端需注明来源。
     const getRank = async (order: number) => {
-      const response = await createFetch(8000, 1)(
-        `https://push2.eastmoney.com/api/qt/clist/get?pn=1&pz=5&po=${order}&np=1&fltt=2&invt=2&fid=f62&fs=m:90+t:2&fields=f12,f14,f62`,
+      const rows = await this.fetchEastmoney(
+        `clist/get?pn=1&pz=5&po=${order}&np=1&fltt=2&invt=2&fid=f62&fs=m:90+t:2&fields=f12,f14,f62`,
+        true,
       );
-      if (!response.ok) throw new Error(`资金行情请求失败: HTTP ${response.status}`);
-      const result = await response.json();
-      if (!Array.isArray(result.data?.diff)) throw new Error('资金行情响应异常');
-      return result.data.diff.filter(item => item.f14 && item.f62 != null && item.f62 !== '-' && Number.isFinite(Number(item.f62)))
+      return rows.filter(item => item.f14 && item.f62 != null && item.f62 !== '-' && Number.isFinite(Number(item.f62)))
         .map(item => ({ name: item.f14, code: item.f12, funds: Number(item.f62) / 100000000 }));
     };
     const [inflow, outflow] = await Promise.all([getRank(1), getRank(0)]);

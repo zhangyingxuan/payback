@@ -25,10 +25,14 @@
         <!-- 模型可能不提供摘要，保留入口并明确空状态，避免误以为页面没有接入。 -->
         <details class="reasoning" :open="streaming">
           <summary>
-            {{ streaming ? '思考过程 · 生成中' : '查看思考过程' }}
+            {{ streaming ? '思考摘要 · 生成中' : '查看思考摘要' }}
           </summary>
+          <!-- 流式片段可能含有尚未闭合的 Markdown，生成时直接显示累积文本。 -->
+          <p v-if="streaming && message.reasoning" class="reasoning-content reasoning-stream">
+            {{ message.reasoning }}
+          </p>
           <v-md-preview
-            v-if="message.reasoning"
+            v-else-if="message.reasoning"
             class="md-body reasoning-content"
             :text="message.reasoning"
             @image-click="openPreview"
@@ -314,6 +318,12 @@ function chipText(call: ToolCallChip): string {
         color: #667085;
         font-size: 14px;
       }
+    }
+
+    .reasoning-stream {
+      font-size: 14px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
     }
   }
 

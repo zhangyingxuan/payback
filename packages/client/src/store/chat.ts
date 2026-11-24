@@ -50,9 +50,9 @@ function uuid(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
-function load(): Conversation[] {
+function load(storageKey: string): Conversation[] {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = storageKey ? localStorage.getItem(storageKey) : null;
     const parsed = raw ? JSON.parse(raw) : [];
     // 旧版本的正文没有同步标记，迁移时保守保留，不能被远端摘要覆盖。
     return Array.isArray(parsed) ? parsed.filter(item => item && typeof item.id === 'string' &&
@@ -81,15 +81,12 @@ function latestId(conversations: Conversation[]): string {
 }
 
 export const useChatStore = defineStore('agentChat', {
-  state: () => {
-    const conversations = load() as Conversation[];
-    return {
-      conversations,
-      // 刷新后回到最近一次会话而不是空态：复盘助手的对话是连续工作流
-      activeId: latestId(conversations),
-      storageError: false,
-    };
-  },
+  state: () => ({
+    conversations: [] as Conversation[],
+    activeId: '',
+    storageError: false,
+    storageKey: '',
+  }),
   getters: {
     active: (state): Conversation | undefined =>
       state.conversations.find((c) => c.id === state.activeId),
@@ -104,6 +101,15 @@ export const useChatStore = defineStore('agentChat', {
       }),
   },
   actions: {
+    openAccount(account: string) {
+      // 会话摘要和未同步正文按账号读取，未标记归属的旧快照保留在原键。
+      const key = account ? STORAGE_KEY + ':' + account : '';
+      if (key === this.storageKey) return;
+      this.storageKey = key;
+      this.conversations = load(key);
+      this.activeId = latestId(this.conversations);
+      this.storageError = false;
+    },
     mergeSummaries(sessions: AgentSessionSummary[]) {
       for (const session of sessions) {
         const existing = this.conversations.find(conv => conv.sessionId === session.id);
@@ -172,9 +178,10 @@ export const useChatStore = defineStore('agentChat', {
       }
     },
     persist() {
+      if (!this.storageKey) return;
       try {
         localStorage.setItem(
-          STORAGE_KEY,
+          this.storageKey,
           JSON.stringify(this.sorted.filter((conv, index) => index < 30 || conv.dirty || conv.id === this.activeId)
             .map(conv => ({ ...conv, messages: conv.dirty || !conv.sessionId ? conv.messages : [],
               messagesLoaded: conv.dirty || !conv.sessionId ? conv.messagesLoaded : false,

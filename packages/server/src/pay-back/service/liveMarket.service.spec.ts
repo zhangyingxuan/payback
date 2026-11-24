@@ -48,6 +48,19 @@ describe('实时市场行情', () => {
     expect(await new LiveMarketService().get('stocks')).toEqual([{ code: '600000', name: '示例', turnover: 12, change: 2, industry: '银行' }]);
   });
 
+  it('东方财富主域名断连时，使用相同查询从备用域名获取成交额排行', async () => {
+    const request = jest.fn()
+      .mockRejectedValueOnce(new Error('socket hang up'))
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ data: { diff: [{ f12: '600000', f14: '浦发银行', f6: 12e8 }] } }) });
+    (createFetch as jest.Mock).mockReturnValue(request);
+
+    await expect(new LiveMarketService().get('stocks')).resolves.toMatchObject([{ code: '600000', turnover: 12 }]);
+    const [primary, fallback] = request.mock.calls.map(([url]) => new URL(url));
+    expect(primary.hostname).toBe('push2.eastmoney.com');
+    expect(fallback.hostname).toBe('push2test.eastmoney.com');
+    expect(fallback.pathname + fallback.search).toBe(primary.pathname + primary.search);
+  });
+
   it('固定保留黄金和石油席位，缺失涨跌返回空值', async () => {
     mockData({ diff: [{ f12: 'BK0732', f3: 1.2 }] });
     expect(await new LiveMarketService().get('commodities')).toEqual([{ code: 'BK0732', name: '黄金', change: 1.2 }, { code: 'BK0464', name: '原油（石油行业）', change: null }]);
