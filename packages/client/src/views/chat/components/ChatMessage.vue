@@ -1,10 +1,21 @@
 <template>
   <div :class="['chat-message', message.role]">
-    <!-- 用户：右侧气泡，纯文本（保留换行） -->
+    <!-- 用户：右侧气泡，附件和文字一同展示 -->
     <template v-if="message.role === 'user'">
       <div class="user-content">
         <time class="message-time" :datetime="messageDateTime">{{ messageTime }}</time>
-        <div class="user-bubble">{{ message.content }}</div>
+        <div class="user-bubble">
+          <button
+            v-if="message.image"
+            class="user-attachment-preview"
+            type="button"
+            aria-label="预览消息附件"
+            @click="openPreview([message.image], 0)"
+          >
+            <img class="user-attachment" :src="message.image" alt="" />
+          </button>
+          <div>{{ userContent }}</div>
+        </div>
         <div v-if="message.content" class="message-actions">
           <el-button class="copy-button" text title="复制消息" aria-label="复制消息" @click="copyMessage">
             <el-icon><CopyDocument /></el-icon>
@@ -104,6 +115,7 @@
 import { computed, ref } from 'vue';
 import dayjs from 'dayjs';
 import type { ChatMessage, ToolCallChip } from '@/store/chat';
+import { VISUAL_LABEL_SUFFIX } from '../readVisualFile';
 import { ElMessage } from 'element-plus';
 import {
   CopyDocument,
@@ -120,6 +132,11 @@ const props = defineProps<{
   streaming?: boolean;
   busy?: boolean;
 }>();
+
+// 旧记录没有图像时，附件名称仍可帮助识别原消息。
+const userContent = computed(() => props.message.image
+  ? props.message.content.replace(VISUAL_LABEL_SUFFIX, '')
+  : props.message.content);
 
 defineEmits<{
   (e: 'retry'): void;
@@ -142,7 +159,7 @@ const visibleContent = computed(() => props.message.role === 'assistant'
 const previewImages = ref<string[]>([]);
 const previewIndex = ref(0);
 
-// 复用同一预览器承接 Markdown 和工具图片，保留点击位置及同组图片切换。
+// 用户附件与助手图片共用查看器，保留同组图片切换。
 function openPreview(images: string[], index: number) {
   previewIndex.value = index;
   previewImages.value = images;
@@ -241,6 +258,25 @@ function chipText(call: ToolCallChip): string {
     line-height: 1.7;
     white-space: pre-wrap;
     word-break: break-word;
+  }
+
+  .user-attachment-preview {
+    display: block;
+    max-width: 100%;
+    margin-bottom: 8px;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    cursor: zoom-in;
+  }
+
+  .user-attachment {
+    display: block;
+    max-width: min(100%, 320px);
+    max-height: 320px;
+    border-radius: 8px;
+    object-fit: contain;
   }
 
   .copy-button {

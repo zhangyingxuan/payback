@@ -82,7 +82,7 @@ export type AgentEvent =
  * 网络层失败（代理未启动、502 等）以 reject 抛出，调用方应展示为可重试错误。
  */
 export async function chatWithAgent(
-  params: { message: string; session_id?: string; model?: 'gateway' | 'codex' },
+  params: { message: string; session_id?: string; model?: 'gateway' | 'codex'; image?: string },
   onEvent: (event: AgentEvent) => void,
   signal?: AbortSignal
 ): Promise<void> {
@@ -162,7 +162,7 @@ export async function deleteAgentSession(id: string): Promise<void> {
 
 export interface AgentStoredSession {
   id: string;
-  messages: { role: 'user' | 'assistant'; content: string; createdAt?: number | null }[];
+  messages: { role: 'user' | 'assistant'; content: string; createdAt?: number | null; image?: string }[];
 }
 
 export interface AgentSessionSummary {

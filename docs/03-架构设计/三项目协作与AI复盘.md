@@ -22,6 +22,8 @@
 
 `serve.py` 注册 `GET /healthz`、`POST /chat`、`DELETE /sessions/{session_id}` 和 `GET/POST /daily-reports/{trade_date}`。聊天响应使用 SSE；客户端实现见 `packages/client/src/api/agent.ts`。Agent 默认用同级 `payback-mcp` 目录和 `uv` 启动工具服务，可通过 `PAYBACK_MCP_DIR`、`PAYBACK_MCP_COMMAND` 覆盖。两个 Python 项目均要求 Python >= 3.11，使用 uv 管理依赖。
 
+Chat 每条消息可附带一份图片或视频。浏览器将图片或三张带时间戳的视频帧编码为 JPEG，通过 `POST /chat` 的 `image` 字段发送，数据 URL 上限为 512 KiB。Gateway 模型需要支持 Chat Completions 的 `image_url`，Codex 使用 `--image`。会话历史只保存问题和附件名称，刷新后重新发送需再次选择文件。
+
 聊天历史使用 `GET /sessions?view=summary&limit=30&cursor=...&q=...` 获取 `{items,nextCursor}`，条目为 `id/title/lastTurnId/snippet`；完整问答通过 `GET /sessions/{session_id}` 按需获取（缺失返回 404）。`q` 搜索全历史问答并返回片段；游标按最后消息递增 ID 降序，字符串传输，无历史日期分组。旧 `GET /sessions` 的最近 50 条完整会话响应仍兼容。
 
 消息详情新增 `createdAt`（Unix 毫秒）：用户为服务端开始处理时间，助手为回复完成时间；SSE `done` 返回 `questionCreatedAt/createdAt`，客户端同步覆盖本地临时时间。chat 页按浏览器本地时区显示到秒。时间与正文在同一事务中保存，Agent 自动创建独立的 `agent_conversation_turn_time` 表，不需 ALTER 权限；删除会话同时清理时间。旧历史时间为 null，页面显示“时间未知”，不伪造回填。修改后需重启 Agent。

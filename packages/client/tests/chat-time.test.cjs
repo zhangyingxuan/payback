@@ -14,17 +14,27 @@ const code = ts.transpileModule(script.content, {
   compilerOptions: { module: ts.ModuleKind.CommonJS, esModuleInterop: true },
 }).outputText;
 const componentModule = { exports: {} };
-new Function('require', 'module', 'exports', code)(require, componentModule, componentModule.exports);
+new Function('require', 'module', 'exports', code)(
+  id => id === '../readVisualFile' ? require('../src/views/chat/readVisualFile.ts') : require(id),
+  componentModule, componentModule.exports);
 const compiled = compileTemplate({ source: descriptor.template.content, filename, id: 'time-test',
   compilerOptions: { mode: 'function' } });
 const render = new Function('Vue', compiled.code)({ ...Vue, resolveComponent: name => name });
+
+test('历史消息在有图片时隐藏附件名称，旧记录保留名称', () => {
+  const content = '看看这张图\n\n【附件】图片 · chart.png';
+  const message = { role: 'user', content, toolCalls: [], createdAt: 0 };
+  const setup = props => componentModule.exports.default.setup({ message: props }, { expose() {} });
+  assert.equal(setup({ ...message, image: 'data:image/jpeg;base64,preview' }).userContent.value, '看看这张图');
+  assert.equal(setup(message).userContent.value, content);
+});
 
 test('用户和助手展示日期及秒，缺失时间不显示 1970 年', () => {
   for (const role of ['user', 'assistant']) {
     for (const createdAt of [new Date(2026, 10, 16, 19, 35, 7).getTime(), 0]) {
       const props = { message: { role, content: '', toolCalls: [], createdAt } };
       const setup = componentModule.exports.default.setup(props, { expose() {} });
-      const tree = render({ ...props, messageTime: setup.messageTime.value,
+      const tree = render({ ...props, userContent: setup.userContent.value, messageTime: setup.messageTime.value,
         messageDateTime: setup.messageDateTime.value, previewImages: [], chartImages: [], visibleContent: '' }, []);
       function findTime(node) {
         if (node?.type === 'time') return node;

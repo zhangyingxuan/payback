@@ -103,7 +103,7 @@ export declare class PayBackController {
                 updatedTime?: undefined;
             } | {
                 name: string;
-                status: "fresh" | "stale" | "empty";
+                status: "empty" | "fresh" | "stale";
                 tradeDate: string;
                 updatedTime: any;
                 count: number;

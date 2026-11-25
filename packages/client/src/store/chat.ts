@@ -19,6 +19,7 @@ export interface ChatMessage {
   id: string;
   role: 'user' | 'assistant';
   content: string;
+  image?: string;
   reasoning?: string;
   toolCalls: ToolCallChip[];
   /** 本轮失败（网关/服务错误），content 可能为空 */
@@ -183,7 +184,9 @@ export const useChatStore = defineStore('agentChat', {
         localStorage.setItem(
           this.storageKey,
           JSON.stringify(this.sorted.filter((conv, index) => index < 30 || conv.dirty || conv.id === this.activeId)
-            .map(conv => ({ ...conv, messages: conv.dirty || !conv.sessionId ? conv.messages : [],
+            // 图片由 Agent 持久化，浏览器快照只存文本以免超出配额。
+            .map(conv => ({ ...conv, messages: conv.dirty || !conv.sessionId
+              ? conv.messages.map(message => ({ ...message, image: undefined })) : [],
               messagesLoaded: conv.dirty || !conv.sessionId ? conv.messagesLoaded : false,
               dirty: !!conv.dirty, localOnly: !!conv.localOnly, loading: false, loadError: '' })))
         );
@@ -226,11 +229,12 @@ export const useChatStore = defineStore('agentChat', {
       const conv = this.active;
       if (conv) conv.cachedAt = Date.now();
     },
-    addMessage(conv: Conversation, role: 'user' | 'assistant', content = ''): ChatMessage {
+    addMessage(conv: Conversation, role: 'user' | 'assistant', content = '', image?: string): ChatMessage {
       const message: ChatMessage = {
         id: uuid(),
         role,
         content,
+        image,
         toolCalls: [],
         createdAt: Date.now(),
       };

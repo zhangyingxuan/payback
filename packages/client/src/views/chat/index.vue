@@ -224,7 +224,7 @@
             :streaming="streaming && msg.id === streamingMessageId"
             :busy="streaming"
             @retry="onRetry"
-            @resend="onResend(msg.content)"
+            @resend="onResend(msg.content, msg.image)"
           />
         </div>
       </div>
@@ -237,7 +237,32 @@
           type="warning"
           :closable="false"
         />
+        <div v-if="visualDraft" class="visual-draft">
+          <img :src="visualDraft.image" :alt="visualDraft.label" />
+          <span>{{ visualDraft.label }}</span>
+          <el-button text aria-label="移除附件" @click="visualDraft = undefined">
+            <el-icon><Close /></el-icon>
+          </el-button>
+        </div>
         <div class="composer-box" :class="{ focused: inputFocused }">
+          <input
+            ref="textFileInput"
+            type="file"
+            :accept="`.md,.markdown,.txt,${VISUAL_FILE_EXTENSIONS}`"
+            hidden
+            @change="onImportText"
+          />
+          <el-button
+            class="import-btn"
+            circle
+            :disabled="detailUnavailable || streaming"
+            :loading="importingText"
+            title="添加文本、图片或视频"
+            aria-label="添加文本、图片或视频"
+            @click="textFileInput?.click()"
+          >
+            <el-icon><Paperclip /></el-icon>
+          </el-button>
           <textarea
             ref="inputEl"
             v-model="draft"
@@ -265,7 +290,7 @@
             class="send-btn"
             type="primary"
             circle
-            :disabled="!draft.trim() || detailUnavailable"
+            :disabled="(!draft.trim() && !visualDraft) || importingText || detailUnavailable"
             title="发送"
             aria-label="发送消息"
             @click="onSend()"
@@ -314,6 +339,8 @@ import {
   Operation,
   DataAnalysis,
   Promotion,
+  Paperclip,
+  Close,
   VideoPause,
   Loading,
   Search,
@@ -337,6 +364,8 @@ import { useChatStore, type Conversation } from '@/store/chat';
 import { usePermissStore } from '@/store/permiss';
 import ChatMessage from './components/ChatMessage.vue';
 import { useSessionList } from './useSessionList';
+import { readTextFile } from './readTextFile';
+import { readVisualFile, VISUAL_FILE_EXTENSIONS, VISUAL_LABEL_SUFFIX, type VisualAttachment } from './readVisualFile';
 
 const SUGGESTIONS = [
   '生成今日复盘全景图',
@@ -350,6 +379,9 @@ const store = useChatStore();
 // 登录失效或账号切换后，不加载此前账号在本机的会话快照。
 store.openAccount(getToken() ? usePermissStore().account : '');
 const draft = ref('');
+const textFileInput = ref<HTMLInputElement>();
+const importingText = ref(false);
+const visualDraft = ref<VisualAttachment>();
 const selectedModel = ref<'' | 'gateway' | 'codex'>('');
 const {
   query: searchQuery,
@@ -483,6 +515,44 @@ async function removeMemory(id: string) {
   }
 }
 
+async function onImportText(event: Event) {
+  const input = event.currentTarget as HTMLInputElement;
+  const file = input.files?.[0];
+  // 清空选择值，让同一个文件可以再次导入。
+  input.value = '';
+  if (!file || importingText.value || streaming.value || detailUnavailable.value) return;
+
+  let changed = false;
+  const stopWatching = watch(() => store.activeId, () => {
+    changed = true;
+  }, { flush: 'sync' });
+  importingText.value = true;
+  try {
+    // 文件选择器关闭后立即恢复焦点，让用户在附件处理期间继续输入。
+    inputEl.value?.focus();
+    const imported = /\.(md|markdown|txt)$/i.test(file.name)
+      ? await readTextFile(file)
+      : await readVisualFile(file);
+    // 文件读取期间可能已切换会话或发送消息，避免内容进入错误的草稿。
+    if (changed || streaming.value || detailUnavailable.value) {
+      ElMessage.warning('会话已变化，请重新导入文件');
+      return;
+    }
+    if (typeof imported === 'string') {
+      draft.value = draft.value.trim() ? `${draft.value}\n\n${imported}` : imported;
+    } else {
+      visualDraft.value = imported;
+    }
+    await nextTick();
+    autoGrow();
+  } catch (error) {
+    ElMessage.error(error instanceof Error ? error.message : '读取文件失败');
+  } finally {
+    stopWatching();
+    importingText.value = false;
+  }
+}
+
 function autoGrow() {
   const el = inputEl.value;
   if (!el) return;
@@ -521,24 +591,39 @@ function onMessagesScroll() {
 }
 
 function onSend(preset?: string) {
-  const text = (preset ?? draft.value).trim();
-  if (!text || streaming.value || detailUnavailable.value) return;
+  const visual = preset === undefined ? visualDraft.value : undefined;
+  let text = (preset ?? draft.value).trim();
+  if ((!text && !visual) || streaming.value || detailUnavailable.value || importingText.value) return;
+  if (visual) {
+    // 保留附件名称供历史搜索和模型使用，有图片时气泡仅展示图片和正文。
+    text = `${text || '请分析附件中的画面。'}\n\n【附件】${visual.label.replace(/[\r\n]/g, ' ')}`;
+    visualDraft.value = undefined;
+  }
   draft.value = '';
   nextTick(autoGrow);
   const conv = ensureConversation();
   store.maybeAutoTitle(conv, text);
-  store.addMessage(conv, 'user', text);
+  store.addMessage(conv, 'user', text, visual?.image);
   scrollToBottom(true);
-  runTurn(conv, text);
+  runTurn(conv, text, visual?.image);
 }
 
 // 重新发送历史问题时保留输入框中的草稿和已有对话。
-function onResend(text: string) {
+function onResend(text: string, image?: string) {
   const conv = store.active;
   if (!conv || !text.trim() || streaming.value) return;
-  store.addMessage(conv, 'user', text);
+  if (!image && hasVisualLabel(text)) {
+    ElMessage.warning('请重新添加原图片或视频后再发送');
+    return;
+  }
+  store.addMessage(conv, 'user', text, image);
   scrollToBottom(true);
-  runTurn(conv, text);
+  runTurn(conv, text, image);
+}
+
+// 无画面的历史附件不能静默重发成纯文本问题。
+function hasVisualLabel(text: string) {
+  return VISUAL_LABEL_SUFFIX.test(text);
 }
 
 function onRetry() {
@@ -553,16 +638,22 @@ function onRetry() {
     }
   }
   if (lastUserIndex < 0) return;
-  const question = conv.messages[lastUserIndex].content;
+  const message = conv.messages[lastUserIndex];
+  const question = message.content;
+  const image = message.image;
+  if (!image && hasVisualLabel(question)) {
+    ElMessage.warning('请重新添加原图片或视频后再发送');
+    return;
+  }
   conv.messages.splice(lastUserIndex + 1);
-  runTurn(conv, question);
+  runTurn(conv, question, image);
 }
 
 function onStop() {
   abortController?.abort();
 }
 
-async function runTurn(conv: Conversation, question: string) {
+async function runTurn(conv: Conversation, question: string, image?: string) {
   const preserveLocal = !!conv.localOnly;
   let saved = false;
   // 后台生成只更新对应会话，不能滚动用户当前正在查看的另一段历史。
@@ -660,6 +751,7 @@ async function runTurn(conv: Conversation, question: string) {
         message: question,
         session_id: conv.sessionId,
         model: selectedModel.value || undefined,
+        image,
       },
       onEvent,
       abortController.signal,
@@ -1082,6 +1174,25 @@ onBeforeUnmount(() => {
   flex-shrink: 0;
   padding: 8px 28px 18px;
 }
+.visual-draft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 764px;
+  margin: 0 auto 8px;
+  color: var(--chat-muted);
+  font-size: 13px;
+  img {
+    width: 48px;
+    height: 48px;
+    border-radius: 6px;
+    object-fit: contain;
+  }
+  span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+}
 .composer-box {
   display: flex;
   align-items: flex-end;
@@ -1116,6 +1227,12 @@ onBeforeUnmount(() => {
     &::placeholder {
       color: #9aaab3;
     }
+  }
+  .import-btn {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    margin: 0;
   }
   .send-btn {
     width: 42px;

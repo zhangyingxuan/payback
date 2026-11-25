@@ -26,6 +26,28 @@ function reasoningNode(streaming, reasoning) {
   return find(tree);
 }
 
+test('用户消息在气泡内展示附件图像并可打开预览', () => {
+  const image = 'data:image/jpeg;base64,preview';
+  let preview;
+  const tree = render({
+    message: { role: 'user', content: '请分析图片', image },
+    userContent: '请分析图片', previewImages: [], copyMessage() {},
+    openPreview: (images, index) => { preview = { images, index }; },
+  }, []);
+  function find(node, predicate) {
+    if (predicate(node)) return node;
+    return Array.isArray(node?.children)
+      ? node.children.map(child => find(child, predicate)).find(Boolean)
+      : undefined;
+  }
+  const bubble = find(tree, node => node?.props?.class === 'user-bubble');
+  assert.equal(find(bubble, node => node?.type === 'img')?.props.src, image);
+  const button = find(bubble, node => node?.type === 'button');
+  assert.equal(button?.props['aria-label'], '预览消息附件');
+  button.props.onClick();
+  assert.deepEqual(preview, { images: [image], index: 0 });
+});
+
 test('未收到摘要也显示思考过程，结束后明确提示未提供', () => {
   for (const streaming of [true, false]) {
     const node = reasoningNode(streaming);
