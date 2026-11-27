@@ -17,12 +17,7 @@
         </transition>
       </router-view> -->
 
-      <!-- 全局注入 个股新增 删除popover组件 -->
-      <PlatePopover
-        :virtualRefData="data.popoverVirtualPlateRefData"
-        :virtualRef="data.popoverVirtualPlateRef"
-      />
-      <!-- 全局注入 个股新增 删除popover组件 -->
+      <!-- 个股与板块共用自选浮层，切换时同步更新目标与操作类型。 -->
       <StockPopover
         :virtualRefData="data.popoverVirtualRefData"
         :virtualRef="data.popoverVirtualRef"
@@ -77,23 +72,19 @@ const data: {
   popoverVirtualRefData: any;
   tooltipVirtualRef: any;
   tooltipVirtualRefData: any;
-  popoverVirtualPlateRef: any;
-  popoverVirtualPlateRefData: any;
 } = reactive({
   popoverVirtualRef: null,
   popoverVirtualRefData: null,
   tooltipVirtualRef: null,
   tooltipVirtualRefData: null,
-  popoverVirtualPlateRef: null,
-  popoverVirtualPlateRefData: null,
 });
 const showPoper = (target: any, superData: any) => {
   data.popoverVirtualRef = target;
-  data.popoverVirtualRefData = superData;
+  data.popoverVirtualRefData = { ...superData, isPlate: false };
 };
 const showPlatePoper = (target: any, superData: any) => {
-  data.popoverVirtualPlateRef = target;
-  data.popoverVirtualPlateRefData = superData;
+  data.popoverVirtualRef = target;
+  data.popoverVirtualRefData = { ...superData, isPlate: true };
 };
 const showTooltip = (target: any, superData: any) => {
   data.tooltipVirtualRef = target;

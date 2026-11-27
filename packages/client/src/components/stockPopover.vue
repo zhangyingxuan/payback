@@ -16,7 +16,14 @@
   </el-popover>
 </template>
 <script lang="ts" setup>
-import { addThsSelfStock, delThsSelfStock } from '../api/thsTrade';
+import {
+  addThsSelfStock,
+  delThsSelfStock,
+  addThsSelfPlate,
+  delThsSelfPlate,
+  addThsSelfPlateByNameCn,
+  delThsSelfPlateByNameCn,
+} from '../api/thsTrade';
 import { Plus, Minus } from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
 import { usePermissStore } from '../store/permiss';
@@ -31,9 +38,7 @@ let superData = defineProps({
 });
 
 async function handleAdd() {
-  const result = await addThsSelfStock({
-    code: superData.virtualRefData?.code,
-  });
+  const result = await updateWatchlist(true);
   if (!result) {
     ElMessage({
       showClose: true,
@@ -43,9 +48,7 @@ async function handleAdd() {
   }
 }
 async function handleDel() {
-  const result = await delThsSelfStock({
-    code: superData.virtualRefData?.code,
-  });
+  const result = await updateWatchlist(false);
   if (!result) {
     ElMessage({
       showClose: true,
@@ -53,6 +56,18 @@ async function handleDel() {
       type: 'success',
     });
   }
+}
+
+function updateWatchlist(add: boolean) {
+  const { code, name, isPlate } = superData.virtualRefData ?? {};
+  // 板块分组可能只有名称，交给现有板块接口查找代码。
+  if (isPlate) {
+    if (code) {
+      return (add ? addThsSelfPlate : delThsSelfPlate)({ code: String(code).split('.')[0] });
+    }
+    return (add ? addThsSelfPlateByNameCn : delThsSelfPlateByNameCn)({ plateNameCn: name });
+  }
+  return (add ? addThsSelfStock : delThsSelfStock)({ code });
 }
 </script>
 
